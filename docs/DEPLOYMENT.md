@@ -42,7 +42,7 @@ dotnet publish src/SupportDesk.WorkerHost -c Release -o publish/worker
 | `RateLimits__*` | Per-minute limits for auth, API and public endpoints |
 | `Automation__Webhooks__AllowPrivateNetworks` | Default `false` (SSRF protection). Set `true` only when webhooks/rules must reach on-premises systems such as a local Wings ERP server |
 | `Seed__Demo` | Must be `false` in production |
-| `ForwardedHeaders__KnownProxies__0…`, `ForwardedHeaders__KnownNetworks__0…` | IPs / CIDR ranges of your reverse proxies. When none are set every `X-Forwarded-For` is trusted — configure them so the agent IP allow-list (Administration → Security) cannot be bypassed with a forged header |
+| `ForwardedHeaders__KnownProxies__0…`, `ForwardedHeaders__KnownNetworks__0…` | IPs / CIDR ranges of remote reverse proxies / load balancers. By default only loopback proxies (Nginx or IIS on the same host) are trusted, so a forged `X-Forwarded-For` cannot bypass the agent IP allow-list or per-IP rate limits. `ForwardedHeaders__TrustAll=true` trusts any sender — use it only when the platform edge always overwrites the header and Kestrel is not reachable directly |
 | `Portal__CustomDomainTarget` | Host name customers point their brand's custom domain at (CNAME); defaults to the host of `App__PublicUrl` |
 
 Database: the API applies EF Core migrations at start-up (`Database:InitializeMode=Migrate`). For controlled

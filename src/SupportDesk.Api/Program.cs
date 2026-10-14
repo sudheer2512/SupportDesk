@@ -46,13 +46,19 @@ builder.Services.AddControllers().AddJsonOptions(o => HostingSetup.ConfigureJson
 builder.Services.Configure<ForwardedHeadersOptions>(o =>
 {
     o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
-    o.KnownIPNetworks.Clear();
-    o.KnownProxies.Clear();
-    // Trusted reverse proxies. When none are configured every X-Forwarded-For is trusted (fine behind a proxy that
-    // overwrites it); configure them in production so the agent IP allow-list cannot be bypassed with a forged header.
-    foreach (var p in config.GetSection("ForwardedHeaders:KnownProxies").Get<string[]>() ?? [])
+    // Trusted reverse proxies. Default: loopback only (Nginx/IIS on the same host), so a client talking to Kestrel directly
+    // cannot forge X-Forwarded-For to bypass the agent IP allow-list or per-IP rate limits. Remote load balancers must be
+    // listed; ForwardedHeaders:TrustAll is only for platforms whose edge always overwrites the header.
+    var knownProxies = config.GetSection("ForwardedHeaders:KnownProxies").Get<string[]>() ?? [];
+    var knownNetworks = config.GetSection("ForwardedHeaders:KnownNetworks").Get<string[]>() ?? [];
+    if (config.GetValue("ForwardedHeaders:TrustAll", false) || knownProxies.Length > 0 || knownNetworks.Length > 0)
+    {
+        o.KnownIPNetworks.Clear();
+        o.KnownProxies.Clear();
+    }
+    foreach (var p in knownProxies)
         if (System.Net.IPAddress.TryParse(p, out var proxy)) o.KnownProxies.Add(proxy);
-    foreach (var n in config.GetSection("ForwardedHeaders:KnownNetworks").Get<string[]>() ?? [])
+    foreach (var n in knownNetworks)
         if (System.Net.IPNetwork.TryParse(n, out var network)) o.KnownIPNetworks.Add(network);
 });
 var corsOrigins = config.GetSection("Cors:Origins").Get<string[]>() ?? [];

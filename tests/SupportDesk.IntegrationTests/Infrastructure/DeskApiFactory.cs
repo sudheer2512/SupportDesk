@@ -49,6 +49,7 @@ public sealed class DeskApiFactory : WebApplicationFactory<Program>, IAsyncLifet
         builder.UseSetting("RateLimits:ApiPerMinute", "1000000");
         builder.UseSetting("RateLimits:PublicPerMinute", "100000");
         builder.UseSetting("Automation:Webhooks:AllowPrivateNetworks", "true");
+        builder.UseSetting("ForwardedHeaders:TrustAll", "true"); // tests simulate client IPs with X-Forwarded-For
         builder.ConfigureTestServices(s => s.AddScoped<IJobHandler, TestCounterJobHandler>());
     }
 
