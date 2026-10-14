@@ -27,6 +27,13 @@ export const routes: Routes = [
     loadComponent: () => import('./auth/login.page').then((m) => m.LoginPage),
   },
   {
+    // Invited agents set their password with the e-mailed code (Teams & Agents module).
+    path: 'accept-invite',
+    canActivate: [guestGuard],
+    title: 'Accept invitation',
+    loadComponent: () => import('./features/teams/accept-invite.page').then((m) => m.AcceptInvitePage),
+  },
+  {
     // Developer reference of @sd/ui components; only routable in dev builds.
     path: 'design-system',
     canMatch: [() => isDevMode()],

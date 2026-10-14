@@ -126,9 +126,17 @@ public sealed class SlaMonitorProcessor(DeskDbContext db, IEventPublisher events
             if (!running) continue;
             foreach (var level in snapshot.Escalations.Where(e => e.Milestone == m.Kind && e.Level > m.EscalationLevelReached).OrderBy(e => e.Level))
             {
-                var anchor = m.Status == MilestoneStatus.Breached ? m.BreachedAt ?? m.DueAt : m.DueAt;
-                if (m.Status == MilestoneStatus.Active && level.MinutesAfterBreach >= 0) break;
-                if (anchor.AddMinutes(level.MinutesAfterBreach) > now) break;
+                if (level.AtPercent is { } percent)
+                {
+                    // Percentage levels compare elapsed (business) time with the target, before or after the breach.
+                    if (SlaClock.Elapsed(m, now, cal) < m.TargetMinutes * percent / 100.0) break;
+                }
+                else
+                {
+                    var anchor = m.Status == MilestoneStatus.Breached ? m.BreachedAt ?? m.DueAt : m.DueAt;
+                    if (m.Status == MilestoneStatus.Active && level.MinutesAfterBreach >= 0) break;
+                    if (anchor.AddMinutes(level.MinutesAfterBreach) > now) break;
+                }
                 await EscalateAsync(ticket, instance, m, level, ct);
                 m.EscalationLevelReached = level.Level;
                 changed = true;

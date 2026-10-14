@@ -48,6 +48,11 @@ public class SlaEscalationLevel : TenantEntity
     public SlaMilestoneKind Milestone { get; set; }
     public int Level { get; set; }
     public int MinutesAfterBreach { get; set; }
+    /// <summary>
+    /// Alternative trigger: fire when this percentage of the milestone target has elapsed (e.g. 80 = before the breach,
+    /// 150 = half the target again after it). When set, <see cref="MinutesAfterBreach"/> is ignored.
+    /// </summary>
+    public int? AtPercent { get; set; }
     public EscalationAction Action { get; set; } = EscalationAction.Notify;
     /// <summary>{"userIds":[…],"roleIds":[…],"notifySupervisors":true,"notifyAssignee":true}</summary>
     public string NotifyJson { get; set; } = "{}";
