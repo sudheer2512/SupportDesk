@@ -13,4 +13,16 @@ export const ROUTES: Routes = [
   },
   // AI administration (owned by the AI module): provider, budget, features, prompts, agents, usage, execution log.
   { path: 'ai', canActivate: [permissionGuard('admin.ai')], loadChildren: () => import('./ai/admin-ai.routes').then((m) => m.ROUTES) },
+  // SaaS platform module: audit viewer, compliance (retention, legal holds, data requests, support access), configuration transfer.
+  { path: 'audit', canActivate: [permissionGuard('admin.audit')], loadChildren: () => import('./audit/audit.routes').then((m) => m.ROUTES) },
+  {
+    path: 'compliance',
+    canActivate: [permissionGuard('admin.compliance')],
+    loadChildren: () => import('./compliance/compliance.routes').then((m) => m.ROUTES),
+  },
+  {
+    path: 'config',
+    canActivate: [permissionGuard('admin.config_transfer')],
+    loadChildren: () => import('./config-transfer/config-transfer.routes').then((m) => m.ROUTES),
+  },
 ];

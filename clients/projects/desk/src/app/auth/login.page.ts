@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ApiError, AuthService, LoginMfaRequiredResponse, LoginResponse, MfaMethod, ThemeService } from '@sd/core';
 import { SdButton, SdFormField, SdIcon, SdInput, SdLogo } from '@sd/ui';
 
@@ -13,7 +13,7 @@ type Step = 'credentials' | 'mfa' | 'expired';
  */
 @Component({
   selector: 'desk-login-page',
-  imports: [FormsModule, SdButton, SdFormField, SdInput, SdIcon, SdLogo],
+  imports: [FormsModule, RouterLink, SdButton, SdFormField, SdInput, SdIcon, SdLogo],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="page">
@@ -85,6 +85,7 @@ type Step = 'credentials' | 'mfa' | 'expired';
                 <button sdButton variant="primary" size="lg" type="submit" block [loading]="busy()">Sign in</button>
               </form>
               <p class="help">Forgot your password? Ask your SupportDesk administrator to reset it.</p>
+              <p class="help signup">New to SupportDesk? <a routerLink="/signup">Start a free trial</a> · <a routerLink="/platform/login">Platform console</a></p>
             }
             @case ('mfa') {
               <h1>Two-step verification</h1>
@@ -340,6 +341,12 @@ type Step = 'credentials' | 'mfa' | 'expired';
       color: var(--sd-text-3);
       font-size: var(--sd-text-sm);
       text-align: center;
+    }
+    .help.signup {
+      margin-top: 8px;
+    }
+    .help a {
+      color: var(--sd-primary);
     }
     @media (max-width: 900px) {
       .page {

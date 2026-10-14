@@ -94,3 +94,14 @@ export * from './lib/api/customers.api';
 export * from './lib/api/products.api';
 export * from './lib/api/erp.api';
 export * from './lib/utils/validation-errors';
+
+// SaaS platform: subscriptions & billing, trial sign-up, platform operator console, compliance, audit, config transfer
+export * from './lib/models/subscriptions';
+export * from './lib/models/platform';
+export * from './lib/models/compliance';
+export * from './lib/models/config-transfer';
+export * from './lib/auth/platform-session';
+export * from './lib/api/subscriptions.api';
+export * from './lib/api/platform.api';
+export * from './lib/api/compliance.api';
+export * from './lib/api/config-transfer.api';
