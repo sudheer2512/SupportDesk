@@ -40,6 +40,7 @@ public static class CommunicationModule
         s.AddScoped<ConversationQueryService>();
         s.AddScoped<CsatService>();
         s.AddScoped<IOutboxHandler, CsatSurveyHandler>();
+        s.AddScoped<IOutboxHandler, ResolutionNoticeHandler>();
         s.AddScoped<NotificationDeliveryProcessor>();
         s.AddScoped<IRecurringTask, NotificationDeliveryTask>();
         s.AddScoped<ChannelSimulator>();

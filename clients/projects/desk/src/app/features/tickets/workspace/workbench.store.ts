@@ -15,8 +15,28 @@ import {
 } from '@sd/core';
 import { Subject, debounceTime, merge } from 'rxjs';
 
-/** What the ticket list shows: a standard queue or a saved view. */
-export type QueueSelection = { kind: 'queue'; key: QueueKey } | { kind: 'view'; id: Guid };
+/** What the workspace shows: a standard queue, a saved view, or the recycle bin (deleted tickets, tickets.delete). */
+export type QueueSelection = { kind: 'queue'; key: QueueKey } | { kind: 'view'; id: Guid } | { kind: 'trash' };
+
+/** `?queue=deleted` opens the recycle bin. */
+export const TRASH_QUEUE_PARAM = 'deleted';
+
+export function sameSelection(a: QueueSelection, b: QueueSelection): boolean {
+  if (a.kind !== b.kind) return false;
+  if (a.kind === 'queue' && b.kind === 'queue') return a.key === b.key;
+  if (a.kind === 'view' && b.kind === 'view') return a.id === b.id;
+  return true;
+}
+
+/** Query params that name a selection in the URL (`?queue=<key>`, `?queue=deleted`, `?view=<id>`). */
+export function selectionQueryParams(s: QueueSelection): Record<string, string> {
+  return s.kind === 'queue' ? { queue: s.key } : s.kind === 'view' ? { view: s.id } : { queue: TRASH_QUEUE_PARAM };
+}
+
+/** Table-prefs key of the list for a selection (columns are remembered per queue / view). */
+export function selectionStorageKey(s: QueueSelection): string {
+  return s.kind === 'queue' ? `tickets.queue.${s.key}` : s.kind === 'view' ? `tickets.view.${s.id}` : 'tickets.trash';
+}
 
 export interface QueueDef {
   key: QueueKey;
@@ -67,6 +87,14 @@ const selectionKey = (userId: Guid) => `sd.tickets.queue.${userId}`;
  * Workspace state shared by the queue panel, list, tabs, ticket view, context panel, shortcuts and palette:
  * live queue counts and saved views (refreshed from realtime ticket changes), the current queue/view, the
  * open-ticket tabs (persisted per user in localStorage) and the active ticket.
+ *
+ * Which list opens (`resolveSelection`), highest precedence first:
+ * 1. the URL — `/tickets?queue=<key>` (`?queue=deleted` = recycle bin) or `/tickets?view=<id>`;
+ * 2. on a fresh load (first time the workspace opens for this user in this tab), the user's default saved view —
+ *    their own personal default, else the shared default ("Open this view by default" in the view editor);
+ * 3. the last queue/view this user picked on this browser (localStorage);
+ * 4. "My open tickets".
+ * Within a session, returning to `/tickets` without query params keeps the current selection.
  */
 @Injectable({ providedIn: 'root' })
 export class TicketWorkbenchStore {
@@ -80,7 +108,9 @@ export class TicketWorkbenchStore {
   readonly views = signal<SavedViewDto[]>([]);
   readonly viewsLoading = signal(false);
   readonly viewsError = signal<string | null>(null);
-  readonly selection = signal<QueueSelection>({ kind: 'queue', key: 'mine' });
+  readonly selection = signal<QueueSelection>({ kind: 'queue', key: 'mine' }, { equal: sameSelection });
+  /** False until the initial selection is settled (URL / default view / last); the list waits for it. */
+  readonly selectionReady = signal(false);
   readonly tabs = signal<OpenTicketTab[]>([]);
   readonly activeTicketId = signal<Guid | null>(null);
   /** Detail of the ticket open in the main panel (set by the ticket view; feeds the context panel and palette). */
@@ -100,11 +130,18 @@ export class TicketWorkbenchStore {
   });
   readonly selectionLabel = computed(() => {
     const s = this.selection();
-    return s.kind === 'queue' ? queueDef(s.key).label : (this.selectedView()?.name ?? 'Saved view');
+    return s.kind === 'queue' ? queueDef(s.key).label : s.kind === 'view' ? (this.selectedView()?.name ?? 'Saved view') : 'Deleted tickets';
   });
+  /** The view that opens on a fresh load: the user's personal default, else the shared default. */
+  readonly defaultView = computed(() => this.myViews().find((v) => v.isDefault) ?? this.sharedViews().find((v) => v.isDefault) ?? null);
 
   private userId: Guid | null = null;
   private countsInFlight = false;
+  /** The first selection of this user's session has been settled (URL or default view). */
+  private initialResolved = false;
+  /** Waiting for the saved views to arrive before applying the default view. */
+  private pendingDefault = false;
+  private viewsLoadedOnce = false;
 
   constructor() {
     // Initialise for the current user right away (init() may be called before the effect below first runs)…
@@ -150,20 +187,68 @@ export class TicketWorkbenchStore {
   loadViews(quiet = false): void {
     if (!this.userId) return;
     if (!quiet) this.viewsLoading.set(true);
+    const uid = this.userId;
     this.viewsApi.list('tickets', true).subscribe({
       next: (views) => {
+        if (uid !== this.userId) return;
         this.views.set(views);
         this.viewsLoading.set(false);
         this.viewsError.set(null);
+        this.viewsLoadedOnce = true;
+        if (this.pendingDefault) {
+          this.applyDefaultView();
+          return;
+        }
         // A selected view that was deleted elsewhere falls back to "My open".
         const s = this.selection();
         if (s.kind === 'view' && !views.some((v) => v.id === s.id)) this.select({ kind: 'queue', key: 'mine' });
       },
       error: (err: unknown) => {
+        if (uid !== this.userId) return;
         this.viewsLoading.set(false);
+        this.viewsLoadedOnce = true;
         if (!quiet) this.viewsError.set(ApiError.from(err).userMessage);
+        // Without views the default view cannot apply: keep the last selection.
+        if (this.pendingDefault) {
+          this.pendingDefault = false;
+          this.selectionReady.set(true);
+        }
       },
     });
+  }
+
+  /**
+   * Settles which list the workspace shows (see the class comment for the precedence). Called by the workspace with the
+   * selection named in the URL (or null) whenever its query params change.
+   */
+  resolveSelection(fromUrl: QueueSelection | null): void {
+    if (fromUrl) {
+      this.initialResolved = true;
+      this.pendingDefault = false;
+      this.select(fromUrl);
+      this.selectionReady.set(true);
+      return;
+    }
+    if (this.initialResolved) {
+      if (!this.pendingDefault) this.selectionReady.set(true);
+      return;
+    }
+    this.initialResolved = true;
+    this.pendingDefault = true;
+    if (this.viewsLoadedOnce) this.applyDefaultView();
+    else if (!this.viewsLoading()) this.loadViews();
+  }
+
+  private applyDefaultView(): void {
+    this.pendingDefault = false;
+    const view = this.defaultView();
+    if (view) this.select({ kind: 'view', id: view.id });
+    else {
+      // A remembered view that no longer exists falls back to "My open".
+      const s = this.selection();
+      if (s.kind === 'view' && !this.views().some((v) => v.id === s.id)) this.select({ kind: 'queue', key: 'mine' });
+    }
+    this.selectionReady.set(true);
   }
 
   upsertView(view: SavedViewDto): void {
@@ -184,7 +269,8 @@ export class TicketWorkbenchStore {
 
   select(selection: QueueSelection): void {
     this.selection.set(selection);
-    if (this.userId) safeStorage.setJson(selectionKey(this.userId), selection);
+    // The recycle bin is never remembered: a fresh load opens a working queue.
+    if (this.userId && selection.kind !== 'trash') safeStorage.setJson(selectionKey(this.userId), selection);
   }
 
   /** Adds (or refreshes) a tab; keeps at most MAX_TABS, dropping the oldest. */
@@ -236,6 +322,11 @@ export class TicketWorkbenchStore {
     this.counts.set({});
     this.countsLoaded.set(false);
     this.views.set([]);
+    this.viewsLoading.set(false);
+    this.viewsLoadedOnce = false;
+    this.initialResolved = false;
+    this.pendingDefault = false;
+    this.selectionReady.set(false);
     this.activeTicket.set(null);
     this.activeTicketId.set(null);
     if (!uid) {

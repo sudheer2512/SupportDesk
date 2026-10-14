@@ -82,9 +82,47 @@ public interface IRecurringTask
     Task RunAsync(CancellationToken ct);
 }
 
-/// <summary>Runs work in a fresh DI scope per tenant with a system request context.</summary>
-public sealed class TenantScopeRunner(IServiceScopeFactory scopes)
+/// <summary>
+/// One database that background work scans. The shared database also holds a frozen copy of every tenant that moved to a
+/// dedicated database; <see cref="ExcludedTenantIds"/> lists them so cross-tenant scans skip that stale data.
+/// </summary>
+public sealed record DatabasePartition(Guid? DedicatedTenantId, IReadOnlySet<Guid> ExcludedTenantIds)
 {
+    public bool IsShared => DedicatedTenantId is null;
+
+    /// <summary>True when this database holds the live data of <paramref name="tenantId"/>.</summary>
+    public bool Owns(Guid tenantId) => !ExcludedTenantIds.Contains(tenantId);
+}
+
+/// <summary>Runs work in a fresh DI scope per tenant with a system request context.</summary>
+public sealed class TenantScopeRunner(IServiceScopeFactory scopes, Persistence.Infrastructure.TenantDatabaseDirectory directory)
+{
+    private static readonly IReadOnlySet<Guid> NoTenants = new HashSet<Guid>();
+
+    /// <summary>The databases to scan: the shared one first, then each dedicated tenant database.</summary>
+    public IReadOnlyList<DatabasePartition> Partitions()
+    {
+        var dedicated = directory.All().Keys.ToHashSet();
+        return [new DatabasePartition(null, dedicated), .. dedicated.Select(t => new DatabasePartition(t, NoTenants))];
+    }
+
+    /// <summary>
+    /// Runs cross-tenant work once per database, in a scope whose connections are pinned to it. In a dedicated database the
+    /// tenant is also set, so tenant-filtered queries work there too. Scans must filter rows with <see cref="DatabasePartition.Owns"/>.
+    /// </summary>
+    public async Task ForEachDatabaseAsync(string actorName, Func<IServiceProvider, DatabasePartition, CancellationToken, Task> work, CancellationToken ct)
+    {
+        foreach (var partition in Partitions())
+        {
+            ct.ThrowIfCancellationRequested();
+            using var scope = scopes.CreateScope();
+            var ctx = scope.ServiceProvider.GetRequiredService<RequestContext>();
+            ctx.DatabasePin = partition.DedicatedTenantId ?? Guid.Empty;
+            if (partition.DedicatedTenantId is { } tenant) ctx.SetSystem(tenant, actorName);
+            await work(scope.ServiceProvider, partition, ct);
+        }
+    }
+
     public async Task ForEachActiveTenantAsync(string actorName, Func<IServiceProvider, Tenant, CancellationToken, Task> work, CancellationToken ct)
     {
         List<Tenant> tenants;

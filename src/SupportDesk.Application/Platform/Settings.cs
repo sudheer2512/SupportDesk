@@ -41,7 +41,9 @@ public sealed record SecuritySettings
 {
     public PasswordPolicy Password { get; init; } = new();
     public SessionPolicy Session { get; init; } = new();
-    public bool RequireMfaForAdmins { get; init; } = true;
+    /// <summary>Administrators must use MFA: they cannot switch it off, and without an authenticator they get an e-mailed code at sign-in.</summary>
+    public bool RequireMfaForAdmins { get; init; }
+    /// <summary>Everyone must use MFA (same enforcement as <see cref="RequireMfaForAdmins"/>).</summary>
     public bool RequireMfaForAll { get; init; }
     /// <summary>Shows one-time codes in API responses (demo/trial environments only; never in production tenants).</summary>
     public bool DemoMode { get; init; }
@@ -61,6 +63,12 @@ public sealed record TicketSettings
     public bool AutoAcknowledge { get; init; } = true;
     public bool RequireResolutionCode { get; init; }
     public bool AllowAgentsToOverrideEntitlement { get; init; } = true;
+    /// <summary>Merge rules: tickets of different customers / departments may be merged; at most this many sources per merge.</summary>
+    public bool AllowMergeAcrossCustomers { get; init; } = true;
+    public bool AllowMergeAcrossDepartments { get; init; } = true;
+    public int MaxMergeSources { get; init; } = 10;
+    /// <summary>Split rule: messages may be split off into a new ticket.</summary>
+    public bool AllowSplit { get; init; } = true;
 }
 
 public sealed record SsoSettings
@@ -71,6 +79,8 @@ public sealed record SsoSettings
     public string? ClientSecretProtected { get; init; }
     public string Scopes { get; init; } = "openid profile email";
     public string EmailClaim { get; init; } = "email";
+    /// <summary>Claim holding the display name used when provisioning users.</summary>
+    public string NameClaim { get; init; } = "name";
     public bool AutoProvision { get; init; }
     public Guid? DefaultRoleId { get; init; }
     public bool EnforceSso { get; init; }

@@ -30,7 +30,8 @@ public sealed class CsatService(
     CommunicationKeys keys,
     TicketHistory history,
     IEventPublisher events,
-    ILogger<CsatService> logger)
+    ILogger<CsatService> logger,
+    Administration.EmailTemplateService templates)
 {
     public async Task<SatisfactionResponse?> SendSurveyAsync(Guid ticketId, CancellationToken ct)
     {
@@ -57,13 +58,17 @@ public sealed class CsatService(
         var display = $"#{ticket.Number}";
         var stars = string.Join(" ", Enumerable.Range(1, 5).Select(i =>
             $"<a href=\"{link}?rating={i}\" style=\"display:inline-block;padding:8px 12px;margin:2px;border-radius:6px;background:{brand?.PrimaryColor ?? "#2563eb"};color:#fff;text-decoration:none\">{i} ★</a>"));
-        var html = $"<p>Hello,</p><p>Your request <strong>{display} — {WebUtility.HtmlEncode(ticket.Subject)}</strong> was resolved{(agent is null ? "" : $" by {WebUtility.HtmlEncode(agent)}")}.</p>" +
-                   $"<p>How satisfied are you with the support you received?</p><p>{stars}</p>" +
-                   $"<p>You can also leave a comment at <a href=\"{link}\">{link}</a>. This survey link expires on {response.ExpiresAt:dd MMM yyyy}.</p>";
+        // Tenant template (administration → notifications → e-mail templates) or the built-in default, plus the brand footer.
+        var (subject, html) = await templates.RenderAsync(Administration.EmailTemplateCatalog.CustomerCsatSurvey, new Dictionary<string, string?>
+        {
+            ["ticket.number"] = display, ["ticket.subject"] = ticket.Subject, ["agent.name"] = agent ?? "our team", ["survey.link"] = link,
+            ["survey.buttons"] = stars, ["survey.expires"] = response.ExpiresAt.ToString("dd MMM yyyy"), ["brand.name"] = brand?.Name
+        }, ct);
+        html += await templates.BrandFooterAsync(brand?.Id, ct);
         var text = $"Your request {display} was resolved. How did we do? Rate us from 1 to 5: {link}";
         try
         {
-            var msg = await outbound.QueueTicketNoticeAsync(ticket, $"How did we do? {ticket.Subject}", html, text, "csat", ConsentPurpose.Surveys, ct);
+            var msg = await outbound.QueueTicketNoticeAsync(ticket, subject, html, text, "csat", ConsentPurpose.Surveys, ct);
             if (msg is null) logger.LogInformation("CSAT survey for ticket {Number} created but no channel was available to send it", ticket.Number);
         }
         catch (Exception ex) when (ex is DomainException or ChannelConfigurationException)
@@ -147,6 +152,8 @@ public sealed class CsatSurveyHandler(CsatService csat) : IOutboxHandler
     {
         var p = Json.Deserialize<TicketEventPayload>(ev.PayloadJson);
         if (p is null || p.Changes?.Any(c => c.Field == "status") != true) return;
+        // The agent resolved without notifying the customer: nothing goes out for this resolution (no survey either).
+        if (p.NotifyCustomer == false) return;
         await csat.SendSurveyAsync(p.TicketId, ct);
     }
 }

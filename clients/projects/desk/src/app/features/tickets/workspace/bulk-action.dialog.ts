@@ -91,6 +91,21 @@ const TITLES: Partial<Record<BulkAction, string>> = {
               <sd-chips-input [value]="tags()" (valueChange)="tags.set($event)" [suggestions]="tagSuggestions()" lowercase [allowNew]="false" placeholder="Pick tags" />
             </sd-form-field>
           }
+          @case ('delete') {
+            <p class="confirm">{{ confirmText() }}</p>
+            <label class="typed">
+              <span>Type <strong>{{ confirmWord() }}</strong> to confirm</span>
+              <input
+                class="sd-input"
+                name="typed"
+                autocomplete="off"
+                [attr.aria-describedby]="'bulk-delete-hint'"
+                [value]="typed()"
+                (input)="typed.set($any($event.target).value)"
+              />
+            </label>
+            <p id="bulk-delete-hint" class="sd-small sd-muted">Deleted tickets leave every queue. Agents with the delete permission can restore them from Deleted tickets.</p>
+          }
           @default {
             <p class="confirm">{{ confirmText() }}</p>
           }
@@ -125,6 +140,12 @@ const TITLES: Partial<Record<BulkAction, string>> = {
     }
     .confirm {
       color: var(--sd-text-2);
+    }
+    .typed {
+      display: grid;
+      gap: 6px;
+      margin-top: var(--sd-space-3);
+      font-size: var(--sd-text-sm);
     }
     .error {
       margin-top: var(--sd-space-2);
@@ -174,6 +195,8 @@ export class BulkActionDialog {
   protected readonly busy = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly result = signal<BulkResultDto | null>(null);
+  /** Typed confirmation for bulk delete ("DELETE 3"). */
+  protected readonly typed = signal('');
 
   protected readonly priorities: SdOption[] = PRIORITIES.map((p) => ({ value: p, label: p }));
   protected readonly agents = computed(() => agentOptions(this.meta.ticketForm()));
@@ -184,6 +207,7 @@ export class BulkActionDialog {
   protected readonly tagSuggestions = computed(() => this.meta.ticketForm()?.tags ?? []);
 
   protected readonly count = this.data.ticketIds.length;
+  protected readonly confirmWord = computed(() => `DELETE ${this.count}`);
   protected readonly title = computed(() => TITLES[this.data.action] ?? 'Bulk update');
   protected readonly description = computed(() => (this.result() ? null : `${this.count} selected ticket${this.count === 1 ? '' : 's'}`));
   protected readonly danger = computed(() => ['spam', 'delete', 'close'].includes(this.data.action));
@@ -194,7 +218,7 @@ export class BulkActionDialog {
       case 'spam':
         return `Mark ${this.count} ticket(s) as spam? They are removed from every queue.`;
       case 'delete':
-        return `Delete ${this.count} ticket(s)? They can be restored by an administrator.`;
+        return `Delete ${this.count} ticket(s)? They move to the recycle bin and can be restored.`;
       case 'watch':
         return `Add yourself as a watcher on ${this.count} ticket(s)?`;
       default:
@@ -226,6 +250,8 @@ export class BulkActionDialog {
       case 'tags_add':
       case 'tags_remove':
         return this.tags().length > 0;
+      case 'delete':
+        return this.typed().trim().toUpperCase() === this.confirmWord();
       default:
         return true;
     }

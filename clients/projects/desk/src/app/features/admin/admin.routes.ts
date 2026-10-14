@@ -24,4 +24,35 @@ export const ROUTES: Routes = [
     canActivate: [permissionGuard('admin.integrations')],
     loadChildren: () => import('./collaboration/collaboration.routes').then((m) => m.ROUTES),
   },
+  // Administration console (H1): roles, ticket configuration, brands, notifications, security, API credentials.
+  { path: 'roles', canActivate: [permissionGuard('admin.roles')], loadChildren: () => import('./roles/roles.routes').then((m) => m.ROUTES) },
+  {
+    path: 'ticket-config',
+    canActivate: [permissionGuard('admin.ticket_config')],
+    loadChildren: () => import('./ticket-config/ticket-config.routes').then((m) => m.ROUTES),
+  },
+  { path: 'brands', canActivate: [permissionGuard('admin.organisation')], loadChildren: () => import('./brands/brands.routes').then((m) => m.ROUTES) },
+  {
+    path: 'notifications',
+    canActivate: [permissionGuard('admin.organisation', 'admin.channels')],
+    loadChildren: () => import('./notifications/notifications.routes').then((m) => m.ROUTES),
+  },
+  { path: 'security', canActivate: [permissionGuard('admin.security')], loadChildren: () => import('./security/security.routes').then((m) => m.ROUTES) },
+  {
+    path: 'api-credentials',
+    canActivate: [permissionGuard('admin.integrations')],
+    loadChildren: () => import('./api-credentials/api-credentials.routes').then((m) => m.ROUTES),
+  },
+  // SaaS platform module: audit viewer, compliance (retention, legal holds, data requests, support access), configuration transfer.
+  { path: 'audit', canActivate: [permissionGuard('admin.audit')], loadChildren: () => import('./audit/audit.routes').then((m) => m.ROUTES) },
+  {
+    path: 'compliance',
+    canActivate: [permissionGuard('admin.compliance')],
+    loadChildren: () => import('./compliance/compliance.routes').then((m) => m.ROUTES),
+  },
+  {
+    path: 'config',
+    canActivate: [permissionGuard('admin.config_transfer')],
+    loadChildren: () => import('./config-transfer/config-transfer.routes').then((m) => m.ROUTES),
+  },
 ];

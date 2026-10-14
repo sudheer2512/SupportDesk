@@ -315,6 +315,25 @@ export interface AgentChatMessageRequest {
   clientRequestId?: string | null;
 }
 
+/** POST /conversations/{id}/transfer — to an agent and/or a department (department needs tickets.transfer). */
+export interface TransferChatRequest {
+  agentId?: Guid | null;
+  departmentId?: Guid | null;
+  note?: string | null;
+}
+
+/** Result of a chat transfer: moved, or the ticket's department transfer is waiting for approval (HTTP 202). */
+export type ChatTransferResult =
+  | { kind: 'transferred'; detail: ConversationDetailDto }
+  | { kind: 'approval_required'; approvalId: Guid | null; message: string };
+
+/** GET /conversations/chat-capacity — active live chats against the routing profile's MaxConcurrentChats. */
+export interface ChatCapacityDto {
+  active: number;
+  limit: number;
+  atLimit: boolean;
+}
+
 // ───────────── Live chat (widget + /hubs/chat) ─────────────
 
 export interface ChatWidgetConfigDto {

@@ -20,6 +20,7 @@ public static class CustomersModule
         s.AddScoped<CustomerService>();
         s.AddScoped<ContactService>();
         s.AddScoped<ContactMergeService>();
+        s.AddScoped<CustomerMergeService>();
         s.AddScoped<ServiceActivityService>();
         s.AddScoped<Customer360Service>();
 

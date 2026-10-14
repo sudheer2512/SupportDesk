@@ -552,3 +552,34 @@ export interface ContactMergeLogDto {
   mergedAt: IsoDateTime;
   snapshot: JsonValue;
 }
+
+// ───── Organisation merge (POST /customers/merge, customers.merge) ─────
+
+/** Folds `mergeId` into `keepId`; `preferMergedFields` lists fields whose merged value wins (see CUSTOMER_MERGE_FIELDS). */
+export interface MergeCustomersRequest {
+  keepId: Guid;
+  mergeId: Guid;
+  preferMergedFields?: string[] | null;
+}
+
+/** Outcome of an organisation merge; `moved` counts records per kind (contacts, tickets, locations, contracts…). */
+export interface CustomerMergeResultDto {
+  survivorId: Guid;
+  mergedId: Guid;
+  alreadyMerged: boolean;
+  moved: Record<string, number>;
+  fieldsCopied: string[];
+  logId: Guid | null;
+}
+
+export interface CustomerMergeLogDto {
+  id: Guid;
+  survivorCustomerId: Guid;
+  survivorName: string | null;
+  mergedCustomerId: Guid;
+  mergedCustomerName: string | null;
+  mergedById: Guid | null;
+  mergedByName: string | null;
+  mergedAt: IsoDateTime;
+  snapshot: JsonValue;
+}

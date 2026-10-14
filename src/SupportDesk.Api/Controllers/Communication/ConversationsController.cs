@@ -28,6 +28,19 @@ public sealed class ConversationsController(ConversationQueryService queries, Ch
         return await queries.GetAsync(id, ct);
     }
 
+    /// <summary>Hands a live chat to another agent and/or department (tickets.reply; department also tickets.transfer).
+    /// 202 when the department transfer of the ticket needs approval (nothing moves); 409 chat_limit_reached for a full agent.</summary>
+    [HttpPost("{id:guid}/transfer")]
+    public async Task<ConversationDetailDto> Transfer(Guid id, TransferChatRequest request, CancellationToken ct)
+    {
+        await chat.TransferAsync(id, request, ct);
+        return await queries.GetAsync(id, ct);
+    }
+
+    /// <summary>The caller's live-chat capacity (active chats vs. MaxConcurrentChats of the routing profile).</summary>
+    [HttpGet("chat-capacity")]
+    public Task<ChatCapacityDto> ChatCapacity(CancellationToken ct) => chat.CapacityAsync(ct);
+
     /// <summary>Sends a live-chat message to the visitor (recorded as a public reply on the chat's ticket).</summary>
     [HttpPost("{id:guid}/messages")]
     public Task<ConversationMessageDto> Send(Guid id, AgentChatMessageRequest request, CancellationToken ct) => chat.AgentSendAsync(id, request.Text, request.ClientRequestId, ct);

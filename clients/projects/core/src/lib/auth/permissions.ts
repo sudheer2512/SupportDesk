@@ -21,6 +21,7 @@ export const PERMISSIONS = [
   'customers.view',
   'customers.manage',
   'contacts.merge',
+  'customers.merge',
   'products.view',
   'products.manage',
   'contracts.view',

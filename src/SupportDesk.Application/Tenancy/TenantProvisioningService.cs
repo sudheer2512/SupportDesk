@@ -100,7 +100,7 @@ public sealed class TenantProvisioningService(DeskDbContext db, RequestContext c
         var roles = new Dictionary<string, Guid>();
         void AddRole(string name, string description, TicketScope scope, CustomerScope custScope, IEnumerable<string> perms)
         {
-            var role = new Role { Name = name, Description = description, IsSystem = true, TicketScope = scope, CustomerScope = custScope };
+            var role = new Role { Name = name, Description = description, IsSystem = true, TicketScope = scope, CustomerScope = custScope, IsLightAgent = name == "Light Agent" };
             db.Roles.Add(role);
             foreach (var p in perms.Distinct()) db.RolePermissions.Add(new RolePermission { RoleId = role.Id, PermissionCode = p });
             roles[name] = role.Id;

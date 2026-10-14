@@ -8,5 +8,6 @@ export const ROUTES: Routes = [
   { path: 'contacts/:id', title: 'Contact', loadComponent: () => import('./contact-detail.page').then((m) => m.ContactDetailPage) },
   { path: 'duplicates', title: 'Duplicate contacts', loadComponent: () => import('./duplicates.page').then((m) => m.DuplicatesPage) },
   { path: 'activities', title: 'Service activities', loadComponent: () => import('./activities.page').then((m) => m.ActivitiesPage) },
+  { path: 'groups', title: 'Customer groups', loadComponent: () => import('./customer-groups.page').then((m) => m.CustomerGroupsPage) },
   { path: ':id', title: 'Customer 360', loadComponent: () => import('./customer-360.page').then((m) => m.Customer360Page) },
 ];

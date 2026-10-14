@@ -1,14 +1,17 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { ApiClient } from '../http/api-client';
-import { Guid, PagedResult } from '../models/common';
+import { Guid, PagedResult, ProblemDetails } from '../models/common';
 import {
   AgentChatMessageRequest,
+  ChatCapacityDto,
+  ChatTransferResult,
   ConversationDetailDto,
   ConversationListItemDto,
   ConversationMessageDto,
   ConversationQuery,
   MessageDetailDto,
+  TransferChatRequest,
 } from '../models/communication';
 
 /** Omnichannel inbox (`/conversations`): unified conversations, messages, delivery status and agent live-chat actions. */
@@ -40,6 +43,31 @@ export class ConversationsApi {
 
   typing(id: Guid, isTyping: boolean): Observable<void> {
     return this.api.post<void>(`conversations/${encodeURIComponent(id)}/typing`, {}, { params: { isTyping }, silent: true });
+  }
+
+  /**
+   * Hands a live chat to another agent and/or department; the chat's ticket follows. 409 `chat_limit_reached` when the
+   * agent is full; a department whose transfers need approval answers 202 (problem details) — a typed result here.
+   */
+  transfer(id: Guid, request: TransferChatRequest): Observable<ChatTransferResult> {
+    return this.api.post<ConversationDetailDto | ProblemDetails>(`conversations/${encodeURIComponent(id)}/transfer`, request, { silent: true }).pipe(
+      map((body): ChatTransferResult => {
+        const problem = body as ProblemDetails;
+        if (problem && problem.code === 'approval_required') {
+          return {
+            kind: 'approval_required',
+            approvalId: (problem['approvalId'] as string | undefined) ?? null,
+            message: problem.title ?? 'An approval request was sent.',
+          };
+        }
+        return { kind: 'transferred', detail: body as ConversationDetailDto };
+      }),
+    );
+  }
+
+  /** The caller's live-chat capacity (active chats vs. MaxConcurrentChats). */
+  chatCapacity(): Observable<ChatCapacityDto> {
+    return this.api.get<ChatCapacityDto>('conversations/chat-capacity', { silent: true });
   }
 
   /** Ends a live chat; the transcript is added to the ticket timeline. */

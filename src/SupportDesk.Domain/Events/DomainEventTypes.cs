@@ -63,7 +63,9 @@ public sealed record TicketEventPayload(
     long Number,
     IReadOnlyList<FieldChange>? Changes = null,
     Guid? ThreadId = null,
-    string? Note = null);
+    string? Note = null,
+    /// <summary>Resolve action only: whether the agent chose to notify the customer (null = not a resolve action).</summary>
+    bool? NotifyCustomer = null);
 
 public sealed record SlaEventPayload(Guid TicketId, long Number, Guid InstanceId, Guid MilestoneId, SlaMilestoneKind Milestone, DateTime DueAt, int EscalationLevel = 0);
 

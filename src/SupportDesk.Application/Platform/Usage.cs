@@ -21,11 +21,13 @@ public sealed record PlanLimits(
     int? MaxAttachmentMb,
     long? ApiCallsMonthly,
     int? MaxBrands,
-    IReadOnlyList<string> Features)
+    IReadOnlyList<string> Features,
+    int? MaxLightAgents = null)
 {
     public long? LimitFor(string metric) => metric switch
     {
         UsageMetrics.Agents => MaxAgents,
+        UsageMetrics.LightAgents => MaxLightAgents,
         UsageMetrics.PortalUsers => MaxPortalUsers,
         UsageMetrics.StorageBytes => StorageMb * 1024 * 1024,
         UsageMetrics.Channels => MaxChannels,
@@ -41,7 +43,8 @@ public sealed class UsageMeter(DeskDbContext db)
     public static DateTime PeriodOf(DateTime utc) => new(utc.Year, utc.Month, 1, 0, 0, 0, DateTimeKind.Utc);
 
     /// <summary>Gauges (agents, storage, channels) are tracked in a fixed period so they are not reset monthly.</summary>
-    public static bool IsGauge(string metric) => metric is UsageMetrics.Agents or UsageMetrics.StorageBytes or UsageMetrics.Channels or UsageMetrics.PortalUsers;
+    public static bool IsGauge(string metric) => metric is UsageMetrics.Agents or UsageMetrics.StorageBytes or UsageMetrics.Channels or UsageMetrics.PortalUsers
+        or UsageMetrics.LightAgents or UsageMetrics.Attachments;
 
     private DateTime PeriodFor(string metric) => IsGauge(metric) ? new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc) : PeriodOf(db.Clock.UtcNow);
 
@@ -103,7 +106,7 @@ public sealed class LimitGuard(DeskDbContext db, UsageMeter usage)
             (int?)L("MaxAgents", plan?.MaxAgents), (int?)L("MaxPortalUsers", plan?.MaxPortalUsers), L("StorageMb", plan?.StorageMb),
             (int?)L("MaxChannels", plan?.MaxChannels), L("AiTokensMonthly", plan?.AiTokensMonthly), (int?)L("MaxAttachmentMb", plan?.MaxAttachmentMb),
             L("ApiCallsMonthly", plan?.ApiCallsMonthly), (int?)L("MaxBrands", plan?.MaxBrands),
-            Json.StringList(plan?.FeaturesJson));
+            Json.StringList(plan?.FeaturesJson), (int?)L("MaxLightAgents", plan?.MaxLightAgents));
         return _limits;
     }
 

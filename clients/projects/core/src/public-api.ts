@@ -109,3 +109,16 @@ export * from './lib/models/organisation';
 export * from './lib/models/sla-admin';
 export * from './lib/api/organisation.api';
 export * from './lib/api/sla-admin.api';
+// SaaS platform: subscriptions & billing, trial sign-up, platform operator console, compliance, audit, config transfer
+export * from './lib/models/subscriptions';
+export * from './lib/models/platform';
+export * from './lib/models/compliance';
+export * from './lib/models/config-transfer';
+export * from './lib/auth/platform-session';
+export * from './lib/api/subscriptions.api';
+export * from './lib/api/platform.api';
+export * from './lib/api/compliance.api';
+export * from './lib/api/config-transfer.api';
+// Administration console (roles, ticket configuration, brands, notifications, security, API credentials)
+export * from './lib/models/administration';
+export * from './lib/api/administration.api';

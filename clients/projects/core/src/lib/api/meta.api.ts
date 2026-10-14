@@ -54,4 +54,15 @@ export class MetaApi {
     this.cached$ = null;
     this._ticketForm.set(null);
   }
+
+  /**
+   * Re-fetches metadata that was already loaded, keeping the current value until the new one arrives (after an
+   * administrator changes statuses, fields, layouts…; also triggered by the realtime `config.changed` event).
+   */
+  refresh(): void {
+    if (!this.cached$ && !this._ticketForm()) return;
+    this.ticketForm$(true)
+      .pipe(catchError(() => of(null)))
+      .subscribe();
+  }
 }

@@ -1,13 +1,22 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal, untracked } from '@angular/core';
-import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MeStore, MetaApi, injectShortcuts } from '@sd/core';
+import { ActivatedRoute, NavigationEnd, ParamMap, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { MeStore, MetaApi, QUEUE_KEYS, QueueKey, injectShortcuts } from '@sd/core';
 import { CommandPaletteService, SdButton, SdCommand, SdIcon, SdSplitLayout, SdTooltip } from '@sd/ui';
 import { filter } from 'rxjs';
 import { ContextPanelComponent } from '../context/context-panel.component';
 import { allowedStatuses } from '../shared/ticket-ui';
 import { QueuePanelComponent } from './queue-panel.component';
+import { RecycleBinComponent } from './recycle-bin.component';
 import { TicketListComponent } from './ticket-list.component';
-import { STANDARD_QUEUES, TicketCommand, TicketWorkbenchStore } from './workbench.store';
+import {
+  QueueSelection,
+  STANDARD_QUEUES,
+  TRASH_QUEUE_PARAM,
+  TicketCommand,
+  TicketWorkbenchStore,
+  selectionQueryParams,
+  selectionStorageKey,
+} from './workbench.store';
 
 /**
  * /tickets — the agent workspace: queues & saved views (left), the ticket list and open tickets as tabs
@@ -16,7 +25,7 @@ import { STANDARD_QUEUES, TicketCommand, TicketWorkbenchStore } from './workbenc
  */
 @Component({
   selector: 'desk-tickets-workspace',
-  imports: [RouterOutlet, RouterLink, SdSplitLayout, SdButton, SdIcon, SdTooltip, QueuePanelComponent, TicketListComponent, ContextPanelComponent],
+  imports: [RouterOutlet, RouterLink, SdSplitLayout, SdButton, SdIcon, SdTooltip, QueuePanelComponent, TicketListComponent, RecycleBinComponent, ContextPanelComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <sd-split-layout
@@ -31,7 +40,7 @@ import { STANDARD_QUEUES, TicketCommand, TicketWorkbenchStore } from './workbenc
       [(rightCollapsed)]="rightCollapsed"
     >
       <section sdSplitLeft class="left">
-        <desk-queue-panel [columnsStorageKey]="listStorageKey()" (chosen)="onQueueChosen()" />
+        <desk-queue-panel [columnsStorageKey]="listStorageKey()" (chosen)="onQueueChosen($event)" />
       </section>
 
       <section sdSplitMain class="main">
@@ -59,7 +68,11 @@ import { STANDARD_QUEUES, TicketCommand, TicketWorkbenchStore } from './workbenc
         </nav>
         <div class="content">
           <div class="list-host" [class.is-hidden]="!!store.activeTicketId()" [attr.inert]="store.activeTicketId() ? '' : null">
-            <desk-ticket-list />
+            @if (store.selection().kind === 'trash') {
+              <desk-recycle-bin />
+            } @else {
+              <desk-ticket-list />
+            }
           </div>
           <div class="ticket-host" [class.is-hidden]="!store.activeTicketId()">
             <router-outlet />
@@ -188,7 +201,8 @@ import { STANDARD_QUEUES, TicketCommand, TicketWorkbenchStore } from './workbenc
       flex-direction: column;
       min-height: 0;
     }
-    .list-host > desk-ticket-list {
+    .list-host > desk-ticket-list,
+    .list-host > desk-recycle-bin {
       flex: 1;
       min-height: 0;
     }
@@ -215,14 +229,16 @@ export class TicketsWorkspacePage {
 
   protected readonly leftCollapsed = signal(typeof window !== 'undefined' && window.innerWidth < 768);
   protected readonly rightCollapsed = signal(false);
-  protected readonly listStorageKey = computed(() => {
-    const s = this.store.selection();
-    return s.kind === 'queue' ? `tickets.queue.${s.key}` : `tickets.view.${s.id}`;
-  });
+  protected readonly listStorageKey = computed(() => (this.store.selection().kind === 'trash' ? null : selectionStorageKey(this.store.selection())));
+  private readonly route = inject(ActivatedRoute);
 
   constructor() {
     this.store.init();
     this.meta.load();
+
+    // The URL names the list (?queue= / ?view=) and wins over the default view and the last selection.
+    const params = this.route.queryParamMap.subscribe((map) => this.store.resolveSelection(this.selectionFromUrl(map)));
+    inject(DestroyRef).onDestroy(() => params.unsubscribe());
 
     // The list tab is "active" when no ticket route is open.
     const nav = this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => {
@@ -280,6 +296,15 @@ export class TicketsWorkspacePage {
           keywords: ['view', 'saved'],
           run: () => this.selectAndShow({ kind: 'view', id: v.id }),
         })),
+        {
+          id: 'tickets.queue.trash',
+          title: 'Switch view: Deleted tickets',
+          group: 'Ticket views',
+          icon: 'trash',
+          keywords: ['recycle bin', 'trash', 'restore', 'deleted', 'spam'],
+          when: () => this.me.can('tickets.delete'),
+          run: () => this.selectAndShow({ kind: 'trash' }),
+        },
       ];
       const off = untracked(() => this.palette.register(commands));
       onCleanup(off);
@@ -314,9 +339,20 @@ export class TicketsWorkspacePage {
     });
   }
 
-  protected onQueueChosen(): void {
+  protected onQueueChosen(selection: QueueSelection): void {
     if (typeof window !== 'undefined' && window.innerWidth < 768) this.leftCollapsed.set(true);
-    if (this.store.activeTicketId()) void this.router.navigate(['/tickets']);
+    // Reflect the choice in the URL (shareable, survives a reload: the URL has the highest precedence).
+    void this.router.navigate(['/tickets'], { queryParams: selectionQueryParams(selection) });
+  }
+
+  /** `?view=<id>` or `?queue=<key>` (`?queue=deleted` = recycle bin, only with tickets.delete); null otherwise. */
+  private selectionFromUrl(map: ParamMap): QueueSelection | null {
+    const view = map.get('view');
+    if (view && /^[0-9a-f-]{36}$/i.test(view)) return { kind: 'view', id: view };
+    const queue = map.get('queue');
+    if (queue === TRASH_QUEUE_PARAM) return this.me.can('tickets.delete') ? { kind: 'trash' } : null;
+    if (queue && (QUEUE_KEYS as readonly string[]).includes(queue)) return { kind: 'queue', key: queue as QueueKey };
+    return null;
   }
 
   protected close(id: string): void {
@@ -329,9 +365,9 @@ export class TicketsWorkspacePage {
     void this.router.navigate(['/tickets']);
   }
 
-  private selectAndShow(selection: Parameters<TicketWorkbenchStore['select']>[0]): void {
+  private selectAndShow(selection: QueueSelection): void {
     this.store.select(selection);
-    void this.router.navigate(['/tickets']);
+    void this.router.navigate(['/tickets'], { queryParams: selectionQueryParams(selection) });
   }
 
   private goToQueue(): void {

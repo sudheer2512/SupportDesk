@@ -84,7 +84,8 @@ public sealed class TicketLookups(DeskDbContext db, TenantSettingsService settin
         }).ToList();
     }
 
-    public static TicketPermissionsDto PermissionsFor(Ticket t, RequestContext ctx)
+    /// <param name="agentsMayOverrideEntitlement">Tenant setting TicketSettings.AllowAgentsToOverrideEntitlement.</param>
+    public static TicketPermissionsDto PermissionsFor(Ticket t, RequestContext ctx, bool agentsMayOverrideEntitlement = false)
     {
         var open = t.StatusCategory.IsOpen();
         var merged = t.MergedIntoTicketId.HasValue;
@@ -93,7 +94,10 @@ public sealed class TicketLookups(DeskDbContext db, TenantSettingsService settin
             Edit: H(Permissions.TicketsEdit), Reply: H(Permissions.TicketsReply), Note: H(Permissions.TicketsNote), Assign: H(Permissions.TicketsAssign),
             Transfer: H(Permissions.TicketsTransfer), Escalate: H(Permissions.TicketsEscalate) && open, Resolve: H(Permissions.TicketsResolve) && open,
             Reopen: H(Permissions.TicketsReopen) && !open, Merge: H(Permissions.TicketsMerge), Split: H(Permissions.TicketsSplit), Delete: H(Permissions.TicketsDelete),
-            LogTime: H(Permissions.TicketsTime), ViewCosts: ctx.Has(Permissions.TicketsViewCosts), OverrideEntitlement: H(Permissions.TicketsOverrideEntitlement));
+            LogTime: H(Permissions.TicketsTime), ViewCosts: ctx.Has(Permissions.TicketsViewCosts),
+            OverrideEntitlement: !merged && TicketAccess.CanOverrideEntitlement(ctx, agentsMayOverrideEntitlement),
+            // Resolved tickets can still be closed (open → closed directly, or resolved → closed); closed ones cannot.
+            Close: H(Permissions.TicketsResolve) && t.StatusCategory != StatusCategory.Closed);
     }
 
     public static IReadOnlyList<FieldChangeDto> Changes(string? json) =>

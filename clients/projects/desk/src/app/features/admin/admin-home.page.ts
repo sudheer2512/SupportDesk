@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { MeStore } from '@sd/core';
 import { SdIcon, SdPageHeader } from '@sd/ui';
 import { ADMIN_AREAS, ADMIN_AREA_GROUPS } from './admin-areas';
 
-/** Administration home: the areas the signed-in administrator may manage, grouped (see admin-areas.ts). */
+/** Administration home: the areas the signed-in administrator may manage, grouped (see admin-areas.ts), with a filter box. */
 @Component({
   selector: 'desk-admin-home',
   imports: [RouterLink, SdIcon, SdPageHeader],
@@ -13,6 +13,21 @@ import { ADMIN_AREAS, ADMIN_AREA_GROUPS } from './admin-areas';
     <div class="desk-page">
       <sd-page-header title="Administration" icon="settings" subtitle="Configure how your help desk works. You see the areas your role may manage." />
       <div class="desk-page__body">
+        <div class="search" role="search">
+          <sd-icon name="search" [size]="16" />
+          <input
+            type="search"
+            class="sd-input"
+            placeholder="Find a setting — e.g. roles, SSO, statuses, templates"
+            aria-label="Find an administration area"
+            [value]="query()"
+            (input)="query.set($any($event.target).value)"
+            (keydown.enter)="openFirst()"
+          />
+        </div>
+        @if (query() && matches() > 0) {
+          <p class="sd-visually-hidden" role="status">{{ matches() }} matching areas</p>
+        }
         @for (g of groups(); track g.name) {
           <section class="group" [attr.aria-labelledby]="'adm-' + $index">
             <h2 [id]="'adm-' + $index">{{ g.name }}</h2>
@@ -29,12 +44,19 @@ import { ADMIN_AREAS, ADMIN_AREA_GROUPS } from './admin-areas';
             </div>
           </section>
         } @empty {
-          <p class="empty">Your role has no administration areas.</p>
+          @if (query()) {
+            <p class="empty" role="status">No administration area matches “{{ query() }}”.</p>
+          } @else {
+            <p class="empty">Your role has no administration areas.</p>
+          }
         }
       </div>
     </div>
   `,
   styles: `
+    .search { position: relative; max-width: 520px; margin-bottom: var(--sd-space-5); }
+    .search sd-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--sd-text-3); pointer-events: none; }
+    .search input { width: 100%; padding-left: 34px; }
     .group { margin-bottom: var(--sd-space-6); }
     h2 {
       font-size: var(--sd-text-xs); font-weight: var(--sd-weight-semibold); letter-spacing: 0.04em; text-transform: uppercase;
@@ -58,10 +80,25 @@ import { ADMIN_AREAS, ADMIN_AREA_GROUPS } from './admin-areas';
 })
 export class AdminHomePage {
   private readonly me = inject(MeStore);
+  private readonly router = inject(Router);
+
+  protected readonly query = signal('');
 
   protected readonly groups = computed(() => {
     this.me.permissions(); // re-evaluate when the signed-in user's permissions change
-    const visible = ADMIN_AREAS.filter((a) => this.me.canAny(a.permissions));
+    const terms = this.query().trim().toLowerCase().split(/\s+/).filter(Boolean);
+    const visible = ADMIN_AREAS.filter((a) => this.me.canAny(a.permissions)).filter((a) => {
+      const text = `${a.label} ${a.description} ${a.group}`.toLowerCase();
+      return terms.every((t) => text.includes(t));
+    });
     return ADMIN_AREA_GROUPS.map((name) => ({ name, areas: visible.filter((a) => a.group === name) })).filter((g) => g.areas.length > 0);
   });
+
+  protected readonly matches = computed(() => this.groups().reduce((n, g) => n + g.areas.length, 0));
+
+  /** Enter in the search box opens the first match. */
+  protected openFirst(): void {
+    const first = this.groups()[0]?.areas[0];
+    if (first) void this.router.navigateByUrl(first.route);
+  }
 }

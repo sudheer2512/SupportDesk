@@ -40,6 +40,9 @@ public sealed class DeskApiFactory : WebApplicationFactory<Program>, IAsyncLifet
     {
         builder.UseEnvironment("Testing");
         builder.UseSetting("ConnectionStrings:SupportDesk", ConnectionString);
+        // Dedicated tenant databases created by tests are named after the test database (dropped with it).
+        builder.UseSetting("ConnectionStrings:DedicatedTemplate",
+            $@"Server=(localdb)\MSSQLLocalDB;Database={_database}_{{name}};Trusted_Connection=True;TrustServerCertificate=True");
         builder.UseSetting("Database:InitializeMode", "EnsureCreated");
         builder.UseSetting("Seed:Demo", "false");
         builder.UseSetting("Workers:Enabled", "false");
@@ -49,6 +52,7 @@ public sealed class DeskApiFactory : WebApplicationFactory<Program>, IAsyncLifet
         builder.UseSetting("RateLimits:ApiPerMinute", "1000000");
         builder.UseSetting("RateLimits:PublicPerMinute", "100000");
         builder.UseSetting("Automation:Webhooks:AllowPrivateNetworks", "true");
+        builder.UseSetting("ForwardedHeaders:TrustAll", "true"); // tests simulate client IPs with X-Forwarded-For
         builder.ConfigureTestServices(s => s.AddScoped<IJobHandler, TestCounterJobHandler>());
     }
 
@@ -65,7 +69,12 @@ public sealed class DeskApiFactory : WebApplicationFactory<Program>, IAsyncLifet
         await using var conn = new SqlConnection("Server=(localdb)\\MSSQLLocalDB;Database=master;Trusted_Connection=True;TrustServerCertificate=True");
         await conn.OpenAsync();
         await using var cmd = conn.CreateCommand();
-        cmd.CommandText = $"IF DB_ID('{_database}') IS NOT NULL BEGIN ALTER DATABASE [{_database}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [{_database}]; END";
+        cmd.CommandText = $"""
+            DECLARE @sql nvarchar(max) = N'';
+            SELECT @sql += N'ALTER DATABASE ' + QUOTENAME(name) + N' SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE ' + QUOTENAME(name) + N';'
+            FROM sys.databases WHERE name = '{_database}' OR name LIKE '{_database}[_]%';
+            EXEC sp_executesql @sql;
+            """;
         await cmd.ExecuteNonQueryAsync();
         try { Directory.Delete(_dataPath, true); } catch (IOException) { } catch (UnauthorizedAccessException) { }
     }

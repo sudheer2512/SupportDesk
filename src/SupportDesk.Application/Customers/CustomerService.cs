@@ -178,7 +178,7 @@ public sealed partial class CustomerService(
         var tiers = DefaultTiers.Concat(rows.Select(r => r.Tier)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
         return new CustomerFacetsDto(tiers, Distinct(rows.Select(r => r.ServiceRegion)), Distinct(rows.Select(r => r.Industry)),
             Distinct(rows.Select(r => r.Category)), groups, managers.Select(m => new IdName(m.Key, m.Value)).OrderBy(m => m.Name).ToList(),
-            Enum.GetNames<CustomerStatus>());
+            Enum.GetValues<CustomerStatus>().Where(s => s != CustomerStatus.Merged).Select(s => s.ToString()).ToList());
     }
 
     // ───────────────────────────── Detail ─────────────────────────────
@@ -289,6 +289,7 @@ public sealed partial class CustomerService(
         var code = Parse.Clean(r.Code, 40);
         if (code is not null && await db.Customers.AnyAsync(x => x.Code == code && x.Id != c.Id, ct)) errors["code"] = $"Code '{code}' is already used by another customer.";
         var status = Parse.Enum(r.Status, isNew ? CustomerStatus.Active : c.Status, "status");
+        if (status == CustomerStatus.Merged && c.Status != CustomerStatus.Merged) errors["status"] = "Use Merge to fold a customer into another one.";
         var tier = Parse.Clean(r.Tier, 40) ?? (isNew ? "Standard" : c.Tier);
 
         if (r.ParentCustomerId is { } parentId)
@@ -377,6 +378,8 @@ public sealed partial class CustomerService(
         ctx.Require(Permissions.CustomersManage);
         var c = await db.Customers.IgnoreQueryFilters([DeskDbContext.SoftDeleteFilter]).VisibleTo(ctx).FirstOrDefaultAsync(x => x.Id == id && x.IsDeleted, ct)
                 ?? throw new NotFoundException("Customer", id);
+        if (c.Status == CustomerStatus.Merged)
+            throw new ConflictException("customer_merged", "This customer was merged into another customer; its records now belong to the surviving customer.");
         if (c.Code is not null && await db.Customers.AnyAsync(x => x.Code == c.Code, ct)) c.Code = null;
         c.IsDeleted = false;
         c.DeletedAt = null;

@@ -72,6 +72,9 @@ public sealed class TicketService(
     ITenantCache cache,
     TicketLookups lookups)
 {
+    /// <summary>Audit action for restoring a deleted/spam ticket from the recycle bin.</summary>
+    public const string TicketRestoredAudit = "ticket.restored";
+
     private List<TicketStatus>? _statuses;
 
     // ───────────────────────────── Loading ─────────────────────────────
@@ -163,6 +166,13 @@ public sealed class TicketService(
 
         var customFieldsJson = await customFields.MergeAsync("Ticket", "{}", r.CustomFields, departmentId,
             enforceRequired: source.EnforceRequiredFields && !ctx.IsSystem, portalOnly: source.PortalSubmission, ct);
+        if (r.StatusId is not null && source.EnforceRequiredFields && !ctx.IsSystem)
+        {
+            // Creating straight into a status must respect "required for this status" custom fields too.
+            var missingForStatus = Administration.CustomFieldRules.MissingForStatus(await customFields.DefinitionsAsync("Ticket", ct), customFieldsJson, departmentId, status.Id);
+            if (missingForStatus.Count > 0)
+                throw new DomainException(ErrorCodes.MissingFields, $"Fill in {string.Join(", ", missingForStatus)} to create the ticket as '{status.Name}'.");
+        }
 
         var number = await counters.NextAsync("ticket", (await settings.TicketsAsync(ct)).NumberStart, ct);
         var ticket = new Ticket
@@ -524,7 +534,10 @@ public sealed class TicketService(
     /// Central status transition with all side effects (dates, reopen counters, SLA pause/resume/completion, events).
     /// Enforces configured transitions and blueprints unless <paramref name="bypassRules"/> (system/blueprint engine).
     /// </summary>
-    public async Task ApplyStatusAsync(Ticket t, TicketStatus to, string? substatus, string? comment, bool bypassRules, CancellationToken ct)
+    /// <param name="notifyCustomer">Resolve action only: carried on the ticket.status_changed event so the resolution notice
+    /// (and CSAT survey) go out only when the agent asked to notify the customer. Null for every other status change.</param>
+    public async Task ApplyStatusAsync(Ticket t, TicketStatus to, string? substatus, string? comment, bool bypassRules, CancellationToken ct,
+        bool? notifyCustomer = null)
     {
         await lookups.LoadAsync(ct);
         var from = await db.TicketStatuses.AsNoTracking().FirstAsync(s => s.Id == t.StatusId, ct);
@@ -539,6 +552,10 @@ public sealed class TicketService(
             var settingsT = await settings.TicketsAsync(ct);
             if (to.Category == StatusCategory.Resolved && settingsT.RequireResolutionCode && string.IsNullOrEmpty(t.ResolutionCode))
                 throw new DomainException(ErrorCodes.MissingFields, "A resolution code is required before resolving. Use Resolve to enter it.");
+            // Custom fields configured as "required for this status" (administration → ticket fields).
+            var missing = Administration.CustomFieldRules.MissingForStatus(await customFields.DefinitionsAsync("Ticket", ct), t.CustomFieldsJson, t.DepartmentId, to.Id);
+            if (missing.Count > 0)
+                throw new DomainException(ErrorCodes.MissingFields, $"Fill in {string.Join(", ", missing)} before moving the ticket to '{to.Name}'.");
         }
         var subs = Json.StringList(to.SubstatusesJson);
         if (substatus is not null && subs.Count > 0 && !subs.Contains(substatus, StringComparer.OrdinalIgnoreCase))
@@ -565,7 +582,7 @@ public sealed class TicketService(
         t.LastActivityAt = now;
         await sla.OnStatusChangedAsync(t, from, to, ct);
         history.Record(t, type, comment is null ? $"Status: {from.Name} → {to.Name}" : $"Status: {from.Name} → {to.Name} — {comment}", cs.Changes);
-        events.Publish(EventTypes.TicketStatusChanged, "Ticket", t.Id, new TicketEventPayload(t.Id, t.Number, cs.Changes, Note: comment));
+        events.Publish(EventTypes.TicketStatusChanged, "Ticket", t.Id, new TicketEventPayload(t.Id, t.Number, cs.Changes, Note: comment, NotifyCustomer: notifyCustomer));
     }
 
     private async Task SetStatusFieldsAsync(Ticket t, TicketStatus to, string? substatus)
@@ -619,7 +636,10 @@ public sealed class TicketService(
         t.RootCause = r.RootCause ?? t.RootCause;
         if (r.ResolutionHtml is not null) t.ResolutionHtml = html.Sanitize(r.ResolutionHtml);
         var confirm = r.RequestConfirmation || s.RequireCustomerConfirmation;
-        await ApplyStatusAsync(t, await StatusForCategoryAsync(StatusCategory.Resolved, ct), null, r.ResolutionCode, bypassRules: t.WorkflowId is not null && ctx.Has(Permissions.AdminAutomation), ct);
+        // NotifyCustomer travels on the status event: the resolution notice (ResolutionNoticeHandler) and the CSAT survey
+        // are sent only when it is true; false means nothing goes to the customer for this resolution.
+        await ApplyStatusAsync(t, await StatusForCategoryAsync(StatusCategory.Resolved, ct), null, r.ResolutionCode,
+            bypassRules: t.WorkflowId is not null && ctx.Has(Permissions.AdminAutomation), ct, notifyCustomer: r.NotifyCustomer);
         if (confirm && t.ContactId is not null)
         {
             t.AwaitingCustomerConfirmation = true;
@@ -663,11 +683,18 @@ public sealed class TicketService(
         if (r.SourceTicketIds.Count == 0 || r.SourceTicketIds.Contains(targetId)) throw new DomainException(ErrorCodes.Validation, "Choose other tickets to merge into this one.");
         var target = await LoadForUpdateAsync(targetId, ct);
         if (target.MergedIntoTicketId is not null) throw new DomainException(ErrorCodes.Validation, "The target ticket was itself merged.");
+        var mergeRules = await settings.TicketsAsync(ct);
+        if (r.SourceTicketIds.Distinct().Count() > mergeRules.MaxMergeSources)
+            throw new DomainException(ErrorCodes.Validation, $"At most {mergeRules.MaxMergeSources} tickets can be merged at once.");
         var sources = new List<Ticket>();
         foreach (var sid in r.SourceTicketIds.Distinct())
         {
             var s = await LoadForUpdateAsync(sid, ct);
             if (s.MergedIntoTicketId is not null) throw new DomainException(ErrorCodes.Validation, $"Ticket {s.Number} was already merged.");
+            if (!mergeRules.AllowMergeAcrossCustomers && s.CustomerId != target.CustomerId)
+                throw new DomainException(ErrorCodes.Validation, $"Ticket {s.Number} belongs to another customer. Your organisation does not allow merging across customers.");
+            if (!mergeRules.AllowMergeAcrossDepartments && s.DepartmentId != target.DepartmentId)
+                throw new DomainException(ErrorCodes.Validation, $"Ticket {s.Number} is in another department. Your organisation does not allow merging across departments.");
             sources.Add(s);
         }
 
@@ -729,6 +756,8 @@ public sealed class TicketService(
     public async Task<Ticket> SplitAsync(Guid id, SplitTicketRequest r, CancellationToken ct = default)
     {
         ctx.Require(Permissions.TicketsSplit);
+        if (!(await settings.TicketsAsync(ct)).AllowSplit)
+            throw new DomainException("split_disabled", "Splitting tickets is turned off for your organisation.");
         var source = await LoadForUpdateAsync(id, ct);
         if (r.ThreadIds.Count == 0) throw new DomainException(ErrorCodes.Validation, "Select at least one message to split off.");
         var threads = await db.TicketThreads.Where(x => x.TicketId == id && r.ThreadIds.Contains(x.Id)).OrderBy(x => x.Seq).ToListAsync(ct);
@@ -760,7 +789,8 @@ public sealed class TicketService(
 
     public async Task<Ticket> CloneAsync(Guid id, CancellationToken ct = default)
     {
-        ctx.Require(Permissions.TicketsSplit);
+        // Cloning creates a new ticket: it needs tickets.create (the same check the desk uses for the Clone action).
+        ctx.Require(Permissions.TicketsCreate);
         var s = await LoadForUpdateAsync(id, ct);
         var clone = await CreateAsync(new CreateTicketRequest
         {
@@ -890,9 +920,14 @@ public sealed class TicketService(
 
     public async Task<Ticket> OverrideEntitlementAsync(Guid id, OverrideEntitlementRequest r, CancellationToken ct = default)
     {
-        ctx.Require(Permissions.TicketsOverrideEntitlement);
+        var agentsMayOverride = (await settings.TicketsAsync(ct)).AllowAgentsToOverrideEntitlement;
+        if (!TicketAccess.CanOverrideEntitlement(ctx, agentsMayOverride))
+            throw new ForbiddenException(agentsMayOverride
+                ? "Overriding support eligibility needs the tickets.edit or tickets.override_entitlement permission."
+                : "Overriding support eligibility needs the tickets.override_entitlement permission.");
         if (string.IsNullOrWhiteSpace(r.Reason)) throw new ValidationException(new Dictionary<string, string> { ["reason"] = "A reason is required." });
         var t = await LoadForUpdateAsync(id, ct);
+        if (t.MergedIntoTicketId is not null) throw new DomainException(ErrorCodes.Validation, "This ticket was merged; work on the surviving ticket.");
         var before = t.EntitlementStatus;
         t.EntitlementStatus = EntitlementStatus.Overridden;
         t.EntitlementNote = r.Reason;
@@ -903,7 +938,8 @@ public sealed class TicketService(
         }
         var change = new FieldChange("entitlementStatus", before.ToString(), "Overridden");
         history.Record(t, TicketEventTypes.EntitlementOverridden, $"Support eligibility overridden: {r.Reason}", [change]);
-        audit.Write(AuditActions.EntitlementOverridden, "Ticket", t.Id, $"Entitlement overridden on #{t.Number}: {r.Reason}");
+        audit.Write(AuditActions.EntitlementOverridden, "Ticket", t.Id, $"Entitlement overridden on #{t.Number}: {r.Reason}",
+            new { r.Reason, r.ContractId, from = before.ToString(), allowedBy = ctx.Has(Permissions.TicketsOverrideEntitlement) ? "permission" : "tenant setting" });
         await sla.OnTicketChangedAsync(t, [change], ct);
         await SaveAsync(t, ct);
         return t;
@@ -913,7 +949,7 @@ public sealed class TicketService(
     {
         ctx.Require(Permissions.TicketsDelete);
         var t = await LoadForUpdateAsync(id, ct);
-        if (await db.LegalHolds.AnyAsync(h => h.ReleasedAt == null && (h.CustomerId == t.CustomerId || h.ContactId == t.ContactId), ct))
+        if (await TicketAccess.HoldsCovering(db, t.Id, t.CustomerId, t.ContactId).AnyAsync(ct))
             throw new DomainException("legal_hold", "This ticket is under legal hold and cannot be deleted.", 409);
         if (spam) t.IsSpam = true;
         t.IsDeleted = true;
@@ -930,10 +966,15 @@ public sealed class TicketService(
         ctx.Require(Permissions.TicketsDelete);
         var t = await db.Tickets.IgnoreQueryFilters([DeskDbContext.SoftDeleteFilter]).FirstOrDefaultAsync(x => x.Id == id && x.IsDeleted, ct)
                 ?? throw new NotFoundException("Deleted ticket", id);
+        await EnsureVisibleAsync(t, ct);
+        var wasSpam = t.IsSpam;
         t.IsDeleted = false;
         t.IsSpam = false;
         t.DeletedAt = null;
-        history.Record(t, TicketEventTypes.Restored, "Restored from trash");
+        t.LastActivityAt = db.Clock.UtcNow;
+        history.Record(t, TicketEventTypes.Restored, wasSpam ? "Restored from spam" : "Restored from the recycle bin");
+        audit.Write(TicketRestoredAudit, "Ticket", t.Id, $"Ticket #{t.Number} restored{(wasSpam ? " (was spam)" : "")}", new { restored = true, wasSpam });
+        events.Publish(EventTypes.TicketUpdated, "Ticket", t.Id, new TicketEventPayload(t.Id, t.Number, [new FieldChange("deleted", "true", "false")]));
         await db.SaveChangesAsync(ct);
     }
 

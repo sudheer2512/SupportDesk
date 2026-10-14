@@ -26,6 +26,10 @@ export const routes: Routes = [
     title: 'Sign in',
     loadComponent: () => import('./auth/login.page').then((m) => m.LoginPage),
   },
+  // Public self-service trial sign-up (no session needed; a signed-in agent may still create another workspace).
+  { path: 'signup', title: 'Start your free trial', loadComponent: () => import('./features/signup/signup.page').then((m) => m.SignupPage) },
+  // SaaS platform operator console: own sign-in, guard and layout (platform tokens only), outside the tenant shell.
+  { path: 'platform', loadChildren: () => import('./features/platform/platform.routes').then((m) => m.ROUTES) },
   {
     // Invited agents set their password with the e-mailed code (Teams & Agents module).
     path: 'accept-invite',

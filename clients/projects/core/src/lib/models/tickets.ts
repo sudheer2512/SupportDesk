@@ -167,7 +167,29 @@ export interface TicketPermissionsDto {
   delete: boolean;
   logTime: boolean;
   viewCosts: boolean;
+  /** tickets.override_entitlement, or tickets.edit while the tenant allows agents to override (AllowAgentsToOverrideEntitlement). */
   overrideEntitlement: boolean;
+  /** tickets.resolve on a ticket that is not closed yet (open or resolved). */
+  close: boolean;
+}
+
+/** A deleted / spam ticket in the recycle bin (GET /tickets/deleted, tickets.delete). */
+export interface DeletedTicketDto {
+  id: Guid;
+  number: number;
+  displayNumber: string;
+  subject: string;
+  status: string;
+  statusCategory: string;
+  customerName: string | null;
+  contactName: string | null;
+  departmentName: string;
+  createdAt: IsoDateTime;
+  deletedAt: IsoDateTime | null;
+  deletedByName: string | null;
+  isSpam: boolean;
+  /** An active legal hold covers the ticket (it cannot be purged; restoring is allowed). */
+  underLegalHold: boolean;
 }
 
 export interface WatcherDto {
