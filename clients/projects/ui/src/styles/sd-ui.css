@@ -333,7 +333,8 @@ input[type='time'].sd-input {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-height: inherit;
+  /* An absolute cap: the overlay pane's max-height is a percentage, which children cannot resolve. */
+  max-height: calc(100dvh - 48px);
   background: var(--sd-surface);
   color: var(--sd-text);
   border-radius: var(--sd-radius-lg);
@@ -341,13 +342,14 @@ input[type='time'].sd-input {
   overflow: hidden;
   animation: sd-dialog-in var(--sd-dur-slow) var(--sd-ease);
 }
-/* The opened component (a feature's host element wrapping <sd-dialog>) passes the height cap down, so the
-   dialog body scrolls and the footer stays visible however tall the content is. */
-.sd-dialog-panel .cdk-dialog-container > * {
+/* The opened component (a feature's host element wrapping <sd-dialog>) and <sd-dialog> shrink with the container
+   (column flex items with min-height 0), so the dialog body scrolls and the footer stays visible. */
+.sd-dialog-panel .cdk-dialog-container > *,
+.sd-dialog-panel .cdk-dialog-container > * > sd-dialog {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
   min-height: 0;
-  max-height: inherit;
 }
 @keyframes sd-dialog-in {
   from {
