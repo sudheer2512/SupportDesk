@@ -102,7 +102,7 @@ public sealed class AnalyticsEngine(DeskDbContext db, RequestContext ctx, Analyt
             DateBasis.OpenAt => q.Where(m => m.CreatedAt < to && (m.ResolvedAt == null || m.ResolvedAt >= p.From)),
             _ => q.Where(m => m.CreatedAt >= p.From && m.CreatedAt < to)
         };
-        var list = await q.Take(MaxRows + 1).ToListAsync(ct);
+        var list = await q.OrderByDescending(m => m.CreatedAt).Take(MaxRows + 1).ToListAsync(ct);
         if (list.Count > MaxRows)
         {
             Truncated = true;
@@ -355,8 +355,10 @@ public sealed class AnalyticsEngine(DeskDbContext db, RequestContext ctx, Analyt
         double? First(string k) => groups[0].TryGetValue(k, out var g) ? g.Value : null;
         var ordered = (asc ? allKeys.OrderBy(k => First(k) ?? double.MaxValue) : allKeys.OrderByDescending(k => First(k) ?? double.MinValue)).ThenBy(k => k).Take(limit).ToList();
         await PrepareLabelsAsync(dimension, ordered, ct);
+        // A missing group means no ticket in the population: 0 for counts and sums, blank for averages and rates.
         foreach (var k in ordered)
-            rows.Add(new BreakdownRowDto(k, labels.Label(dimension, k), groups.Select(g => g.TryGetValue(k, out var v) ? v.Value : null).ToList()));
+            rows.Add(new BreakdownRowDto(k, labels.Label(dimension, k),
+                groups.Select((g, i) => g.TryGetValue(k, out var v) ? v.Value : metrics[i].IsAdditive ? 0 : (double?)null).ToList()));
         return (columns, rows, totals);
     }
 

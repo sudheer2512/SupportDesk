@@ -237,9 +237,11 @@ public static class ReportRenderer
         normal.Font.Name = PdfFonts.Family;
         normal.Font.Size = 9;
         var section = doc.AddSection();
+        // A4 landscape, given as explicit dimensions (column widths below are computed for this width).
         section.PageSetup = doc.DefaultPageSetup.Clone();
-        section.PageSetup.PageFormat = PageFormat.A4;
-        section.PageSetup.Orientation = Orientation.Landscape;
+        section.PageSetup.Orientation = Orientation.Portrait;
+        section.PageSetup.PageWidth = Unit.FromCentimeter(29.7);
+        section.PageSetup.PageHeight = Unit.FromCentimeter(21);
         section.PageSetup.LeftMargin = Unit.FromCentimeter(1.5);
         section.PageSetup.RightMargin = Unit.FromCentimeter(1.5);
         section.PageSetup.TopMargin = Unit.FromCentimeter(1.5);
@@ -327,7 +329,7 @@ public static class ReportRenderer
         table.Borders.Width = 0.25;
         table.Borders.Color = Colors.LightGray;
         table.Format.Font.Size = 7.5;
-        var available = 26.7 - 3.0; // A4 landscape width minus margins (cm)
+        var available = 29.7 - 3.0 - 0.2; // A4 landscape width minus margins (cm), with a little slack for borders
         var total = weights.Sum();
         foreach (var w in weights) table.AddColumn(Unit.FromCentimeter(available * w / total));
         return table;

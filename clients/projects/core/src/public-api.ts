@@ -94,3 +94,7 @@ export * from './lib/api/customers.api';
 export * from './lib/api/products.api';
 export * from './lib/api/erp.api';
 export * from './lib/utils/validation-errors';
+
+// Analytics: metric catalogue, queries, reports, dashboards, exports and scheduled reports
+export * from './lib/models/analytics';
+export * from './lib/api/analytics.api';
