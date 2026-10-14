@@ -107,7 +107,7 @@ public sealed class ChatHub(RequestContext ctx, ChatService chat) : Hub
 public sealed class SignalRChatRealtime(IHubContext<ChatHub> hub) : IChatRealtime
 {
     public Task MessageAsync(Guid tenantId, Guid conversationId, object message, CancellationToken ct = default) =>
-        hub.Clients.Group(ChatHub.Group(tenantId, conversationId)).SendAsync("chat.message", message, ct);
+        hub.Clients.Group(ChatHub.Group(tenantId, conversationId)).SendAsync("chat.message", message, conversationId, ct);
 
     public Task StatusAsync(Guid tenantId, Guid conversationId, object status, CancellationToken ct = default) =>
         hub.Clients.Group(ChatHub.Group(tenantId, conversationId)).SendAsync("chat.status", status, ct);

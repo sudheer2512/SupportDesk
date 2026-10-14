@@ -73,7 +73,7 @@ public sealed class ConversationQueryService(DeskDbContext db, RequestContext ct
         var summary = (await MapAsync([conv], ct))[0];
         bool? window = conv.Channel == Channel.WhatsApp ? conv.ServiceWindowEndsAt > db.Clock.UtcNow : null;
         return new ConversationDetailDto(summary, conv.ExternalKey, conv.VisitorEmail, conv.Rating, Json.ElementOrNull(conv.MetadataJson),
-            messages.Select(MapMessage).ToList(), calls.Select(MapCall).ToList(), window);
+            await MapMessagesAsync(messages, ct), calls.Select(MapCall).ToList(), window);
     }
 
     public async Task<PagedResult<ConversationMessageDto>> MessagesAsync(Guid conversationId, string? cursor, int limit, CancellationToken ct = default)
@@ -88,7 +88,7 @@ public sealed class ConversationQueryService(DeskDbContext db, RequestContext ct
         }
         var rows = await q.OrderBy(m => m.OccurredAt).ThenBy(m => m.Id).Take(limit + 1).ToListAsync(ct);
         var page = rows.Take(limit).ToList();
-        return new PagedResult<ConversationMessageDto>(page.Select(MapMessage).ToList(),
+        return new PagedResult<ConversationMessageDto>(await MapMessagesAsync(page, ct),
             rows.Count > limit ? DbExtensions.EncodeCursor(page[^1].OccurredAt.ToString("O", CultureInfo.InvariantCulture), page[^1].Id) : null);
     }
 
@@ -98,7 +98,7 @@ public sealed class ConversationQueryService(DeskDbContext db, RequestContext ct
         var deliveries = await db.MessageDeliveries.AsNoTracking().Where(d => d.MessageId == messageId).OrderBy(d => d.UpdatedAt).ToListAsync(ct);
         var meta = Json.Object(msg.MetadataJson);
         Guid? raw = meta.TryGetValue("rawFileId", out var r) && r.ValueKind == JsonValueKind.String && Guid.TryParse(r.GetString(), out var g) ? g : null;
-        return new MessageDetailDto(MapMessage(msg), deliveries.Select(MapDelivery).ToList(), raw);
+        return new MessageDetailDto((await MapMessagesAsync([msg], ct))[0], deliveries.Select(MapDelivery).ToList(), raw);
     }
 
     /// <summary>The raw RFC 822 source of an inbound e-mail (stored file id), after the same visibility checks.</summary>
@@ -162,7 +162,9 @@ public sealed class ConversationQueryService(DeskDbContext db, RequestContext ct
         var userIds = rows.Where(r => r.AssignedUserId != null).Select(r => r.AssignedUserId!.Value).Distinct().ToList();
         var users = await db.Users.AsNoTracking().Where(u => userIds.Contains(u.Id)).ToDictionaryAsync(u => u.Id, u => u.DisplayName, ct);
         var convIds = rows.Select(r => r.Id).ToList();
-        var last = (await db.Messages.AsNoTracking().Where(m => m.ConversationId != null && convIds.Contains(m.ConversationId.Value))
+        var last = (await db.Messages.AsNoTracking().Where(m => m.ConversationId != null && convIds.Contains(m.ConversationId.Value)
+                    // Previews skip automatic chat notices (greeting, handoff, joined…): agents want the last real message.
+                    && !(m.Channel == Channel.Chat && m.Direction == MessageDirection.Outbound && m.AuthorUserId == null))
                 .GroupBy(m => m.ConversationId!.Value)
                 .Select(g => g.OrderByDescending(m => m.OccurredAt).ThenByDescending(m => m.CreatedAt).Select(m => new { m.ConversationId, m.BodyText, m.Direction }).First())
                 .ToListAsync(ct))
@@ -179,6 +181,20 @@ public sealed class ConversationQueryService(DeskDbContext db, RequestContext ct
         }).ToList();
     }
 
+    /// <summary>Maps messages with the attachments of their ticket entries (internal attachments are never on public channel messages).</summary>
+    private async Task<List<ConversationMessageDto>> MapMessagesAsync(IReadOnlyList<Message> messages, CancellationToken ct)
+    {
+        var threadIds = messages.Where(m => m.ThreadId != null).Select(m => m.ThreadId!.Value).Distinct().ToList();
+        var attachments = threadIds.Count == 0
+            ? []
+            : await db.TicketAttachments.AsNoTracking().Where(a => a.ThreadId != null && threadIds.Contains(a.ThreadId.Value)).ToListAsync(ct);
+        var byThread = attachments.ToLookup(a => a.ThreadId!.Value);
+        return messages.Select(m => MapMessage(m, m.ThreadId is { } t
+            ? byThread[t].Select(a => new AttachmentDto(a.Id, a.FileId, a.FileName, a.ContentType, a.SizeBytes, a.Visibility.ToString(), a.IsInline, null, a.CreatedAt,
+                $"/api/v1/attachments/{a.Id}/download")).ToList()
+            : null)).ToList();
+    }
+
     public static string AuthorOf(Message m)
     {
         if (m.Direction == MessageDirection.Inbound) return "customer";
@@ -191,9 +207,9 @@ public sealed class ConversationQueryService(DeskDbContext db, RequestContext ct
         };
     }
 
-    public static ConversationMessageDto MapMessage(Message m) => new(m.Id, m.Direction.ToString(), m.Channel.ToString(), m.ContentType, AuthorOf(m), m.FromName,
+    public static ConversationMessageDto MapMessage(Message m, IReadOnlyList<AttachmentDto>? attachments = null) => new(m.Id, m.Direction.ToString(), m.Channel.ToString(), m.ContentType, AuthorOf(m), m.FromName,
         m.FromAddress, Json.StringList(m.ToJson), m.Subject, m.BodyText, m.BodyHtml, m.Status.ToString(), m.IsAutoReply, m.TicketId, m.ThreadId, m.InternetMessageId,
-        Json.ElementOrNull(m.MetadataJson), m.OccurredAt);
+        Json.ElementOrNull(m.MetadataJson), m.OccurredAt, attachments ?? []);
 
     public static MessageDeliveryDto MapDelivery(MessageDelivery d) => new(d.Id, d.Recipient, d.Status.ToString(), d.Attempts, d.NextAttemptAt, d.LastAttemptAt,
         d.ProviderMessageId, d.Error, Json.Element(d.StatusHistoryJson, "[]"), d.UpdatedAt);

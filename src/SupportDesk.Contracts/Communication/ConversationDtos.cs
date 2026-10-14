@@ -1,4 +1,5 @@
 using System.Text.Json;
+using SupportDesk.Contracts.Common;
 
 namespace SupportDesk.Contracts.Communication;
 
@@ -73,7 +74,9 @@ public sealed record ConversationMessageDto(
     Guid? ThreadId,
     string? InternetMessageId,
     JsonElement? Metadata,
-    DateTime OccurredAt);
+    DateTime OccurredAt,
+    /// <summary>Files attached to the ticket entry behind this message (inline images flagged).</summary>
+    IReadOnlyList<AttachmentDto>? Attachments = null);
 
 public sealed record CallRecordDto(Guid Id, string ExternalCallId, string Direction, string Status, string FromNumber, string ToNumber, DateTime StartedAt,
     DateTime? AnsweredAt, DateTime? EndedAt, int DurationSeconds, string? RecordingUrl, Guid? AgentUserId, Guid? TicketId, string? Disposition);

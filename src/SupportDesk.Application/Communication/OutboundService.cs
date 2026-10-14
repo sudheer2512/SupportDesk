@@ -106,6 +106,7 @@ public sealed class OutboundService(
         msg.ThreadId = thread.Id;
         msg.ContactId = contact?.Id;
         msg.AuthorUserId = thread.AuthorUserId;
+        if (thread.CreatedAt <= msg.OccurredAt) msg.OccurredAt = thread.CreatedAt; // the reply was written then (it may be sent later)
         msg.ConversationId = await db.Conversations.Where(c => c.TicketId == ticket.Id && c.ChannelAccountId == account.Id).OrderByDescending(c => c.LastMessageAt)
             .Select(c => (Guid?)c.Id).FirstOrDefaultAsync(ct);
         thread.MessageId = msg.Id;
@@ -161,7 +162,7 @@ public sealed class OutboundService(
             ChannelAccountId = account.Id, ConversationId = conv?.Id, TicketId = ticket.Id, ThreadId = thread.Id, Channel = thread.Channel, Direction = MessageDirection.Outbound,
             FromAddress = account.Address, FromName = account.DisplayName ?? account.Name, ToJson = Json.Serialize(new[] { recipient }), BodyText = text,
             BodyHtml = thread.BodyHtml, ContentType = meta.TemplateName is null ? "text" : "template", ContactId = contact?.Id, AuthorUserId = thread.AuthorUserId,
-            Status = MessageStatus.Queued, OccurredAt = now, CreatedAt = now
+            Status = MessageStatus.Queued, OccurredAt = (thread.CreatedAt <= now ? thread.CreatedAt : now), CreatedAt = now
         };
         msg.ExternalId = $"out:{msg.Id:N}";
         msg.MetadataJson = Json.Serialize(meta);
