@@ -71,7 +71,7 @@ public sealed class EngineeringDemoSeed(ILogger<EngineeringDemoSeed> logger) : I
         try
         {
             // ENG-1: export timeout, escalated by Meera after reproducing it, fixed and released in 8.0.1.
-            var eng1 = await EscalateAsync(c, "export", "meera", 23, trackerId, new EscalateToEngineeringRequest
+            var (eng1, escalatedAt) = await EscalateAsync(c, "export", "meera", 23, trackerId, new EscalateToEngineeringRequest
             {
                 TrackerId = trackerId, ItemType = "Bug", Title = "Sales Register export to Excel times out for large date ranges", Severity = "Major", Priority = "High",
                 AssigneeUserId = c.Users["dev"], Tags = ["export", "performance"], AreaPath = "ERP\\Sales", IterationPath = "8.0.1"
@@ -79,11 +79,15 @@ public sealed class EngineeringDemoSeed(ILogger<EngineeringDemoSeed> logger) : I
             // A second customer hits the same defect: linked to the same work item ("other tickets affected").
             var second = await CreateTicketAsync(c, ct);
             if (second is { } secondId && eng1 is not null)
+            {
+                c.At(Cap(c, c.DaysAgo(0.8, 12)));
                 await c.AsAgentAsync("karthik", sp => sp.GetRequiredService<EngineeringTicketService>()
                     .LinkAsync(secondId, new LinkWorkItemRequest { TrackerId = trackerId, Reference = eng1.ExternalId, SetSubstatus = false }, ct));
+            }
             if (eng1 is not null)
             {
-                await BoardAsync(c, "dev", 20, async board =>
+                var fixedAt = Cap(c, escalatedAt.AddHours(6));
+                await BoardAsync(c, "dev", fixedAt, async board =>
                 {
                     var item = await board.GetAsync(await WorkItemIdAsync(c, trackerId, eng1.ExternalId, ct), ct);
                     var w = item.Item;
@@ -97,54 +101,75 @@ public sealed class EngineeringDemoSeed(ILogger<EngineeringDemoSeed> logger) : I
                     var moved = await board.GetAsync(w.Id, ct);
                     await board.MoveAsync(w.Id, new MoveEngineeringWorkItemRequest("Resolved", null, moved.Item.RowVersion), ct);
                 });
-                await BoardAsync(c, "lakshmi", 8, board => board.PublishReleaseAsync(release801, new PublishEngineeringReleaseRequest(Deployed: true), ct));
+                await BoardAsync(c, "lakshmi", Cap(c, fixedAt.AddHours(2)), board => board.PublishReleaseAsync(release801, new PublishEngineeringReleaseRequest(Deployed: true), ct));
             }
-
-            // ENG-2: the POS billing counter freeze (ticket already in "Escalated to Engineering").
-            await EscalateAsync(c, "pharmacy", "meera", 5, trackerId, new EscalateToEngineeringRequest
-            {
-                TrackerId = trackerId, ItemType = "Bug", Title = "POS billing counter freezes when scanning more than 30 items", Severity = "Critical", Priority = "High",
-                AssigneeUserId = c.Users["dev"], Tags = ["pos", "billing-counter"], SetSubstatus = false
-            }, ct, activate: true, releaseId: release81);
-
-            // ENG-3: discount scheme crash behind the VIP outage.
-            await EscalateAsync(c, "vip", "meera", 3, trackerId, new EscalateToEngineeringRequest
-            {
-                TrackerId = trackerId, ItemType = "Bug", Title = "Invoice save fails with a null discount scheme for walk-in patients", Severity = "Critical",
-                Priority = "Critical", AssigneeUserId = c.Users["dev"], Tags = ["billing", "regression"]
-            }, ct, activate: true);
-
-            // ENG-4: the loyalty feature request from the roadmap backlog.
-            await EscalateAsync(c, "feature", "lakshmi", 31, trackerId, new EscalateToEngineeringRequest
-            {
-                TrackerId = trackerId, ItemType = "Feature", Title = "Redeem loyalty points together with UPI for the balance", Priority = "Low", Tags = ["loyalty"],
-                SetSubstatus = false
-            }, ct, releaseId: release81);
         }
         catch (Exception ex) when (ex is Domain.DomainException or InvalidOperationException or KeyNotFoundException)
         {
-            logger.LogWarning(ex, "Engineering demo data incomplete");
+            logger.LogWarning(ex, "Engineering demo data incomplete (ENG-1)");
+        }
+
+        // ENG-2: the POS billing counter freeze (ticket already in "Escalated to Engineering").
+        await TryAsync("POS freeze", () => EscalateAsync(c, "pharmacy", "meera", 5, trackerId, new EscalateToEngineeringRequest
+        {
+            TrackerId = trackerId, ItemType = "Bug", Title = "POS billing counter freezes when scanning more than 30 items", Severity = "Critical", Priority = "High",
+            AssigneeUserId = c.Users["dev"], Tags = ["pos", "billing-counter"], SetSubstatus = false
+        }, ct, activate: true, releaseId: release81));
+
+        // ENG-3: discount scheme crash behind the VIP outage.
+        await TryAsync("discount scheme crash", () => EscalateAsync(c, "vip", "meera", 3, trackerId, new EscalateToEngineeringRequest
+        {
+            TrackerId = trackerId, ItemType = "Bug", Title = "Invoice save fails with a null discount scheme for walk-in patients", Severity = "Critical",
+            Priority = "Critical", AssigneeUserId = c.Users["dev"], Tags = ["billing", "regression"]
+        }, ct, activate: true));
+
+        // ENG-4: the loyalty feature request from the roadmap backlog.
+        await TryAsync("loyalty feature", () => EscalateAsync(c, "feature", "lakshmi,vikram", 31, trackerId, new EscalateToEngineeringRequest
+        {
+            TrackerId = trackerId, ItemType = "Feature", Title = "Redeem loyalty points together with UPI for the balance", Priority = "Low", Tags = ["loyalty"],
+            SetSubstatus = false
+        }, ct, releaseId: release81));
+    }
+
+    private async Task TryAsync(string what, Func<Task> work)
+    {
+        try { await work(); }
+        catch (Exception ex) when (ex is Domain.DomainException or InvalidOperationException or KeyNotFoundException)
+        {
+            logger.LogWarning(ex, "Engineering demo data incomplete ({What})", what);
         }
     }
 
-    private static async Task<EngineeringLinkViewDto?> EscalateAsync(DemoSeedContext c, string ticketKey, string agent, double afterHours, Guid trackerId,
+    private static async Task<(EngineeringLinkViewDto? Link, DateTime At)> EscalateAsync(DemoSeedContext c, string ticketKey, string agent, double afterHours, Guid trackerId,
         EscalateToEngineeringRequest request, CancellationToken ct, bool activate = false, Guid? releaseId = null)
     {
-        if (!c.Tickets.TryGetValue(ticketKey, out var ticketId)) return null;
+        if (!c.Tickets.TryGetValue(ticketKey, out var ticketId)) return (null, c.Anchor);
         DateTime created = default;
         await c.AsSystemAsync(async sp => created = await sp.GetRequiredService<DeskDbContext>().Tickets.AsNoTracking().Where(t => t.Id == ticketId).Select(t => t.CreatedAt).FirstAsync(ct));
         var at = created.AddHours(afterHours);
         if (at > c.Anchor.AddMinutes(-30)) at = c.Anchor.AddMinutes(-30);
         c.At(at);
         EngineeringLinkViewDto? link = null;
-        await c.AsAgentAsync(agent, async sp =>
+        // The first persona who can see the ticket escalates it (department scope depends on earlier demo steps).
+        foreach (var persona in agent.Split(','))
         {
-            var svc = sp.GetRequiredService<EngineeringTicketService>();
-            var prefill = await svc.PrefillAsync(ticketId, ct);
-            link = (await svc.EscalateAsync(ticketId, request with { ReproStepsHtml = request.ReproStepsHtml ?? prefill.ReproStepsHtml }, ct)).Link;
-        });
-        if (link is null || (!activate && releaseId is null)) return link;
-        await BoardAsync(c, "dev", 0.5, async board =>
+            try
+            {
+                await c.AsAgentAsync(persona, async sp =>
+                {
+                    var svc = sp.GetRequiredService<EngineeringTicketService>();
+                    var prefill = await svc.PrefillAsync(ticketId, ct);
+                    link = (await svc.EscalateAsync(ticketId, request with { ReproStepsHtml = request.ReproStepsHtml ?? prefill.ReproStepsHtml }, ct)).Link;
+                });
+                break;
+            }
+            catch (Domain.NotFoundException) when (persona != agent.Split(',')[^1])
+            {
+                // Out of this persona's scope: try the next one.
+            }
+        }
+        if (link is null || (!activate && releaseId is null)) return (link, at);
+        await BoardAsync(c, "dev", Cap(c, at.AddHours(0.5)), async board =>
         {
             var w = (await board.GetAsync(await WorkItemIdAsync(c, trackerId, link.ExternalId, ct), ct)).Item;
             if (releaseId is not null)
@@ -158,13 +183,14 @@ public sealed class EngineeringDemoSeed(ILogger<EngineeringDemoSeed> logger) : I
             }
             if (activate) await board.MoveAsync(w.Id, new MoveEngineeringWorkItemRequest("Active", null, w.RowVersion), ct);
         });
-        return link;
+        return (link, at);
     }
 
-    private static async Task BoardAsync(DemoSeedContext c, string user, double hoursLater, Func<EngineeringBoardService, Task> work)
+    private static DateTime Cap(DemoSeedContext c, DateTime at) => at > c.Anchor.AddMinutes(-10) ? c.Anchor.AddMinutes(-10) : at;
+
+    /// <summary>Runs board work as a persona at <paramref name="at"/> (clock pins only flow into awaited calls, so every step pins explicitly).</summary>
+    private static async Task BoardAsync(DemoSeedContext c, string user, DateTime at, Func<EngineeringBoardService, Task> work)
     {
-        var at = c.Clock.UtcNow.AddHours(hoursLater);
-        if (at > c.Anchor.AddMinutes(-10)) at = c.Anchor.AddMinutes(-10);
         c.At(at);
         await c.AsAgentAsync(user, sp => work(sp.GetRequiredService<EngineeringBoardService>()));
     }
