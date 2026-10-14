@@ -153,4 +153,37 @@ AgentMetric, BacklogSnapshot, ScheduledReport, Dashboard) · Integration (Integr
   realtime pushes originate where hubs run — leases make every worker safe to run on several nodes).
 * **Enterprise isolation:** selected tenants on dedicated databases via configuration-named connection strings.
 
+## 11. SaaS operation, compliance and configuration transfer
+
+Code: `Application/Subscriptions` (catalog, billing, usage metering, sign-up, platform console services, dedicated databases,
+support access), `Application/Administration/Compliance` (audit viewer, retention, legal holds, data-subject requests) and
+`Application/Administration/ConfigTransfer` (export/import engine, drafts, snapshots); all registered by `SubscriptionsModule`.
+Controllers: `Api/Controllers/Subscriptions` and `Api/Controllers/Compliance`. Desk: `/subscription`, `/signup`, `/platform/*`,
+`/admin/audit`, `/admin/compliance`, `/admin/config`.
+
+* **Catalog:** tenants, plans, subscriptions, invoices, usage history (`UsageSnapshot`), sign-ups and support-access grants live in the
+  shared database. `CatalogStore` hands tenant-context services a shared-database DbContext (explicit tenant predicates); changes to
+  the tenant/subscription/plan rows are mirrored into dedicated databases because the kernel (`LimitGuard`, 402 check) reads them in
+  tenant context.
+* **Billing:** per-seat prices (`decimal`, currency per plan) billed in advance, at least the active agents. Upgrades apply now with a
+  pro-rata invoice; downgrades are scheduled for period end and refused when current usage does not fit (`409 plan_usage_exceeded`).
+  `invoice-generation` (hourly) rolls periods and issues one invoice per period (filtered unique index); `subscription-lifecycle`
+  moves expired trials and overdue invoices to *past due* with a grace period, then suspends (writes → 402); paying the outstanding
+  invoices reactivates. Payments go through `IPaymentProvider` (built-in offline "manual" provider: operators mark invoices paid);
+  card data is never stored. `usage-metering` (15 min) recomputes gauges per tenant, flushes buffered API-client calls (an MVC filter
+  meters and enforces `ApiCallsMonthly`) and writes daily history.
+* **Platform console:** platform tokens only (`Policies.Platform`, no tenant claim); every service calls `PlatformAccess.Enter`.
+  There is no impersonation: operators request time-boxed support access that a tenant administrator approves; an active grant
+  unlocks read-only diagnostics only. Operator actions are written to both the platform trail (tenant null) and the tenant's trail.
+* **Compliance:** retention policies (closed tickets archive/anonymise/delete, channel messages, attachments, AI logs, audit records
+  ≥ 1 year) run daily in batches; legal holds (customer/contact/tickets/date range, all criteria must match) always win. Deletes use
+  `DependentRowPurger`, which discovers referencing foreign keys from the database. Purging audit records keeps the chain verifiable
+  from a recorded anchor (`compliance.audit_anchor`). Data-subject exports and erasures are durable jobs; exports are downloaded once
+  through an expiring token link; erasure needs approval (a second compliance administrator when one exists) and pseudonymises the
+  contact while ticket statistics stay intact.
+* **Configuration transfer:** sections are exported with ids remapped to natural keys (`"@ref:statuses/Waiting on Customer"`, also
+  inside JSON definitions); secrets are never exported. Imports become drafts with a diff and per-item resolution (create, overwrite,
+  skip, rename); publishing applies the draft in three passes and records a `ConfigurationSnapshot`; rollback captures the current
+  state, re-applies a snapshot (items added since are deactivated, never deleted) and records the result as a new snapshot.
+
 See `docs/DEVELOPMENT.md` for conventions and `docs/DEPLOYMENT.md` for IIS/Linux instructions.

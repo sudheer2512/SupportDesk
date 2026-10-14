@@ -39,7 +39,7 @@ import { SAAS_CSS, bytes, tenantTone } from '../subscription/saas-ui';
           <sd-empty-state icon="building" title="No tenants match" message="Clear the search or status filter." />
         } @else {
           <div class="table-wrap">
-            <table class="grid">
+            <table class="data">
               <caption class="sd-visually-hidden">Tenants</caption>
               <thead>
                 <tr>

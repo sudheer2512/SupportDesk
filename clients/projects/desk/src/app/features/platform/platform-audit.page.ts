@@ -44,7 +44,7 @@ import { SAAS_CSS, humanize } from '../subscription/saas-ui';
           <sd-empty-state icon="shield-check" title="No audit entries match" />
         } @else {
           <div class="table-wrap">
-            <table class="grid">
+            <table class="data">
               <caption class="sd-visually-hidden">Platform audit entries</caption>
               <thead><tr><th scope="col">When</th><th scope="col">Actor</th><th scope="col">Action</th><th scope="col" class="hide-sm">Tenant</th><th scope="col">Summary</th><th scope="col" class="num hide-sm">#</th></tr></thead>
               <tbody>

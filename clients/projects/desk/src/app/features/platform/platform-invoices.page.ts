@@ -34,7 +34,7 @@ import { SAAS_CSS, invoiceLabel, invoiceTone, money } from '../subscription/saas
           <sd-empty-state icon="receipt" title="No invoices" message="Invoices appear when subscription periods start or plans are upgraded." />
         } @else {
           <div class="table-wrap">
-            <table class="grid">
+            <table class="data">
               <caption class="sd-visually-hidden">Invoices</caption>
               <thead>
                 <tr>

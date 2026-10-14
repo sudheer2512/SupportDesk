@@ -58,7 +58,6 @@ public sealed class SubscriptionService(
     SubscriptionViewBuilder views,
     InvoiceIssuer issuer,
     InvoicePresenter invoices,
-    BillingLifecycle lifecycle,
     DedicatedCatalogMirror mirror,
     IAuditWriter audit)
 {
@@ -68,7 +67,10 @@ public sealed class SubscriptionService(
     {
         ctx.Require(Permissions.AdminBilling);
         var (tenant, sub) = await LoadAsync(ct);
-        return await views.BuildAsync(Cdb, tenant, sub, await usage.CurrentAsync(ct), db.Clock.UtcNow, ct);
+        // Live gauges (cheap counts) so the page never shows stale numbers; today's history point is refreshed too.
+        var values = await usage.RecomputeAsync(ct);
+        await history.WriteAsync(tenant.Id, values, ct);
+        return await views.BuildAsync(Cdb, tenant, sub, values, db.Clock.UtcNow, ct);
     }
 
     /// <summary>Public plans for the comparison table (plus the current plan if it is private).</summary>

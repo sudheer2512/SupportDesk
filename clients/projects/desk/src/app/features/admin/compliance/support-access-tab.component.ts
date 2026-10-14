@@ -21,7 +21,7 @@ import { SAAS_CSS, requestTone } from '../../subscription/saas-ui';
       <sd-empty-state icon="life-buoy" title="No support access requests" />
     } @else {
       <div class="table-wrap">
-        <table class="grid">
+        <table class="data">
           <caption class="sd-visually-hidden">Support access requests</caption>
           <thead><tr><th scope="col">Requested by</th><th scope="col">Reason</th><th scope="col">Status</th><th scope="col"><span class="sd-visually-hidden">Actions</span></th></tr></thead>
           <tbody>

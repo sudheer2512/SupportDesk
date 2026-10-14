@@ -30,6 +30,7 @@ public sealed class DedicatedDatabaseProvisioner(
     SharedConnection shared,
     IConfiguration configuration,
     TenantDatabaseDirectoryAccessor directory,
+    DedicatedCatalogMirror mirror,
     IAuditWriter audit,
     ILogger<DedicatedDatabaseProvisioner> logger)
 {
@@ -141,6 +142,7 @@ public sealed class DedicatedDatabaseProvisioner(
             $"Workspace moved to a dedicated database (connection '{name}')", new { name, tables, rows }, db.Clock.UtcNow);
         await db.SaveChangesAsync(ct);
         directory.Invalidate();
+        await mirror.SyncAsync(tenantId, ct);
         steps.Add($"Tenant switched to DatabaseMode=Dedicated with connection name '{name}'; routing directory refreshed.");
         logger.LogInformation("Tenant {Tenant} moved to dedicated database {Database}", tenantId, database);
         return new DedicatedDatabaseResultDto(name, database, tables, rows, steps);

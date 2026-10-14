@@ -144,7 +144,7 @@ type Panel = 'suspend' | 'reactivate' | 'cancel' | 'extend' | 'plan' | 'dedicate
             <sd-empty-state compact icon="receipt" title="No invoices yet" />
           } @else {
             <div class="table-wrap">
-              <table class="grid">
+              <table class="data">
                 <caption class="sd-visually-hidden">Recent invoices</caption>
                 <thead>
                   <tr><th scope="col">Number</th><th scope="col" class="hide-sm">Period</th><th scope="col" class="hide-sm">Due</th><th scope="col" class="num">Total</th><th scope="col">Status</th><th scope="col"><span class="sd-visually-hidden">Actions</span></th></tr>
@@ -175,7 +175,7 @@ type Panel = 'suspend' | 'reactivate' | 'cancel' | 'extend' | 'plan' | 'dedicate
             <sd-empty-state compact icon="life-buoy" title="No support access requested" message="Request access when a tenant asks for help; their administrator must approve it." />
           } @else {
             <div class="table-wrap">
-              <table class="grid">
+              <table class="data">
                 <caption class="sd-visually-hidden">Support access</caption>
                 <thead><tr><th scope="col">Requested</th><th scope="col">Operator</th><th scope="col" class="hide-sm">Reason</th><th scope="col">Status</th><th scope="col"><span class="sd-visually-hidden">Actions</span></th></tr></thead>
                 <tbody>

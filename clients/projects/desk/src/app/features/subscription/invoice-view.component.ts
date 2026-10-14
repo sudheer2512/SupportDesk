@@ -44,7 +44,7 @@ import { SAAS_CSS, invoiceLabel, invoiceTone, money } from './saas-ui';
       </dd>
     </dl>
     <div class="table-wrap lines">
-      <table class="grid">
+      <table class="data">
         <caption class="sd-visually-hidden">Invoice lines</caption>
         <thead>
           <tr><th scope="col">Description</th><th scope="col" class="num">Qty</th><th scope="col" class="num hide-sm">Unit price</th><th scope="col" class="num">Amount</th></tr>

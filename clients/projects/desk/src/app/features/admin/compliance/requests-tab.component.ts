@@ -62,7 +62,7 @@ import { SAAS_CSS, requestTone } from '../../subscription/saas-ui';
       <sd-empty-state icon="user-check" title="No data-subject requests" message="Record export and erasure requests from customers here; every step is audited." />
     } @else {
       <div class="table-wrap">
-        <table class="grid">
+        <table class="data">
           <caption class="sd-visually-hidden">Data-subject requests</caption>
           <thead><tr><th scope="col">Contact</th><th scope="col">Type</th><th scope="col">Status</th><th scope="col" class="hide-sm">Requested</th><th scope="col"><span class="sd-visually-hidden">Actions</span></th></tr></thead>
           <tbody>

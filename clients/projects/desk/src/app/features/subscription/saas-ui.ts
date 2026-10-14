@@ -91,15 +91,15 @@ export function humanize(value: string | null | undefined): string {
 /** Responsive data table + callouts + section headings used across the SaaS screens. */
 export const SAAS_CSS = `
   .table-wrap { overflow-x: auto; border: 1px solid var(--sd-border); border-radius: var(--sd-radius-lg); background: var(--sd-surface); }
-  table.grid { width: 100%; border-collapse: collapse; font-size: var(--sd-text-sm); }
-  table.grid th { position: sticky; top: 0; text-align: left; font-weight: var(--sd-weight-semibold); color: var(--sd-text-2); background: var(--sd-surface-2);
+  table.data { width: 100%; border-collapse: collapse; font-size: var(--sd-text-sm); }
+  table.data th { position: sticky; top: 0; text-align: left; font-weight: var(--sd-weight-semibold); color: var(--sd-text-2); background: var(--sd-surface-2);
     padding: 8px 12px; border-bottom: 1px solid var(--sd-border); white-space: nowrap; }
-  table.grid td { padding: 9px 12px; border-bottom: 1px solid var(--sd-divider); vertical-align: middle; }
-  table.grid tr:last-child td { border-bottom: 0; }
-  table.grid tbody tr.clickable { cursor: pointer; }
-  table.grid tbody tr.clickable:hover, table.grid tbody tr.clickable:focus-visible { background: var(--sd-row-hover); outline: none; }
-  table.grid td.num, table.grid th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  table.grid td.actions { text-align: right; white-space: nowrap; }
+  table.data td { padding: 9px 12px; border-bottom: 1px solid var(--sd-divider); vertical-align: middle; }
+  table.data tr:last-child td { border-bottom: 0; }
+  table.data tbody tr.clickable { cursor: pointer; }
+  table.data tbody tr.clickable:hover, table.data tbody tr.clickable:focus-visible { background: var(--sd-row-hover); outline: none; }
+  table.data td.num, table.data th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  table.data td.actions { text-align: right; white-space: nowrap; }
   .callout { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid transparent; border-radius: var(--sd-radius-md);
     font-size: var(--sd-text-sm); margin-bottom: var(--sd-space-4); }
   .callout > sd-icon { margin-top: 1px; flex: none; }
@@ -125,7 +125,7 @@ export const SAAS_CSS = `
   dl.facts dt { color: var(--sd-text-3); }
   dl.facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
   @media (max-width: 640px) {
-    table.grid .hide-sm { display: none; }
+    table.data .hide-sm { display: none; }
   }
 `;
 

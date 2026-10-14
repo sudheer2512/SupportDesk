@@ -165,13 +165,13 @@ import { SAAS_CSS, UsageMetersComponent, bytes, compactNumber, invoiceLabel, inv
             }
           </sd-card>
 
-          <div class="grid">
+          <div class="grid wide">
             <sd-card title="Invoices" class="block">
               @if (invoices().length === 0 && !invoicesLoading()) {
                 <sd-empty-state compact icon="receipt" title="No invoices yet" [message]="s.status === 'Trialing' ? 'Your first invoice is issued when the trial converts to a paid plan.' : 'Invoices are issued at the start of each billing period.'" />
               } @else {
                 <div class="table-wrap">
-                  <table class="grid">
+                  <table class="data">
                     <caption class="sd-visually-hidden">Invoices</caption>
                     <thead>
                       <tr>
@@ -250,6 +250,7 @@ import { SAAS_CSS, UsageMetersComponent, bytes, compactNumber, invoiceLabel, inv
     ${SAAS_CSS}
     .grid { display: grid; gap: var(--sd-space-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); margin-bottom: var(--sd-space-4); }
     .block { display: block; margin-bottom: var(--sd-space-4); }
+    @media (min-width: 1100px) { .grid.wide { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); } }
     .plan { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
     .plan-name { font-size: var(--sd-text-xl); font-weight: var(--sd-weight-bold); }
     .price { font-size: var(--sd-text-md); font-weight: var(--sd-weight-semibold); }

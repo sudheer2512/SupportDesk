@@ -96,7 +96,7 @@ import { SAAS_CSS, humanize } from '../../subscription/saas-ui';
           <sd-empty-state icon="shield-check" title="No audit entries match" message="Widen the date range or clear filters." />
         } @else {
           <div class="table-wrap">
-            <table class="grid">
+            <table class="data">
               <caption class="sd-visually-hidden">Audit entries</caption>
               <thead>
                 <tr>
@@ -161,7 +161,7 @@ import { SAAS_CSS, humanize } from '../../subscription/saas-ui';
           <p class="muted small">No before/after values recorded.</p>
         } @else {
           <div class="table-wrap">
-            <table class="grid diff">
+            <table class="data diff">
               <caption class="sd-visually-hidden">Before and after values</caption>
               <thead><tr><th scope="col">Field</th><th scope="col">Before</th><th scope="col">After</th></tr></thead>
               <tbody>

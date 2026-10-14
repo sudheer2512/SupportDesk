@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ApiError, ChangePlanResultDto, PlanChangePreviewDto, PlanDto, PlanFeatureDto, SubscriptionDto, SubscriptionsApi } from '@sd/core';
 import { SdBadge, SdButton, SdFormField, SdIcon, SdInput } from '@sd/ui';
@@ -27,7 +27,7 @@ import { SAAS_CSS, bytes, compactNumber, money } from './saas-ui';
     </div>
 
     <div class="table-wrap">
-      <table class="grid compare">
+      <table class="data compare">
         <caption class="sd-visually-hidden">Plan comparison</caption>
         <thead>
           <tr>
@@ -142,7 +142,7 @@ import { SAAS_CSS, bytes, compactNumber, money } from './saas-ui';
     .preview .callout { margin-bottom: 12px; }
   `,
 })
-export class PlanPickerComponent {
+export class PlanPickerComponent implements OnInit {
   private readonly api = inject(SubscriptionsApi);
 
   readonly subscription = input.required<SubscriptionDto>();
@@ -170,7 +170,11 @@ export class PlanPickerComponent {
     { label: 'API calls / month', value: (p) => this.n(p.apiCallsMonthly) },
   ];
 
-  /** Called by the host when the drawer opens. */
+  ngOnInit(): void {
+    this.reset();
+  }
+
+  /** Starts from the current seats (never fewer than the active agents) and billing cycle. */
   reset(): void {
     const sub = this.subscription();
     const agents = sub.usage.find((m) => m.metric === 'agents')?.used ?? 0;

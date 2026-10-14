@@ -41,7 +41,7 @@ import { SAAS_CSS } from '../../subscription/saas-ui';
       <sd-empty-state icon="scale" title="No legal holds" message="Place a hold to preserve a customer's or contact's records during litigation, audits or investigations." />
     } @else {
       <div class="table-wrap">
-        <table class="grid">
+        <table class="data">
           <caption class="sd-visually-hidden">Legal holds</caption>
           <thead><tr><th scope="col">Hold</th><th scope="col">Covers</th><th scope="col" class="num">Tickets</th><th scope="col">Status</th><th scope="col"><span class="sd-visually-hidden">Actions</span></th></tr></thead>
           <tbody>

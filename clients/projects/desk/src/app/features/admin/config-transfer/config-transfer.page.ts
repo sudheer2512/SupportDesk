@@ -100,7 +100,7 @@ import { SAAS_CSS } from '../../subscription/saas-ui';
           <sd-empty-state icon="history" title="No snapshots yet" message="Capture one before making large changes so you can roll back." />
         } @else {
           <div class="table-wrap">
-            <table class="grid">
+            <table class="data">
               <caption class="sd-visually-hidden">Configuration snapshots</caption>
               <thead><tr><th scope="col" class="num">Version</th><th scope="col">Label</th><th scope="col">Kind</th><th scope="col" class="hide-sm">Captured</th><th scope="col" class="hide-sm">Items</th><th scope="col"><span class="sd-visually-hidden">Actions</span></th></tr></thead>
               <tbody>
@@ -166,7 +166,7 @@ import { SAAS_CSS } from '../../subscription/saas-ui';
                       <details>
                         <summary class="small">{{ item.changes.length }} field(s) differ</summary>
                         <div class="table-wrap">
-                          <table class="grid">
+                          <table class="data">
                             <caption class="sd-visually-hidden">Differences for {{ item.name }}</caption>
                             <thead><tr><th scope="col">Field</th><th scope="col">This workspace</th><th scope="col">File</th></tr></thead>
                             <tbody>

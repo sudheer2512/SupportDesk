@@ -26,7 +26,7 @@ import { SAAS_CSS, UsageMetersComponent, humanize, requestTone } from '../subscr
           <sd-empty-state icon="life-buoy" title="No support access requests" message="Open a tenant and choose “Request support access” when a customer asks for help." />
         } @else {
           <div class="table-wrap">
-            <table class="grid">
+            <table class="data">
               <caption class="sd-visually-hidden">Support access requests</caption>
               <thead><tr><th scope="col">Tenant</th><th scope="col">Operator</th><th scope="col" class="hide-sm">Reason</th><th scope="col">Status</th><th scope="col" class="hide-sm">Requested</th><th scope="col"><span class="sd-visually-hidden">Actions</span></th></tr></thead>
               <tbody>

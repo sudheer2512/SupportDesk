@@ -110,11 +110,14 @@ public sealed class SubscriptionsDemoSeed(IServiceScopeFactory scopes) : IDemoSe
             db.RetentionPolicies.Add(new RetentionPolicy { Name = "Purge AI execution logs after 180 days", EntityType = "AiLogs", Action = RetentionAction.Delete, AfterDays = 180, IsActive = false });
             db.RetentionPolicies.Add(new RetentionPolicy { Name = "Delete audit records after 7 years", EntityType = "AuditLogs", Action = RetentionAction.Delete, AfterDays = 7 * 365 });
             if (c.Customers.TryGetValue("coastal", out var coastal))
+            {
+                var customerName = await db.Customers.Where(x => x.Id == coastal).Select(x => x.Name).FirstAsync(ct);
                 db.LegalHolds.Add(new LegalHold
                 {
-                    Name = "Coastal Foods contract dispute", Reason = "Preserve all support records for arbitration matter ARB/2026/114 (legal: R. Iyer).",
+                    Name = $"{customerName} contract dispute", Reason = "Preserve all support records for arbitration matter ARB/2026/114 (legal: R. Iyer).",
                     CustomerId = coastal, FromDate = now.AddDays(-365)
                 });
+            }
             await db.SaveChangesAsync(ct);
             await sp.GetRequiredService<ConfigTransferService>().CreateSnapshotAsync(new Contracts.ConfigTransfer.CreateSnapshotRequest("Baseline after go-live"), ct);
         });

@@ -26,7 +26,7 @@ import { SAAS_CSS } from '../../subscription/saas-ui';
       </sd-empty-state>
     } @else {
       <div class="table-wrap">
-        <table class="grid">
+        <table class="data">
           <caption class="sd-visually-hidden">Retention policies</caption>
           <thead>
             <tr><th scope="col">Policy</th><th scope="col">Rule</th><th scope="col" class="hide-sm">Last run</th><th scope="col">Active</th><th scope="col"><span class="sd-visually-hidden">Actions</span></th></tr>
@@ -35,7 +35,7 @@ import { SAAS_CSS } from '../../subscription/saas-ui';
             @for (p of policies(); track p.id) {
               <tr>
                 <td><strong>{{ p.name }}</strong></td>
-                <td>{{ p.action }} {{ typeLabel(p.dataType).toLowerCase() }} older than {{ days(p.afterDays) }}</td>
+                <td>{{ p.action }} · {{ typeLabel(p.dataType) }} older than {{ days(p.afterDays) }}</td>
                 <td class="hide-sm">{{ p.lastRunAt ? (p.lastRunAt | sdDateTime) + ' · ' + p.lastRunAffected + ' affected' : 'never' }}</td>
                 <td><sd-badge size="sm" [tone]="p.isActive ? 'success' : 'neutral'">{{ p.isActive ? 'Active' : 'Paused' }}</sd-badge></td>
                 <td class="actions">
