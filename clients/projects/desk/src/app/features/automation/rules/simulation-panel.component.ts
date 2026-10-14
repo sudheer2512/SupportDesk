@@ -67,9 +67,9 @@ import { actionTone, errorMessage } from '../shared/automation-ui';
                     <tr>
                       <td>{{ ctx.fieldLabel(c.field) }}</td>
                       <td>
-                        <span class="op">{{ c.op }}</span> {{ c.expected ?? '' }}
+                        <span class="op">{{ c.op }}</span> {{ c.expected === null ? '' : ctx.describeValue(c.expected) }}
                       </td>
-                      <td class="actual">{{ c.actual ?? '—' }}</td>
+                      <td class="actual">{{ ctx.describeValue(c.actual) }}</td>
                       <td>
                         <sd-icon [name]="c.result ? 'circle-check' : 'circle-x'" [size]="14" [class]="c.result ? 'ok' : 'no'" />
                         <span class="sd-visually-hidden">{{ c.result ? 'true' : 'false' }}</span>
@@ -175,6 +175,10 @@ import { actionTone, errorMessage } from '../shared/automation-ui';
       border-top: 1px solid var(--sd-divider);
       vertical-align: top;
       word-break: break-word;
+    }
+    .trace td:first-child {
+      white-space: nowrap;
+      word-break: normal;
     }
     .op {
       font-family: var(--sd-font-mono);

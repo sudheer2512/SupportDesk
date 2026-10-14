@@ -148,8 +148,8 @@ const STATUSES = ['Succeeded', 'PartiallyFailed', 'Failed', 'SkippedLoop', 'NotM
                 @for (c of e.trace; track $index) {
                   <tr>
                     <td>{{ ctx.fieldLabel(c.field) }}</td>
-                    <td><span class="mono">{{ c.op }}</span> {{ c.expected ?? '' }}</td>
-                    <td>{{ c.actual ?? '—' }}</td>
+                    <td><span class="mono">{{ c.op }}</span> {{ c.expected === null ? '' : ctx.describeValue(c.expected) }}</td>
+                    <td>{{ ctx.describeValue(c.actual) }}</td>
                     <td><sd-icon [name]="c.result ? 'circle-check' : 'circle-x'" [size]="14" [class]="c.result ? 'ok' : 'no'" /><span class="sd-visually-hidden">{{ c.result }}</span></td>
                   </tr>
                 }
@@ -292,6 +292,9 @@ const STATUSES = ['Succeeded', 'PartiallyFailed', 'Failed', 'SkippedLoop', 'NotM
       color: var(--sd-text-3);
       font-weight: var(--sd-weight-medium);
     }
+    .trace td:first-child {
+      white-space: nowrap;
+    }
     .trace td {
       padding: 3px 4px;
       border-top: 1px solid var(--sd-divider);
@@ -423,10 +426,15 @@ export class ExecutionsPage implements OnInit {
 
   protected actionSummary(e: RuleExecutionDto): string {
     if (e.actions.length === 0) return '—';
-    const failed = e.actions.filter((a) => a.status === 'failed').length;
-    const queued = e.actions.filter((a) => a.status === 'queued').length;
-    const ok = e.actions.length - failed - queued;
-    return [ok ? `${ok} done` : '', queued ? `${queued} queued` : '', failed ? `${failed} failed` : ''].filter(Boolean).join(' · ');
+    const count = (s: string) => e.actions.filter((a) => a.status === s).length;
+    const parts: [number, string][] = [
+      [count('succeeded'), 'done'],
+      [count('would_run'), 'would run'],
+      [count('queued'), 'queued'],
+      [count('skipped'), 'skipped'],
+      [count('failed'), 'failed'],
+    ];
+    return parts.filter(([n]) => n > 0).map(([n, label]) => `${n} ${label}`).join(' · ');
   }
 
   protected rangeText(p: PageResult<RuleExecutionDto>): string {

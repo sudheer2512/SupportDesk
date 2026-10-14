@@ -136,6 +136,35 @@ export class AutomationContext {
     return this.meta()?.customFields.find((f) => f.key === k)?.fieldType ?? null;
   }
 
+  /** id → display name across the configuration lists (statuses, departments, teams, agents, categories…). */
+  private readonly nameIndex = computed(() => {
+    const m = new Map<string, string>();
+    const meta = this.meta();
+    const add = (list: SdOption[]) => list.forEach((o) => m.set(o.value.toLowerCase(), o.label));
+    add(this.statusOptions());
+    add(this.departmentOptions());
+    add(this.teamOptions());
+    add(this.agentOptions());
+    add(this.allCategoryOptions());
+    add(this.issueTypeOptions());
+    add(this.roleOptions());
+    for (const p of meta?.products ?? []) {
+      m.set(p.id.toLowerCase(), p.name);
+      p.modules.forEach((x) => m.set(x.id.toLowerCase(), `${p.name} › ${x.name}`));
+      p.versions.forEach((x) => m.set(x.id.toLowerCase(), `${p.name} ${x.name}`));
+    }
+    (meta?.brands ?? []).forEach((b) => m.set(b.id.toLowerCase(), b.name));
+    this.blueprints().forEach((b) => m.set(b.id.toLowerCase(), b.name));
+    return m;
+  });
+
+  /** Replaces ids in a trace value ("…guid…" or ["guid", …]) with names where known. */
+  describeValue(raw: string | null): string {
+    if (raw === null || raw === '') return '—';
+    const names = this.nameIndex();
+    return raw.replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, (id) => names.get(id.toLowerCase()) ?? id);
+  }
+
   // ───── Labels ─────
 
   triggerLabel(key: string): string {
