@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { AiApi, Permission, TicketDetailDto } from '@sd/core';
+import { SdDialogService } from '@sd/ui';
 
 export type ComposerMode = 'reply' | 'note' | 'handover';
 
@@ -64,6 +65,24 @@ export const COMPOSER_ACTIONS: ComposerActionDef[] = [
           : 'AI draft inserted, but no matching article or resolved ticket was found — review it carefully.',
         draft.grounded ? 'info' : 'error',
       );
+    },
+  },
+  {
+    key: 'collaboration.share',
+    label: 'Share to Teams/Slack',
+    icon: 'share',
+    permission: 'tickets.note',
+    modes: ['note'],
+    run: async (ctx) => {
+      const dialogs = inject(SdDialogService);
+      const { ShareToChannelDialog } = await import('../../engineering/share/share-to-channel.dialog');
+      const comment = ctx.html().replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+      const ref = dialogs.open<string | null>(ShareToChannelDialog, {
+        data: { ticketId: ctx.ticket.id, ticketLabel: `${ctx.ticket.displayNumber} “${ctx.ticket.subject}”`, comment },
+        size: 'sm',
+      });
+      const channel = await firstValueFrom(ref.closed);
+      if (channel) ctx.notify(`Shared to ${channel}.`);
     },
   },
 ];

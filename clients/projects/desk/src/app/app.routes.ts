@@ -50,6 +50,11 @@ export const routes: Routes = [
       { path: 'kb', canActivate: [perms('kb')], loadChildren: () => import('./features/kb/kb.routes').then((m) => m.ROUTES) },
       { path: 'analytics', canActivate: [perms('analytics')], loadChildren: () => import('./features/analytics/analytics.routes').then((m) => m.ROUTES) },
       { path: 'ai', canActivate: [perms('ai')], loadChildren: () => import('./features/ai/ai.routes').then((m) => m.ROUTES) },
+      {
+        path: 'engineering',
+        canActivate: [perms('engineering')],
+        loadChildren: () => import('./features/engineering/engineering.routes').then((m) => m.ROUTES),
+      },
       { path: 'admin', canActivate: [perms('admin')], loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ROUTES) },
       {
         path: 'subscription',

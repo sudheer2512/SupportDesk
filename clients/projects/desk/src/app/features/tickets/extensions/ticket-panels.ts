@@ -55,4 +55,12 @@ export const TICKET_PANELS: TicketPanelDef[] = [
     order: 20,
     loadComponent: () => import('../../ai/ticket-ai-panel/ticket-ai-tab.component').then((m) => m.TicketAiTabComponent),
   },
+  {
+    key: 'engineering.links',
+    label: 'Engineering',
+    icon: 'bug',
+    permission: ['engineering.link', 'engineering.view'],
+    order: 30,
+    loadComponent: () => import('../../engineering/ticket-panel/engineering-tab.component').then((m) => m.EngineeringTabComponent),
+  },
 ];
