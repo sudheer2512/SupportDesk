@@ -81,6 +81,8 @@ internal static class ModelConfiguration
         m.Entity<TenantSetting>(e => e.HasIndex(x => new { x.TenantId, x.Key }).IsUnique());
         m.Entity<AuditLog>(e =>
         {
+            // Sealed rows are protected by a database trigger (see DatabaseInitializer.EnsureSqlObjectsAsync).
+            e.ToTable(tb => tb.HasTrigger("TR_AuditLogs_Protect"));
             e.HasIndex(x => new { x.TenantId, x.Sequence });
             e.HasIndex(x => new { x.TenantId, x.OccurredAt });
             e.HasIndex(x => new { x.EntityType, x.EntityId });

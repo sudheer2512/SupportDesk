@@ -108,7 +108,8 @@ public sealed class TicketService(
 
     public async Task<Ticket> CreateAsync(CreateTicketRequest r, TicketCreationSource source, CancellationToken ct = default)
     {
-        if (ctx.IsAgent) ctx.Require(Permissions.TicketsCreate);
+        // Agents and API clients need tickets.create; portal contacts and system processes (channels, ERP) create through their own paths.
+        if (!ctx.IsSystem && !ctx.IsContact) ctx.Require(Permissions.TicketsCreate);
         await limits.EnsureActiveAsync(ct);
         await lookups.LoadAsync(ct);
 

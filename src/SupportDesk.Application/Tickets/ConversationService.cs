@@ -52,7 +52,10 @@ public sealed class ConversationService(
     ISlaEngine sla,
     TicketLookups lookups)
 {
-    private const int MaxSeqRetries = 4;
+    private const int MaxSeqRetries = 15;
+
+    /// <summary>Randomised back-off between sequence-allocation retries so concurrent writers spread out.</summary>
+    private static Task JitterAsync(int attempt, CancellationToken ct) => Task.Delay(Random.Shared.Next(5, 20 * Math.Min(attempt, 5)), ct);
 
     public async Task<TicketThread> ReplyAsync(Guid ticketId, ReplyRequest r, CancellationToken ct = default)
     {
@@ -123,6 +126,7 @@ public sealed class ConversationService(
             {
                 // Another writer took the next sequence number (or changed the ticket) — reload and retry.
                 db.ChangeTracker.Clear();
+                await JitterAsync(attempt, ct);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -174,6 +178,7 @@ public sealed class ConversationService(
             catch (DbUpdateException) when (attempt < MaxSeqRetries)
             {
                 db.ChangeTracker.Clear();
+                await JitterAsync(attempt, ct);
             }
         }
     }
@@ -231,6 +236,7 @@ public sealed class ConversationService(
             catch (DbUpdateException) when (attempt < MaxSeqRetries)
             {
                 db.ChangeTracker.Clear();
+                await JitterAsync(attempt, ct);
             }
         }
     }

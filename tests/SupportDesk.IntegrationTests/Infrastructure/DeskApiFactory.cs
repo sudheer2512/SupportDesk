@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,6 +48,7 @@ public sealed class DeskApiFactory : WebApplicationFactory<Program>, IAsyncLifet
         builder.UseSetting("RateLimits:AuthPerMinute", "100000");
         builder.UseSetting("RateLimits:ApiPerMinute", "1000000");
         builder.UseSetting("RateLimits:PublicPerMinute", "100000");
+        builder.ConfigureTestServices(s => s.AddScoped<IJobHandler, TestCounterJobHandler>());
     }
 
     public Task InitializeAsync()
@@ -163,3 +165,17 @@ public sealed class TestTenant(DeskApiFactory factory, Guid id, string slug, Pro
 
 [CollectionDefinition("api")]
 public sealed class ApiCollection : ICollectionFixture<DeskApiFactory>;
+
+/// <summary>Counts executions per payload key (restart-recovery and idempotency tests).</summary>
+public sealed class TestCounterJobHandler : IJobHandler
+{
+    public const string JobType = "test.counter";
+    public static readonly System.Collections.Concurrent.ConcurrentDictionary<string, int> Executions = new();
+    public string Type => JobType;
+
+    public Task ExecuteAsync(Domain.Platform.BackgroundJob job, CancellationToken ct)
+    {
+        Executions.AddOrUpdate(job.PayloadJson, 1, (_, n) => n + 1);
+        return Task.CompletedTask;
+    }
+}

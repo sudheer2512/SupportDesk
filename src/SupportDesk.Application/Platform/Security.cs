@@ -117,12 +117,16 @@ public sealed partial class HtmlSanitization
                     el.SetAttribute("rel", "noopener noreferrer nofollow");
                     el.SetAttribute("target", "_blank");
                 }
-                else if (el.TagName.Equals("IFRAME", StringComparison.OrdinalIgnoreCase))
-                {
-                    var src = el.GetAttribute("src") ?? "";
-                    if (!EmbedRegex().IsMatch(src)) el.Remove();
-                    else el.SetAttribute("sandbox", "allow-scripts allow-same-origin allow-presentation");
-                }
+            }
+        };
+        // Only YouTube/Vimeo embeds survive; they are sandboxed. (Done on the whole DOM: removing nodes per-node is ignored.)
+        _sanitizer.PostProcessDom += (_, e) =>
+        {
+            foreach (var frame in e.Document.QuerySelectorAll("iframe").ToList())
+            {
+                var src = frame.GetAttribute("src") ?? "";
+                if (!EmbedRegex().IsMatch(src)) frame.Remove();
+                else frame.SetAttribute("sandbox", "allow-scripts allow-same-origin allow-presentation");
             }
         };
     }

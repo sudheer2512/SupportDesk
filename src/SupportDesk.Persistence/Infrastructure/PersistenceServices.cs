@@ -184,10 +184,12 @@ public sealed class DatabaseInitializer(DeskDbContext db, TenantDatabaseDirector
         if (mode == DatabaseInitializeMode.EnsureCreated)
         {
             await db.Database.EnsureCreatedAsync(ct);
+            await EnsureSqlObjectsAsync(db, ct);
             return;
         }
         logger.LogInformation("Applying database migrations (shared database)");
         await db.Database.MigrateAsync(ct);
+        await EnsureSqlObjectsAsync(db, ct);
         foreach (var (tenantId, cs) in directory.All())
             await MigrateDedicatedAsync(tenantId, cs, ct);
     }
@@ -198,6 +200,28 @@ public sealed class DatabaseInitializer(DeskDbContext db, TenantDatabaseDirector
         var options = new DbContextOptionsBuilder<DeskDbContext>().UseSqlServer(connectionString).Options;
         await using var tenantDb = new DeskDbContext(options, new RequestContext(), db.Clock);
         await tenantDb.Database.MigrateAsync(ct);
+        await EnsureSqlObjectsAsync(tenantDb, ct);
+    }
+
+    /// <summary>
+    /// Database-level safeguards that EF does not model (idempotent): sealed audit records cannot be updated or deleted
+    /// unless the session explicitly opts into a retention purge (SESSION_CONTEXT 'audit_purge' = 1).
+    /// </summary>
+    public static async Task EnsureSqlObjectsAsync(DeskDbContext target, CancellationToken ct)
+    {
+        await target.Database.ExecuteSqlRawAsync("""
+            CREATE OR ALTER TRIGGER dbo.TR_AuditLogs_Protect ON dbo.AuditLogs AFTER UPDATE, DELETE AS
+            BEGIN
+                SET NOCOUNT ON;
+                IF ISNULL(CAST(SESSION_CONTEXT(N'audit_purge') AS int), 0) = 1 RETURN;
+                IF EXISTS (
+                    SELECT 1 FROM deleted d LEFT JOIN inserted i ON i.Id = d.Id
+                    WHERE d.[Hash] <> '' AND (i.Id IS NULL OR i.[Hash] <> d.[Hash] OR i.PrevHash <> d.PrevHash OR i.[Sequence] <> d.[Sequence]
+                        OR i.[Action] <> d.[Action] OR ISNULL(i.Summary, N'') <> ISNULL(d.Summary, N'') OR ISNULL(i.ChangesJson, N'') <> ISNULL(d.ChangesJson, N'')
+                        OR i.OccurredAt <> d.OccurredAt OR ISNULL(i.ActorId, '00000000-0000-0000-0000-000000000000') <> ISNULL(d.ActorId, '00000000-0000-0000-0000-000000000000')))
+                    THROW 51000, 'Sealed audit records are immutable.', 1;
+            END
+            """, ct);
     }
 }
 
