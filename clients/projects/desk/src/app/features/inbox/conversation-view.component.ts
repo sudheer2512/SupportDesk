@@ -312,7 +312,6 @@ function displayHtml(html: string | null): string {
               align="end"
               [items]="templateItems()"
               [disabled]="!s.ticketId || (s.status !== 'AgentActive' && s.status !== 'WaitingForAgent')"
-              (select)="loadTemplates()"
             />
             <button sdButton variant="primary" type="submit" icon="send" [loading]="sending()" [disabled]="!draft().trim()">Send</button>
           </div>
@@ -747,7 +746,11 @@ export class ConversationViewComponent {
         if (id !== this.conversationId()) return;
         this.detail.set(d);
         this.changed.emit(d);
-        if (d.summary.channel === 'Chat' && d.summary.status !== 'Closed') this.joinChat(id);
+        if (d.summary.channel === 'Chat' && d.summary.status !== 'Closed') {
+          this.joinChat(id);
+          // The chat composer offers reply templates (rendered against the chat's ticket).
+          if (d.summary.ticketId) this.loadTemplates();
+        }
       },
       error: (e: unknown) => {
         if (!quiet) this.error.set(ApiError.from(e).userMessage);
@@ -842,7 +845,7 @@ export class ConversationViewComponent {
       });
   }
 
-  /** Loads the template list the first time the menu opens. */
+  /** Loads the template list once (first chat with a ticket shown in this view). */
   protected loadTemplates(): void {
     if (this.templates() !== null) return;
     this.templatesError.set(null);
