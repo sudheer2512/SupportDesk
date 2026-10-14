@@ -36,8 +36,11 @@ public sealed partial class DeskLinkTests
     /// <summary>Links that intentionally target another app: the customer portal (served under /portal) and the mobile customer app.</summary>
     private static readonly string[] OtherApps = ["/portal", "/customer/tickets/"];
 
-    /// <summary>Server paths that are not navigation links (API URLs, hubs, JSON-patch paths of tracker adapters).</summary>
-    private static readonly string[] NotLinks = ["/api/", "/hubs/", "/fields/", "/relations/"];
+    /// <summary>
+    /// Server paths that are not navigation links: API URLs, hubs, JSON-patch paths of tracker adapters, and file-system paths
+    /// (e.g. the font directories the invoice PDF renderer probes on Linux).
+    /// </summary>
+    private static readonly string[] NotLinks = ["/api/", "/hubs/", "/fields/", "/relations/", "/usr/", "/etc/", "/var/", "/opt/", "/tmp/"];
 
     public static bool IsDeskRoute(string link)
     {
