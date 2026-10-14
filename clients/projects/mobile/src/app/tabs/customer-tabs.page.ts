@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { IonIcon, IonLabel, IonTabBar, IonTabButton, IonTabs } from '@ionic/angular/standalone';
 
-/** Customer tab shell: Tickets, Help, Profile. */
+/** Customer tab shell: My tickets, New request, Help (knowledge base), Profile. */
 @Component({
   selector: 'm-customer-tabs',
   imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel],
@@ -11,7 +11,11 @@ import { IonIcon, IonLabel, IonTabBar, IonTabButton, IonTabs } from '@ionic/angu
       <ion-tab-bar slot="bottom">
         <ion-tab-button tab="tickets">
           <ion-icon name="ticket-outline" aria-hidden="true" />
-          <ion-label>Tickets</ion-label>
+          <ion-label>My tickets</ion-label>
+        </ion-tab-button>
+        <ion-tab-button tab="new">
+          <ion-icon name="add-circle-outline" aria-hidden="true" />
+          <ion-label>New request</ion-label>
         </ion-tab-button>
         <ion-tab-button tab="help">
           <ion-icon name="help-circle-outline" aria-hidden="true" />
@@ -19,7 +23,7 @@ import { IonIcon, IonLabel, IonTabBar, IonTabButton, IonTabs } from '@ionic/angu
         </ion-tab-button>
         <ion-tab-button tab="profile">
           <ion-icon name="person-circle-outline" aria-hidden="true" />
-          <ion-label>Profile</ion-label>
+          <ion-label>Me</ion-label>
         </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>

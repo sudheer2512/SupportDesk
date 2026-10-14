@@ -14,6 +14,9 @@ export interface NotificationDto {
   readAt: IsoDateTime | null;
   acknowledgedAt: IsoDateTime | null;
   createdAt: IsoDateTime;
+  /** What the notification is about (e.g. "Ticket", "ApprovalRequest") — sent by the API, optional for realtime payloads. */
+  entityType?: string | null;
+  entityId?: Guid | null;
 }
 
 /** Ordering used to decide toasts / desktop notifications (case-insensitive; unknown → info). */

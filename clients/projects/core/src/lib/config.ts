@@ -6,6 +6,8 @@ export interface SdCoreConfig {
   apiBaseUrl: string;
   /** SignalR hub URL for the agent workbench (default `/hubs/desk`). */
   hubUrl: string;
+  /** SignalR hub URL for portal contacts (default `/hubs/portal`; the mobile app points it at the server origin). */
+  portalHubUrl: string;
   /** `mobile` adds `X-Client: mobile` to API calls and keeps the refresh token in the body (see RefreshTokenStore). */
   client: 'web' | 'mobile';
   /** Route of the agent login page (used after a failed refresh). */
@@ -17,6 +19,7 @@ export interface SdCoreConfig {
 export const DEFAULT_SD_CONFIG: SdCoreConfig = {
   apiBaseUrl: '/api/v1',
   hubUrl: '/hubs/desk',
+  portalHubUrl: '/hubs/portal',
   client: 'web',
   loginPath: '/login',
   forbiddenPath: '/forbidden',

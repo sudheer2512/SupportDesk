@@ -1,6 +1,7 @@
 import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 import type { HubConnection } from '@microsoft/signalr';
 import { Observable, Subject, filter } from 'rxjs';
+import { SD_CONFIG } from '../config';
 import { Guid } from '../models/common';
 import { PortalTicketChangedEvent, PortalTicketThreadEvent } from '../models/portal-content';
 import { PortalAuthService } from './portal-auth.service';
@@ -13,6 +14,7 @@ import { PortalAuthService } from './portal-auth.service';
 @Injectable({ providedIn: 'root' })
 export class PortalRealtimeService {
   private readonly auth = inject(PortalAuthService);
+  private readonly config = inject(SD_CONFIG);
   private connection: HubConnection | null = null;
   private starting: Promise<void> | null = null;
   private readonly _state = signal<'disconnected' | 'connecting' | 'connected' | 'reconnecting'>('disconnected');
@@ -70,7 +72,7 @@ export class PortalRealtimeService {
     this._state.set('connecting');
     const signalR = await import('@microsoft/signalr');
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl('/hubs/portal', { accessTokenFactory: () => this.auth.accessToken() ?? '' })
+      .withUrl(this.config.portalHubUrl || '/hubs/portal', { accessTokenFactory: () => this.auth.accessToken() ?? '' })
       .withAutomaticReconnect([0, 2_000, 5_000, 10_000, 30_000, 60_000])
       .configureLogging(signalR.LogLevel.Warning)
       .build();

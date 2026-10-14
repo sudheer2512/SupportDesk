@@ -94,3 +94,7 @@ export * from './lib/api/customers.api';
 export * from './lib/api/products.api';
 export * from './lib/api/erp.api';
 export * from './lib/utils/validation-errors';
+
+// Mobile app: push-device registration
+export * from './lib/models/mobile';
+export * from './lib/api/devices.api';

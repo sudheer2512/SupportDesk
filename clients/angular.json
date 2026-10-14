@@ -228,7 +228,7 @@
               "node_modules/@ionic/angular/css/padding.css",
               "node_modules/@ionic/angular/css/flex-utils.css",
               "node_modules/@ionic/angular/css/text-alignment.css",
-              "node_modules/@ionic/angular/css/palettes/dark.system.css",
+              "node_modules/@ionic/angular/css/palettes/dark.class.css",
               "node_modules/@fontsource-variable/inter/index.css",
               "projects/ui/src/styles/sd-tokens.css",
               "projects/mobile/src/theme.css"
