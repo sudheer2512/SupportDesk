@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+  <PropertyGroup>
+    <Description>SupportDesk Worker Service host: runs the background workers out of process (Windows Service or systemd).</Description>
+    <UserSecretsId>supportdesk-workerhost</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SupportDesk.Integrations\SupportDesk.Integrations.csproj" />
+    <ProjectReference Include="..\SupportDesk.Workers\SupportDesk.Workers.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <Description>HTTP load and performance harness for the SupportDesk API (latency percentiles, throughput, error rate).</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SupportDesk.Contracts\SupportDesk.Contracts.csproj" />
+  </ItemGroup>
+</Project>

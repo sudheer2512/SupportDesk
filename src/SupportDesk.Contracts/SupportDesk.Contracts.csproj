@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>SupportDesk public API contracts (request/response DTOs), shared by the API, integrations and .NET clients.</Description>
+  </PropertyGroup>
+</Project>

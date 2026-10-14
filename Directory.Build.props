@@ -1,0 +1,14 @@
+<Project>
+  <!-- Shared compiler settings for every SupportDesk project. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <Company>SupportDesk</Company>
+    <Product>SupportDesk</Product>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+</Project>

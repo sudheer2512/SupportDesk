@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>SupportDesk integration adapters: email (IMAP/SMTP, Microsoft 365, Gmail, file drop), messaging (WhatsApp, SMS, Meta), telephony, AI model providers, Wings ERP, Azure DevOps/GitHub, Teams, storage, cache and scanning.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SupportDesk.Application\SupportDesk.Application.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MailKit" />
+    <PackageReference Include="MimeKit" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="SupportDesk.UnitTests" />
+    <InternalsVisibleTo Include="SupportDesk.IntegrationTests" />
+  </ItemGroup>
+</Project>

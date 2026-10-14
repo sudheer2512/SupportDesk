@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>SupportDesk application services: ticketing, SLA, routing, automation, omnichannel, knowledge, AI orchestration, analytics, administration and subscriptions.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SupportDesk.Domain\SupportDesk.Domain.csproj" />
+    <ProjectReference Include="..\SupportDesk.Contracts\SupportDesk.Contracts.csproj" />
+    <ProjectReference Include="..\SupportDesk.Persistence\SupportDesk.Persistence.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="HtmlSanitizer" />
+    <PackageReference Include="ClosedXML" />
+    <PackageReference Include="PDFsharp-MigraDoc" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="SupportDesk.UnitTests" />
+    <InternalsVisibleTo Include="SupportDesk.IntegrationTests" />
+  </ItemGroup>
+</Project>

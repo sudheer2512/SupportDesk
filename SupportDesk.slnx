@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SupportDesk.Api/SupportDesk.Api.csproj" />
+    <Project Path="src/SupportDesk.Application/SupportDesk.Application.csproj" />
+    <Project Path="src/SupportDesk.Contracts/SupportDesk.Contracts.csproj" />
+    <Project Path="src/SupportDesk.Domain/SupportDesk.Domain.csproj" />
+    <Project Path="src/SupportDesk.Integrations/SupportDesk.Integrations.csproj" />
+    <Project Path="src/SupportDesk.Persistence/SupportDesk.Persistence.csproj" />
+    <Project Path="src/SupportDesk.WorkerHost/SupportDesk.WorkerHost.csproj" />
+    <Project Path="src/SupportDesk.Workers/SupportDesk.Workers.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SupportDesk.IntegrationTests/SupportDesk.IntegrationTests.csproj" />
+    <Project Path="tests/SupportDesk.LoadTests/SupportDesk.LoadTests.csproj" />
+    <Project Path="tests/SupportDesk.UnitTests/SupportDesk.UnitTests.csproj" />
+  </Folder>
+</Solution>

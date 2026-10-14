@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>SupportDesk domain model: entities, enums and pure business rules (business time, SLA, conditions, threading).</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="SupportDesk.UnitTests" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>SupportDesk background workers: durable job runner, outbox dispatcher and recurring schedulers. Hosted by the API or by the WorkerHost.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SupportDesk.Application\SupportDesk.Application.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="SupportDesk.IntegrationTests" />
+  </ItemGroup>
+</Project>
