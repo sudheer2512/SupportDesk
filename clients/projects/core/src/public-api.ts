@@ -85,3 +85,12 @@ export * from './lib/utils/dates';
 export * from './lib/utils/fuzzy';
 export * from './lib/utils/ids';
 export * from './lib/utils/storage';
+
+// Customers, products & assets, contracts and ERP integration
+export * from './lib/models/customers';
+export * from './lib/models/products';
+export * from './lib/models/erp';
+export * from './lib/api/customers.api';
+export * from './lib/api/products.api';
+export * from './lib/api/erp.api';
+export * from './lib/utils/validation-errors';
