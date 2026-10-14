@@ -1,5 +1,5 @@
 import { inject, isDevMode } from '@angular/core';
-import { Routes } from '@angular/router';
+import { CanActivateFn, Router, Routes } from '@angular/router';
 import { MeStore, authGuard, guestGuard, permissionGuard } from '@sd/core';
 import { ForbiddenPage } from './pages/forbidden.page';
 import { NotFoundPage } from './pages/not-found.page';
@@ -9,11 +9,15 @@ import { ShellComponent } from './shell/shell.component';
 /** Permission list for a module route (kept in sync with the nav rail via DESK_MODULES). */
 const perms = (path: string) => permissionGuard(...(moduleByPath(path)?.permissions ?? []));
 
-/** Lands on the first module the user may open (or the profile page when none). */
-function firstAllowedModule(): string {
+/**
+ * Lands on the first module the user may open (or the profile page when none). A guard rather than a
+ * redirect so it runs after the shell's authGuard (redirects are applied before guards).
+ */
+const landingGuard: CanActivateFn = () => {
   const me = inject(MeStore);
-  return DESK_MODULES.find((m) => me.canAny(m.permissions))?.path ?? 'me';
-}
+  const target = DESK_MODULES.find((m) => me.canAny(m.permissions))?.path ?? 'me';
+  return inject(Router).parseUrl(`/${target}`);
+};
 
 export const routes: Routes = [
   {
@@ -34,7 +38,7 @@ export const routes: Routes = [
     component: ShellComponent,
     canActivate: [authGuard],
     children: [
-      { path: '', pathMatch: 'full', redirectTo: () => firstAllowedModule() },
+      { path: '', pathMatch: 'full', canActivate: [landingGuard], children: [] },
       { path: 'command', canActivate: [perms('command')], loadChildren: () => import('./features/command/command.routes').then((m) => m.ROUTES) },
       { path: 'tickets', canActivate: [perms('tickets')], loadChildren: () => import('./features/tickets/tickets.routes').then((m) => m.ROUTES) },
       { path: 'inbox', canActivate: [perms('inbox')], loadChildren: () => import('./features/inbox/inbox.routes').then((m) => m.ROUTES) },
