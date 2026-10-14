@@ -16,6 +16,13 @@
   window.__supportDeskChatLoaded = true;
 
   var widgetKey = script.getAttribute('data-widget-key');
+  // The demo page lets admins preview any widget: /widget/demo.html?widgetKey=wk_… (only with data-allow-key-override).
+  if (script.hasAttribute('data-allow-key-override')) {
+    try {
+      var override = new URLSearchParams(location.search).get('widgetKey');
+      if (override && /^[A-Za-z0-9_-]{3,120}$/.test(override)) widgetKey = override;
+    } catch (e) { /* ignore */ }
+  }
   if (!widgetKey) { console.warn('SupportDesk chat: data-widget-key is missing.'); return; }
   var base = new URL(script.src, location.href).origin;
   var api = base + '/api/v1/chat/' + encodeURIComponent(widgetKey);
