@@ -1,7 +1,7 @@
 namespace SupportDesk.Domain.Organisation;
 
 /// <summary>A support department (technical support, implementation, billing…) with its own queues, SLAs and schedule.</summary>
-public class Department : AuditedEntity
+public class Department : AuditedEntity, IConcurrencyVersioned
 {
     public string Name { get; set; } = "";
     public string Code { get; set; } = "";
@@ -17,11 +17,14 @@ public class Department : AuditedEntity
     /// <summary>Transfers out of this department need supervisor approval.</summary>
     public bool TransferRequiresApproval { get; set; }
     public int SortOrder { get; set; }
+    public DateTime? ArchivedAt { get; set; }
+    public byte[] RowVersion { get; set; } = [];
 }
 
-public enum RoutingStrategy { Manual, RoundRobin, LoadBalanced, SkillBased }
+/// <summary>Territory = agents whose territory/customer specialisation matches the customer's service region win (then load).</summary>
+public enum RoutingStrategy { Manual, RoundRobin, LoadBalanced, SkillBased, Territory }
 
-public class Team : AuditedEntity
+public class Team : AuditedEntity, IConcurrencyVersioned
 {
     public Guid DepartmentId { get; set; }
     public string Name { get; set; } = "";
@@ -32,7 +35,14 @@ public class Team : AuditedEntity
     public Guid? RoundRobinCursorUserId { get; set; }
     /// <summary>Only agents whose availability is Online receive automatic assignments.</summary>
     public bool OnlyAssignToOnlineAgents { get; set; } = true;
+    /// <summary>Skip agents who are off shift (agents without a shift assignment are always considered on shift).</summary>
+    public bool ConsiderShifts { get; set; }
+    /// <summary>Team-level cap on open tickets per agent (the lower of this and the agent's own capacity applies).</summary>
+    public int? MaxOpenTicketsPerAgent { get; set; }
+    /// <summary>Queue (team of the same department) that receives tickets when no member is eligible.</summary>
+    public Guid? FallbackTeamId { get; set; }
     public bool IsActive { get; set; } = true;
+    public byte[] RowVersion { get; set; } = [];
 }
 
 public class TeamMember : TenantEntity
@@ -96,9 +106,13 @@ public class AgentRoutingAttribute : TenantEntity
 }
 
 /// <summary>A work shift pattern. Weekly hours JSON: {"Monday":[{"start":"09:00","end":"18:00"}],…}</summary>
-public class Shift : AuditedEntity
+public class Shift : AuditedEntity, IConcurrencyVersioned
 {
     public string Name { get; set; } = "";
+    public string? Description { get; set; }
+    /// <summary>Display colour for the schedule calendar (#rrggbb).</summary>
+    public string? Color { get; set; }
+    public byte[] RowVersion { get; set; } = [];
     public string TimeZone { get; set; } = "UTC";
     public string WeeklyHoursJson { get; set; } = "{}";
     public bool IsActive { get; set; } = true;
@@ -124,6 +138,10 @@ public class AgentLeave : AuditedEntity
     public LeaveStatus Status { get; set; } = LeaveStatus.Requested;
     public string? Reason { get; set; }
     public Guid? ApprovedById { get; set; }
+    public DateTime? DecidedAt { get; set; }
+    public string? DecisionNote { get; set; }
+    /// <summary>Approval request raised for this leave (Approvals inbox), if approval was needed.</summary>
+    public Guid? ApprovalRequestId { get; set; }
 }
 
 /// <summary>Out-of-office coverage: new assignments for UserId go to DelegateUserId during the window.</summary>
@@ -136,6 +154,8 @@ public class AgentDelegation : AuditedEntity
     public string? Reason { get; set; }
     /// <summary>Also move the absent agent's open tickets to the delegate when the window starts.</summary>
     public bool ReassignOpenTickets { get; set; }
+    /// <summary>Pending approvals addressed to the absent agent are routed to the delegate.</summary>
+    public bool IncludeApprovals { get; set; } = true;
     public bool IsActive { get; set; } = true;
 }
 
@@ -143,9 +163,11 @@ public class AgentDelegation : AuditedEntity
 /// Working calendar for SLA business-hour calculations.
 /// WeeklyHoursJson: {"Monday":[{"start":"09:00","end":"18:00"}], "Saturday":[], …} in the calendar time zone.
 /// </summary>
-public class BusinessCalendar : AuditedEntity
+public class BusinessCalendar : AuditedEntity, IConcurrencyVersioned
 {
     public string Name { get; set; } = "";
+    public string? Description { get; set; }
+    public byte[] RowVersion { get; set; } = [];
     public string TimeZone { get; set; } = "UTC";
     public bool Is24x7 { get; set; }
     public string WeeklyHoursJson { get; set; } = "{}";

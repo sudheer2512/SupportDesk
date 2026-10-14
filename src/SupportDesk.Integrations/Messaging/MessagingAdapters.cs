@@ -24,16 +24,12 @@ public static class MessagingAdapters
         s.AddHttpClient<TeamsWebhookNotifier>(c => c.Timeout = TimeSpan.FromSeconds(30)).AddStandardResilienceHandler();
         s.AddTransient<ITeamsNotifier>(sp => sp.GetRequiredService<TeamsWebhookNotifier>());
 
-        var fcmConfigured = !string.IsNullOrWhiteSpace(configuration["Push:Fcm:ServiceAccountJson"]) || !string.IsNullOrWhiteSpace(configuration["Push:Fcm:ServiceAccountFile"]);
-        if (fcmConfigured)
-        {
-            s.AddHttpClient<FcmPushSender>(c => c.Timeout = TimeSpan.FromSeconds(30)).AddStandardResilienceHandler();
-            s.AddTransient<IPushSender>(sp => sp.GetRequiredService<FcmPushSender>());
-        }
-        else
-        {
-            s.AddSingleton<IPushSender, LogOnlyPushSender>();
-        }
+        // Push: FCM HTTP v1 (Push:Fcm:*) and/or APNs (Push:Apns:*), routed per device platform by PushRouter; with neither
+        // configured every push is only logged.
+        s.AddHttpClient<FcmPushSender>(c => c.Timeout = TimeSpan.FromSeconds(30)).AddStandardResilienceHandler();
+        s.AddHttpClient<ApnsPushSender>(c => c.Timeout = TimeSpan.FromSeconds(30)).AddStandardResilienceHandler();
+        s.AddSingleton<LogOnlyPushSender>();
+        s.AddTransient<IPushSender, PushRouter>();
         return s;
     }
 }

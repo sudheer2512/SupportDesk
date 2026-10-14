@@ -1,7 +1,8 @@
 /*
  * SupportDesk mobile theme: maps Ionic's colour and typography variables onto the @sd/ui tokens
  * (sd-tokens.css is loaded before this file) so Ionic chrome and any @sd/ui component match in light and
- * dark mode. Dark mode follows the system (Ionic dark.system palette + the token media query).
+ * dark mode. Dark mode follows the system unless the user picks Light/Dark in Profile: MobileThemeService toggles
+ * the 'ion-palette-dark' class (Ionic dark.class palette) and data-theme (sd tokens) together.
  */
 :root {
   --ion-font-family: var(--sd-font);
@@ -49,15 +50,30 @@
   --ion-color-danger-tint: #c84242;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ion-color-primary: #8e9cff;
-    --ion-color-primary-rgb: 142, 156, 255;
-    --ion-color-primary-contrast: #0d1020;
-    --ion-color-primary-contrast-rgb: 13, 16, 32;
-    --ion-color-primary-shade: #7d89e0;
-    --ion-color-primary-tint: #99a6ff;
-  }
+/* Dark: Ionic's palette (dark.class.css, `.ion-palette-dark.ios|.md`) would paint pure black surfaces — keep the
+   chrome on the @sd tokens (which switch with data-theme / prefers-color-scheme) and lighten the brand colour. */
+:root.ion-palette-dark,
+:root.ion-palette-dark.ios,
+:root.ion-palette-dark.md {
+  --ion-background-color: var(--sd-bg);
+  --ion-text-color: var(--sd-text);
+  --ion-border-color: var(--sd-border);
+  --ion-toolbar-background: var(--sd-surface);
+  --ion-tab-bar-background: var(--sd-surface);
+  --ion-item-background: var(--sd-surface);
+  --ion-card-background: var(--sd-surface);
+
+  --ion-color-primary: #8e9cff;
+  --ion-color-primary-rgb: 142, 156, 255;
+  --ion-color-primary-contrast: #0d1020;
+  --ion-color-primary-contrast-rgb: 13, 16, 32;
+  --ion-color-primary-shade: #7d89e0;
+  --ion-color-primary-tint: #99a6ff;
+}
+
+/* Comfortable touch targets for icon-only buttons in lists and toolbars. */
+ion-button[size='small'] {
+  min-height: 36px;
 }
 
 .m-card {

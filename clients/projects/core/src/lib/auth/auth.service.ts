@@ -111,8 +111,12 @@ export class AuthService implements AuthSession {
     } catch (error) {
       const err = ApiError.from(error);
       const sessionGone = err.status >= 400 && err.status < 500 && err.status !== 429;
-      if (sessionGone || this._status() !== 'authenticated') {
+      if (sessionGone) {
         await this.clearLocal();
+      } else if (this._status() !== 'authenticated') {
+        // Server unreachable while restoring (offline start-up): stay signed out locally but keep a stored refresh
+        // token, so a mobile client can restore the session once the network is back.
+        await this.clearLocal(true);
       } else {
         // Network or server hiccup while signed in: keep the current token and try again shortly.
         this.scheduleRefresh(RETRY_AFTER_NETWORK_ERROR_MS);
@@ -138,12 +142,12 @@ export class AuthService implements AuthSession {
     this.refreshTimer = setTimeout(() => void this.refreshAccessToken(), delay);
   }
 
-  private async clearLocal(): Promise<void> {
+  private async clearLocal(keepStoredRefreshToken = false): Promise<void> {
     if (this.refreshTimer) clearTimeout(this.refreshTimer);
     this.refreshTimer = null;
     this.token.set(null);
     this.me.clear();
     this._status.set('anonymous');
-    if (this.refreshStore) await this.refreshStore.set(null);
+    if (this.refreshStore && !keepStoredRefreshToken) await this.refreshStore.set(null);
   }
 }

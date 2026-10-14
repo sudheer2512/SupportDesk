@@ -41,7 +41,9 @@ export class PortalAuthService implements AuthSession {
   ready(brand: string): Promise<void> {
     const key = brand.toLowerCase();
     if (this._brand() !== key) {
-      this.clearLocal();
+      // The first selection after start-up keeps a stored (mobile) refresh token — it is what restores the session;
+      // switching to another brand drops the previous brand's session.
+      this.clearLocal(true, this._brand() === null);
       this._brand.set(key);
       this.restored.clear();
     }
@@ -129,7 +131,9 @@ export class PortalAuthService implements AuthSession {
       return this.handle(response).status === 'ok';
     } catch (error) {
       const err = ApiError.from(error);
-      if (err.status >= 400 || this._status() !== 'authenticated') this.clearLocal(true);
+      const sessionGone = err.status >= 400 && err.status < 500 && err.status !== 429;
+      // Unreachable server (offline start-up): sign out locally but keep a stored refresh token for later.
+      if (sessionGone || this._status() !== 'authenticated') this.clearLocal(true, !sessionGone);
       return false;
     }
   }
@@ -158,7 +162,7 @@ export class PortalAuthService implements AuthSession {
   private selectBrand(brand: string): void {
     const key = brand.toLowerCase();
     if (this._brand() !== key) {
-      this.clearLocal();
+      this.clearLocal(true, this._brand() === null);
       this._brand.set(key);
       this.restored.clear();
     }
@@ -168,13 +172,13 @@ export class PortalAuthService implements AuthSession {
     safeStorage.set(STORAGE_KEYS.portalEmailPrefix + brand.toLowerCase(), email.trim());
   }
 
-  private clearLocal(keepBrand = true): void {
+  private clearLocal(keepBrand = true, keepStoredRefreshToken = false): void {
     if (this.refreshTimer) clearTimeout(this.refreshTimer);
     this.refreshTimer = null;
     this.token.set(null);
     this._contact.set(null);
     this._status.set('anonymous');
     if (!keepBrand) this._brand.set(null);
-    if (this.refreshStore) void this.refreshStore.set(null);
+    if (this.refreshStore && !keepStoredRefreshToken) void this.refreshStore.set(null);
   }
 }

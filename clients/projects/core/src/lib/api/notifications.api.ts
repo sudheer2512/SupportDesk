@@ -9,8 +9,12 @@ import { NotificationDto } from '../models/notifications';
 export class NotificationsApi {
   private readonly api = inject(ApiClient);
 
-  list(limit = 20): Observable<NotificationDto[]> {
-    return this.api.get<NotificationDto[]>('notifications', { params: { limit } });
+  list(limit = 20, unreadOnly = false): Observable<NotificationDto[]> {
+    return this.api.get<NotificationDto[]>('notifications', { params: { limit, unreadOnly: unreadOnly || null } });
+  }
+
+  unreadCount(): Observable<{ count: number }> {
+    return this.api.get<{ count: number }>('notifications/unread-count', { silent: true });
   }
 
   markRead(id: Guid): Observable<void> {

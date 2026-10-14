@@ -1,50 +1,56 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, Routes } from '@angular/router';
-import { AuthService, PortalAuthService } from '@sd/core';
 import { ModeService } from './core/mobile-session';
+import { SessionCoordinator } from './core/session-coordinator';
 
-/** Agent tabs need a restored/active agent session. */
+/** Agent screens need an agent session — live, or an offline session restored from this device's saved data. */
 const agentGuard: CanActivateFn = async () => {
-  const auth = inject(AuthService);
-  const router = inject(Router);
-  if (inject(ModeService).mode() !== 'agent') return router.parseUrl('/login');
-  await auth.ready();
-  return auth.isAuthenticated() ? true : router.parseUrl('/login');
+  const router = inject(Router); // inject before any await (injection context)
+  const ok = await inject(SessionCoordinator).canEnter('agent');
+  return ok ? true : router.parseUrl('/login');
 };
 
-/** Customer tabs need a portal session for the remembered brand. */
+/** Customer screens need a portal session for the remembered help center (live or offline). */
 const customerGuard: CanActivateFn = async () => {
-  const mode = inject(ModeService);
-  const auth = inject(PortalAuthService);
   const router = inject(Router);
-  if (mode.mode() !== 'customer' || !mode.brand()) return router.parseUrl('/login');
-  await auth.ready(mode.brand());
-  return auth.isAuthenticated() ? true : router.parseUrl('/login');
+  const ok = await inject(SessionCoordinator).canEnter('customer');
+  return ok ? true : router.parseUrl('/login');
 };
 
-const placeholder = () => import('./pages/placeholder.page').then((m) => m.PlaceholderPage);
+/** Opening the app with a saved session skips the sign-in screen. */
+const loginGuard: CanActivateFn = async () => {
+  const mode = inject(ModeService).mode();
+  const router = inject(Router);
+  const signedIn = await inject(SessionCoordinator).canEnter(mode);
+  return signedIn ? router.parseUrl(mode === 'agent' ? '/agent/home' : '/customer/tickets') : true;
+};
+
 const profile = () => import('./pages/profile.page').then((m) => m.ProfilePage);
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
-  { path: 'login', loadComponent: () => import('./pages/login.page').then((m) => m.LoginPage) },
+  { path: 'login', canActivate: [loginGuard], loadComponent: () => import('./pages/login.page').then((m) => m.LoginPage), title: 'Sign in' },
   {
     path: 'agent',
     canActivate: [agentGuard],
     loadComponent: () => import('./tabs/agent-tabs.page').then((m) => m.AgentTabsPage),
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'queue' },
+      { path: '', pathMatch: 'full', redirectTo: 'home' },
+      { path: 'home', loadComponent: () => import('./agent/home.page').then((m) => m.AgentHomePage), title: 'Home' },
+      { path: 'tickets', loadComponent: () => import('./agent/tickets.page').then((m) => m.AgentTicketsPage), title: 'Tickets' },
       {
-        path: 'queue',
-        loadComponent: placeholder,
-        data: { title: 'Queue', text: 'Your assigned and team tickets with SLA timers, swipe actions and quick replies.' },
+        path: 'tickets/number/:number',
+        loadComponent: () => import('./agent/ticket-by-number.page').then((m) => m.TicketByNumberPage),
+        title: 'Ticket',
       },
+      { path: 'tickets/:id', loadComponent: () => import('./agent/ticket-detail.page').then((m) => m.AgentTicketDetailPage), title: 'Ticket' },
       {
         path: 'notifications',
-        loadComponent: placeholder,
-        data: { title: 'Notifications', text: 'Mentions, assignments and SLA alerts with push notifications.' },
+        loadComponent: () => import('./agent/notifications.page').then((m) => m.AgentNotificationsPage),
+        title: 'Notifications',
       },
-      { path: 'profile', loadComponent: profile },
+      { path: 'approvals', loadComponent: () => import('./agent/approvals.page').then((m) => m.AgentApprovalsPage), title: 'Approvals' },
+      { path: 'profile', loadComponent: profile, title: 'Me' },
     ],
   },
   {
@@ -53,17 +59,12 @@ export const routes: Routes = [
     loadComponent: () => import('./tabs/customer-tabs.page').then((m) => m.CustomerTabsPage),
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'tickets' },
-      {
-        path: 'tickets',
-        loadComponent: placeholder,
-        data: { title: 'My tickets', text: 'Your requests, their status and replies — with photo attachments.' },
-      },
-      {
-        path: 'help',
-        loadComponent: placeholder,
-        data: { title: 'Help', text: 'Search the knowledge base and start a new request.' },
-      },
-      { path: 'profile', loadComponent: profile },
+      { path: 'tickets', loadComponent: () => import('./customer/customer-tickets.page').then((m) => m.CustomerTicketsPage), title: 'My tickets' },
+      { path: 'tickets/:id', loadComponent: () => import('./customer/customer-ticket.page').then((m) => m.CustomerTicketPage), title: 'Request' },
+      { path: 'new', loadComponent: () => import('./customer/new-ticket.page').then((m) => m.NewTicketPage), title: 'New request' },
+      { path: 'help', loadComponent: () => import('./customer/help.page').then((m) => m.HelpPage), title: 'Help' },
+      { path: 'help/articles/:slug', loadComponent: () => import('./customer/article.page').then((m) => m.ArticlePage), title: 'Article' },
+      { path: 'profile', loadComponent: profile, title: 'Me' },
     ],
   },
   { path: '**', redirectTo: 'login' },
