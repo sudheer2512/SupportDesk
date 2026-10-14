@@ -44,7 +44,9 @@ public static class DbExtensions
         {
             var s = cursor.Replace('-', '+').Replace('_', '/');
             s = s.PadRight(s.Length + (4 - s.Length % 4) % 4, '=');
-            return Json.Deserialize<CursorData>(System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(s)));
+            var data = Json.Deserialize<CursorData>(System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(s)));
+            // Every cursor the API issues carries a value; callers parse it without null checks.
+            return data is { V: not null } ? data : throw new FormatException("Cursor without a value.");
         }
         catch (Exception ex) when (ex is FormatException or System.Text.Json.JsonException)
         {

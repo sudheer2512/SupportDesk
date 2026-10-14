@@ -140,7 +140,14 @@ public static class HostingSetup
         h["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
         h["Cross-Origin-Opener-Policy"] = "same-origin";
         var path = http.Request.Path;
-        if (path.StartsWithSegments("/widget"))
+        if (path.StartsWithSegments("/api") || path.StartsWithSegments("/oauth") || path.StartsWithSegments("/.well-known"))
+        {
+            // API responses are data, never documents: nothing may load, run or frame them. File endpoints override this
+            // with "sandbox; default-src 'none'" (and any download without its own policy still gets this one).
+            h["X-Frame-Options"] = "DENY";
+            h["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'";
+        }
+        else if (path.StartsWithSegments("/widget"))
         {
             // The chat widget is embedded on customer websites.
             h["Content-Security-Policy"] = "default-src 'self'; connect-src 'self' ws: wss:; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; frame-ancestors *";
@@ -162,7 +169,9 @@ public static class HostingSetup
     {
         var root = app.Environment.WebRootPath;
         if (root is null) return;
-        app.MapFallback("/portal/{**path}", async http =>
+        // ":nonfile" — the portal's own bundles (/portal/main-*.js, *.css) must reach the static file middleware, which
+        // skips requests that already matched an endpoint; a missing file then 404s instead of returning index.html.
+        app.MapFallback("/portal/{**path:nonfile}", async http =>
         {
             var file = Path.Combine(root, "portal", "index.html");
             if (!File.Exists(file)) { http.Response.StatusCode = 404; return; }

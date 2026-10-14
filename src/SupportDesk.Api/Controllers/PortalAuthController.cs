@@ -65,6 +65,9 @@ public sealed class PortalAuthController(PortalAuthService portal, AuthService a
     [HttpPost("auth/logout")]
     public async Task<IActionResult> Logout(string brand, [FromBody] RefreshRequest? request, CancellationToken ct)
     {
+        // Cookie-borne logout needs the anti-forgery header (as refresh does): no CSRF logout.
+        if (request?.RefreshToken is null && Request.Cookies.ContainsKey(RefreshCookie) && !HasAntiForgeryHeader)
+            return Problem(statusCode: 400, title: "Missing X-Requested-With header.");
         var token = request?.RefreshToken ?? Request.Cookies[RefreshCookie];
         if (token is not null && await portal.ResolveBrandAsync(brand, ct) is not null) await auth.LogoutAsync(null, token, ct);
         ClearRefreshCookie(RefreshCookie, RefreshPath);

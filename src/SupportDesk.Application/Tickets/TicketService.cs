@@ -159,6 +159,7 @@ public sealed class TicketService(
         var priority = ParseEnum(r.Priority, TicketPriority.Medium, "priority");
         TicketSeverity? severity = r.Severity is null ? null : ParseEnum(r.Severity, TicketSeverity.Minor, "severity");
         await ValidateReferencesAsync(customerId, productId, r.ModuleId, versionId, r.CategoryId, r.SubcategoryId, r.IssueTypeId, ct);
+        await ValidateOwnedReferencesAsync(null, r.LocationId, null, r.AssetId, r.TeamId, r.BrandId, r.ParentTicketId, ct);
 
         var customFieldsJson = await customFields.MergeAsync("Ticket", "{}", r.CustomFields, departmentId,
             enforceRequired: source.EnforceRequiredFields && !ctx.IsSystem, portalOnly: source.PortalSubmission, ct);
@@ -293,6 +294,24 @@ public sealed class TicketService(
         if (errors.Count > 0) throw new ValidationException(errors);
     }
 
+    /// <summary>
+    /// Ids the caller supplies must belong to this tenant (the tenant query filter hides every other tenant's rows), so a
+    /// ticket can never reference another tenant's contact, location, installation, asset, team, brand or parent ticket.
+    /// </summary>
+    private async Task ValidateOwnedReferencesAsync(Guid? contactId, Guid? locationId, Guid? installationId, Guid? assetId, Guid? teamId, Guid? brandId,
+        Guid? parentTicketId, CancellationToken ct)
+    {
+        var errors = new Dictionary<string, string>();
+        if (contactId is { } c && !await db.Contacts.AnyAsync(x => x.Id == c, ct)) errors["contactId"] = "Unknown contact.";
+        if (locationId is { } l && !await db.CustomerLocations.AnyAsync(x => x.Id == l, ct)) errors["locationId"] = "Unknown location.";
+        if (installationId is { } i && !await db.Installations.AnyAsync(x => x.Id == i, ct)) errors["installationId"] = "Unknown installation.";
+        if (assetId is { } a && !await db.CustomerAssets.AnyAsync(x => x.Id == a, ct)) errors["assetId"] = "Unknown asset.";
+        if (teamId is { } tm && !await db.Teams.AnyAsync(x => x.Id == tm, ct)) errors["teamId"] = "Unknown team.";
+        if (brandId is { } b && !await db.Brands.AnyAsync(x => x.Id == b, ct)) errors["brandId"] = "Unknown brand.";
+        if (parentTicketId is { } p && !await db.Tickets.AnyAsync(x => x.Id == p, ct)) errors["parentTicketId"] = "Unknown parent ticket.";
+        if (errors.Count > 0) throw new ValidationException(errors);
+    }
+
     private async Task LinkAttachmentsAsync(Ticket ticket, Guid? threadId, IReadOnlyList<Guid>? fileIds, Visibility visibility, CancellationToken ct)
     {
         if (fileIds is not { Count: > 0 }) return;
@@ -329,6 +348,7 @@ public sealed class TicketService(
                 t.DescriptionText = TextNormalization.HtmlToText(clean);
         }
         Guid? Next(Guid? current, Guid? requested, string field) => clear.Contains(field) ? null : requested ?? current;
+        await ValidateOwnedReferencesAsync(r.ContactId, r.LocationId, r.InstallationId, r.AssetId, null, null, null, ct);
         cs.Set("customerId", t.CustomerId, Next(t.CustomerId, r.CustomerId, "customerId"), v => t.CustomerId = v);
         cs.Set("contactId", t.ContactId, Next(t.ContactId, r.ContactId, "contactId"), v => t.ContactId = v);
         cs.Set("locationId", t.LocationId, Next(t.LocationId, r.LocationId, "locationId"), v => t.LocationId = v);

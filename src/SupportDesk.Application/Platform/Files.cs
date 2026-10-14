@@ -96,6 +96,12 @@ public sealed class FileService(DeskDbContext db, IFileStorage storage, IMalware
             await usage.IncrementAsync(UsageMetrics.StorageBytes, size, ct);
             return file;
         }
+        catch (IOException ex) when (IsHostAntivirusBlock(ex))
+        {
+            // An on-access scanner on the server (e.g. Microsoft Defender) quarantined the buffered upload before our own
+            // scan could read it back. That is a detection too: reject it cleanly (it used to surface as a 500).
+            throw new DomainException("file_infected", "The file was rejected by the malware scanner (host antivirus).");
+        }
         finally
         {
             try { File.Delete(tempPath); } catch (IOException) { }
@@ -135,6 +141,9 @@ public sealed class FileService(DeskDbContext db, IFileStorage storage, IMalware
         if (n.Length == 0) n = "file";
         return n.Length > 180 ? n[..150] + Path.GetExtension(n) : n;
     }
+
+    /// <summary>Win32 ERROR_VIRUS_INFECTED (225) / ERROR_VIRUS_DELETED (226) raised by the OS when an antivirus blocks the file.</summary>
+    private static bool IsHostAntivirusBlock(IOException ex) => ex.HResult is unchecked((int)0x800700E1) or unchecked((int)0x800700E2);
 
     private static bool IsExecutable(ReadOnlySpan<byte> h) =>
         (h.Length >= 2 && h[0] == 'M' && h[1] == 'Z') ||                                  // PE / DOS

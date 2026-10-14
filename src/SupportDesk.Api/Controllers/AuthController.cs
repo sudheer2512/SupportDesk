@@ -40,6 +40,9 @@ public sealed class AuthController(AuthService auth, SsoService sso, RequestCont
     public async Task<IActionResult> Logout([FromBody] RefreshRequest? request, CancellationToken ct)
     {
         Guid? sid = Guid.TryParse(User.FindFirst(DeskClaims.Session)?.Value, out var s) ? s : null;
+        // Cookie-only logout (no bearer, no body token) needs the same anti-forgery header as refresh: no CSRF logout.
+        if (sid is null && request?.RefreshToken is null && Request.Cookies.ContainsKey(RefreshCookie) && !HasAntiForgeryHeader)
+            return Problem(statusCode: 400, title: "Missing X-Requested-With header.");
         if (ctx.HasTenant || sid is not null || request?.RefreshToken is not null || Request.Cookies.ContainsKey(RefreshCookie))
             await auth.LogoutAsync(sid, request?.RefreshToken ?? Request.Cookies[RefreshCookie], ct);
         if (sid is { } id) RequestContextMiddleware.Forget(id);

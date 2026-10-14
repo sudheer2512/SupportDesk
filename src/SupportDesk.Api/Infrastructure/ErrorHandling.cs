@@ -80,6 +80,14 @@ public sealed class DeskExceptionHandler(ILogger<DeskExceptionHandler> logger, I
                 problem.Title = "The request could not be read.";
                 problem.Extensions["code"] = ErrorCodes.Validation;
                 break;
+            case FormatException or OverflowException or IndexOutOfRangeException or ArgumentNullException when http.Request.Query.ContainsKey("cursor"):
+                // Keyset cursors are opaque base64 JSON; list services parse their value (date, number, "priority|date")
+                // after decoding. A hand-edited cursor must be a client error, not a 500.
+                logger.LogWarning(exception, "Rejected a malformed cursor on {Method} {Path}", http.Request.Method, http.Request.Path);
+                problem.Status = 400;
+                problem.Title = "Invalid cursor.";
+                problem.Extensions["code"] = ErrorCodes.Validation;
+                break;
             case OperationCanceledException when http.RequestAborted.IsCancellationRequested:
                 return true;
             default:
