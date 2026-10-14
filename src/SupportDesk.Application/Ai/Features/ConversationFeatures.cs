@@ -160,7 +160,6 @@ public sealed record GroundedReply(Guid ExecutionId, string BodyText, string Bod
 
 /// <summary>Suggested replies grounded in published knowledge and similar resolved tickets, with numbered citations.</summary>
 public sealed partial class AiReplyService(
-    DeskDbContext db,
     RequestContext ctx,
     AiGateway gateway,
     AiTicketLoader loader,

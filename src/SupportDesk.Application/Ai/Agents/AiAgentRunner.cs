@@ -40,9 +40,21 @@ public sealed class AiAgentRunner(
     AiReplyService replies,
     AiProposalService proposals,
     TicketLookups lookups,
+    TicketService tickets,
     IServiceScopeFactory scopes,
     ILogger<AiAgentRunner> logger)
 {
+    /// <summary>Agent-initiated run ("Run AI agents" in the workbench). Produces proposals; never sends automatic replies.</summary>
+    public async Task<AgentRunResultDto> RunManualAsync(Guid ticketId, CancellationToken ct)
+    {
+        ctx.Require(Permissions.AiUse);
+        ctx.Require(Permissions.TicketsEdit);
+        var t = await db.Tickets.AsNoTracking().FirstOrDefaultAsync(x => x.Id == ticketId, ct) ?? throw new NotFoundException("Ticket", ticketId);
+        await tickets.EnsureVisibleAsync(t, ct);
+        await gateway.EnsureAvailableAsync(AiFeatures.Agents, interactive: true, ct, requiresAgentsPlan: true);
+        return await RunForTicketAsync(ticketId, AgentTriggers.Manual, ActorType.User, ct);
+    }
+
     private sealed class RunState
     {
         public int AgentsRun;

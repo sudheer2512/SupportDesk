@@ -27,7 +27,6 @@ namespace SupportDesk.Application.Ai;
 /// read-only work runs here (no model calls are logged per panel view); failures never break the panel.
 /// </summary>
 public sealed class AiTicketContextContributor(
-    DeskDbContext db,
     RequestContext ctx,
     AiGateway gateway,
     KnowledgeRetriever retriever,

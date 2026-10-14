@@ -119,8 +119,9 @@ public static partial class PiiRedactor
     }
 
     [GeneratedRegex(@"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}")] private static partial Regex EmailRegex();
-    [GeneratedRegex(@"(?<![\d\w])(?:\d[ \-]?){12,18}\d(?![\d\w])")] private static partial Regex CardRegex();
-    [GeneratedRegex(@"(?<![\d\w+])[2-9]\d{3}[ \-]?\d{4}[ \-]?\d{4}(?![\d\w])")] private static partial Regex AadhaarRegex();
+    // Digit groups must not continue on either side ("1234 5678 9012 3456" is one number, not an Aadhaar inside a card).
+    [GeneratedRegex(@"(?<![\w+])(?<!\d[ \-])(?:\d[ \-]?){12,18}\d(?![ \-]?\d)(?!\w)")] private static partial Regex CardRegex();
+    [GeneratedRegex(@"(?<![\w+])(?<!\d[ \-])[2-9]\d{3}[ \-]?\d{4}[ \-]?\d{4}(?![ \-]?\d)(?!\w)")] private static partial Regex AadhaarRegex();
     [GeneratedRegex(@"(?<![A-Za-z0-9])[A-Z]{5}\d{4}[A-Z](?![A-Za-z0-9])")] private static partial Regex PanRegex();
     [GeneratedRegex(@"(?<![\w/])\+?\d[\d \-().]{6,18}\d(?![\w/])")] private static partial Regex PhoneRegex();
     [GeneratedRegex(@"^\s*\d{4}[-/.]\d{1,2}[-/.]\d{1,2}\s*$|^\s*\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4}\s*$")] private static partial Regex DateLikeRegex();
