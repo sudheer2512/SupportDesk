@@ -56,6 +56,13 @@ export const routes: Routes = [
         canActivate: [perms('subscription')],
         loadChildren: () => import('./features/subscription/subscription.routes').then((m) => m.ROUTES),
       },
+      // Approvals inbox and the full notifications page (Command Center module); any signed-in agent — the API scopes the data.
+      { path: 'approvals', title: 'Approvals', loadComponent: () => import('./features/command/approvals.page').then((m) => m.ApprovalsPage) },
+      {
+        path: 'notifications',
+        title: 'Notifications',
+        loadComponent: () => import('./features/command/notifications.page').then((m) => m.NotificationsPage),
+      },
       { path: 'me', title: 'My profile', loadComponent: () => import('./profile/profile.page').then((m) => m.ProfilePage) },
       { path: 'forbidden', title: 'Access denied', component: ForbiddenPage },
       { path: '**', title: 'Not found', component: NotFoundPage },

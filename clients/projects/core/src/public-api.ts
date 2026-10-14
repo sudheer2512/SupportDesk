@@ -19,6 +19,8 @@ export * from './lib/models/realtime';
 export * from './lib/models/portal';
 export * from './lib/models/communication';
 export * from './lib/models/automation';
+export * from './lib/models/workbench';
+export * from './lib/models/approvals';
 
 // HTTP
 export * from './lib/http/api-client';
@@ -48,6 +50,8 @@ export * from './lib/api/chat.api';
 export * from './lib/api/automation.api';
 export * from './lib/api/blueprints.api';
 export * from './lib/api/webhooks.api';
+export * from './lib/api/workbench.api';
+export * from './lib/api/approvals.api';
 
 // Realtime
 export * from './lib/realtime/realtime.service';

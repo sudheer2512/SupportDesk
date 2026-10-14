@@ -9,9 +9,9 @@ import { SaveViewRequest, SavedViewDto } from '../models/tickets';
 export class ViewsApi {
   private readonly api = inject(ApiClient);
 
-  /** Views for a scope (e.g. "tickets"), including counts when the server computes them. */
-  list(scope = 'tickets'): Observable<SavedViewDto[]> {
-    return this.api.get<SavedViewDto[]>('views', { params: { scope } });
+  /** Views for a scope (e.g. "tickets"); `counts` asks the server for each view's matching-ticket count. */
+  list(scope = 'tickets', counts = false): Observable<SavedViewDto[]> {
+    return this.api.get<SavedViewDto[]>('views', { params: { scope, counts: counts || null } });
   }
 
   get(id: Guid): Observable<SavedViewDto> {

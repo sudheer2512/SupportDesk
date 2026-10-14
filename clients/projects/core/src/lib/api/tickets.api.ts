@@ -38,6 +38,7 @@ import {
   UpdateTicketRequest,
   WatcherDto,
 } from '../models/tickets';
+import { TicketLockInfoDto } from '../models/workbench';
 
 const enc = encodeURIComponent;
 
@@ -137,16 +138,16 @@ export class TicketsApi {
   }
 
   setTags(id: Guid, tags: string[]): Observable<TicketDetailDto> {
-    return this.action(id, 'tags', { tags });
+    return this.api.put<TicketDetailDto>(`tickets/${enc(id)}/tags`, { tags }, { silent: true });
   }
 
-  /** Takes the edit lock (collision avoidance for long edits). */
-  lock(id: Guid): Observable<TicketDetailDto> {
-    return this.action(id, 'lock', {});
+  /** Takes the soft edit lock (collision avoidance for long edits); 409 `ticket_locked` when someone else holds it. */
+  lock(id: Guid): Observable<TicketLockInfoDto> {
+    return this.api.post<TicketLockInfoDto>(`tickets/${enc(id)}/lock`, {}, { silent: true });
   }
 
-  unlock(id: Guid): Observable<TicketDetailDto> {
-    return this.action(id, 'unlock', {});
+  unlock(id: Guid): Observable<void> {
+    return this.api.post<void>(`tickets/${enc(id)}/unlock`, {}, { silent: true });
   }
 
   overrideEntitlement(id: Guid, request: OverrideEntitlementRequest): Observable<TicketDetailDto> {
@@ -206,7 +207,7 @@ export class TicketsApi {
   }
 
   updateTask(taskId: Guid, request: SaveTaskRequest): Observable<TaskDto> {
-    return this.api.put<TaskDto>(`tasks/${enc(taskId)}`, request);
+    return this.api.patch<TaskDto>(`tasks/${enc(taskId)}`, request);
   }
 
   deleteTask(taskId: Guid): Observable<void> {
