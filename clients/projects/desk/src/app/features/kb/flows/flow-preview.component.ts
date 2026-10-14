@@ -70,7 +70,7 @@ interface Step {
                 }
                 @if (n.articleId) {
                   <a class="article-link" [routerLink]="[base, 'articles', n.articleId]" target="_blank" rel="noopener">
-                    <sd-icon name="book-open" [size]="16" /> {{ articleTitles()[n.articleId] ?? 'Open the linked article' }}
+                    <sd-icon name="book-open" [size]="16" /> {{ articleTitle(n.articleId) }}
                     <sd-icon name="external-link" [size]="13" />
                   </a>
                 } @else {
@@ -231,6 +231,11 @@ export class FlowPreview {
       const def = this.definition();
       untracked(() => this.path.set(def.startNodeId && this.byId().has(def.startNodeId) ? [{ nodeId: def.startNodeId, via: null }] : []));
     });
+  }
+
+  protected articleTitle(id: string): string {
+    const titles: Readonly<Record<string, string | undefined>> = this.articleTitles();
+    return titles[id] ?? 'Open the linked article';
   }
 
   protected exists(id: string | null | undefined): boolean {

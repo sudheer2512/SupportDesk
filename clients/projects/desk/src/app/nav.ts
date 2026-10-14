@@ -89,7 +89,7 @@ export const DESK_MODULES: readonly DeskModule[] = [
     path: 'kb',
     label: 'Knowledge Base',
     icon: 'book-open',
-    permissions: ['kb.view_internal', 'kb.author', 'kb.review', 'kb.publish'],
+    permissions: ['kb.view_internal', 'kb.author', 'kb.review', 'kb.publish', 'community.moderate'],
     section: 'Operations',
     shortcut: 'g k',
     description: 'Articles, categories, review workflow and portal publishing.',

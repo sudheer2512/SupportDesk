@@ -1,10 +1,13 @@
 import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { PortalAuthService, ThemeService } from '@sd/core';
-import { SdAvatar, SdButton, SdDrawer, SdEmptyState, SdIcon, SdSkeleton } from '@sd/ui';
-import { filter } from 'rxjs';
+import { PortalAuthService, PortalContentApi, PortalFlowSummaryDto, ThemeService } from '@sd/core';
+import { SdAvatar, SdButton, SdDrawer, SdEmptyState, SdIcon, SdSkeleton, SdSpinner } from '@sd/ui';
+import { catchError, filter, of } from 'rxjs';
 import { BrandService } from '../brand.service';
+import { mediaQuery } from '../shared/portal-utils';
+import { AssistantPanelComponent } from './assistant-panel.component';
 
 interface PortalNavItem {
   label: string;
@@ -14,8 +17,10 @@ interface PortalNavItem {
 }
 
 /**
- * Branded portal layout: header (brand logo/title, feature-aware nav, sign-in / account menu, theme
- * toggle), routed content and footer (brand footer HTML via Angular's sanitizer, support contacts).
+ * Branded portal layout: header (brand logo/title, feature-aware nav, submit button, sign-in / account
+ * menu, theme toggle), routed content, footer (brand footer HTML via Angular's sanitizer, support
+ * contacts, quick links), a phone menu sheet and — when the brand enables it — the floating "Ask"
+ * assistant (side panel on desktop, bottom sheet on phones; loaded on first open).
  */
 @Component({
   selector: 'portal-shell',
@@ -32,13 +37,15 @@ interface PortalNavItem {
     SdDrawer,
     SdEmptyState,
     SdSkeleton,
+    SdSpinner,
+    AssistantPanelComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <a class="sd-skip-link" href="#portal-main" (click)="skip($event)">Skip to content</a>
     <header class="header">
       <div class="portal-container bar">
-        <a class="brand" [routerLink]="base()" [attr.aria-label]="brand.name() + ' — home'">
+        <a class="brand" [routerLink]="brand.base()" [attr.aria-label]="brand.name() + ' — home'">
           @if (brand.config()?.logoUrl) {
             <img [src]="brand.config()!.logoUrl" [alt]="brand.config()!.name" class="logo" />
           } @else {
@@ -50,7 +57,7 @@ interface PortalNavItem {
           @for (item of nav(); track item.path) {
             <a
               class="nav-link"
-              [routerLink]="base() + item.path"
+              [routerLink]="brand.base() + item.path"
               routerLinkActive="is-active"
               [routerLinkActiveOptions]="{ exact: !!item.exact }"
               ariaCurrentWhenActive="page"
@@ -59,6 +66,9 @@ interface PortalNavItem {
           }
         </nav>
         <span class="sd-spacer"></span>
+        @if (brand.state() === 'ready') {
+          <a sdButton variant="primary" size="sm" icon="file-plus" class="submit" [routerLink]="brand.base() + '/submit'">Submit a ticket</a>
+        }
         <button
           type="button"
           class="icon-btn"
@@ -75,8 +85,13 @@ interface PortalNavItem {
           <ng-template #accountMenu>
             <div class="sd-menu" cdkMenu aria-label="Account">
               <div class="sd-menu-label" role="presentation">{{ contact.customerName || contact.email }}</div>
-              <a class="sd-menu-item" cdkMenuItem [routerLink]="base() + '/tickets'"><sd-icon name="ticket" [size]="15" />My tickets</a>
-              <a class="sd-menu-item" cdkMenuItem [routerLink]="base() + '/account'"><sd-icon name="user" [size]="15" />Account</a>
+              <a class="sd-menu-item" cdkMenuItem [routerLink]="brand.base() + '/tickets'"><sd-icon name="ticket" [size]="15" />My tickets</a>
+              <a class="sd-menu-item" cdkMenuItem [routerLink]="brand.base() + '/account'"><sd-icon name="user" [size]="15" />Account</a>
+              @if (contact.canViewContracts) {
+                <a class="sd-menu-item" cdkMenuItem [routerLink]="brand.base() + '/account'" [queryParams]="{ tab: 'contracts' }"
+                  ><sd-icon name="file-text" [size]="15" />Contracts &amp; products</a
+                >
+              }
               <div class="sd-menu-divider" role="separator"></div>
               <button type="button" class="sd-menu-item" cdkMenuItem (cdkMenuItemTriggered)="auth.logout()">
                 <sd-icon name="log-out" [size]="15" />Sign out
@@ -84,9 +99,9 @@ interface PortalNavItem {
             </div>
           </ng-template>
         } @else if (brand.state() === 'ready') {
-          <a sdButton variant="primary" size="sm" [routerLink]="base() + '/login'" class="signin">Sign in</a>
+          <a sdButton size="sm" [routerLink]="brand.base() + '/login'" class="signin">Sign in</a>
         }
-        <button type="button" class="icon-btn menu" aria-label="Open menu" (click)="menuOpen.set(true)">
+        <button type="button" class="icon-btn menu" aria-label="Open menu" [attr.aria-expanded]="menuOpen()" (click)="menuOpen.set(true)">
           <sd-icon name="menu" [size]="20" />
         </button>
       </div>
@@ -95,7 +110,7 @@ interface PortalNavItem {
     <main id="portal-main" tabindex="-1" class="main">
       @switch (brand.state()) {
         @case ('loading') {
-          <div class="portal-container loading" aria-busy="true">
+          <div class="portal-container loading" aria-busy="true" aria-label="Loading the help center">
             <sd-skeleton height="28px" width="40%" />
             <sd-skeleton [lines]="4" />
           </div>
@@ -114,8 +129,23 @@ interface PortalNavItem {
       }
     </main>
 
-    <footer class="footer">
+    <footer class="footer" [class.has-ask]="showAssistant()">
       <div class="portal-container foot">
+        @if (brand.state() === 'ready') {
+          <nav class="foot-links" aria-label="Help center">
+            @if (brand.features().kb) {
+              <a [routerLink]="brand.base() + '/kb'">Knowledge Base</a>
+            }
+            @if (brand.features().community) {
+              <a [routerLink]="brand.base() + '/community'">Community</a>
+            }
+            <a [routerLink]="brand.base() + '/help'">Help &amp; contact</a>
+            <a [routerLink]="brand.base() + '/submit'">Submit a ticket</a>
+            @if (auth.isAuthenticated()) {
+              <a [routerLink]="brand.base() + '/tickets'">My tickets</a>
+            }
+          </nav>
+        }
         @if (brand.config()?.footerHtml) {
           <div class="sd-prose footer-html" [innerHTML]="brand.config()!.footerHtml"></div>
         }
@@ -131,14 +161,33 @@ interface PortalNavItem {
       </div>
     </footer>
 
+    @if (showAssistant()) {
+      <button type="button" class="ask" [class.is-open]="assistantOpen()" aria-haspopup="dialog" [attr.aria-expanded]="assistantOpen()" (click)="assistantOpen.set(true)">
+        <sd-icon name="sparkles" [size]="18" />
+        <span>Ask</span>
+      </button>
+      <sd-drawer [(open)]="assistantOpen" [side]="narrow() ? 'bottom' : 'right'" width="420px" [title]="'Ask ' + brand.name()">
+        @defer (when assistantOpen()) {
+          <portal-assistant-panel />
+        } @placeholder {
+          <div class="assistant-loading"><sd-spinner [size]="20" label="Loading the assistant" /></div>
+        }
+      </sd-drawer>
+    }
+
     <sd-drawer side="bottom" [(open)]="menuOpen" title="Menu">
       <nav class="sheet-nav" aria-label="Portal">
         @for (item of nav(); track item.path) {
-          <a class="sheet-link" [routerLink]="base() + item.path"><sd-icon [name]="item.icon" [size]="18" />{{ item.label }}</a>
+          <a class="sheet-link" [routerLink]="brand.base() + item.path"><sd-icon [name]="item.icon" [size]="18" />{{ item.label }}</a>
         }
+        <a class="sheet-link" [routerLink]="brand.base() + '/submit'"><sd-icon name="file-plus" [size]="18" />Submit a ticket</a>
         @if (!auth.contact()) {
-          <a class="sheet-link" [routerLink]="base() + '/login'"><sd-icon name="log-in" [size]="18" />Sign in</a>
+          <a class="sheet-link" [routerLink]="brand.base() + '/login'"><sd-icon name="log-in" [size]="18" />Sign in</a>
+          @if (brand.features().selfRegistration) {
+            <a class="sheet-link" [routerLink]="brand.base() + '/register'"><sd-icon name="user-plus" [size]="18" />Create an account</a>
+          }
         } @else {
+          <a class="sheet-link" [routerLink]="brand.base() + '/account'"><sd-icon name="user" [size]="18" />Account</a>
           <button type="button" class="sheet-link" (click)="auth.logout()"><sd-icon name="log-out" [size]="18" />Sign out</button>
         }
       </nav>
@@ -161,7 +210,7 @@ interface PortalNavItem {
     .bar {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       height: 60px;
     }
     .brand {
@@ -183,6 +232,7 @@ interface PortalNavItem {
     }
     .mark {
       display: inline-flex;
+      flex: none;
       align-items: center;
       justify-content: center;
       width: 32px;
@@ -202,7 +252,7 @@ interface PortalNavItem {
     .nav {
       display: flex;
       gap: 2px;
-      margin-left: 16px;
+      margin-left: 12px;
     }
     .nav-link {
       padding: 8px 10px;
@@ -223,6 +273,7 @@ interface PortalNavItem {
     }
     .icon-btn {
       display: inline-flex;
+      flex: none;
       align-items: center;
       justify-content: center;
       width: 36px;
@@ -237,11 +288,18 @@ interface PortalNavItem {
       background: var(--sd-surface-3);
       color: var(--sd-text);
     }
+    .icon-btn:focus-visible,
+    .account:focus-visible,
+    .ask:focus-visible {
+      outline: none;
+      box-shadow: var(--sd-focus-ring);
+    }
     .menu {
       display: none;
     }
     .account {
       display: inline-flex;
+      flex: none;
       align-items: center;
       gap: 8px;
       padding: 3px 10px 3px 3px;
@@ -268,16 +326,28 @@ interface PortalNavItem {
       padding: 48px 0;
     }
     .footer {
-      margin-top: 48px;
+      margin-top: 56px;
       border-top: 1px solid var(--sd-border);
       background: var(--sd-surface);
     }
+    .footer.has-ask {
+      padding-bottom: 56px;
+    }
     .foot {
       display: grid;
-      gap: 12px;
+      gap: 14px;
       padding: 24px 0 32px;
       color: var(--sd-text-2);
       font-size: var(--sd-text-sm);
+    }
+    .foot-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 18px;
+    }
+    .foot-links a {
+      color: var(--sd-text-2);
+      font-weight: var(--sd-weight-medium);
     }
     .contacts {
       display: flex;
@@ -295,6 +365,38 @@ interface PortalNavItem {
       margin-left: auto;
       color: var(--sd-text-3);
     }
+    .ask {
+      position: fixed;
+      right: max(16px, env(safe-area-inset-right, 0px));
+      bottom: max(16px, env(safe-area-inset-bottom, 0px));
+      z-index: var(--sd-z-sticky);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 48px;
+      padding: 0 18px 0 16px;
+      border: 0;
+      border-radius: var(--sd-radius-pill);
+      background: var(--sd-primary);
+      color: var(--sd-on-primary);
+      font: inherit;
+      font-weight: var(--sd-weight-semibold);
+      box-shadow: var(--sd-shadow-lg);
+      cursor: pointer;
+      transition: transform var(--sd-dur) var(--sd-ease), box-shadow var(--sd-dur) var(--sd-ease);
+    }
+    .ask:hover {
+      background: var(--sd-primary-hover);
+      transform: translateY(-1px);
+    }
+    .ask.is-open {
+      visibility: hidden;
+    }
+    .assistant-loading {
+      display: flex;
+      justify-content: center;
+      padding: 32px;
+    }
     .sheet-nav {
       display: grid;
       gap: 4px;
@@ -308,6 +410,7 @@ interface PortalNavItem {
       border-radius: var(--sd-radius-md);
       background: transparent;
       color: var(--sd-text);
+      font: inherit;
       font-size: var(--sd-text-lg);
       text-align: left;
       text-decoration: none;
@@ -317,7 +420,12 @@ interface PortalNavItem {
       background: var(--sd-surface-3);
       text-decoration: none;
     }
-    @media (max-width: 860px) {
+    @media (max-width: 1080px) {
+      .submit {
+        display: none;
+      }
+    }
+    @media (max-width: 920px) {
       .nav,
       .account-name {
         display: none;
@@ -330,6 +438,20 @@ interface PortalNavItem {
       .signin {
         display: none;
       }
+      .ask span {
+        display: none;
+      }
+      .ask {
+        width: 52px;
+        height: 52px;
+        padding: 0;
+        justify-content: center;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ask:hover {
+        transform: none;
+      }
     }
   `,
 })
@@ -337,24 +459,38 @@ export class PortalShellComponent {
   protected readonly brand = inject(BrandService);
   protected readonly auth = inject(PortalAuthService);
   protected readonly theme = inject(ThemeService);
+  private readonly content = inject(PortalContentApi);
+
   protected readonly menuOpen = signal(false);
-  protected readonly base = computed(() => `/${this.brand.slug() ?? ''}`);
+  protected readonly assistantOpen = signal(false);
+  protected readonly narrow = mediaQuery('(max-width: 640px)');
   protected readonly initial = computed(() => (this.brand.name()[0] ?? 'S').toUpperCase());
+  protected readonly showAssistant = computed(() => this.brand.state() === 'ready' && this.brand.features().aiAssistant);
+
+  /** Troubleshooting flows decide the Help item only when the knowledge base is off (KB brands always show it). */
+  private readonly flowsRes = rxResource({
+    params: () => (this.brand.state() === 'ready' && !this.brand.features().kb ? (this.brand.slug() ?? undefined) : undefined),
+    stream: ({ params }) => this.content.flows(params).pipe(catchError(() => of<PortalFlowSummaryDto[]>([]))),
+  });
+  private readonly hasFlows = computed(() => this.flowsRes.hasValue() && this.flowsRes.value().length > 0);
+
   protected readonly nav = computed<PortalNavItem[]>(() => {
     const f = this.brand.features();
     const items: PortalNavItem[] = [{ label: 'Home', path: '', icon: 'home', exact: true }];
     if (f.kb) items.push({ label: 'Knowledge Base', path: '/kb', icon: 'book-open' });
     if (f.community) items.push({ label: 'Community', path: '/community', icon: 'messages' });
-    items.push({ label: 'My Tickets', path: '/tickets', icon: 'ticket' });
-    items.push({ label: 'Submit a Ticket', path: '/submit', icon: 'file-plus' });
-    if (this.auth.isAuthenticated()) items.push({ label: 'Account', path: '/account', icon: 'user' });
+    if (f.kb || this.hasFlows()) items.push({ label: 'Help', path: '/help', icon: 'life-buoy' });
+    items.push({ label: 'My tickets', path: '/tickets', icon: 'ticket' });
     return items;
   });
 
   constructor() {
     const sub = inject(Router)
       .events.pipe(filter((e) => e instanceof NavigationEnd))
-      .subscribe(() => this.menuOpen.set(false));
+      .subscribe(() => {
+        this.menuOpen.set(false);
+        this.assistantOpen.set(false);
+      });
     inject(DestroyRef).onDestroy(() => sub.unsubscribe());
   }
 

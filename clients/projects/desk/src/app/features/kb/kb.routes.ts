@@ -1,9 +1,21 @@
-import { CanDeactivateFn, Routes } from '@angular/router';
-import { permissionGuard } from '@sd/core';
-import { KbLeaveGuarded } from './kb-common';
+import { inject } from '@angular/core';
+import { CanActivateFn, CanDeactivateFn, Router, Routes } from '@angular/router';
+import { AuthService, MeStore, SD_CONFIG, permissionGuard } from '@sd/core';
+import { KB_BASE, KbLeaveGuarded } from './kb-common';
 import { KB_SECTION_PERMISSIONS, KbLayoutComponent } from './kb-layout.component';
 
 const confirmLeave: CanDeactivateFn<KbLeaveGuarded> = (component) => component?.canDeactivate?.() ?? true;
+
+/** /kb lands on the article list; community-only moderators are sent to the moderation queue instead. */
+const articlesLanding: CanActivateFn = async (_route, state) => {
+  const me = inject(MeStore);
+  const router = inject(Router);
+  const config = inject(SD_CONFIG);
+  await inject(AuthService).ready();
+  if (me.canAny(KB_SECTION_PERMISSIONS.articles)) return true;
+  if (me.canAny(KB_SECTION_PERMISSIONS.community)) return router.parseUrl(`${KB_BASE}/community`);
+  return router.createUrlTree([config.forbiddenPath], { queryParams: { from: state.url } });
+};
 
 /**
  * Knowledge Base module routes (lazy-loaded from app.routes.ts at /kb, permission-guarded there).
@@ -18,7 +30,7 @@ export const ROUTES: Routes = [
         path: '',
         pathMatch: 'full',
         title: 'Knowledge Base',
-        canActivate: [permissionGuard(...KB_SECTION_PERMISSIONS.articles)],
+        canActivate: [articlesLanding],
         loadComponent: () => import('./articles/articles-list.page').then((m) => m.ArticlesListPage),
       },
       {

@@ -262,7 +262,7 @@ import { StatusBadgeComponent } from '../../shared/status-badge.component';
                 <h2 id="csat-title" class="card-title">Your rating</h2>
                 <p class="stars"><span class="sd-visually-hidden">{{ t.csatScore }} out of 5 stars</span>
                   @for (n of [1, 2, 3, 4, 5]; track n) {
-                    <sd-icon name="star" [size]="18" [class.on]="n <= (t.csatScore ?? 0)" />
+                    <sd-icon name="star" [size]="18" [class.on]="n <= t.csatScore" />
                   }
                 </p>
                 @if (t.csatComment) {

@@ -49,7 +49,6 @@ public sealed class ArticleAuthoringService(
             ArticleId = a.Id, FileId = stored.Id, FileName = stored.FileName, ContentType = stored.ContentType, SizeBytes = stored.SizeBytes, CreatedAt = db.Clock.UtcNow
         };
         db.ArticleAttachments.Add(att);
-        a.UpdatedAt = db.Clock.UtcNow;
         await db.SaveChangesAsync(ct);
         return ArticleService.MapAttachment(att);
     }
