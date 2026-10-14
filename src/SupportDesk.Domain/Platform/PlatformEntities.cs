@@ -21,6 +21,9 @@ public class Tenant : Entity, IHasTimestamps
     public string? DataRegion { get; set; }
     public string? SuspensionReason { get; set; }
     public DateTime? SuspendedAt { get; set; }
+    public DateTime? CancelledAt { get; set; }
+    /// <summary>When a cancelled tenant's data is due for deletion (set by the platform operator on cancellation).</summary>
+    public DateTime? DeletionScheduledAt { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
@@ -37,6 +40,8 @@ public class Plan : Entity, IHasTimestamps
     public bool IsPublic { get; set; } = true;
     public int TrialDays { get; set; }
     public int? MaxAgents { get; set; }
+    /// <summary>Light agents (collaborators: view + internal notes). Null = unlimited.</summary>
+    public int? MaxLightAgents { get; set; }
     public int? MaxPortalUsers { get; set; }
     public long? StorageMb { get; set; }
     public int? MaxChannels { get; set; }
@@ -69,12 +74,23 @@ public class Subscription : AuditedEntity, IConcurrencyVersioned
     public Guid? PendingPlanId { get; set; }
     /// <summary>Per-tenant overrides of plan limits, e.g. {"MaxAgents":80}.</summary>
     public string? LimitOverridesJson { get; set; }
+    /// <summary>End of the grace period after a trial expired or an invoice went unpaid; the tenant is suspended afterwards.</summary>
+    public DateTime? GraceEndsAt { get; set; }
+    public DateTime? SuspendedAt { get; set; }
+    public DateTime? CancelledAt { get; set; }
+    public string? BillingContactName { get; set; }
+    public string? BillingContactEmail { get; set; }
+    public string? BillingAddress { get; set; }
+    public string? BillingTaxId { get; set; }
+    /// <summary>Key of the <c>IPaymentProvider</c> that collects payments ("manual" = offline / bank transfer). Card data is never stored.</summary>
+    public string PaymentProvider { get; set; } = "manual";
     public byte[] RowVersion { get; set; } = [];
 }
 
 public static class UsageMetrics
 {
     public const string Agents = "agents";
+    public const string LightAgents = "light_agents";
     public const string PortalUsers = "portal_users";
     public const string StorageBytes = "storage_bytes";
     public const string Channels = "channels";
@@ -82,6 +98,7 @@ public static class UsageMetrics
     public const string ApiCalls = "api_calls";
     public const string TicketsCreated = "tickets_created";
     public const string MessagesSent = "messages_sent";
+    public const string Attachments = "attachments";
 }
 
 /// <summary>Usage counter for one metric in one monthly period. Updated atomically.</summary>
@@ -95,9 +112,13 @@ public class UsageRecord : TenantEntity
 
 public enum InvoiceStatus { Draft, Open, Paid, Void }
 
+/// <summary>Subscription = the regular period invoice (one per period); Proration = mid-period upgrade charge; Manual = operator-issued.</summary>
+public enum InvoiceKind { Subscription, Proration, Manual }
+
 public class BillingInvoice : AuditedEntity
 {
     public Guid SubscriptionId { get; set; }
+    public InvoiceKind Kind { get; set; } = InvoiceKind.Subscription;
     public string Number { get; set; } = "";
     public DateTime PeriodStart { get; set; }
     public DateTime PeriodEnd { get; set; }
@@ -112,6 +133,8 @@ public class BillingInvoice : AuditedEntity
     public DateTime DueAt { get; set; }
     public DateTime? PaidAt { get; set; }
     public string? PaymentReference { get; set; }
+    public string? PaymentProvider { get; set; }
+    public string? Notes { get; set; }
 }
 
 /// <summary>Platform operators run the SaaS (tenant administration). Not tenant-owned.</summary>
@@ -288,7 +311,7 @@ public class ScheduledTaskState : Entity
 
 // ───────────── Configuration lifecycle & compliance ─────────────
 
-public enum ConfigSnapshotKind { Publish, Import, PreRollback, Manual }
+public enum ConfigSnapshotKind { Publish, Import, PreRollback, Manual, Rollback }
 
 /// <summary>Full configuration bundle captured at publish/import time so settings can be exported, compared and rolled back.</summary>
 public class ConfigurationSnapshot : AuditedEntity
@@ -324,12 +347,15 @@ public class LegalHold : AuditedEntity
     public Guid? CustomerId { get; set; }
     public Guid? ContactId { get; set; }
     public string? TicketIdsJson { get; set; }
+    /// <summary>Optional date range (ticket creation time) the hold covers; open-ended when null.</summary>
+    public DateTime? FromDate { get; set; }
+    public DateTime? ToDate { get; set; }
     public DateTime? ReleasedAt { get; set; }
     public Guid? ReleasedById { get; set; }
 }
 
 public enum DataRequestType { Export, Erasure }
-public enum DataRequestStatus { Pending, Processing, Completed, Rejected }
+public enum DataRequestStatus { Pending, Processing, Completed, Rejected, Failed }
 
 public class DataRequest : AuditedEntity
 {
@@ -340,6 +366,16 @@ public class DataRequest : AuditedEntity
     public string? ResultStorageKey { get; set; }
     public DateTime? CompletedAt { get; set; }
     public string? RejectionReason { get; set; }
+    /// <summary>Erasure requests need an explicit approval before the job runs.</summary>
+    public Guid? ApprovedById { get; set; }
+    public DateTime? ApprovedAt { get; set; }
+    /// <summary>Export download: SHA-256 of the one-time token, its expiry, and when it was used.</summary>
+    public string? DownloadTokenHash { get; set; }
+    public DateTime? DownloadExpiresAt { get; set; }
+    public DateTime? DownloadedAt { get; set; }
+    public string? ResultFileName { get; set; }
+    public long? ResultSizeBytes { get; set; }
+    public string? Error { get; set; }
 }
 
 /// <summary>Metadata for every stored file (attachments, exports, recordings). Content lives in IFileStorage under a tenant prefix.</summary>

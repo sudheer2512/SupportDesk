@@ -50,6 +50,28 @@ public static class PersistenceServices
 public sealed record SharedConnection(string ConnectionString);
 
 /// <summary>
+/// Resolves a dedicated tenant database's connection string by name: an explicit <c>ConnectionStrings:{name}</c> entry
+/// wins; otherwise the optional <c>ConnectionStrings:DedicatedTemplate</c> (containing <c>{name}</c>) is used, so new
+/// dedicated databases can be provisioned without a configuration change. Names are restricted to [a-z0-9_]{3,40}.
+/// </summary>
+public static class DedicatedConnections
+{
+    public const string TemplateKey = "ConnectionStrings:DedicatedTemplate";
+
+    public static bool IsValidName(string? name) =>
+        name is { Length: >= 3 and <= 40 } && name.All(c => c is >= 'a' and <= 'z' or >= '0' and <= '9' or '_');
+
+    public static string? Resolve(IConfiguration configuration, string name)
+    {
+        var explicitValue = configuration.GetConnectionString(name);
+        if (!string.IsNullOrWhiteSpace(explicitValue)) return explicitValue;
+        var template = configuration[TemplateKey];
+        if (string.IsNullOrWhiteSpace(template) || !template.Contains("{name}", StringComparison.Ordinal) || !IsValidName(name)) return null;
+        return template.Replace("{name}", name, StringComparison.Ordinal);
+    }
+}
+
+/// <summary>
 /// Maps tenants that run on a dedicated database (enterprise isolation) to their connection strings. The tenant
 /// catalog always lives in the shared database. Connection strings come from configuration by name — never from user input.
 /// </summary>
@@ -88,7 +110,7 @@ public sealed class TenantDatabaseDirectory(SharedConnection shared, IConfigurat
             while (reader.Read())
             {
                 var name = reader.GetString(1);
-                var cs = configuration.GetConnectionString(name);
+                var cs = DedicatedConnections.Resolve(configuration, name);
                 if (cs is null) logger.LogError("Dedicated connection string {Name} is not configured", name);
                 else fresh[reader.GetGuid(0)] = cs;
             }
