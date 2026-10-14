@@ -55,7 +55,8 @@ public sealed class OutboundService(
     IJobQueue jobs,
     IEventPublisher events,
     HtmlSanitization html,
-    ILogger<OutboundService> logger)
+    ILogger<OutboundService> logger,
+    Administration.EmailTemplateService templates)
 {
     public static readonly DateTime DeadLetter = new(9999, 12, 31, 0, 0, 0, DateTimeKind.Utc);
 
@@ -99,6 +100,7 @@ public sealed class OutboundService(
         var body = thread.BodyHtml ?? "";
         if (!string.IsNullOrWhiteSpace(agent?.Signature)) body += $"<div class=\"sd-signature\">{html.Sanitize(agent.Signature)}</div>";
         if (!string.IsNullOrWhiteSpace(account.SignatureHtml)) body += $"<div class=\"sd-mailbox-signature\">{account.SignatureHtml}</div>";
+        body += await templates.BrandFooterAsync(ticket.BrandId ?? account.BrandId, ct);
         var attachmentIds = await db.TicketAttachments.AsNoTracking().Where(a => a.ThreadId == thread.Id && a.Visibility == Visibility.Public)
             .Select(a => a.FileId).ToListAsync(ct);
         var msg = await BuildEmailAsync(account, ticket, to, Json.StringList(thread.CcJson), Json.StringList(thread.BccJson), $"Re: {ticket.Subject}", body,
@@ -226,10 +228,17 @@ public sealed class OutboundService(
         }
         var display = await DisplayNumberAsync(ticket, ct);
         var brand = ticket.BrandId is { } b ? await db.Brands.AsNoTracking().FirstOrDefaultAsync(x => x.Id == b, ct) : null;
-        var body = $"<p>Hello{(inbound.FromName is { Length: > 0 } n ? " " + System.Net.WebUtility.HtmlEncode(n) : "")},</p>" +
-                   $"<p>Thank you for contacting {System.Net.WebUtility.HtmlEncode(brand?.Name ?? account.DisplayName ?? account.Name)}. We have received your request and logged it as <strong>{display}</strong>.</p>" +
-                   "<p>Our team will get back to you shortly. To add more information, simply reply to this e-mail and keep the reference in the subject.</p>";
-        var msg = await BuildEmailAsync(account, ticket, [to], [], [], $"Re: {ticket.Subject}", body,
+        // Tenant template (administration → notifications → e-mail templates) or the built-in default, plus the brand footer.
+        var (subject, body) = await templates.RenderAsync(Administration.EmailTemplateCatalog.CustomerAcknowledgement, new Dictionary<string, string?>
+        {
+            ["contact.name"] = inbound.FromName is { Length: > 0 } n ? n : "there",
+            ["brand.name"] = brand?.Name ?? account.DisplayName ?? account.Name,
+            ["ticket.number"] = display,
+            ["ticket.subject"] = ticket.Subject,
+            ["portal.url"] = brand is null ? keys.PublicBaseUrl : $"{keys.PublicBaseUrl}/portal/{brand.Slug}"
+        }, ct);
+        body += await templates.BrandFooterAsync(ticket.BrandId ?? account.BrandId, ct);
+        var msg = await BuildEmailAsync(account, ticket, [to], [], [], subject, body,
             new OutboundMeta { Kind = "ack", Headers = new() { ["Auto-Submitted"] = "auto-replied", ["X-Auto-Response-Suppress"] = "All", ["Precedence"] = "auto_reply" } },
             threaded: true, ct);
         msg.ContactId = inbound.ContactId;

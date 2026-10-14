@@ -43,13 +43,16 @@ public enum TicketScope { Own = 1, Team = 2, Departments = 3, All = 4 }
 
 public enum CustomerScope { AccountManaged = 1, All = 2 }
 
-public class Role : AuditedEntity
+public class Role : AuditedEntity, IConcurrencyVersioned
 {
     public string Name { get; set; } = "";
     public string? Description { get; set; }
     public bool IsSystem { get; set; }
     public TicketScope TicketScope { get; set; } = TicketScope.Departments;
     public CustomerScope CustomerScope { get; set; } = CustomerScope.All;
+    /// <summary>Holders are light agents (collaborators): they can never reply to customers or own tickets, whatever the permissions say.</summary>
+    public bool IsLightAgent { get; set; }
+    public byte[] RowVersion { get; set; } = [];
     public List<RolePermission> Permissions { get; set; } = [];
 }
 

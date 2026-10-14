@@ -119,3 +119,6 @@ export * from './lib/api/subscriptions.api';
 export * from './lib/api/platform.api';
 export * from './lib/api/compliance.api';
 export * from './lib/api/config-transfer.api';
+// Administration console (roles, ticket configuration, brands, notifications, security, API credentials)
+export * from './lib/models/administration';
+export * from './lib/api/administration.api';

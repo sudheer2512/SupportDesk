@@ -33,7 +33,8 @@ public sealed class AuthService(
     ISecretProtector secrets,
     ISystemMailer mailer,
     IAuditWriter audit,
-    PrincipalLoader principals)
+    PrincipalLoader principals,
+    Administration.IpAccessPolicy ipPolicy)
 {
     private const int OtpMinutes = 10;
 
@@ -70,13 +71,28 @@ public sealed class AuthService(
         }
 
         user.FailedLoginCount = 0;
+        // Agent IP allow-list (administration → security).
+        if (!await ipPolicy.IsAllowedAsync(client.IpAddress, ct))
+        {
+            audit.Write(AuditActions.LoginFailed, "User", user.Id, $"Sign-in blocked for {user.Email}: network not allowed", new { reason = "ip_not_allowed", client.IpAddress });
+            await db.SaveChangesAsync(ct);
+            return new AuthResult(LoginStatus.IpNotAllowed, Message: "Sign-in from your network is not allowed by your organisation.");
+        }
+        var isAdmin = await IsAdministratorAsync(user, ct);
+        var sso = await settings.GetAsync<SsoSettings>(SettingKeys.Sso, ct);
+        if (sso.Enabled && sso.EnforceSso && !isAdmin)
+        {
+            await db.SaveChangesAsync(ct);
+            return new AuthResult(LoginStatus.SsoRequired, Message: "Your organisation requires single sign-on. Use “Sign in with SSO”.");
+        }
         if (security.Password.ExpiryDays > 0 && user.PasswordChangedAt is { } changed && changed.AddDays(security.Password.ExpiryDays) < db.Clock.UtcNow)
         {
             await db.SaveChangesAsync(ct);
             return new AuthResult(LoginStatus.PasswordExpired, Message: "Your password has expired. Choose a new one to continue.");
         }
 
-        if (user.MfaEnabled)
+        // MFA policy: enrolled users always; users the policy covers get an e-mailed code even without an authenticator app.
+        if (user.MfaEnabled || security.RequireMfaForAll || (security.RequireMfaForAdmins && isAdmin))
         {
             var (challenge, demoCode) = await CreateOtpAsync(PrincipalKind.User, user.Id, OtpPurpose.LoginMfa, user.Email, sendEmail: true, security.DemoMode, ct);
             await db.SaveChangesAsync(ct);
@@ -369,10 +385,10 @@ public sealed class AuthService(
     public async Task DisableMfaAsync(Guid userId, CancellationToken ct)
     {
         var security = await settings.SecurityAsync(ct);
-        var isAdmin = await db.UserRoles.Where(r => r.UserId == userId).AnyAsync(r => r.Role!.Name == "Administrator", ct);
+        var user = await db.Users.FirstAsync(u => u.Id == userId, ct);
+        var isAdmin = await IsAdministratorAsync(user, ct);
         if (security.RequireMfaForAll || (security.RequireMfaForAdmins && isAdmin))
             throw new DomainException("mfa_required_by_policy", "Your organisation requires multi-factor authentication.");
-        var user = await db.Users.FirstAsync(u => u.Id == userId, ct);
         user.MfaEnabled = false;
         user.MfaSecretProtected = null;
         audit.Write(AuditActions.MfaDisabled, "User", userId, "MFA disabled");
@@ -383,7 +399,7 @@ public sealed class AuthService(
     public async Task<(OtpChallenge Challenge, string? DemoCode)> CreateOtpAsync(PrincipalKind kind, Guid principalId, OtpPurpose purpose, string? destination,
         bool sendEmail, bool demoMode, CancellationToken ct)
     {
-        var code = Random.Shared.Next(0, 1_000_000).ToString("D6");
+        var code = System.Security.Cryptography.RandomNumberGenerator.GetInt32(0, 1_000_000).ToString("D6");
         var challenge = new OtpChallenge
         {
             TenantId = ctx.HasTenant ? ctx.TenantId : null,
@@ -417,6 +433,12 @@ public sealed class AuthService(
         var s = slug.Trim().ToLowerInvariant();
         return await db.Tenants.AsNoTracking().FirstOrDefaultAsync(t => t.Slug == s && t.Status != TenantStatus.PendingDeletion, ct);
     }
+
+    /// <summary>Administrators for the MFA and SSO policies: the Administrator kind or a role that can manage roles or security.</summary>
+    private async Task<bool> IsAdministratorAsync(User user, CancellationToken ct) =>
+        user.Kind == UserKind.Administrator ||
+        await db.RolePermissions.AnyAsync(p => (p.PermissionCode == Permissions.AdminRoles || p.PermissionCode == Permissions.AdminSecurity)
+                                               && db.UserRoles.Any(ur => ur.UserId == user.Id && ur.RoleId == p.RoleId), ct);
 
     private static string Normalize(string code) => new(code.Where(char.IsLetterOrDigit).ToArray());
 

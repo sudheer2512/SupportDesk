@@ -89,16 +89,18 @@ public sealed class MeController(DeskDbContext db, RequestContext ctx, Principal
     public async Task<SettingsDto> GetNotificationSettings(CancellationToken ct)
     {
         var uid = RequireUser();
-        var s = await db.NotificationSettings.AsNoTracking().FirstOrDefaultAsync(x => x.UserId == uid, ct) ?? new NotificationSettings { UserId = uid };
+        // Without personal settings/preferences the tenant defaults apply (administration → notifications).
+        var policy = await Application.Administration.NotificationPolicySettings.LoadAsync(db, ct);
+        var s = await db.NotificationSettings.AsNoTracking().FirstOrDefaultAsync(x => x.UserId == uid, ct) ?? policy.AsUserDefaults(uid);
         var prefs = await db.NotificationPreferences.AsNoTracking().Where(p => p.UserId == uid).ToDictionaryAsync(p => p.EventType, ct);
         return new SettingsDto(s.Enabled, s.QuietHoursStart?.ToString("HH:mm"), s.QuietHoursEnd?.ToString("HH:mm"), s.TimeZone, s.DailyDigestAt.ToString("HH:mm"),
             s.DesktopNotifications,
             NotificationTypes.All.Select(t =>
             {
-                var d = NotificationTypes.Defaults(t);
+                var d = policy.For(t);
                 return prefs.TryGetValue(t, out var p)
                     ? new PreferenceDto(t, p.InApp, p.Email, p.Push, p.Teams, p.Digest.ToString())
-                    : new PreferenceDto(t, true, d.Email, d.Push, d.Teams, DigestMode.None.ToString());
+                    : new PreferenceDto(t, d.InApp, d.Email || d.Digest, d.Push, d.Teams, (d.Digest ? policy.DigestMode : DigestMode.None).ToString());
             }).ToList());
     }
 

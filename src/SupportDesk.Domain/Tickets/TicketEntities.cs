@@ -128,8 +128,9 @@ public class Ticket : AuditedEntity, ISoftDeletable, IConcurrencyVersioned
 }
 
 /// <summary>Configurable ticket status. Each maps to a lifecycle category; transitions can be restricted.</summary>
-public class TicketStatus : AuditedEntity
+public class TicketStatus : AuditedEntity, IConcurrencyVersioned
 {
+    public byte[] RowVersion { get; set; } = [];
     public string Name { get; set; } = "";
     public StatusCategory Category { get; set; }
     public string Color { get; set; } = "#64748b";

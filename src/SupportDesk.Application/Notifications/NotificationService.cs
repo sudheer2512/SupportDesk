@@ -68,6 +68,9 @@ public sealed class NotificationService(DeskDbContext db, RequestContext ctx, IR
         var users = await db.Users.AsNoTracking().Where(u => r.UserIds.Contains(u.Id) && u.IsActive).Select(u => u.Id).ToListAsync(ct);
         var prefs = await db.NotificationPreferences.AsNoTracking().Where(p => users.Contains(p.UserId) && p.EventType == r.Type).ToDictionaryAsync(p => p.UserId, ct);
         var settings = await db.NotificationSettings.AsNoTracking().Where(s => users.Contains(s.UserId)).ToDictionaryAsync(s => s.UserId, ct);
+        // Tenant defaults (administration → notifications) apply where a user has no preference / settings of their own.
+        var policy = await Administration.NotificationPolicySettings.LoadAsync(db, ct);
+        var tenantDefault = policy.For(r.Type);
         var created = new List<Notification>();
         foreach (var userId in users)
         {
@@ -75,9 +78,9 @@ public sealed class NotificationService(DeskDbContext db, RequestContext ctx, IR
             if (dedup.Length > 440) dedup = TextNormalization.Sha256Hex(dedup);
             if (await db.Notifications.AnyAsync(n => n.DedupKey == dedup, ct)) continue;
             prefs.TryGetValue(userId, out var pref);
-            settings.TryGetValue(userId, out var s);
+            if (!settings.TryGetValue(userId, out var s)) s = policy.AsUserDefaults(userId);
             if (s is { Enabled: false }) continue;
-            var inApp = pref?.InApp ?? true;
+            var inApp = pref?.InApp ?? tenantDefault.InApp;
             var n = new Notification
             {
                 UserId = userId, Type = r.Type, Title = Trim(r.Title, 300), Body = r.Body is null ? null : Trim(r.Body, 2000), Link = r.Link,
@@ -87,11 +90,10 @@ public sealed class NotificationService(DeskDbContext db, RequestContext ctx, IR
             db.Notifications.Add(n);
             created.Add(n);
 
-            var defaults = NotificationTypes.Defaults(r.Type);
-            var email = pref?.Email ?? defaults.Email;
-            var push = pref?.Push ?? defaults.Push;
-            var teams = pref?.Teams ?? defaults.Teams;
-            var digest = pref?.Digest ?? DigestMode.None;
+            var email = pref?.Email ?? (tenantDefault.Email || tenantDefault.Digest);
+            var push = pref?.Push ?? tenantDefault.Push;
+            var teams = pref?.Teams ?? tenantDefault.Teams;
+            var digest = pref?.Digest ?? (tenantDefault.Digest ? policy.DigestMode : DigestMode.None);
             var deliverAt = r.Severity == NotificationSeverity.Critical ? now : AfterQuietHours(now, s);
             if (email)
                 db.NotificationDeliveries.Add(new NotificationDelivery

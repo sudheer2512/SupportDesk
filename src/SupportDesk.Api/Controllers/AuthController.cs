@@ -121,6 +121,7 @@ public sealed class AuthController(AuthService auth, SsoService sso, RequestCont
             return Ok(new LoginResponse(r.Status, ChallengeId: r.ChallengeId, Methods: r.Methods, DemoCode: r.DemoCode, Message: r.Message));
         if (r.Status == LoginStatus.PasswordExpired) return Ok(new LoginResponse(r.Status, Message: r.Message));
         if (r.Status == "locked") return StatusCode(423, new LoginResponse(r.Status, Message: r.Message));
+        if (r.Status is LoginStatus.IpNotAllowed or LoginStatus.SsoRequired) return StatusCode(403, new LoginResponse(r.Status, Message: r.Message));
         ClearRefreshCookie(RefreshCookie, RefreshPath);
         return Unauthorized(new LoginResponse(r.Status, Message: r.Message));
     }

@@ -162,6 +162,13 @@ public sealed class TicketService(
 
         var customFieldsJson = await customFields.MergeAsync("Ticket", "{}", r.CustomFields, departmentId,
             enforceRequired: source.EnforceRequiredFields && !ctx.IsSystem, portalOnly: source.PortalSubmission, ct);
+        if (r.StatusId is not null && source.EnforceRequiredFields && !ctx.IsSystem)
+        {
+            // Creating straight into a status must respect "required for this status" custom fields too.
+            var missingForStatus = Administration.CustomFieldRules.MissingForStatus(await customFields.DefinitionsAsync("Ticket", ct), customFieldsJson, departmentId, status.Id);
+            if (missingForStatus.Count > 0)
+                throw new DomainException(ErrorCodes.MissingFields, $"Fill in {string.Join(", ", missingForStatus)} to create the ticket as '{status.Name}'.");
+        }
 
         var number = await counters.NextAsync("ticket", (await settings.TicketsAsync(ct)).NumberStart, ct);
         var ticket = new Ticket
@@ -519,6 +526,10 @@ public sealed class TicketService(
             var settingsT = await settings.TicketsAsync(ct);
             if (to.Category == StatusCategory.Resolved && settingsT.RequireResolutionCode && string.IsNullOrEmpty(t.ResolutionCode))
                 throw new DomainException(ErrorCodes.MissingFields, "A resolution code is required before resolving. Use Resolve to enter it.");
+            // Custom fields configured as "required for this status" (administration → ticket fields).
+            var missing = Administration.CustomFieldRules.MissingForStatus(await customFields.DefinitionsAsync("Ticket", ct), t.CustomFieldsJson, t.DepartmentId, to.Id);
+            if (missing.Count > 0)
+                throw new DomainException(ErrorCodes.MissingFields, $"Fill in {string.Join(", ", missing)} before moving the ticket to '{to.Name}'.");
         }
         var subs = Json.StringList(to.SubstatusesJson);
         if (substatus is not null && subs.Count > 0 && !subs.Contains(substatus, StringComparer.OrdinalIgnoreCase))
@@ -643,11 +654,18 @@ public sealed class TicketService(
         if (r.SourceTicketIds.Count == 0 || r.SourceTicketIds.Contains(targetId)) throw new DomainException(ErrorCodes.Validation, "Choose other tickets to merge into this one.");
         var target = await LoadForUpdateAsync(targetId, ct);
         if (target.MergedIntoTicketId is not null) throw new DomainException(ErrorCodes.Validation, "The target ticket was itself merged.");
+        var mergeRules = await settings.TicketsAsync(ct);
+        if (r.SourceTicketIds.Distinct().Count() > mergeRules.MaxMergeSources)
+            throw new DomainException(ErrorCodes.Validation, $"At most {mergeRules.MaxMergeSources} tickets can be merged at once.");
         var sources = new List<Ticket>();
         foreach (var sid in r.SourceTicketIds.Distinct())
         {
             var s = await LoadForUpdateAsync(sid, ct);
             if (s.MergedIntoTicketId is not null) throw new DomainException(ErrorCodes.Validation, $"Ticket {s.Number} was already merged.");
+            if (!mergeRules.AllowMergeAcrossCustomers && s.CustomerId != target.CustomerId)
+                throw new DomainException(ErrorCodes.Validation, $"Ticket {s.Number} belongs to another customer. Your organisation does not allow merging across customers.");
+            if (!mergeRules.AllowMergeAcrossDepartments && s.DepartmentId != target.DepartmentId)
+                throw new DomainException(ErrorCodes.Validation, $"Ticket {s.Number} is in another department. Your organisation does not allow merging across departments.");
             sources.Add(s);
         }
 
@@ -709,6 +727,8 @@ public sealed class TicketService(
     public async Task<Ticket> SplitAsync(Guid id, SplitTicketRequest r, CancellationToken ct = default)
     {
         ctx.Require(Permissions.TicketsSplit);
+        if (!(await settings.TicketsAsync(ct)).AllowSplit)
+            throw new DomainException("split_disabled", "Splitting tickets is turned off for your organisation.");
         var source = await LoadForUpdateAsync(id, ct);
         if (r.ThreadIds.Count == 0) throw new DomainException(ErrorCodes.Validation, "Select at least one message to split off.");
         var threads = await db.TicketThreads.Where(x => x.TicketId == id && r.ThreadIds.Contains(x.Id)).OrderBy(x => x.Seq).ToListAsync(ct);

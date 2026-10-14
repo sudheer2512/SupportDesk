@@ -155,7 +155,7 @@ public class PlatformOperator : Entity, IHasTimestamps
 public enum PortalAuthMode { Local, Sso, LocalAndSso }
 
 /// <summary>A brand owns a customer portal, knowledge base, chat widget and outbound identity.</summary>
-public class Brand : AuditedEntity
+public class Brand : AuditedEntity, IConcurrencyVersioned
 {
     public string Name { get; set; } = "";
     /// <summary>Globally unique portal slug (/portal/{slug}).</summary>
@@ -163,6 +163,10 @@ public class Brand : AuditedEntity
     /// <summary>Optional custom portal host name (support.example.com). Globally unique.</summary>
     public string? CustomDomain { get; set; }
     public string? LogoUrl { get; set; }
+    public string? FaviconUrl { get; set; }
+    /// <summary>Sanitised HTML appended to customer e-mails sent for this brand (signature / legal footer).</summary>
+    public string? EmailFooterHtml { get; set; }
+    public byte[] RowVersion { get; set; } = [];
     public string PrimaryColor { get; set; } = "#2563eb";
     public string AccentColor { get; set; } = "#0ea5e9";
     public string? SupportEmail { get; set; }
