@@ -12,6 +12,9 @@ public sealed class AutomationRulesController(RuleService rules) : DeskControlle
     [HttpGet("catalog")]
     public AutomationCatalogDto Catalog() => rules.Catalog();
 
+    [HttpGet("lookups")]
+    public Task<AutomationLookupsDto> Lookups(CancellationToken ct) => rules.LookupsAsync(ct);
+
     // ───── Rules ─────
 
     [HttpGet("rules")]

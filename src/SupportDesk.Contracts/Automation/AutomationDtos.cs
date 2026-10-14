@@ -280,6 +280,9 @@ public sealed record WebhookDeliveryDto(
 
 public sealed record WebhookEventTypesDto(IReadOnlyList<string> EventTypes);
 
+/// <summary>Reference lists the designers need beyond /meta/ticket-form (roles for blueprints/approvals, reply templates).</summary>
+public sealed record AutomationLookupsDto(IReadOnlyList<Common.IdName> Roles, IReadOnlyList<Common.IdName> ReplyTemplates);
+
 // ───────────────────────────── Inbound webhook trigger ─────────────────────────────
 
 public sealed record InboundWebhookResultDto(Guid RuleId, Guid TicketId, long TicketNumber, string Status, Guid? ExecutionId, string? Message);
