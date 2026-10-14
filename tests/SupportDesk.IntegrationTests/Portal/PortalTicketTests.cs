@@ -190,6 +190,35 @@ public sealed class PortalTicketTests(DeskApiFactory factory)
     }
 
     [Fact]
+    public async Task Anonymous_submissions_need_the_brand_switch_and_drop_honeypot_bots()
+    {
+        var t = await factory.CreateTenantAsync();
+        var anon = factory.CreateClient();
+        var request = new PortalAnonymousTicketRequest { Name = "Walk In", Email = "walk.in@visitor.test", Subject = "Demo request", Description = "Please call me" };
+        Assert.Equal(HttpStatusCode.NotFound, (await anon.PostAsJsonAsync($"/api/v1/portal/{t.Slug}/submit", request, J)).StatusCode);
+
+        await factory.InTenantAsync(t.Id, async sp =>
+        {
+            var db = sp.GetRequiredService<DeskDbContext>();
+            (await db.Brands.FirstAsync()).AllowAnonymousTickets = true;
+            await db.SaveChangesAsync();
+        });
+        var bot = await anon.PostAsJsonAsync($"/api/v1/portal/{t.Slug}/submit", request with { Website = "http://spam.example", Subject = "Spam" }, J);
+        Assert.True((await bot.Content.ReadFromJsonAsync<PortalSubmissionResultDto>(J))!.Accepted);
+        var ok = await anon.PostAsJsonAsync($"/api/v1/portal/{t.Slug}/submit", request, J);
+        var result = (await ok.Content.ReadFromJsonAsync<PortalSubmissionResultDto>(J))!;
+        Assert.True(result.Accepted, result.Message);
+        Assert.NotNull(result.DisplayNumber);
+
+        var subjects = await factory.InTenantAsync(t.Id, sp => sp.GetRequiredService<DeskDbContext>().Tickets.Select(x => x.Subject).ToListAsync());
+        Assert.Contains("Demo request", subjects);
+        Assert.DoesNotContain("Spam", subjects);
+        var form = await anon.GetFromJsonAsync<PortalTicketFormDto>($"/api/v1/portal/{t.Slug}/submit/form", J);
+        Assert.NotEmpty(form!.Departments);
+        Assert.Empty(form.Installations);
+    }
+
+    [Fact]
     public async Task Contact_tokens_only_work_for_brands_of_their_own_tenant()
     {
         var a = await factory.CreateTenantAsync();

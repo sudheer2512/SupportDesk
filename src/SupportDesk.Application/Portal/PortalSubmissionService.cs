@@ -2,7 +2,6 @@ using System.Globalization;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
-using SupportDesk.Application.Customers;
 using SupportDesk.Application.Knowledge;
 using SupportDesk.Application.Platform;
 using SupportDesk.Application.Search;
@@ -24,7 +23,6 @@ public sealed class PortalSubmissionService(
     DeskDbContext db,
     PortalContext portal,
     TicketService tickets,
-    ContactResolver contacts,
     TicketLookups lookups,
     IDistributedCache cache,
     HtmlSanitization html)
@@ -60,10 +58,11 @@ public sealed class PortalSubmissionService(
         if (count >= MaxPerIpPerHour) throw new DomainException("rate_limited", "Too many requests from your network. Please try again later or sign in.", 429);
         await cache.SetStringAsync(key, (count + 1).ToString(CultureInfo.InvariantCulture), new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1) }, ct);
 
-        var contact = await contacts.FindOrCreateAsync(email, r.Phone, name, null, channel, ct);
+        // The ticket core matches an existing contact by e-mail/phone or creates one (same unit of work as the ticket).
         var ticket = await tickets.CreateAsync(new CreateTicketRequest
         {
-            Subject = subject, DescriptionHtml = description, Channel = channel.ToString(), BrandId = brand.Id, ContactId = contact.Id,
+            Subject = subject, DescriptionHtml = description, Channel = channel.ToString(), BrandId = brand.Id,
+            NewContact = new NewContactDto(name, email, string.IsNullOrWhiteSpace(r.Phone) ? null : r.Phone.Trim(), null),
             DepartmentId = r.DepartmentId ?? brand.DefaultDepartmentId, CategoryId = r.CategoryId, ProductId = r.ProductId, CustomFields = r.CustomFields
         }, new TicketCreationSource(CreateInitialThread: true, PortalSubmission: true, AuthorName: name, FromAddress: email, EnforceRequiredFields: false), ct);
         await lookups.LoadAsync(ct);

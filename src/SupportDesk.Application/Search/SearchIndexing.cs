@@ -90,24 +90,24 @@ public sealed class SearchBackfill(DeskDbContext db, SearchIndexer indexer)
         total += tickets.Count;
 
         var articles = await db.Articles.AsNoTracking().Where(a => !docs.Any(d => d.EntityType == SearchTypes.Article && d.EntityId == a.Id && d.UpdatedAt >= a.UpdatedAt))
-            .Select(a => a.Id).Take(batch).ToListAsync(ct);
+            .OrderBy(a => a.Id).Select(a => a.Id).Take(batch).ToListAsync(ct);
         foreach (var id in articles) await indexer.IndexAsync(SearchTypes.Article, id, ct);
         total += articles.Count;
 
         var contacts = await db.Contacts.AsNoTracking()
             .Where(c => c.Status != Domain.Customers.ContactStatus.Erased && c.Status != Domain.Customers.ContactStatus.Merged
                         && !docs.Any(d => d.EntityType == SearchTypes.Contact && d.EntityId == c.Id && d.UpdatedAt >= c.UpdatedAt))
-            .Select(c => c.Id).Take(batch).ToListAsync(ct);
+            .OrderBy(c => c.Id).Select(c => c.Id).Take(batch).ToListAsync(ct);
         foreach (var id in contacts) await indexer.IndexAsync(SearchTypes.Contact, id, ct);
         total += contacts.Count;
 
         var customers = await db.Customers.AsNoTracking().Where(c => !docs.Any(d => d.EntityType == SearchTypes.Customer && d.EntityId == c.Id && d.UpdatedAt >= c.UpdatedAt))
-            .Select(c => c.Id).Take(batch).ToListAsync(ct);
+            .OrderBy(c => c.Id).Select(c => c.Id).Take(batch).ToListAsync(ct);
         foreach (var id in customers) await indexer.IndexAsync(SearchTypes.Customer, id, ct);
         total += customers.Count;
 
         var topics = await db.CommunityTopics.AsNoTracking().Where(t => !docs.Any(d => d.EntityType == SearchTypes.Topic && d.EntityId == t.Id && d.UpdatedAt >= t.UpdatedAt))
-            .Select(t => t.Id).Take(batch).ToListAsync(ct);
+            .OrderBy(t => t.Id).Select(t => t.Id).Take(batch).ToListAsync(ct);
         foreach (var id in topics) await indexer.IndexAsync(SearchTypes.Topic, id, ct);
         total += topics.Count;
 
@@ -119,7 +119,7 @@ public sealed class SearchBackfill(DeskDbContext db, SearchIndexer indexer)
                                                                             && c.Status != Domain.Customers.ContactStatus.Merged)) ||
                 (d.EntityType == SearchTypes.Customer && !db.Customers.Any(c => c.Id == d.EntityId)) ||
                 (d.EntityType == SearchTypes.Topic && !db.CommunityTopics.Any(t => t.Id == d.EntityId)))
-            .Select(d => new { d.EntityType, d.EntityId }).Take(batch).ToListAsync(ct);
+            .OrderBy(d => d.Id).Select(d => new { d.EntityType, d.EntityId }).Take(batch).ToListAsync(ct);
         foreach (var o in orphans) await indexer.RemoveAsync(o.EntityType, o.EntityId, ct);
         return total + orphans.Count;
     }
