@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SupportDesk.Application.Administration;
 using SupportDesk.Application.Common;
 using SupportDesk.Application.Identity;
 using SupportDesk.Application.Platform;
@@ -91,7 +92,8 @@ public sealed class AgentAdminService(
     PrincipalLoader principals,
     AgentSeatGuard seats,
     HtmlSanitization html,
-    FileService files)
+    FileService files,
+    RoleAdminService roleGuard)
 {
     public const string AvatarPurpose = "avatar";
     private const int MaxLimit = 200;
@@ -258,6 +260,8 @@ public sealed class AgentAdminService(
             errors["teamIds"] = "Teams must belong to the selected departments.";
         if (r.ReportsToUserId is { } rt && (rt == userId || !await db.Users.AnyAsync(x => x.Id == rt && x.IsActive, ct))) errors["reportsToUserId"] = "Choose another active user.";
         if (errors.Count > 0) throw new ValidationException(errors);
+        // No privilege escalation: the caller must hold every permission of the roles added and removed.
+        await roleGuard.EnsureCanAssignAsync(userId, roleIds, ct);
 
         var adminRole = await db.Roles.Where(x => x.Name == "Administrator").Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
         var wasAdmin = adminRole is { } ar && await db.UserRoles.AnyAsync(x => x.UserId == userId && x.RoleId == ar, ct);
@@ -385,6 +389,10 @@ public sealed class AgentAdminService(
                 await db.Agents.AnyAsync(x => x.UserId == target && x.IsLightAgent, ct))
                 throw new ValidationException(new Dictionary<string, string> { ["reassignToUserId"] = "Choose another active (full) agent." });
         }
+        // Only users who could grant the target's roles may deactivate them (a supervisor cannot lock out an administrator).
+        var targetRoles = await db.UserRoles.AsNoTracking().Where(x => x.UserId == userId).Select(x => x.RoleId).ToListAsync(ct);
+        await roleGuard.EnsureCanAssignAsync(userId, targetRoles, ct);
+        await roleGuard.EnsureCanDeactivateAsync(userId, ct);
         var adminRole = await db.Roles.Where(x => x.Name == "Administrator").Select(x => (Guid?)x.Id).FirstOrDefaultAsync(ct);
         if (adminRole is { } ar && await db.UserRoles.AnyAsync(x => x.UserId == userId && x.RoleId == ar, ct) && !await OtherActiveAdminExistsAsync(userId, ar, ct))
             throw new ConflictException("last_administrator", "This is the last active administrator.");
@@ -529,6 +537,7 @@ public sealed class AgentInvitationService(
     AgentSeatGuard seats,
     AuthService auth,
     AgentAdminService agents,
+    RoleAdminService roleGuard,
     IConfiguration configuration)
 {
     public static readonly TimeSpan Validity = TimeSpan.FromHours(72);
@@ -559,6 +568,8 @@ public sealed class AgentInvitationService(
         else if (await db.Roles.CountAsync(x => roleIds.Contains(x.Id), ct) != roleIds.Count) errors["roleIds"] = "Unknown role.";
         if (!string.IsNullOrWhiteSpace(r.TimeZone) && !TimeZoneInfo.TryFindSystemTimeZoneById(r.TimeZone, out _)) errors["timeZone"] = "Unknown time zone.";
         if (errors.Count > 0) throw new ValidationException(errors);
+        // No privilege escalation through invitations either (a new user has no roles yet, so only the added roles are checked).
+        await roleGuard.EnsureCanAssignAsync(Guid.NewGuid(), roleIds, ct);
         await seats.EnsureCanAddAsync(r.IsLightAgent, ct);
 
         var tenant = await db.Tenants.AsNoTracking().FirstAsync(t => t.Id == ctx.TenantId, ct);

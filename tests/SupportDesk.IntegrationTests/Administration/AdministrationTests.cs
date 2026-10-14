@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SupportDesk.Contracts.Administration;
 using SupportDesk.Contracts.Auth;
 using SupportDesk.Contracts.Common;
+using SupportDesk.Contracts.Organisation;
 using SupportDesk.Contracts.Tickets;
 using SupportDesk.Domain.Rules;
 using SupportDesk.IntegrationTests.Infrastructure;
@@ -195,6 +196,49 @@ public sealed class AdministrationTests(DeskApiFactory factory)
         });
         Assert.Contains("role.created", actions);
         Assert.Contains("user.roles_changed", actions);
+    }
+
+    [Fact]
+    public async Task Agent_administration_cannot_escalate_privileges_either()
+    {
+        var t = await factory.CreateTenantAsync();
+        var admin = await t.AdminClientAsync();
+        // A user manager without administrator rights uses the organisation module's agent screens.
+        var managerRole = await CreateRoleAsync(admin, "User manager", [Permissions.AdminUsers, Permissions.AgentsManage, Permissions.TicketsView]);
+        var viewers = await CreateRoleAsync(admin, "Viewers", [Permissions.TicketsView]);
+        var (managerId, managerEmail) = await t.CreateAgentAsync("User Manager");
+        await Ok<UserRolesDto>(await SetRolesAsync(admin, managerId, managerRole.Id));
+        var manager = await t.AgentClientAsync(managerEmail);
+        var administrator = t.Provisioned.Roles["Administrator"];
+
+        // Changing an agent's access to the Administrator role is refused; a role within the manager's own rights is fine.
+        var (otherId, _) = await t.CreateAgentAsync("Other Agent");
+        await Ok<UserRolesDto>(await SetRolesAsync(admin, otherId, viewers.Id));
+        async Task<HttpResponseMessage> SetAccessAsync(Guid roleId)
+        {
+            var detail = await Ok<AgentDetailDto>(await manager.GetAsync($"/api/v1/org/agents/{otherId}"));
+            return await manager.PutAsJsonAsync($"/api/v1/org/agents/{otherId}/access", new UpdateAgentAccessRequest
+            {
+                RoleIds = [roleId], DepartmentIds = [t.SupportDepartmentId], RowVersion = detail.RowVersion
+            }, J);
+        }
+        var promote = await SetAccessAsync(administrator);
+        Assert.Equal(HttpStatusCode.Forbidden, promote.StatusCode);
+        Assert.Equal("privilege_escalation", await CodeAsync(promote));
+        await Ok<AgentDetailDto>(await SetAccessAsync(viewers.Id));
+
+        // Inviting a new administrator is refused.
+        var invite = await manager.PostAsJsonAsync("/api/v1/org/agents", new InviteAgentRequest
+        {
+            Email = $"new.admin.{Guid.NewGuid():N}@{t.Slug}.test", Name = "New Admin", RoleIds = [administrator], DepartmentIds = [t.SupportDepartmentId]
+        }, J);
+        Assert.Equal(HttpStatusCode.Forbidden, invite.StatusCode);
+
+        // Deactivating an administrator (a stronger user) is refused, and the administrator can still sign in.
+        var deactivate = await manager.PostAsJsonAsync($"/api/v1/org/agents/{t.Provisioned.AdminUserId}/deactivate",
+            new DeactivateAgentRequest("unassign", null, "Escalation attempt"), J);
+        Assert.Equal(HttpStatusCode.Forbidden, deactivate.StatusCode);
+        Assert.NotNull(await t.AdminClientAsync());
     }
 
     // ───────────────────────────── Ticket configuration ─────────────────────────────
