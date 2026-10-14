@@ -35,7 +35,7 @@ import {
 import { Subject, debounceTime, filter, merge } from 'rxjs';
 import { channelIcon, channelLabel } from '../shared/ticket-ui';
 import { BulkActionDialog, BulkDialogData, BulkDialogResult } from './bulk-action.dialog';
-import { TicketWorkbenchStore, queueDef } from './workbench.store';
+import { TicketWorkbenchStore, queueDef, selectionStorageKey } from './workbench.store';
 
 const PAGE = 50;
 
@@ -366,35 +366,45 @@ export class TicketListComponent {
   protected readonly rowClass = (row: TicketListItemDto): string | null =>
     row.slaState === 'Breached' && row.statusCategory !== 'Resolved' && row.statusCategory !== 'Closed' ? 'is-breached' : null;
 
-  protected readonly storageKey = computed(() => {
-    const s = this.store.selection();
-    return s.kind === 'queue' ? `tickets.queue.${s.key}` : `tickets.view.${s.id}`;
-  });
+  protected readonly storageKey = computed(() => selectionStorageKey(this.store.selection()));
 
-  private readonly baseQuery = computed<TicketQuery>(() => {
+  /** Null while the workspace shows the recycle bin (this list is not rendered then). */
+  private readonly baseQuery = computed<TicketQuery | null>(() => {
     const s = this.store.selection();
-    return s.kind === 'queue' ? queueDef(s.key).query : { viewId: s.id };
+    return s.kind === 'queue' ? queueDef(s.key).query : s.kind === 'view' ? { viewId: s.id } : null;
   });
 
   protected readonly list = cursorList<TicketListItemDto>(() => this.tickets.list({}, { silent: true }));
 
-  protected readonly moreBulk = computed<SdMenuItem[]>(() => [
-    { id: 'priority', label: 'Change priority', icon: 'flag', run: () => this.bulk('priority') },
-    { id: 'tags_add', label: 'Add tags', icon: 'tag', run: () => this.bulk('tags_add') },
-    { id: 'tags_remove', label: 'Remove tags', icon: 'tag', run: () => this.bulk('tags_remove') },
-    { id: 'transfer', label: 'Transfer…', icon: 'share', run: () => this.bulk('transfer') },
-    { id: 'watch', label: 'Watch', icon: 'eye', run: () => this.bulk('watch') },
-    { id: 'd1', divider: true },
-    { id: 'close', label: 'Close', icon: 'circle-check', run: () => this.bulk('close') },
-    { id: 'spam', label: 'Mark as spam', icon: 'shield-off', danger: true, run: () => this.bulk('spam') },
-  ]);
+  protected readonly moreBulk = computed<SdMenuItem[]>(() => {
+    const items: SdMenuItem[] = [
+      { id: 'priority', label: 'Change priority', icon: 'flag', run: () => this.bulk('priority') },
+      { id: 'tags_add', label: 'Add tags', icon: 'tag', run: () => this.bulk('tags_add') },
+      { id: 'tags_remove', label: 'Remove tags', icon: 'tag', run: () => this.bulk('tags_remove') },
+      { id: 'transfer', label: 'Transfer…', icon: 'share', disabled: !this.me.can('tickets.transfer'), run: () => this.bulk('transfer') },
+      { id: 'watch', label: 'Watch', icon: 'eye', run: () => this.bulk('watch') },
+      { id: 'd1', divider: true },
+      { id: 'close', label: 'Close', icon: 'circle-check', disabled: !this.me.can('tickets.resolve'), run: () => this.bulk('close') },
+    ];
+    // Spam and delete both need tickets.delete (deleted tickets go to the recycle bin and can be restored).
+    if (this.me.can('tickets.delete')) {
+      items.push(
+        { id: 'spam', label: 'Mark as spam…', icon: 'shield-off', danger: true, run: () => this.bulk('spam') },
+        { id: 'delete', label: 'Delete…', icon: 'trash', danger: true, run: () => this.bulk('delete') },
+      );
+    }
+    return items;
+  });
 
   constructor() {
-    // Rebuild the fetcher whenever the queue/view, quick filter or sort changes.
+    // Rebuild the fetcher whenever the queue/view, quick filter or sort changes — once the initial selection
+    // (URL / default view / last) is settled, so a fresh load fetches only the list it will show.
     effect(() => {
+      const ready = this.store.selectionReady();
       const base = this.baseQuery();
       const q = this.query().trim();
       const sort = this.sort();
+      if (!ready || !base) return;
       untracked(() => {
         const apiSort = (sort?.key as TicketSort | undefined) ?? null;
         const dir = apiSort === 'due' ? 'asc' : apiSort === 'priority' ? 'desc' : (sort?.dir ?? 'desc');
@@ -458,7 +468,7 @@ export class TicketListComponent {
 
   reload(): void {
     this.updatesPending.set(false);
-    this.list.load();
+    if (this.store.selectionReady() && this.baseQuery()) this.list.load();
     this.store.refreshCounts();
   }
 

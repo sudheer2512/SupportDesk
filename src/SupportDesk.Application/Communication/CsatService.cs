@@ -147,6 +147,8 @@ public sealed class CsatSurveyHandler(CsatService csat) : IOutboxHandler
     {
         var p = Json.Deserialize<TicketEventPayload>(ev.PayloadJson);
         if (p is null || p.Changes?.Any(c => c.Field == "status") != true) return;
+        // The agent resolved without notifying the customer: nothing goes out for this resolution (no survey either).
+        if (p.NotifyCustomer == false) return;
         await csat.SendSurveyAsync(p.TicketId, ct);
     }
 }

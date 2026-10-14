@@ -33,6 +33,26 @@ public static class TicketAccess
         };
     }
 
+    /// <summary>
+    /// Entitlement override: always with tickets.override_entitlement; additionally, when the tenant setting
+    /// AllowAgentsToOverrideEntitlement is on, any agent who may edit the ticket (tickets.edit). A reason is always
+    /// required and the override is audited (TicketService.OverrideEntitlementAsync).
+    /// </summary>
+    public static bool CanOverrideEntitlement(RequestContext ctx, bool agentsMayOverride) =>
+        ctx.IsSystem || ctx.Has(Permissions.TicketsOverrideEntitlement) || (agentsMayOverride && ctx.Has(Permissions.TicketsEdit));
+
+    /// <summary>
+    /// Active legal holds covering a ticket: holds on its customer, its contact, or naming the ticket in TicketIdsJson.
+    /// Null keys never match (a contact-only hold does not cover tickets without a customer).
+    /// </summary>
+    public static IQueryable<Domain.Platform.LegalHold> HoldsCovering(DeskDbContext db, Guid ticketId, Guid? customerId, Guid? contactId)
+    {
+        var id = ticketId.ToString();
+        return db.LegalHolds.Where(h => h.ReleasedAt == null &&
+            ((customerId != null && h.CustomerId == customerId) || (contactId != null && h.ContactId == contactId) ||
+             (h.TicketIdsJson != null && h.TicketIdsJson.Contains(id))));
+    }
+
     public static bool CanView(Ticket t, RequestContext ctx, bool isWatcher)
     {
         if (ctx.IsSystem || ctx.ActorType == ActorType.ApiClient && ctx.UserId is null) return true;

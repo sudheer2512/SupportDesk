@@ -37,6 +37,20 @@ import { QueueSelection, STANDARD_QUEUES, TicketWorkbenchStore } from './workben
             </button>
           </li>
         }
+        @if (canSeeTrash()) {
+          <li>
+            <button
+              type="button"
+              class="item"
+              [class.is-active]="isTrash()"
+              [attr.aria-current]="isTrash() ? 'page' : null"
+              (click)="choose({ kind: 'trash' })"
+            >
+              <sd-icon name="trash" [size]="15" />
+              <span class="label sd-truncate">Deleted tickets</span>
+            </button>
+          </li>
+        }
       </ul>
 
       <div class="section-head">
@@ -87,6 +101,9 @@ import { QueueSelection, STANDARD_QUEUES, TicketWorkbenchStore } from './workben
       >
         <sd-icon [name]="v.visibility === 'Shared' ? 'users' : 'bookmark'" [size]="15" />
         <span class="label sd-truncate">{{ v.name }}</span>
+        @if (v.id === store.defaultView()?.id) {
+          <sd-icon class="default" name="star" [size]="12" label="Opens by default" />
+        }
         @if (v.count !== null) {
           <span class="count">{{ v.count }}</span>
         }
@@ -182,6 +199,10 @@ import { QueueSelection, STANDARD_QUEUES, TicketWorkbenchStore } from './workben
     .item.is-active .count {
       background: var(--sd-surface);
     }
+    .default {
+      flex: none;
+      color: var(--sd-warning);
+    }
     .count.is-alert {
       background: var(--sd-danger-bg);
       color: var(--sd-danger);
@@ -238,6 +259,15 @@ export class QueuePanelComponent {
   protected isView(id: string): boolean {
     const s = this.store.selection();
     return s.kind === 'view' && s.id === id;
+  }
+
+  /** The recycle bin (deleted + spam tickets) is offered to agents who may delete and restore tickets. */
+  protected canSeeTrash(): boolean {
+    return this.me.can('tickets.delete');
+  }
+
+  protected isTrash(): boolean {
+    return this.store.selection().kind === 'trash';
   }
 
   protected choose(selection: QueueSelection): void {

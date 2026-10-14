@@ -77,6 +77,10 @@ export interface ViewEditorData {
           <sd-checkbox [value]="saveColumns()" (valueChange)="saveColumns.set($event)">Save the current column layout with this view</sd-checkbox>
         }
         <sd-checkbox [value]="isDefault()" (valueChange)="isDefault.set($event)">Open this view by default</sd-checkbox>
+        <p class="default-hint sd-small sd-muted">
+          Opens when you load the ticket workspace without a queue or view in the link
+          ({{ visibility() === 'Shared' ? 'for everyone without a personal default' : 'replaces your previous default view' }}).
+        </p>
 
         @if (formError()) {
           <p class="error" role="alert">{{ formError() }}</p>
@@ -89,6 +93,10 @@ export interface ViewEditorData {
     </sd-dialog>
   `,
   styles: `
+    .default-hint {
+      margin-top: calc(-1 * var(--sd-space-2));
+      padding-left: 26px;
+    }
     .form {
       display: grid;
       gap: var(--sd-space-3);

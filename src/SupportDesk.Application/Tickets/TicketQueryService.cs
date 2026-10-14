@@ -19,11 +19,59 @@ public sealed class TicketQueryService(
     RequestContext ctx,
     TicketLookups lookups,
     TicketService tickets,
+    Platform.TenantSettingsService settings,
     IEnumerable<ITicketContextContributor> contributors)
 {
     public const int MaxLimit = 200;
 
     public IQueryable<Ticket> Scoped() => db.Tickets.AsNoTracking().VisibleTo(ctx, db);
+
+    /// <summary>
+    /// Recycle bin: deleted and spam tickets in the caller's data scope, most recently deleted first (tickets.delete).
+    /// Keyset-paged on DeletedAt; each row says whether a legal hold covers it (restoring is always allowed).
+    /// </summary>
+    public async Task<PagedResult<DeletedTicketDto>> ListDeletedAsync(string? q, string? cursor, int? limit, CancellationToken ct = default)
+    {
+        ctx.Require(Permissions.TicketsDelete);
+        var query = db.Tickets.IgnoreQueryFilters([DeskDbContext.SoftDeleteFilter]).AsNoTracking().Where(t => t.IsDeleted).VisibleTo(ctx, db);
+        if (!string.IsNullOrWhiteSpace(q))
+        {
+            var term = q.Trim();
+            query = long.TryParse(term.TrimStart('#'), out var n) ? query.Where(t => t.Number == n || t.Subject.Contains(term)) : query.Where(t => t.Subject.Contains(term));
+        }
+        var take = Math.Clamp(limit ?? 50, 1, MaxLimit);
+        var min = new DateTime(1900, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        if (DbExtensions.DecodeCursor(cursor) is { } c)
+        {
+            var v = DateTime.Parse(c.V, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+            query = query.Where(t => (t.DeletedAt ?? min) < v || ((t.DeletedAt ?? min) == v && t.Id.CompareTo(c.Id) < 0));
+        }
+        var page = await query.OrderByDescending(t => t.DeletedAt ?? min).ThenByDescending(t => t.Id).Take(take + 1).ToListAsync(ct);
+        var hasMore = page.Count > take;
+        if (hasMore) page.RemoveAt(page.Count - 1);
+
+        await lookups.LoadAsync(ct);
+        var ids = page.Select(t => t.Id).ToList();
+        var customerIds = page.Where(t => t.CustomerId.HasValue).Select(t => t.CustomerId!.Value).Distinct().ToList();
+        var contactIds = page.Where(t => t.ContactId.HasValue).Select(t => t.ContactId!.Value).Distinct().ToList();
+        var customers = await db.Customers.IgnoreQueryFilters([DeskDbContext.SoftDeleteFilter]).AsNoTracking().Where(x => customerIds.Contains(x.Id))
+            .ToDictionaryAsync(x => x.Id, x => x.Name, ct);
+        var contacts = await db.Contacts.IgnoreQueryFilters([DeskDbContext.SoftDeleteFilter]).AsNoTracking().Where(x => contactIds.Contains(x.Id))
+            .ToDictionaryAsync(x => x.Id, x => x.FullName, ct);
+        var deletedBy = (await db.TicketEvents.AsNoTracking()
+                .Where(e => ids.Contains(e.TicketId) && (e.Type == TicketEventTypes.Deleted || e.Type == TicketEventTypes.MarkedSpam))
+                .Select(e => new { e.TicketId, e.ActorName, e.OccurredAt }).ToListAsync(ct))
+            .GroupBy(e => e.TicketId).ToDictionary(g => g.Key, g => g.OrderByDescending(e => e.OccurredAt).First().ActorName);
+        var holds = await db.LegalHolds.AsNoTracking().Where(h => h.ReleasedAt == null).Select(h => new { h.CustomerId, h.ContactId, h.TicketIdsJson }).ToListAsync(ct);
+        bool Held(Ticket t) => holds.Any(h => (t.CustomerId != null && h.CustomerId == t.CustomerId) || (t.ContactId != null && h.ContactId == t.ContactId) ||
+                                              (h.TicketIdsJson != null && h.TicketIdsJson.Contains(t.Id.ToString(), StringComparison.OrdinalIgnoreCase)));
+
+        var items = page.Select(t => new DeletedTicketDto(t.Id, t.Number, lookups.Display(t.Number), t.Subject, lookups.Status(t.StatusId) ?? "", t.StatusCategory.ToString(),
+            t.CustomerId is { } cu ? customers.GetValueOrDefault(cu) : null, t.ContactId is { } co ? contacts.GetValueOrDefault(co) : null,
+            lookups.Department(t.DepartmentId) ?? "", t.CreatedAt, t.DeletedAt, deletedBy.GetValueOrDefault(t.Id), t.IsSpam, Held(t))).ToList();
+        var next = hasMore ? DbExtensions.EncodeCursor((page[^1].DeletedAt ?? min).ToString("O", CultureInfo.InvariantCulture), page[^1].Id) : null;
+        return new PagedResult<DeletedTicketDto>(items, next, null);
+    }
 
     public async Task<PagedResult<TicketListItemDto>> ListAsync(TicketQuery q, CancellationToken ct = default)
     {
@@ -218,6 +266,7 @@ public sealed class TicketQueryService(
         var refs = await db.TicketExternalReferences.AsNoTracking().Where(r => r.TicketId == t.Id && r.System != "client-request").ToListAsync(ct);
         var lockInfo = await tickets.GetLockAsync(t.Id, ct);
         var canCosts = ctx.Has(Permissions.TicketsViewCosts);
+        var agentsMayOverride = (await settings.TicketsAsync(ct)).AllowAgentsToOverrideEntitlement;
 
         return new TicketDetailDto(
             t.Id, t.Number, lookups.Display(t.Number), t.Subject, t.DescriptionHtml, t.Channel.ToString(), t.BrandId, lookups.Brand(t.BrandId),
@@ -237,7 +286,7 @@ public sealed class TicketQueryService(
             children.Select(c => new ChildTicketDto(c.Id, c.Number, c.Subject, lookups.Status(c.StatusId), c.StatusCategory.ToString(), lookups.User(c.AssigneeId))).ToList(),
             refs.Select(MapRef).ToList(),
             lockInfo is null || lockInfo.Until < db.Clock.UtcNow ? null : new TicketLockDto(lockInfo.UserId, lockInfo.UserName, lockInfo.Until),
-            Convert.ToBase64String(t.RowVersion), TicketLookups.PermissionsFor(t, ctx));
+            Convert.ToBase64String(t.RowVersion), TicketLookups.PermissionsFor(t, ctx, agentsMayOverride));
     }
 
     public static ExternalReferenceDto MapRef(TicketExternalReference r) =>

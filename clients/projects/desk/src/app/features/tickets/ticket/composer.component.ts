@@ -60,12 +60,14 @@ interface DraftState {
   body: string;
   to: string[];
   cc: string[];
+  /** Blind copies (e-mail replies only; kept in memory — drafts store To and Cc). */
+  bcc: string[];
   templateId: Guid | null;
   basedOnSeq: number | null;
   mentions: Guid[];
 }
 
-const EMPTY: DraftState = { body: '', to: [], cc: [], templateId: null, basedOnSeq: null, mentions: [] };
+const EMPTY: DraftState = { body: '', to: [], cc: [], bcc: [], templateId: null, basedOnSeq: null, mentions: [] };
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const IDLE_MS = 20_000;
 
@@ -153,13 +155,22 @@ const IDLE_MS = 20_000;
               <span class="rlabel" id="to-label">To</span>
               <sd-chips-input class="chips" ariaLabel="To" [value]="state().to" (valueChange)="patch({ to: $event })" [validate]="isEmailAddress" placeholder="Add recipient" />
               @if (!showCc() && state().cc.length === 0) {
-                <button sdButton size="sm" variant="link" type="button" (click)="showCc.set(true)">Cc</button>
+                <button sdButton size="sm" variant="link" type="button" aria-label="Add Cc recipients" (click)="showCc.set(true)">Cc</button>
+              }
+              @if (!showBcc() && state().bcc.length === 0) {
+                <button sdButton size="sm" variant="link" type="button" aria-label="Add Bcc recipients" (click)="showBcc.set(true)">Bcc</button>
               }
             </div>
             @if (showCc() || state().cc.length > 0) {
               <div class="recipients">
                 <span class="rlabel">Cc</span>
                 <sd-chips-input class="chips" ariaLabel="Cc" [value]="state().cc" (valueChange)="patch({ cc: $event })" [validate]="isEmailAddress" placeholder="Add Cc" />
+              </div>
+            }
+            @if (showBcc() || state().bcc.length > 0) {
+              <div class="recipients">
+                <span class="rlabel" sdTooltip="Blind copy: other recipients do not see these addresses. Not kept in saved drafts.">Bcc</span>
+                <sd-chips-input class="chips" ariaLabel="Bcc" [value]="state().bcc" (valueChange)="patch({ bcc: $event })" [validate]="isEmailAddress" placeholder="Add Bcc" />
               </div>
             }
           } @else {
@@ -434,6 +445,7 @@ export class ComposerComponent {
   private readonly drafts = signal<Record<DraftKind, DraftState>>({ reply: { ...EMPTY }, note: { ...EMPTY } });
   protected readonly uploads = signal<Upload[]>([]);
   protected readonly showCc = signal(false);
+  protected readonly showBcc = signal(false);
   protected readonly collision = signal<ReplyCollisionDto | null>(null);
   protected readonly sending = signal(false);
   protected readonly draftStatus = signal<'idle' | 'saving' | 'saved' | 'error'>('idle');
@@ -686,6 +698,7 @@ export class ComposerComponent {
             bodyHtml: s.body,
             to: this.isEmail() ? s.to : null,
             cc: this.isEmail() && s.cc.length ? s.cc : null,
+            bcc: this.isEmail() && s.bcc.length ? s.bcc : null,
             attachmentFileIds: fileIds.length ? fileIds : null,
             statusId,
             basedOnSeq: s.basedOnSeq ?? this.ctx.ticket()?.lastThreadSeq ?? null,
@@ -829,6 +842,7 @@ export class ComposerComponent {
     this.draftStatus.set('idle');
     this.dirty.clear();
     this.showCc.set(false);
+    this.showBcc.set(false);
     this.mode.set(this.can()?.reply === false && this.can()?.note ? 'note' : 'reply');
     this.drafts.set({ reply: { ...EMPTY, to: this.defaultTo() }, note: { ...EMPTY } });
     for (const kind of ['reply', 'note'] as DraftKind[]) {
@@ -841,6 +855,7 @@ export class ComposerComponent {
               body: d.bodyHtml ?? '',
               to: d.to.length ? d.to : all[kind].to,
               cc: d.cc,
+              bcc: all[kind].bcc,
               templateId: d.templateId,
               basedOnSeq: d.basedOnSeq,
               mentions: [],

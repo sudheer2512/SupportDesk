@@ -21,6 +21,11 @@ public sealed class TicketsController(
     [HttpGet("queue-counts")]
     public Task<Dictionary<string, int>> QueueCounts(CancellationToken ct) => queries.QueueCountsAsync(ct);
 
+    /// <summary>Recycle bin: deleted and spam tickets in the caller's scope, newest deletion first (tickets.delete). Restore with POST {id}/restore.</summary>
+    [HttpGet("deleted")]
+    public Task<PagedResult<DeletedTicketDto>> Deleted([FromQuery] string? q, [FromQuery] string? cursor, [FromQuery] int? limit, CancellationToken ct) =>
+        queries.ListDeletedAsync(q, cursor, limit, ct);
+
     [HttpGet("{id:guid}")]
     public Task<TicketDetailDto> Get(Guid id, CancellationToken ct) => queries.GetDetailAsync(id, ct);
 

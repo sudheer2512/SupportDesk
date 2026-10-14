@@ -11,7 +11,7 @@ import {
   TicketBlueprintDto,
   TicketFormMetaDto,
 } from '@sd/core';
-import { SdBadge, SdButton, SdCombobox, SdFormField, SdIcon, SdInput, SdOption, SdRelativeTimePipe, SdSkeleton, SdToggle, ToastService } from '@sd/ui';
+import { SdBadge, SdButton, SdCombobox, SdEmptyState, SdFormField, SdIcon, SdInput, SdOption, SdRelativeTimePipe, SdSkeleton, SdToggle, ToastService } from '@sd/ui';
 
 type FieldKind = 'select' | 'combo' | 'number' | 'date' | 'bool' | 'text';
 
@@ -27,15 +27,32 @@ interface FieldEditor {
  * fields that are still missing are asked for inline, plus the comment when required), execution with
  * approval-pending handling (HTTP 202). Uses only agent-level APIs (`/tickets/{id}/blueprint`, `/meta/ticket-form`).
  * `<desk-blueprint-panel [ticketId]="ticket.id" (changed)="reloadTicket()" />` — renders nothing when the
- * ticket does not follow a blueprint.
+ * ticket does not follow a blueprint, unless `showEmpty` is set (the ticket side tab), which shows an empty state
+ * ("This ticket doesn't follow a blueprint") and a retryable error when the blueprint cannot be loaded.
+ * Blueprints are attached automatically when a ticket is created (the API has no manual "apply blueprint" action).
  */
 @Component({
   selector: 'desk-blueprint-panel',
-  imports: [FormsModule, SdBadge, SdButton, SdCombobox, SdFormField, SdIcon, SdInput, SdSkeleton, SdToggle, SdRelativeTimePipe],
+  imports: [FormsModule, SdBadge, SdButton, SdCombobox, SdEmptyState, SdFormField, SdIcon, SdInput, SdSkeleton, SdToggle, SdRelativeTimePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (loading() && !blueprint()) {
       <sd-skeleton [lines]="3" />
+    } @else if (showEmpty() && loadError()) {
+      <sd-empty-state icon="triangle-alert" title="The blueprint could not be loaded" [message]="loadError()" compact>
+        <button sdButton size="sm" icon="refresh" type="button" (click)="reload()">Try again</button>
+      </sd-empty-state>
+    } @else if (showEmpty() && loaded() && !blueprint()) {
+      <sd-empty-state
+        icon="workflow"
+        title="This ticket doesn't follow a blueprint"
+        [message]="
+          me.can('admin.automation')
+            ? 'Blueprints are applied when a ticket is created, based on its department and category. Publish an active blueprint under Automation to guide new tickets.'
+            : 'Blueprints are applied automatically when a ticket is created. Its status changes freely.'
+        "
+        compact
+      />
     } @else if (blueprint(); as bp) {
       <section class="panel" [attr.aria-label]="'Blueprint ' + bp.workflowName">
         <header class="head">
@@ -296,11 +313,15 @@ export class BlueprintPanelComponent {
   protected readonly me = inject(MeStore);
 
   readonly ticketId = input.required<string>();
+  /** Show an empty state when the ticket has no blueprint, and an error state when loading fails (side tab). */
+  readonly showEmpty = input(false);
   /** Emits after a transition completed or was sent for approval (reload the ticket). */
   readonly changed = output<void>();
 
   protected readonly blueprint = signal<TicketBlueprintDto | null>(null);
   protected readonly loading = signal(false);
+  protected readonly loaded = signal(false);
+  protected readonly loadError = signal<string | null>(null);
   protected readonly running = signal(false);
   protected readonly openKey = signal<string | null>(null);
   protected readonly comment = signal('');
@@ -314,6 +335,7 @@ export class BlueprintPanelComponent {
       const id = this.ticketId();
       untracked(() => {
         this.blueprint.set(null);
+        this.loaded.set(false);
         this.openKey.set(null);
         if (id) this.reload();
       });
@@ -323,12 +345,17 @@ export class BlueprintPanelComponent {
 
   reload(): void {
     this.loading.set(true);
+    this.loadError.set(null);
     this.api.forTicket(this.ticketId()).subscribe({
       next: (bp) => {
         this.blueprint.set(bp);
         this.loading.set(false);
+        this.loaded.set(true);
       },
-      error: () => this.loading.set(false),
+      error: (err: unknown) => {
+        this.loading.set(false);
+        this.loadError.set(ApiError.from(err).userMessage);
+      },
     });
   }
 

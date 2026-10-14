@@ -32,6 +32,7 @@ public static class Permissions
     public const string CustomersView = "customers.view";
     public const string CustomersManage = "customers.manage";
     public const string ContactsMerge = "contacts.merge";
+    public const string CustomersMerge = "customers.merge";
     public const string ProductsView = "products.view";
     public const string ProductsManage = "products.manage";
     public const string ContractsView = "contracts.view";
@@ -82,7 +83,7 @@ public static class Permissions
     public static readonly IReadOnlyList<PermissionInfo> Catalog =
     [
         new(TicketsView, "Tickets", "View tickets within the role's data scope"),
-        new(TicketsCreate, "Tickets", "Create tickets"),
+        new(TicketsCreate, "Tickets", "Create and clone tickets"),
         new(TicketsEdit, "Tickets", "Edit ticket fields"),
         new(TicketsReply, "Tickets", "Send public replies to customers"),
         new(TicketsNote, "Tickets", "Add internal notes"),
@@ -92,7 +93,7 @@ public static class Permissions
         new(TicketsResolve, "Tickets", "Resolve and close tickets"),
         new(TicketsReopen, "Tickets", "Reopen resolved/closed tickets"),
         new(TicketsMerge, "Tickets", "Merge tickets"),
-        new(TicketsSplit, "Tickets", "Split and clone tickets"),
+        new(TicketsSplit, "Tickets", "Split tickets"),
         new(TicketsDelete, "Tickets", "Delete tickets and mark spam", true),
         new(TicketsBulk, "Tickets", "Bulk-update tickets"),
         new(TicketsTime, "Tickets", "Log time on tickets"),
@@ -102,6 +103,7 @@ public static class Permissions
         new(CustomersView, "Customers", "View customers and contacts"),
         new(CustomersManage, "Customers", "Create and edit customers, contacts and locations"),
         new(ContactsMerge, "Customers", "Merge duplicate contacts", true),
+        new(CustomersMerge, "Customers", "Merge duplicate customer organisations", true),
         new(ProductsView, "Products", "View products, installations and assets"),
         new(ProductsManage, "Products", "Manage products, versions, installations and assets"),
         new(ContractsView, "Products", "View contracts and entitlements"),
@@ -157,7 +159,7 @@ public static class Permissions
         public static readonly string[] Supervisor =
         [
             .. Agent, TicketsTransfer, TicketsBulk, TicketsDelete, TicketsViewCosts, TicketsOverrideEntitlement, TicketsExport,
-            ContactsMerge, ContractsManage, KbReview, KbPublish, CommunityModerate, ApprovalsDecide, SupervisorMonitor,
+            ContactsMerge, CustomersMerge, ContractsManage, KbReview, KbPublish, CommunityModerate, ApprovalsDecide, SupervisorMonitor,
             AgentsManage, AnalyticsTeam, AnalyticsExport, AnalyticsSchedule, AiApprove, EngineeringManage
         ];
 

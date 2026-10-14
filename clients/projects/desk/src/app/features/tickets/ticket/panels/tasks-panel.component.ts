@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ApiError, Guid, SaveTaskRequest, TaskDto, TicketsApi } from '@sd/core';
@@ -19,10 +20,22 @@ function toRequest(t: TaskDto, changes: Partial<SaveTaskRequest> = {}): SaveTask
   };
 }
 
-/** Tasks, subtasks and checklist items of the ticket (GET/POST /tickets/{id}/tasks, PATCH/DELETE /tasks/{id}). */
+/** Values of the inline task editor. */
+interface TaskDraft {
+  title: string;
+  assigneeId: Guid | null;
+  dueAt: string | null;
+  isChecklistItem: boolean;
+}
+
+/**
+ * Tasks, subtasks and checklist items of the ticket (GET/POST /tickets/{id}/tasks, PATCH/DELETE /tasks/{id}).
+ * Adding, editing and ticking tasks needs tickets.edit or tickets.note (`can.edit` / `can.note`); deleting needs
+ * tickets.edit (`can.edit`) — the API enforces both.
+ */
 @Component({
   selector: 'desk-tasks-panel',
-  imports: [FormsModule, SdButton, SdCheckbox, SdCombobox, SdDateInput, SdEmptyState, SdIcon, SdRelativeTimePipe, SdSkeleton],
+  imports: [NgTemplateOutlet, FormsModule, SdButton, SdCheckbox, SdCombobox, SdDateInput, SdEmptyState, SdIcon, SdRelativeTimePipe, SdSkeleton],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (loading() && tasks().length === 0) {
@@ -39,33 +52,61 @@ function toRequest(t: TaskDto, changes: Partial<SaveTaskRequest> = {}): SaveTask
       <ul class="tasks">
         @for (t of tasks(); track t.id) {
           <li>
-            <div class="task" [class.is-done]="t.status === 'Done'">
-              <sd-checkbox [value]="t.status === 'Done'" (valueChange)="toggle(t, $event)" [ariaLabel]="'Done: ' + t.title" />
-              <div class="body">
-                <span class="title">
-                  @if (t.isChecklistItem) {
-                    <sd-icon name="list-checks" [size]="13" />
-                  }
-                  {{ t.title }}
-                </span>
-                <span class="meta sd-xs sd-muted">
-                  {{ t.assigneeName ?? 'Unassigned' }}
-                  @if (t.dueAt) {
-                    · due {{ t.dueAt | sdRelativeTime }}
-                  }
-                </span>
+            @if (editingId() === t.id) {
+              <ng-container [ngTemplateOutlet]="editor" [ngTemplateOutletContext]="{ $implicit: t }" />
+            } @else {
+              <div class="task" [class.is-done]="t.status === 'Done'">
+                <sd-checkbox [value]="t.status === 'Done'" (valueChange)="toggle(t, $event)" [disabled]="!canSave()" [ariaLabel]="'Done: ' + t.title" />
+                <div class="body">
+                  <span class="title">
+                    @if (t.isChecklistItem) {
+                      <sd-icon name="list-checks" [size]="13" />
+                    }
+                    {{ t.title }}
+                  </span>
+                  <span class="meta sd-xs sd-muted">
+                    {{ t.assigneeName ?? 'Unassigned' }}
+                    @if (t.dueAt) {
+                      · due {{ t.dueAt | sdRelativeTime }}
+                    }
+                  </span>
+                </div>
+                @if (canSave()) {
+                  <button type="button" class="icon" [attr.aria-label]="'Edit ' + t.title" (click)="startEdit(t)"><sd-icon name="pencil" [size]="14" /></button>
+                  <button type="button" class="icon" [attr.aria-label]="'Add subtask to ' + t.title" (click)="startSubtask(t.id)"><sd-icon name="plus" [size]="14" /></button>
+                }
+                @if (canDelete()) {
+                  <button type="button" class="icon danger" [attr.aria-label]="'Delete ' + t.title" (click)="remove(t)"><sd-icon name="trash" [size]="14" /></button>
+                }
               </div>
-              <button type="button" class="icon" [attr.aria-label]="'Add subtask to ' + t.title" (click)="startSubtask(t.id)"><sd-icon name="plus" [size]="14" /></button>
-              <button type="button" class="icon danger" [attr.aria-label]="'Delete ' + t.title" (click)="remove(t)"><sd-icon name="trash" [size]="14" /></button>
-            </div>
+            }
             @if (t.subtasks.length || subtaskFor() === t.id) {
               <ul class="tasks sub">
                 @for (s of t.subtasks; track s.id) {
-                  <li class="task" [class.is-done]="s.status === 'Done'">
-                    <sd-checkbox [value]="s.status === 'Done'" (valueChange)="toggle(s, $event)" [ariaLabel]="'Done: ' + s.title" />
-                    <span class="body title">{{ s.title }}</span>
-                    <button type="button" class="icon danger" [attr.aria-label]="'Delete ' + s.title" (click)="remove(s)"><sd-icon name="trash" [size]="14" /></button>
-                  </li>
+                  @if (editingId() === s.id) {
+                    <li><ng-container [ngTemplateOutlet]="editor" [ngTemplateOutletContext]="{ $implicit: s }" /></li>
+                  } @else {
+                    <li class="task" [class.is-done]="s.status === 'Done'">
+                      <sd-checkbox [value]="s.status === 'Done'" (valueChange)="toggle(s, $event)" [disabled]="!canSave()" [ariaLabel]="'Done: ' + s.title" />
+                      <span class="body">
+                        <span class="title">{{ s.title }}</span>
+                        @if (s.assigneeName || s.dueAt) {
+                          <span class="meta sd-xs sd-muted">
+                            {{ s.assigneeName ?? 'Unassigned' }}
+                            @if (s.dueAt) {
+                              · due {{ s.dueAt | sdRelativeTime }}
+                            }
+                          </span>
+                        }
+                      </span>
+                      @if (canSave()) {
+                        <button type="button" class="icon" [attr.aria-label]="'Edit ' + s.title" (click)="startEdit(s)"><sd-icon name="pencil" [size]="14" /></button>
+                      }
+                      @if (canDelete()) {
+                        <button type="button" class="icon danger" [attr.aria-label]="'Delete ' + s.title" (click)="remove(s)"><sd-icon name="trash" [size]="14" /></button>
+                      }
+                    </li>
+                  }
                 }
                 @if (subtaskFor() === t.id) {
                   <li>
@@ -79,23 +120,48 @@ function toRequest(t: TaskDto, changes: Partial<SaveTaskRequest> = {}): SaveTask
             }
           </li>
         } @empty {
-          <sd-empty-state icon="list-checks" title="No tasks yet" message="Break the work down into tasks or a checklist." compact />
+          <sd-empty-state icon="list-checks" title="No tasks yet" [message]="canSave() ? 'Break the work down into tasks or a checklist.' : 'Nobody has added tasks to this ticket.'" compact />
         }
       </ul>
 
-      <form class="add" (ngSubmit)="add()">
-        <input class="sd-input" name="title" placeholder="New task or checklist item" aria-label="New task title" [ngModel]="title()" (ngModelChange)="title.set($event)" maxlength="250" />
+      @if (canSave()) {
+        <form class="add" (ngSubmit)="add()">
+          <input class="sd-input" name="title" placeholder="New task or checklist item" aria-label="New task title" [ngModel]="title()" (ngModelChange)="title.set($event)" maxlength="250" />
+          <div class="add-row">
+            <sd-combobox size="sm" ariaLabel="Task assignee" placeholder="Assignee" [options]="agents()" [value]="assigneeId()" (valueChange)="assigneeId.set($any($event))" />
+            <sd-date-input size="sm" type="datetime" ariaLabel="Due" [value]="dueAt()" (valueChange)="dueAt.set($event)" />
+          </div>
+          <div class="add-row">
+            <sd-checkbox [value]="checklist()" (valueChange)="checklist.set($event)">Checklist item</sd-checkbox>
+            <span class="sd-spacer"></span>
+            <button sdButton size="sm" variant="primary" icon="plus" type="submit" [disabled]="!title().trim()" [loading]="saving()">Add</button>
+          </div>
+        </form>
+      }
+    }
+
+    <ng-template #editor let-t>
+      <form class="edit" (ngSubmit)="saveEdit(t)" [attr.aria-label]="'Edit task ' + t.title" (keydown.escape)="cancelEdit()">
+        <input
+          class="sd-input sd-input-sm"
+          name="editTitle"
+          aria-label="Task title"
+          maxlength="250"
+          [ngModel]="draft().title"
+          (ngModelChange)="patchDraft({ title: $event })"
+        />
         <div class="add-row">
-          <sd-combobox size="sm" ariaLabel="Task assignee" placeholder="Assignee" [options]="agents()" [value]="assigneeId()" (valueChange)="assigneeId.set($any($event))" />
-          <sd-date-input size="sm" type="datetime" ariaLabel="Due" [value]="dueAt()" (valueChange)="dueAt.set($event)" />
+          <sd-combobox size="sm" ariaLabel="Task assignee" placeholder="Unassigned" [options]="agents()" [value]="draft().assigneeId" (valueChange)="patchDraft({ assigneeId: $any($event) })" />
+          <sd-date-input size="sm" type="datetime" ariaLabel="Due" [value]="draft().dueAt" (valueChange)="patchDraft({ dueAt: $event })" />
         </div>
         <div class="add-row">
-          <sd-checkbox [value]="checklist()" (valueChange)="checklist.set($event)">Checklist item</sd-checkbox>
+          <sd-checkbox [value]="draft().isChecklistItem" (valueChange)="patchDraft({ isChecklistItem: $event })">Checklist item</sd-checkbox>
           <span class="sd-spacer"></span>
-          <button sdButton size="sm" variant="primary" icon="plus" type="submit" [disabled]="!title().trim()" [loading]="saving()">Add</button>
+          <button sdButton size="sm" variant="ghost" type="button" (click)="cancelEdit()">Cancel</button>
+          <button sdButton size="sm" variant="primary" icon="save" type="submit" [disabled]="!draft().title.trim()" [loading]="saving()">Save</button>
         </div>
       </form>
-    }
+    </ng-template>
   `,
   styles: `
     :host {
@@ -161,8 +227,20 @@ function toRequest(t: TaskDto, changes: Partial<SaveTaskRequest> = {}): SaveTask
       background: var(--sd-surface-3);
       color: var(--sd-text);
     }
+    .icon:focus-visible {
+      outline: none;
+      box-shadow: var(--sd-focus-ring);
+    }
     .icon.danger:hover {
       color: var(--sd-danger);
+    }
+    .edit {
+      display: grid;
+      gap: 6px;
+      padding: 8px;
+      border: 1px solid var(--sd-primary-border);
+      border-radius: var(--sd-radius-md);
+      background: var(--sd-primary-soft);
     }
     .add {
       display: grid;
@@ -211,7 +289,13 @@ export class TasksPanelComponent {
   protected readonly checklist = signal(false);
   protected readonly subtaskFor = signal<Guid | null>(null);
   protected readonly subTitle = signal('');
+  protected readonly editingId = signal<Guid | null>(null);
+  protected readonly draft = signal<TaskDraft>({ title: '', assigneeId: null, dueAt: null, isChecklistItem: false });
   protected readonly agents = computed(() => agentOptions(this.ctx.meta.ticketForm(), null, true));
+  /** Create / edit / tick (API: tickets.edit or tickets.note). */
+  protected readonly canSave = computed(() => !!this.ctx.can()?.edit || !!this.ctx.can()?.note);
+  /** Delete (API: tickets.edit). */
+  protected readonly canDelete = computed(() => !!this.ctx.can()?.edit);
   private readonly flat = computed(() => this.tasks().flatMap((t) => [t, ...t.subtasks]));
   protected readonly total = computed(() => this.flat().filter((t) => t.status !== 'Cancelled').length);
   protected readonly done = computed(() => this.flat().filter((t) => t.status === 'Done').length);
@@ -219,7 +303,10 @@ export class TasksPanelComponent {
   constructor() {
     effect(() => {
       this.ticketId();
-      untracked(() => this.load());
+      untracked(() => {
+        this.editingId.set(null);
+        this.load();
+      });
     });
   }
 
@@ -275,6 +362,38 @@ export class TasksPanelComponent {
     });
   }
 
+  protected startEdit(t: TaskDto): void {
+    this.draft.set({ title: t.title, assigneeId: t.assigneeId, dueAt: t.dueAt, isChecklistItem: t.isChecklistItem });
+    this.editingId.set(t.id);
+  }
+
+  protected cancelEdit(): void {
+    this.editingId.set(null);
+  }
+
+  protected patchDraft(changes: Partial<TaskDraft>): void {
+    this.draft.update((d) => ({ ...d, ...changes }));
+  }
+
+  protected saveEdit(t: TaskDto): void {
+    const d = this.draft();
+    const title = d.title.trim();
+    if (!title || this.saving()) return;
+    this.saving.set(true);
+    this.tickets.updateTask(t.id, toRequest(t, { title, assigneeId: d.assigneeId, dueAt: d.dueAt, isChecklistItem: d.isChecklistItem })).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.editingId.set(null);
+        this.toast.success('Task updated', title);
+        this.load();
+      },
+      error: (err: unknown) => {
+        this.saving.set(false);
+        toastApiError(this.toast, err, 'Could not update the task');
+      },
+    });
+  }
+
   protected toggle(t: TaskDto, done: boolean): void {
     this.tickets.updateTask(t.id, toRequest(t, { status: done ? 'Done' : 'Open' })).subscribe({
       next: () => this.load(),
@@ -286,6 +405,7 @@ export class TasksPanelComponent {
   }
 
   protected remove(t: TaskDto): void {
+    if (!this.canDelete()) return;
     this.tickets.deleteTask(t.id).subscribe({
       next: () => this.load(),
       error: (err: unknown) => toastApiError(this.toast, err, 'Could not delete the task'),

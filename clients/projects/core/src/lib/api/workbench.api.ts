@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map, shareReplay } from 'rxjs';
 import { ApiClient } from '../http/api-client';
-import { Guid, ProblemDetails } from '../models/common';
-import { TicketDetailDto, TransferTicketRequest } from '../models/tickets';
+import { Guid, PagedResult, ProblemDetails } from '../models/common';
+import { DeletedTicketDto, TicketDetailDto, TransferTicketRequest } from '../models/tickets';
 import {
   ConditionFieldCatalogDto,
   ContactLookupDto,
@@ -75,6 +75,11 @@ export class WorkbenchApi {
 
   restoreTicket(id: Guid): Observable<void> {
     return this.api.post<void>(`tickets/${enc(id)}/restore`, {}, { silent: true });
+  }
+
+  /** Recycle bin (tickets.delete): deleted and spam tickets, most recently deleted first; keyset paged. */
+  deletedTickets(query: { q?: string | null; cursor?: string | null; limit?: number | null } = {}): Observable<PagedResult<DeletedTicketDto>> {
+    return this.api.get<PagedResult<DeletedTicketDto>>('tickets/deleted', { params: query, silent: true });
   }
 
   // ───── Look-ups ─────
