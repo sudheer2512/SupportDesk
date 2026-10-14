@@ -53,10 +53,12 @@ public sealed class WebhookRejectedException(string message) : Exception(message
 public sealed record ConnectionTestResult(bool Success, string Message, IReadOnlyDictionary<string, string>? Details = null);
 
 /// <summary>Result of an outbound send. Permanent failures are dead-lettered immediately (no retry).</summary>
-public sealed record SendResult(bool Success, string? ProviderMessageId, string? Error, bool Permanent = false)
+/// <summary>Outcome of a provider send. <see cref="DeadToken"/> (push only): the device token will never work again — stop using it.</summary>
+public sealed record SendResult(bool Success, string? ProviderMessageId, string? Error, bool Permanent = false, bool DeadToken = false)
 {
     public static SendResult Ok(string? providerId) => new(true, providerId, null);
     public static SendResult Fail(string error, bool permanent = false) => new(false, null, error, permanent);
+    public static SendResult Dead(string error) => new(false, null, error, Permanent: true, DeadToken: true);
 }
 
 // ───────────────────────────── E-mail ─────────────────────────────
@@ -200,11 +202,18 @@ public interface IMessagingProvider
 
 // ───────────────────────────── Notifications ─────────────────────────────
 
-/// <summary>Mobile/web push (FCM HTTP v1, or a log-only fallback when not configured).</summary>
+/// <summary>Mobile/web push (FCM HTTP v1 and/or APNs, or a log-only fallback when not configured).</summary>
 public interface IPushSender
 {
     bool IsConfigured { get; }
     Task<SendResult> SendAsync(string deviceToken, string title, string body, IReadOnlyDictionary<string, string> data, CancellationToken ct);
+
+    /// <summary>
+    /// Platform-aware send: a router can deliver iOS tokens through APNs directly and Android/Web tokens through FCM.
+    /// Single-provider senders ignore the platform. A <see cref="SendResult.Permanent"/> failure means the token is dead.
+    /// </summary>
+    Task<SendResult> SendAsync(DevicePlatform platform, string deviceToken, string title, string body, IReadOnlyDictionary<string, string> data,
+        CancellationToken ct) => SendAsync(deviceToken, title, body, data, ct);
 }
 
 /// <summary>Microsoft Teams incoming-webhook notifier.</summary>

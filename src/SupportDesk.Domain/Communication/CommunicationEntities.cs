@@ -242,4 +242,8 @@ public class PushDevice : TenantEntity
     public bool IsActive { get; set; } = true;
     public DateTime RegisteredAt { get; set; }
     public DateTime LastSeenAt { get; set; }
+    /// <summary>Mobile app version that registered the token (diagnostics, targeted rollouts).</summary>
+    public string? AppVersion { get; set; }
+    /// <summary>Why the token stopped receiving pushes (signed out, rejected by the push service…).</summary>
+    public string? DeactivatedReason { get; set; }
 }
