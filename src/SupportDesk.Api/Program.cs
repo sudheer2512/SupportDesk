@@ -92,8 +92,10 @@ app.UseStaticFiles(new StaticFileOptions
     }
 });
 app.UseCors();
-app.UseRateLimiter();
+// Authentication first, so the API limiter partitions by the signed-in user / API client (not by IP: many users share an
+// office NAT, and one busy integration must not starve the agents behind it). Anonymous endpoints still limit by IP.
 app.UseAuthentication();
+app.UseRateLimiter();
 app.UseMiddleware<RequestContextMiddleware>();
 app.UseAuthorization();
 

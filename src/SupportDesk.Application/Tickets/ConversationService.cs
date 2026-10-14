@@ -69,8 +69,11 @@ public sealed class ConversationService(
             if (t.MergedIntoTicketId is not null) throw new DomainException(ErrorCodes.Validation, "This ticket was merged; reply on the surviving ticket.");
             if (r.BasedOnSeq is { } seen && !r.Force && t.LastThreadSeq > seen)
             {
+                // Entries by someone else. An API client without an acting user has no user id: every newer public entry counts
+                // (comparing with a null user id would also drop customer messages, whose author user id is null too).
+                var me = ctx.UserId;
                 var newer = await db.TicketThreads.AsNoTracking()
-                    .Where(x => x.TicketId == ticketId && x.Seq > seen && x.Visibility == Visibility.Public && x.AuthorUserId != ctx.UserId)
+                    .Where(x => x.TicketId == ticketId && x.Seq > seen && x.Visibility == Visibility.Public && (me == null || x.AuthorUserId != me))
                     .OrderBy(x => x.Seq).ToListAsync(ct);
                 if (newer.Count > 0)
                     throw new ReplyCollisionException(new ReplyCollisionDto(t.LastThreadSeq, await MapThreadsAsync(newer, internalView: true, ct)));

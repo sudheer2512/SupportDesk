@@ -395,6 +395,29 @@ public sealed class AdministrationTests(DeskApiFactory factory)
     // ───────────────────────────── API credentials ─────────────────────────────
 
     [Fact]
+    public async Task An_api_key_reply_gets_the_collision_review_for_new_customer_messages()
+    {
+        var t = await factory.CreateTenantAsync();
+        var admin = await t.AdminClientAsync();
+        var created = await Ok<ApiKeySecretDto>(await admin.PostAsJsonAsync("/api/v1/admin/api-keys",
+            new CreateApiKeyRequest("Integration", ["tickets:read", "tickets:write"], null, null), J));
+        var api = factory.CreateClient(new WebApplicationFactoryClientOptions { HandleCookies = false });
+        api.DefaultRequestHeaders.Add("X-Api-Key", created.Secret);
+
+        var ticket = await Ok<TicketDetailDto>(await api.PostAsJsonAsync("/api/v1/tickets",
+            new CreateTicketRequest { Subject = "Collision via API", Channel = "Api", SkipRouting = true }, J));
+        var seen = ticket.LastThreadSeq;
+        await factory.InTenantAsync(t.Id, sp => sp.GetRequiredService<SupportDesk.Application.Tickets.ConversationService>().AddCustomerMessageAsync(ticket.Id,
+            new SupportDesk.Application.Tickets.CustomerMessageInput("<p>Any update?</p>", null, SupportDesk.Domain.Channel.Email, null, "Customer"), default));
+
+        var stale = await api.PostAsJsonAsync($"/api/v1/tickets/{ticket.Id}/replies", new ReplyRequest { BodyHtml = "<p>Fixed.</p>", BasedOnSeq = seen }, J);
+        Assert.Equal(HttpStatusCode.Conflict, stale.StatusCode);
+        Assert.Equal("reply_collision", await CodeAsync(stale));
+        var forced = await api.PostAsJsonAsync($"/api/v1/tickets/{ticket.Id}/replies", new ReplyRequest { BodyHtml = "<p>Fixed.</p>", BasedOnSeq = seen, Force = true }, J);
+        Assert.True(forced.IsSuccessStatusCode, await forced.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
     public async Task An_api_key_is_limited_to_its_scopes_and_can_be_revoked()
     {
         var t = await factory.CreateTenantAsync();

@@ -181,6 +181,31 @@ public sealed class SessionAndTokenTests(DeskApiFactory factory)
     }
 
     [Fact]
+    public async Task Api_rate_limits_apply_per_signed_in_caller_not_per_ip()
+    {
+        var t = await factory.CreateTenantAsync();
+        var adminToken = await factory.LoginAsync(t.Slug, t.AdminEmail);
+        var (_, agentEmail) = await t.CreateAgentAsync("Busy Neighbour");
+        var agentToken = await factory.LoginAsync(t.Slug, agentEmail);
+
+        // A host on the same database with a tiny API budget; both callers come from the same (test) IP.
+        await using var limited = factory.WithWebHostBuilder(b => b.UseSetting("RateLimits:ApiPerMinute", "8"));
+        HttpClient Client(string token)
+        {
+            var c = limited.CreateClient(new WebApplicationFactoryClientOptions { HandleCookies = false });
+            c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            return c;
+        }
+        var admin = Client(adminToken);
+        var statuses = new List<HttpStatusCode>();
+        for (var i = 0; i < 6; i++) statuses.Add((await admin.GetAsync("/api/v1/tickets?limit=1")).StatusCode);
+        Assert.Contains(HttpStatusCode.TooManyRequests, statuses);
+
+        // The other user behind the same address still has their own budget.
+        Assert.Equal(HttpStatusCode.OK, (await Client(agentToken).GetAsync("/api/v1/tickets?limit=1")).StatusCode);
+    }
+
+    [Fact]
     public async Task Login_endpoints_are_rate_limited_per_client()
     {
         // A host on the same database with a tight authentication limit (the shared fixture disables limits).
