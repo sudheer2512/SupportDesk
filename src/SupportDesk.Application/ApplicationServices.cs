@@ -71,6 +71,7 @@ public static class ApplicationServices
         s.AddScoped<TicketQueryService>();
         s.AddScoped<TicketCollaborationService>();
         s.AddScoped<MetaService>();
+        s.AddScoped<WorkbenchSearchService>();
         s.AddScoped<ISlaEngine, SlaEngine>();
         s.AddScoped<IRoutingService, RoutingService>();
         s.AddScoped<IEntitlementService, EntitlementService>();

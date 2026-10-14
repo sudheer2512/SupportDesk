@@ -548,7 +548,8 @@ export interface CreateFollowUpRequest {
 
 // ───── Views ─────
 
-export type ViewVisibility = 'Private' | 'Team' | 'Shared' | string;
+/** Personal (owner only) or Shared (everyone; creating shared views needs supervisor.monitor). */
+export type ViewVisibility = 'Personal' | 'Shared' | string;
 
 export interface SavedViewDto {
   id: Guid;
@@ -581,7 +582,8 @@ export interface TicketQuery {
   viewId?: Guid | null;
   q?: string | null;
   statusId?: string | string[] | null;
-  statusCategory?: StatusCategory | StatusCategory[] | null;
+  /** Exact categories, or the lower-case groups "open"/"unresolved" (every open category) and "done" (resolved or closed). */
+  statusCategory?: StatusCategory | StatusCategory[] | 'open' | 'unresolved' | 'done' | null;
   priority?: string | string[] | null;
   assigneeId?: string | string[] | null;
   unassigned?: boolean | null;
