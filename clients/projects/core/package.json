@@ -1,0 +1,6 @@
+{
+  "name": "@sd/core",
+  "private": true,
+  "description": "SupportDesk API client layer and app services — consumed as source via tsconfig paths. Side-effect free so unused clients are tree-shaken.",
+  "sideEffects": false
+}

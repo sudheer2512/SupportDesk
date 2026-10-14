@@ -1,0 +1,8 @@
+{
+  "name": "@sd/ui",
+  "private": true,
+  "description": "SupportDesk design system — consumed as source via tsconfig paths. sideEffects:false lets the bundler drop components (and their TipTap/ECharts imports) that an entry point does not use.",
+  "sideEffects": [
+    "*.css"
+  ]
+}

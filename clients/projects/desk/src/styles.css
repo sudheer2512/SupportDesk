@@ -1,0 +1,33 @@
+/* Desk app-level styles (design tokens and base styles come from @sd/ui's sd-ui.css). */
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  overflow: hidden;
+}
+
+desk-root {
+  display: block;
+  height: 100%;
+}
+
+/* Page content container used by feature pages */
+.desk-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.desk-page__body {
+  flex: 1;
+  padding: 0 var(--sd-space-6) var(--sd-space-8);
+}
+
+@media (max-width: 640px) {
+  .desk-page__body {
+    padding: 0 var(--sd-space-4) var(--sd-space-7);
+  }
+}

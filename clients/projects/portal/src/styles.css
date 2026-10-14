@@ -1,0 +1,40 @@
+/*
+ * Portal app-level styles. Brand colours from GET /portal/{brand}/config are written to
+ * --brand-primary / --brand-accent / --brand-on-primary on <html> by BrandService; the @sd/ui primary
+ * and accent tokens follow them (lightened for dark mode so contrast holds).
+ */
+:root,
+:root[data-theme='light'] {
+  --sd-primary: var(--brand-primary, #3343cf);
+  --sd-on-primary: var(--brand-on-primary, #ffffff);
+  --sd-accent: var(--brand-accent, #c2470f);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --sd-primary: color-mix(in oklab, var(--brand-primary, #8e9cff) 60%, white);
+    --sd-on-primary: #10121a;
+    --sd-accent: color-mix(in oklab, var(--brand-accent, #ff9a62) 65%, white);
+  }
+}
+
+:root[data-theme='dark'] {
+  --sd-primary: color-mix(in oklab, var(--brand-primary, #8e9cff) 60%, white);
+  --sd-on-primary: #10121a;
+  --sd-accent: color-mix(in oklab, var(--brand-accent, #ff9a62) 65%, white);
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+portal-root {
+  display: block;
+  min-height: 100dvh;
+}
+
+.portal-container {
+  width: min(1120px, 100% - 32px);
+  margin-inline: auto;
+}

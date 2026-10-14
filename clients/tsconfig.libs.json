@@ -1,0 +1,9 @@
+/* Type-check of the shared libraries only (no emit): `npm run check:libs`. Templates are checked through the apps (ngc). */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": []
+  },
+  "include": ["projects/core/src/**/*.ts", "projects/ui/src/**/*.ts"]
+}
