@@ -15,8 +15,8 @@ namespace SupportDesk.Application.Automation;
 /// <summary>Configuration section "Automation:Webhooks".</summary>
 public sealed class WebhookTransportOptions
 {
-    /// <summary>Allow calls to loopback/private (RFC 1918) addresses — needed for on-premises ERP endpoints. Link-local/metadata addresses are always blocked.</summary>
-    public bool AllowPrivateNetworks { get; set; } = true;
+    /// <summary>Allow calls to loopback/private (RFC 1918) addresses. Off by default (SSRF protection); enable for on-premises ERP endpoints. Link-local/metadata addresses are always blocked.</summary>
+    public bool AllowPrivateNetworks { get; set; }
     public int DefaultTimeoutSeconds { get; set; } = 10;
     public string UserAgent { get; set; } = "SupportDesk-Webhooks/1.0";
 }

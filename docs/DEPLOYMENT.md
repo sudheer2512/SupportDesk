@@ -35,6 +35,7 @@ dotnet publish src/SupportDesk.WorkerHost -c Release -o publish/worker
 | `OpenTelemetry__OtlpEndpoint` | OTLP collector for traces |
 | `Cors__Origins` | Only if the SPAs are hosted on another origin |
 | `RateLimits__*` | Per-minute limits for auth, API and public endpoints |
+| `Automation__Webhooks__AllowPrivateNetworks` | Default `false` (SSRF protection). Set `true` only when webhooks/rules must reach on-premises systems such as a local Wings ERP server |
 | `Seed__Demo` | Must be `false` in production |
 
 Database: the API applies EF Core migrations at start-up (`Database:InitializeMode=Migrate`). For controlled
