@@ -58,7 +58,14 @@ public sealed class LocalAiProvider : IChatModel, IEmbeddingModel
             var examples = t.Examples.Where(e => e.Labels.TryGetValue(field, out var l) && allowed.Contains(l)).ToList();
             string? value = null;
             double confidence = 0;
-            if (examples.Count >= 5 && examples.Select(e => e.Labels[field]).Distinct().Count() >= 2)
+            var distinct = examples.Select(e => e.Labels[field]).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+            if (examples.Count >= 5 && distinct == 1 && field != "priority")
+            {
+                // Every past ticket has the same value (e.g. a single-product tenant): suggest it with support-based confidence.
+                value = examples[0].Labels[field];
+                confidence = 0.55 + 0.3 * Math.Min(1, examples.Count / 20.0);
+            }
+            else if (examples.Count >= 5 && distinct >= 2)
             {
                 var model = LocalModelCache.GetOrTrain($"{t.CorpusKey}:{field}", () =>
                 {
