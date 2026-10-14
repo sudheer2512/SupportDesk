@@ -16,7 +16,7 @@ import {
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { MeStore, RealtimeService, safeStorage } from '@sd/core';
+import { ApiError, MeStore, RealtimeService, TicketsApi, safeStorage } from '@sd/core';
 import { SdButton, SdDrawer, SdEmptyState, SdSkeleton, SdTab, SdTabs, ToastService } from '@sd/ui';
 import { debounceTime, filter, merge } from 'rxjs';
 import { TICKET_PANELS, TicketPanelDef } from '../extensions/ticket-panels';
@@ -74,7 +74,7 @@ const NARROW_PX = 1000;
         >
           <div class="state-actions">
             <button sdButton type="button" (click)="closeTab()">Close tab</button>
-            <button sdButton variant="primary" type="button" (click)="ctx.load(id())">Try again</button>
+            <button sdButton variant="primary" type="button" (click)="retry()">Try again</button>
           </div>
         </sd-empty-state>
       </div>
@@ -285,11 +285,38 @@ export class TicketViewComponent {
 
   private lastTimelineLength = 0;
   private joined: string | null = null;
+  private readonly ticketsApi = inject(TicketsApi);
+
+  /** /tickets/<number> → /tickets/<id> without a history entry; a missing number shows the normal error state. */
+  private openByNumber(number: string): void {
+    this.ctx.ticket.set(null);
+    this.ctx.error.set(null);
+    this.ctx.loading.set(true);
+    this.ticketsApi.getByNumber(number).subscribe({
+      next: (t) => void this.router.navigate(['/tickets', t.id], { replaceUrl: true, queryParamsHandling: 'preserve' }),
+      error: (err: unknown) => {
+        this.ctx.loading.set(false);
+        this.ctx.error.set(ApiError.from(err));
+      },
+    });
+  }
+
+  protected retry(): void {
+    const number = /^#?(\d{1,18})$/.exec(this.id())?.[1];
+    if (number) this.openByNumber(number);
+    else this.ctx.load(this.id());
+  }
 
   constructor() {
     // Load + join the realtime group whenever the routed ticket changes (the component is reused across ids).
     effect(() => {
       const id = this.id();
+      // Shared links may carry the ticket number (/tickets/1011 or /tickets/%231011): resolve it to the id route.
+      const number = /^#?(\d{1,18})$/.exec(id)?.[1];
+      if (number) {
+        untracked(() => this.openByNumber(number));
+        return;
+      }
       untracked(() => {
         if (this.joined && this.joined !== id) this.realtime.leaveTicket(this.joined);
         this.joined = id;

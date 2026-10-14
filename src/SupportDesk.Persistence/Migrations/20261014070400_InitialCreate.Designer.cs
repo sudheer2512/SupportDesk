@@ -12,7 +12,7 @@ using SupportDesk.Persistence;
 namespace SupportDesk.Persistence.Migrations
 {
     [DbContext(typeof(DeskDbContext))]
-    [Migration("20261014043248_InitialCreate")]
+    [Migration("20261014070400_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -4241,6 +4241,55 @@ namespace SupportDesk.Persistence.Migrations
                     b.HasIndex("TenantId", "SourceType", "SourceId");
 
                     b.ToTable("KnowledgeChunks");
+                });
+
+            modelBuilder.Entity("SupportDesk.Domain.Knowledge.KnowledgeSearchLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("BrandId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ContactId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Locale")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<string>("NormalizedQuery")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Query")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("ResultCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "CreatedAt");
+
+                    b.HasIndex("TenantId", "NormalizedQuery");
+
+                    b.ToTable("KnowledgeSearchLogs", (string)null);
                 });
 
             modelBuilder.Entity("SupportDesk.Domain.Knowledge.TroubleshootingFlow", b =>

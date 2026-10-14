@@ -916,6 +916,26 @@ namespace SupportDesk.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "KnowledgeSearchLogs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Query = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    NormalizedQuery = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    ResultCount = table.Column<int>(type: "int", nullable: false),
+                    Source = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    BrandId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ContactId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Locale = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_KnowledgeSearchLogs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "LegalHolds",
                 columns: table => new
                 {
@@ -4692,6 +4712,16 @@ namespace SupportDesk.Persistence.Migrations
                 columns: new[] { "TenantId", "Visibility" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_KnowledgeSearchLogs_TenantId_CreatedAt",
+                table: "KnowledgeSearchLogs",
+                columns: new[] { "TenantId", "CreatedAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_KnowledgeSearchLogs_TenantId_NormalizedQuery",
+                table: "KnowledgeSearchLogs",
+                columns: new[] { "TenantId", "NormalizedQuery" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_LegalHolds_TenantId_ReleasedAt",
                 table: "LegalHolds",
                 columns: new[] { "TenantId", "ReleasedAt" });
@@ -5646,6 +5676,9 @@ namespace SupportDesk.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "KnowledgeChunks");
+
+            migrationBuilder.DropTable(
+                name: "KnowledgeSearchLogs");
 
             migrationBuilder.DropTable(
                 name: "LegalHolds");
