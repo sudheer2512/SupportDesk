@@ -1,5 +1,7 @@
+import { isDevMode } from '@angular/core';
 import {
-  Activity, ArrowDown, ArrowLeft, ArrowRight, ArrowUp, AtSign, Archive, Award, Bell, BellOff, Bold, BookOpen, Bookmark, Bot, BrainCircuit, Bug,
+  Activity, ArrowDown, ArrowUpDown, BellRing, MessageSquare, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, RadioTower,
+  ArrowLeft, ArrowRight, ArrowUp, AtSign, Archive, Award, Bell, BellOff, Bold, BookOpen, Bookmark, Bot, BrainCircuit, Bug,
   Building, Calendar, ChartColumn, ChartPie, Check, CheckCheck, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, ChevronsLeft, ChevronsUpDown,
   CircleAlert, CircleCheck, CircleDot, CircleQuestionMark, CircleX, ClipboardList, Clock, Code, Columns3, Command, Copy, CreditCard, Database,
   Download, Ellipsis, EllipsisVertical, ExternalLink, Eye, EyeOff, FilePlus, FileText, Flag, Folder, Funnel, Gauge, GitMerge, GitPullRequest,
@@ -35,7 +37,9 @@ const registry = new Map<string, IconNode>(Object.entries({
   lightbulb: Lightbulb, link: Link, list: List, 'list-checks': ListChecks, 'list-filter': ListFilter, 'list-ordered': ListOrdered, lock: Lock,
   'lock-open': LockOpen, 'log-in': LogIn, 'log-out': LogOut, mail: Mail, 'map-pin': MapPin, menu: Menu, 'message-circle': MessageCircle,
   messages: MessagesSquare, minus: Minus, devices: MonitorSmartphone, moon: Moon, 'octagon-alert': OctagonAlert, package: Package,
-  'collapse-icon': PanelLeft, paperclip: Paperclip, pause: Pause, pencil: Pencil, phone: Phone, play: Play, plug: Plug, plus: Plus,
+  'collapse-icon': PanelLeft, 'panel-left-close': PanelLeftClose, 'panel-left-open': PanelLeftOpen,
+  'panel-right-close': PanelRightClose, 'panel-right-open': PanelRightOpen, 'arrow-up-down': ArrowUpDown, 'bell-ring': BellRing,
+  'message-square': MessageSquare, 'radio-tower': RadioTower, paperclip: Paperclip, pause: Pause, pencil: Pencil, phone: Phone, play: Play, plug: Plug, plus: Plus,
   puzzle: Puzzle, 'qr-code': QrCode, quote: Quote, radar: Radar, receipt: Receipt, redo: Redo2, refresh: RefreshCw, rocket: Rocket,
   history: RotateCcw, scale: Scale, search: Search, send: Send, server: Server, settings: Settings, share: Share2,
   'shield-alert': ShieldAlert, 'shield-check': ShieldCheck, sliders: SlidersHorizontal, smartphone: Smartphone, sparkles: Sparkles,
@@ -53,7 +57,10 @@ export function registerIcons(icons: Record<string, IconNode>): void {
 }
 
 export function iconNode(name: string): IconNode {
-  return registry.get(name) ?? (CircleQuestionMark as IconNode);
+  const node = registry.get(name);
+  if (node) return node;
+  if (isDevMode() && name) console.warn(`sd-icon: unknown icon "${name}" (register it in icon-registry.ts)`);
+  return CircleQuestionMark as IconNode;
 }
 
 export function hasIcon(name: string): boolean {
