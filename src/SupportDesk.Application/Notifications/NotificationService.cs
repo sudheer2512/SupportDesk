@@ -40,16 +40,17 @@ public static class NotificationTypes
     public const string AiProposal = "ai.proposal";
     public const string AnomalyDetected = "anomaly.detected";
     public const string ChatWaiting = "chat.waiting";
+    public const string ChatTransferred = "chat.transferred";
     public const string System = "system";
 
     public static readonly string[] All =
-        [TicketAssigned, TicketMentioned, CustomerReplied, TicketEscalated, SlaWarning, SlaBreached, ApprovalRequested, ApprovalDecided, FollowUpDue, AiProposal, AnomalyDetected, ChatWaiting, System];
+        [TicketAssigned, TicketMentioned, CustomerReplied, TicketEscalated, SlaWarning, SlaBreached, ApprovalRequested, ApprovalDecided, FollowUpDue, AiProposal, AnomalyDetected, ChatWaiting, ChatTransferred, System];
 
     public static (bool Email, bool Push, bool Teams) Defaults(string type) => type switch
     {
         TicketAssigned or TicketMentioned or ApprovalRequested => (true, true, false),
         SlaBreached or TicketEscalated => (true, true, true),
-        SlaWarning or CustomerReplied or FollowUpDue or ChatWaiting => (false, true, false),
+        SlaWarning or CustomerReplied or FollowUpDue or ChatWaiting or ChatTransferred => (false, true, false),
         _ => (false, false, false)
     };
 }

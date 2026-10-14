@@ -90,6 +90,13 @@ public sealed class KnowledgeRetriever(
         var texts = await db.KnowledgeChunks.AsNoTracking().Where(c => chunkIds.Contains(c.Id))
             .Select(c => new { c.Id, c.Title, c.Text }).ToDictionaryAsync(c => c.Id, ct);
 
+        // Customer-facing citations link into a brand's portal: without an explicit brand, use the query's brand or the default one.
+        if (q.Audience != KnowledgeAudience.Agent && string.IsNullOrEmpty(q.BrandSlug) && kept.Any(x => x.Chunk.SourceType == ChunkSources.Article))
+        {
+            var brandId = q.BrandId;
+            var slug = await db.Brands.AsNoTracking().Where(b => brandId == null ? b.IsDefault : b.Id == brandId).Select(b => b.Slug).FirstOrDefaultAsync(ct);
+            q = q with { BrandSlug = slug };
+        }
         var results = kept.Where(x => texts.ContainsKey(x.Chunk.Id)).Select(x =>
         {
             var row = texts[x.Chunk.Id];
@@ -179,9 +186,9 @@ public sealed class KnowledgeRetriever(
             .ToDictionaryAsync(t => t.Id, t => t.Number, ct);
     }
 
-    private static string ArticleUrl(RetrievalQuery q, Guid id, ArticleInfo? info) => q.Audience == KnowledgeAudience.Agent
+    private static string? ArticleUrl(RetrievalQuery q, Guid id, ArticleInfo? info) => q.Audience == KnowledgeAudience.Agent
         ? $"/kb/articles/{id}"
-        : q.BrandSlug is { Length: > 0 } slug ? $"/portal/{slug}/kb/{info?.Slug ?? id.ToString()}" : $"/kb/{info?.Slug ?? id.ToString()}";
+        : q.BrandSlug is { Length: > 0 } slug ? $"/portal/{slug}/kb/{info?.Slug ?? id.ToString()}" : null;
 
     private async Task<List<RetrievedChunk>> MergeKnowledgeModuleHitsAsync(List<RetrievedChunk> results, RetrievalQuery q, string text, CancellationToken ct)
     {

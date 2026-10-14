@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { ConversationDetailDto, ConversationListItemDto, ConversationsApi, MeStore, RealtimeService } from '@sd/core';
-import { SdBadge, SdButton, SdEmptyState, SdRelativeTimePipe, SdSplitLayout, SdTooltip, ToastService } from '@sd/ui';
-import { debounceTime, filter, forkJoin } from 'rxjs';
+import { ApiError, ChatCapacityDto, ConversationDetailDto, ConversationListItemDto, ConversationsApi, MeStore, RealtimeService } from '@sd/core';
+import { SdBadge, SdButton, SdEmptyState, SdIcon, SdRelativeTimePipe, SdSplitLayout, SdTooltip, ToastService } from '@sd/ui';
+import { catchError, debounceTime, filter, forkJoin, of } from 'rxjs';
 import { ChatAlertsService } from './chat-alerts.service';
 import { ConversationContextComponent } from './conversation-context.component';
 import { ConversationViewComponent } from './conversation-view.component';
@@ -14,7 +14,7 @@ import { ConversationViewComponent } from './conversation-view.component';
  */
 @Component({
   selector: 'desk-chat-console-page',
-  imports: [RouterLink, SdSplitLayout, SdButton, SdBadge, SdEmptyState, SdTooltip, SdRelativeTimePipe, ConversationViewComponent, ConversationContextComponent],
+  imports: [RouterLink, SdSplitLayout, SdButton, SdBadge, SdEmptyState, SdIcon, SdTooltip, SdRelativeTimePipe, ConversationViewComponent, ConversationContextComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <sd-split-layout storageKey="chat-console" [defaultLeft]="320" [defaultRight]="300">
@@ -41,7 +41,16 @@ import { ConversationViewComponent } from './conversation-view.component';
 
         <h2 class="section">
           Waiting <sd-badge size="sm" [tone]="waiting().length ? 'warning' : 'neutral'">{{ waiting().length }}</sd-badge>
+          @if (capacity(); as cap) {
+            <span class="capacity" [class.is-full]="cap.atLimit" [attr.aria-label]="'My chats: ' + cap.active + ' of ' + cap.limit">{{ cap.active }}/{{ cap.limit }}</span>
+          }
         </h2>
+        @if (atLimit()) {
+          <p class="limit" role="status" id="chat-limit-note">
+            <sd-icon name="octagon-alert" [size]="14" />
+            You're at your chat limit ({{ capacity()!.limit }}). End or transfer a chat to accept another.
+          </p>
+        }
         <ul class="items" aria-label="Waiting for an agent">
           @for (c of waiting(); track c.id) {
             <li>
@@ -51,7 +60,18 @@ import { ConversationViewComponent } from './conversation-view.component';
                 <span class="sd-small sd-truncate preview">{{ c.lastMessagePreview || c.subject }}</span>
               </button>
               @if (me.can('tickets.reply')) {
-                <button sdButton size="sm" variant="primary" class="accept" [loading]="accepting() === c.id" (click)="accept(c)">Accept</button>
+                <button
+                  sdButton
+                  size="sm"
+                  variant="primary"
+                  class="accept"
+                  [disabled]="atLimit()"
+                  [attr.aria-describedby]="atLimit() ? 'chat-limit-note' : null"
+                  [loading]="accepting() === c.id"
+                  (click)="accept(c)"
+                >
+                  Accept
+                </button>
               }
             </li>
           } @empty {
@@ -201,6 +221,36 @@ import { ConversationViewComponent } from './conversation-view.component';
     .accept {
       flex: none;
     }
+    .capacity {
+      margin-left: auto;
+      padding: 0 6px;
+      border-radius: var(--sd-radius-pill);
+      background: var(--sd-surface-3);
+      color: var(--sd-text-2);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0;
+    }
+    .capacity.is-full {
+      background: var(--sd-danger-bg);
+      color: var(--sd-danger);
+    }
+    .limit {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      margin: 0 var(--sd-space-3) var(--sd-space-2);
+      padding: 6px 10px;
+      border: 1px solid var(--sd-warning-border);
+      border-radius: var(--sd-radius-sm);
+      background: var(--sd-warning-bg);
+      color: var(--sd-text);
+      font-size: var(--sd-text-sm);
+    }
+    .limit sd-icon {
+      flex: none;
+      margin-top: 2px;
+      color: var(--sd-warning);
+    }
   `,
 })
 export class ChatConsolePage {
@@ -220,6 +270,9 @@ export class ChatConsolePage {
   protected readonly bot = signal<ConversationListItemDto[]>([]);
   protected readonly current = signal<ConversationDetailDto | null>(null);
   protected readonly accepting = signal<string | null>(null);
+  /** My live-chat load vs. MaxConcurrentChats (null when unknown). */
+  protected readonly capacity = signal<ChatCapacityDto | null>(null);
+  protected readonly atLimit = computed(() => !!this.capacity()?.atLimit);
   private knownWaiting: Set<string> | null = null;
 
   constructor() {
@@ -256,8 +309,11 @@ export class ChatConsolePage {
         this.select(c.id);
         this.refresh();
       },
-      error: () => {
+      error: (err: unknown) => {
         this.accepting.set(null);
+        const e = ApiError.from(err);
+        // 409s (chat_limit_reached, chat_taken) are not toasted globally.
+        if (e.status === 409) this.toast.warning(e.code === 'chat_limit_reached' ? 'Chat limit reached' : 'Could not accept the chat', e.userMessage);
         this.refresh();
       },
     });
@@ -268,13 +324,16 @@ export class ChatConsolePage {
       waiting: this.api.list({ channel: 'Chat', status: 'WaitingForAgent', limit: 100 }),
       mine: this.api.list({ channel: 'Chat', status: 'AgentActive', mine: true, limit: 100 }),
       bot: this.api.list({ channel: 'Chat', status: 'BotActive', limit: 100 }),
+      // Capacity is advisory in the UI (the API enforces it): keep the queue usable when it cannot be read.
+      capacity: this.api.chatCapacity().pipe(catchError(() => of(null))),
     }).subscribe({
-      next: ({ waiting, mine, bot }) => {
+      next: ({ waiting, mine, bot, capacity }) => {
         this.notifyNew(waiting.items);
         // Oldest waiting first (fair queue).
         this.waiting.set([...waiting.items].sort((a, b) => a.lastMessageAt.localeCompare(b.lastMessageAt)));
         this.mine.set(mine.items);
         this.bot.set(bot.items);
+        this.capacity.set(capacity);
       },
       error: () => undefined,
     });

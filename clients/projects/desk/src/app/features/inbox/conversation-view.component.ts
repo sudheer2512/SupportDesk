@@ -23,9 +23,25 @@ import {
   ConversationsApi,
   MeStore,
   RealtimeService,
+  ReplyTemplateDto,
+  WorkbenchApi,
 } from '@sd/core';
-import { SdBadge, SdButton, SdDateTimePipe, SdDurationPipe, SdEmptyState, SdIcon, SdRelativeTimePipe, SdSkeleton, SdTooltip, ToastService } from '@sd/ui';
-import { Subscription, debounceTime, filter } from 'rxjs';
+import {
+  SdBadge,
+  SdButton,
+  SdDateTimePipe,
+  SdDialogService,
+  SdDropdownMenu,
+  SdDurationPipe,
+  SdEmptyState,
+  SdIcon,
+  SdMenuItem,
+  SdRelativeTimePipe,
+  SdSkeleton,
+  SdTooltip,
+  ToastService,
+} from '@sd/ui';
+import { Subscription, debounceTime, filter, firstValueFrom } from 'rxjs';
 import {
   channelIcon,
   channelLabel,
@@ -37,7 +53,24 @@ import {
   saveBlob,
 } from '../../shared/channel-ui';
 import { AttachmentChipComponent } from './attachment-chip.component';
+import { ChatTransferData, ChatTransferDialog } from './chat-transfer.dialog';
 import { DeliveryTimelineComponent } from './delivery-timeline.component';
+
+/** Rendered template HTML → chat text: paragraphs and line breaks become new lines, list items get a bullet. */
+function templateText(html: string): string {
+  const doc = new DOMParser().parseFromString(
+    html
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<li[^>]*>/gi, '• ')
+      .replace(/<\/(p|div|li|h[1-6]|tr)>/gi, '\n'),
+    'text/html',
+  );
+  return (doc.body.textContent ?? '')
+    .replace(/ /g, ' ')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
 
 /** Strips inline images that point at authenticated attachment URLs (they are listed as attachment thumbnails instead). */
 function displayHtml(html: string | null): string {
@@ -65,6 +98,7 @@ function displayHtml(html: string | null): string {
     SdDateTimePipe,
     SdRelativeTimePipe,
     SdDurationPipe,
+    SdDropdownMenu,
     AttachmentChipComponent,
     DeliveryTimelineComponent,
   ],
@@ -95,6 +129,9 @@ function displayHtml(html: string | null): string {
           }
           @if (isChat() && canAccept()) {
             <button sdButton size="sm" variant="primary" icon="user-check" [loading]="busy()" (click)="accept()">Accept chat</button>
+          }
+          @if (canTransfer()) {
+            <button sdButton size="sm" variant="secondary" icon="share" [disabled]="busy()" (click)="transfer()">Transfer</button>
           }
           @if (isChat() && s.status !== 'Closed') {
             <button sdButton size="sm" variant="ghost" icon="x" [loading]="busy()" (click)="closeChat()">End chat</button>
@@ -265,7 +302,20 @@ function displayHtml(html: string | null): string {
             [disabled]="s.status !== 'AgentActive' && s.status !== 'WaitingForAgent'"
             maxlength="4000"
           ></textarea>
-          <button sdButton variant="primary" type="submit" icon="send" [loading]="sending()" [disabled]="!draft().trim()">Send</button>
+          <div class="composer-actions">
+            <sd-dropdown-menu
+              size="sm"
+              variant="ghost"
+              icon="file-text"
+              label="Templates"
+              ariaLabel="Insert a reply template"
+              align="end"
+              [items]="templateItems()"
+              [disabled]="!s.ticketId || (s.status !== 'AgentActive' && s.status !== 'WaitingForAgent')"
+              (select)="loadTemplates()"
+            />
+            <button sdButton variant="primary" type="submit" icon="send" [loading]="sending()" [disabled]="!draft().trim()">Send</button>
+          </div>
         </form>
       } @else if (!isChat() && s.ticketId && s.channel !== 'Phone') {
         <p class="reply-hint sd-small sd-muted">
@@ -544,6 +594,25 @@ function displayHtml(html: string | null): string {
       min-height: 44px;
       max-height: 160px;
     }
+    .composer-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 4px;
+    }
+    @media (max-width: 480px) {
+      .composer {
+        flex-wrap: wrap;
+      }
+      .composer textarea {
+        flex-basis: 100%;
+      }
+      .composer-actions {
+        flex-direction: row;
+        justify-content: flex-end;
+        width: 100%;
+      }
+    }
     .reply-hint {
       display: flex;
       align-items: center;
@@ -562,6 +631,10 @@ export class ConversationViewComponent {
   private readonly toast = inject(ToastService);
   private readonly me = inject(MeStore);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly workbench = inject(WorkbenchApi);
+  private readonly dialogs = inject(SdDialogService);
+  private readonly templates = signal<ReplyTemplateDto[] | null>(null);
+  private readonly templatesError = signal<string | null>(null);
 
   readonly conversationId = input.required<string>();
   /** Emitted after every (re)load so lists can patch their row. */
@@ -597,6 +670,29 @@ export class ConversationViewComponent {
     return s.status === 'WaitingForAgent' || s.status === 'BotActive' || (s.status === 'AgentActive' && !s.assignedUserId);
   });
   protected readonly pageUrl = computed(() => metaString(this.detail()?.metadata, 'pageUrl'));
+  /** The agent handling the chat (or anyone while it waits) may hand it on; supervisors always. */
+  protected readonly canTransfer = computed(() => {
+    const s = this.detail()?.summary;
+    if (!s || s.channel !== 'Chat' || s.status === 'Closed' || !this.me.can('tickets.reply')) return false;
+    return !s.assignedUserId || s.assignedUserId === this.me.user()?.id || this.me.can('supervisor.monitor');
+  });
+  /** Reply templates (canned responses) rendered against the chat's ticket and inserted as plain text. */
+  protected readonly templateItems = computed<SdMenuItem[]>(() => {
+    const list = this.templates();
+    if (this.templatesError()) return [{ id: 'err', label: this.templatesError()!, disabled: true }];
+    if (list === null) return [{ id: 'loading', label: 'Loading templates…', disabled: true }];
+    if (list.length === 0) return [{ id: 'none', label: 'No templates available', disabled: true }];
+    const items: SdMenuItem[] = [];
+    let category: string | null | undefined;
+    for (const t of [...list].sort((a, b) => (a.category ?? '').localeCompare(b.category ?? '') || a.name.localeCompare(b.name))) {
+      if (t.category !== category) {
+        category = t.category;
+        if (category) items.push({ id: `h-${category}`, label: category, heading: true });
+      }
+      items.push({ id: t.id, label: t.name, icon: 'file-text', run: () => void this.insertTemplate(t) });
+    }
+    return items;
+  });
 
   private typingTimer: ReturnType<typeof setTimeout> | null = null;
   private lastTypingSent = 0;
@@ -724,8 +820,50 @@ export class ConversationViewComponent {
         this.busy.set(false);
         this.toast.success('Chat accepted', 'You are now chatting with the visitor.');
       },
-      error: () => this.busy.set(false),
+      error: (err: unknown) => {
+        this.busy.set(false);
+        const e = ApiError.from(err);
+        // 409 chat_limit_reached / chat_taken are not toasted globally.
+        if (e.status === 409) this.toast.warning(e.code === 'chat_limit_reached' ? 'Chat limit reached' : 'Could not accept the chat', e.userMessage);
+        this.reload(true);
+      },
     });
+  }
+
+  protected transfer(): void {
+    const d = this.detail();
+    if (!d || !this.canTransfer()) return;
+    this.dialogs
+      .open<ConversationDetailDto | null, ChatTransferData>(ChatTransferDialog, { data: { conversation: d }, size: 'sm' })
+      .closed.subscribe((updated) => {
+        if (!updated) return;
+        this.detail.set(updated);
+        this.changed.emit(updated);
+      });
+  }
+
+  /** Loads the template list the first time the menu opens. */
+  protected loadTemplates(): void {
+    if (this.templates() !== null) return;
+    this.templatesError.set(null);
+    this.workbench.templates().subscribe({
+      next: (list) => this.templates.set(list),
+      error: (err: unknown) => this.templatesError.set(ApiError.from(err).userMessage),
+    });
+  }
+
+  /** Renders the template's placeholders against the chat's ticket and appends it to the message as plain text. */
+  private async insertTemplate(t: ReplyTemplateDto): Promise<void> {
+    const ticketId = this.detail()?.summary.ticketId;
+    if (!ticketId) return;
+    try {
+      const rendered = await firstValueFrom(this.workbench.renderTemplate(ticketId, t.id));
+      const text = templateText(rendered.bodyHtml);
+      const current = this.draft();
+      this.draft.set((current.trim() ? `${current.replace(/\s+$/, '')}\n` : '') + text);
+    } catch (err) {
+      this.toast.error('Could not insert the template', ApiError.from(err).userMessage);
+    }
   }
 
   protected closeChat(): void {
@@ -770,7 +908,11 @@ export class ConversationViewComponent {
         this.sending.set(false);
         this.reload(true);
       },
-      error: () => this.sending.set(false),
+      error: (err: unknown) => {
+        this.sending.set(false);
+        const e = ApiError.from(err);
+        if (e.status === 409) this.toast.warning(e.code === 'chat_limit_reached' ? 'Chat limit reached' : 'Message not sent', e.userMessage);
+      },
     });
   }
 

@@ -109,7 +109,7 @@ public sealed class AnomalyDetectionService(DeskDbContext db, RequestContext ctx
         foreach (var a in created)
             await notifications.NotifyAsync(new NotifyRequest(supervisors, NotificationTypes.AnomalyDetected,
                 $"Unusual ticket volume: {a.DimensionLabel}", $"{a.Count} tickets on {a.Day:yyyy-MM-dd} vs. a typical {a.Baseline:0.#} per day (z = {a.Score:0.0}).",
-                "/analytics/anomalies", NotificationSeverity.Warning, false, "AnomalyAlert", a.Id, $"anomaly:{a.Id:N}"), ct);
+                DeskLinks.AiAnomalies, NotificationSeverity.Warning, false, "AnomalyAlert", a.Id, $"anomaly:{a.Id:N}"), ct);
         await gateway.RunBuiltinAsync(new AiCall { Feature = AiFeatures.AnomalyDetection, EntityType = "AnomalyAlert" }, () =>
             Task.FromResult(new AiOutput<object>(created.Select(a => new { a.Id, a.Dimension, a.DimensionLabel, a.Day, a.Count, a.Baseline, a.Score }).ToList(),
                 Math.Min(1, created.Max(a => a.Score) / 6))), ct);
