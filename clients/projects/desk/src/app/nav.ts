@@ -112,6 +112,14 @@ export const DESK_MODULES: readonly DeskModule[] = [
     description: 'Summaries, reply drafts, triage suggestions and approved AI actions.',
   },
   {
+    path: 'engineering',
+    label: 'Engineering',
+    icon: 'bug',
+    permissions: ['engineering.view', 'engineering.manage'],
+    section: 'Operations',
+    description: 'Built-in engineering board: escalated defects, fix versions and releases.',
+  },
+  {
     path: 'admin',
     label: 'Administration',
     icon: 'settings',

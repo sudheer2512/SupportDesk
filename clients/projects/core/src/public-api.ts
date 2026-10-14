@@ -101,3 +101,6 @@ export * from './lib/api/devices.api';
 // Analytics: metric catalogue, queries, reports, dashboards, exports and scheduled reports
 export * from './lib/models/analytics';
 export * from './lib/api/analytics.api';
+// Engineering escalation (Azure DevOps / GitHub / built-in tracker) and Teams / Slack collaboration
+export * from './lib/models/engineering';
+export * from './lib/api/engineering.api';

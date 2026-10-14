@@ -68,4 +68,22 @@ export const ADMIN_AREAS: AdminAreaDef[] = [
     permissions: ['admin.integrations'],
     group: 'Integrations',
   },
+  {
+    key: 'engineering',
+    label: 'Engineering',
+    description: 'Azure DevOps (Services / Server), GitHub or the built-in board: escalation, mappings, sync-back rules, webhooks and logs.',
+    icon: 'bug',
+    route: '/admin/engineering',
+    permissions: ['admin.integrations'],
+    group: 'Integrations',
+  },
+  {
+    key: 'collaboration',
+    label: 'Teams & Slack',
+    description: 'Post urgent tickets, SLA breaches, escalations, mentions and fix releases to team channels.',
+    icon: 'messages',
+    route: '/admin/collaboration',
+    permissions: ['admin.integrations'],
+    group: 'Integrations',
+  },
 ];
