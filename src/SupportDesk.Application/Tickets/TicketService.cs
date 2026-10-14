@@ -162,6 +162,13 @@ public sealed class TicketService(
 
         var customFieldsJson = await customFields.MergeAsync("Ticket", "{}", r.CustomFields, departmentId,
             enforceRequired: source.EnforceRequiredFields && !ctx.IsSystem, portalOnly: source.PortalSubmission, ct);
+        if (r.StatusId is not null && source.EnforceRequiredFields && !ctx.IsSystem)
+        {
+            // Creating straight into a status must respect "required for this status" custom fields too.
+            var missingForStatus = Administration.CustomFieldRules.MissingForStatus(await customFields.DefinitionsAsync("Ticket", ct), customFieldsJson, departmentId, status.Id);
+            if (missingForStatus.Count > 0)
+                throw new DomainException(ErrorCodes.MissingFields, $"Fill in {string.Join(", ", missingForStatus)} to create the ticket as '{status.Name}'.");
+        }
 
         var number = await counters.NextAsync("ticket", (await settings.TicketsAsync(ct)).NumberStart, ct);
         var ticket = new Ticket

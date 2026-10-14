@@ -117,7 +117,7 @@ export const ADMIN_AREAS: AdminAreaDef[] = [
   {
     key: 'security',
     label: 'Security & sign-in',
-    description: 'MFA, password and session policies, agent IP allow-list, single sign-on and active sessions.',
+    description: 'MFA, password and session policies, agent IP allow-list, single sign-on (SSO / OIDC) and active sessions.',
     icon: 'lock',
     route: '/admin/security',
     permissions: ['admin.security'],

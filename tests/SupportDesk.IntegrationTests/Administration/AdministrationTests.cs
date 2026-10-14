@@ -334,6 +334,18 @@ public sealed class AdministrationTests(DeskApiFactory factory)
         var saved = (await admin.GetFromJsonAsync<SecurityPolicyDto>("/api/v1/admin/security/policy", J))!;
         Assert.Equal("RequiredForAll", saved.MfaPolicy);
         Assert.Equal(12, saved.Password.MinLength);
+
+        // SSO: the client secret is write-only and is dropped when the provider registration changes.
+        var sso = await Ok<SsoConfigDto>(await admin.PutAsJsonAsync("/api/v1/admin/security/sso", new SaveSsoConfigRequest(false, "https://idp.example.com", "desk-app",
+            "s3cret-value", false, "openid profile email", "email", "name", false, null, false), J));
+        Assert.True(sso.HasClientSecret);
+        Assert.DoesNotContain("s3cret-value", await admin.GetStringAsync("/api/v1/admin/security/sso"));
+        var kept = await Ok<SsoConfigDto>(await admin.PutAsJsonAsync("/api/v1/admin/security/sso", new SaveSsoConfigRequest(false, "https://idp.example.com", "desk-app",
+            null, false, "openid profile email", "email", "name", false, null, false), J));
+        Assert.True(kept.HasClientSecret);
+        var moved = await Ok<SsoConfigDto>(await admin.PutAsJsonAsync("/api/v1/admin/security/sso", new SaveSsoConfigRequest(false, "https://other-idp.example.net", "desk-app",
+            null, false, "openid profile email", "email", "name", false, null, false), J));
+        Assert.False(moved.HasClientSecret);
     }
 
     // ───────────────────────────── API credentials ─────────────────────────────
@@ -395,6 +407,20 @@ public sealed class AdministrationTests(DeskApiFactory factory)
         // The public portal configuration reflects the change (contract unchanged).
         var portal = await Anonymous().GetFromJsonAsync<JsonElement>($"/api/v1/portal/{a.Slug}/config", J);
         Assert.Equal("#7c3aed", portal.GetProperty("primaryColor").GetString());
+
+        // Logos are public only once a brand uses them: a generic upload labelled "brand-asset" is never served.
+        byte[] png = Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+        MultipartFormDataContent Form()
+        {
+            var content = new ByteArrayContent(png);
+            content.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+            return new MultipartFormDataContent { { content, "file", "logo.png" } };
+        }
+        var sneaky = await Ok<UploadedFileDto>(await adminA.PostAsync("/api/v1/files?purpose=brand-asset", Form()));
+        Assert.Equal(HttpStatusCode.NotFound, (await Anonymous().GetAsync($"/api/v1/brand-assets/{sneaky.FileId}")).StatusCode);
+        var withLogo = await Ok<AdminBrandDto>(await adminA.PostAsync($"/api/v1/admin/brands/{brandA.Id}/assets/logo", Form()));
+        Assert.StartsWith("/api/v1/brand-assets/", withLogo.LogoUrl);
+        Assert.Equal(HttpStatusCode.OK, (await Anonymous().GetAsync(withLogo.LogoUrl)).StatusCode);
 
         // Templates: unknown placeholders are rejected; preview renders with sample values and encodes them.
         var bad = await adminA.PutAsJsonAsync("/api/v1/admin/notifications/templates/customer.ticket_acknowledgement",

@@ -42,6 +42,18 @@ export function saveErrors(err: unknown, fallback: string): { fields: Record<str
   return { fields: {}, message: err instanceof ApiError ? err.userMessage : fallback };
 }
 
+/**
+ * Template keys contain dots ("customer.ticket_acknowledgement"); the SPA host treats a dotted last path segment as a
+ * static file, so routes use "--" instead (deep links and reloads keep working).
+ */
+export function templateRouteKey(key: string): string {
+  return key.replace(/\./g, '--');
+}
+
+export function templateKeyFromRoute(routeKey: string): string {
+  return routeKey.replace(/--/g, '.');
+}
+
 /** True when two JSON-serialisable values are equal (dirty tracking for small editor models). */
 export function sameValue(a: unknown, b: unknown): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
@@ -72,7 +84,8 @@ export interface AdminSection {
       margin: 0 var(--sd-space-6) var(--sd-space-5);
       border-bottom: 1px solid var(--sd-border);
       overflow-x: auto;
-      scrollbar-width: thin;
+      overflow-y: hidden;
+      scrollbar-width: none;
     }
     a {
       display: inline-flex;

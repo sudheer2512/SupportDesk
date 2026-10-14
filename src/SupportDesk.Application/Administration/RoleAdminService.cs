@@ -46,7 +46,8 @@ public sealed class RoleAdminService(
     IAuditWriter audit,
     PrincipalLoader principals,
     LimitGuard limits,
-    AdminChangeNotifier changes)
+    AdminChangeNotifier changes,
+    TenantSettingsService settings)
 {
     public async Task<List<AdminRoleListItemDto>> ListAsync(CancellationToken ct)
     {
@@ -141,6 +142,8 @@ public sealed class RoleAdminService(
         role.IsLightAgent = r.IsLightAgent;
         foreach (var p in role.Permissions.Where(p => removed.Contains(p.PermissionCode)).ToList()) db.RolePermissions.Remove(p);
         foreach (var p in added) db.RolePermissions.Add(new RolePermission { RoleId = role.Id, PermissionCode = p });
+        // Always update the role row so its rowversion moves even for permission-only edits (stale editors get 409).
+        db.Entry(role).Property(x => x.UpdatedAt).IsModified = true;
 
         if (added.Count > 0 || removed.Count > 0)
             audit.Write(AuditActions.PermissionsChanged, "Role", role.Id, $"Permissions of role '{role.Name}' changed (+{added.Count} / -{removed.Count})", new { added, removed });
@@ -162,6 +165,9 @@ public sealed class RoleAdminService(
         var role = await db.Roles.Include(x => x.Permissions).FirstOrDefaultAsync(x => x.Id == id, ct) ?? throw new NotFoundException("Role", id);
         if (role.IsSystem) throw new ConflictException("system_role_read_only", "System roles cannot be deleted.");
         EnsureCanManage(role.Permissions.Select(p => p.PermissionCode), role.TicketScope, role.CustomerScope, $"the role '{role.Name}'");
+        var sso = await settings.GetAsync<SsoSettings>(SettingKeys.Sso, ct);
+        if (sso.DefaultRoleId == id)
+            throw new ConflictException("role_in_use", "Single sign-on gives this role to new users. Choose another default role under Security → Single sign-on first.");
         var memberships = await db.UserRoles.Where(ur => ur.RoleId == id).ToListAsync(ct);
         Role? target = null;
         if (memberships.Count > 0)

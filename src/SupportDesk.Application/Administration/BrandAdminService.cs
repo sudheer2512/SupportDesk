@@ -33,6 +33,7 @@ public sealed partial class BrandAdminService(
 {
     public const string AssetPurpose = "brand-asset";
     public const string AssetRoute = "/api/v1/brand-assets/";
+    public const long MaxAssetBytes = 2 * 1024 * 1024;
     private static readonly string[] ReservedSlugs = ["admin", "api", "portal", "assets", "widget", "hubs", "login", "static", "docs", "openapi"];
 
     [GeneratedRegex("^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})?$")]
@@ -130,7 +131,7 @@ public sealed partial class BrandAdminService(
         var stored = await files.UploadAsync(content, fileName!, contentType, AssetPurpose, ct);
         if (!stored.ContentType.StartsWith("image/", StringComparison.Ordinal) || !FileService.IsInlineSafe(stored.ContentType))
             throw new DomainException("file_type_blocked", "Upload a PNG, JPEG, GIF or WebP image.", 415);
-        if (stored.SizeBytes > 2 * 1024 * 1024) throw new DomainException("file_too_large", "Brand images may be at most 2 MB.", 413);
+        if (stored.SizeBytes > MaxAssetBytes) throw new DomainException("file_too_large", "Brand images may be at most 2 MB.", 413);
         var url = AssetRoute + stored.Id;
         if (kind == "logo") b.LogoUrl = url; else b.FaviconUrl = url;
         audit.Write(AdminAuditActions.BrandChanged, "Brand", b.Id, $"Brand '{b.Name}' {kind} uploaded", new { file = stored.FileName, stored.SizeBytes, stored.Sha256 });
@@ -277,7 +278,10 @@ public sealed partial class BrandAdminService(
     }
 }
 
-/// <summary>Serves brand logos/favicons publicly (unauthenticated; unguessable ids; inline-safe images only).</summary>
+/// <summary>
+/// Serves brand logos/favicons publicly (unauthenticated; inline-safe images only). Only files a brand currently uses as
+/// its logo or favicon are served — an upload merely labelled "brand-asset" by someone else never becomes public.
+/// </summary>
 public sealed class BrandAssetService(DeskDbContext db, IFileStorage storage)
 {
     public async Task<(StoredFile File, Stream Content)> OpenAsync(Guid fileId, CancellationToken ct)
@@ -285,6 +289,9 @@ public sealed class BrandAssetService(DeskDbContext db, IFileStorage storage)
         var file = await db.AllTenants<StoredFile>().AsNoTracking().FirstOrDefaultAsync(f => f.Id == fileId && f.Purpose == BrandAdminService.AssetPurpose, ct);
         if (file is null || file.ScanStatus is ScanStatus.Infected or ScanStatus.Blocked || !file.ContentType.StartsWith("image/", StringComparison.Ordinal)
             || !FileService.IsInlineSafe(file.ContentType))
+            throw new NotFoundException("Image", fileId);
+        var url = BrandAdminService.AssetRoute + fileId;
+        if (!await db.AllTenants<Brand>().AnyAsync(b => b.TenantId == file.TenantId && (b.LogoUrl == url || b.FaviconUrl == url), ct))
             throw new NotFoundException("Image", fileId);
         return (file, await storage.OpenReadAsync(file.StorageKey, ct));
     }

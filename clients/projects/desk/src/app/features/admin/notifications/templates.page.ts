@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { RouterLink } from '@angular/router';
 import { AdminNotificationsApi, ApiError, NotificationTemplateDto } from '@sd/core';
 import { SdBadge, SdButton, SdEmptyState, SdIcon, SdRelativeTimePipe, SdSkeleton } from '@sd/ui';
-import { ADMIN_EDITOR_STYLES } from '../admin-shared';
+import { ADMIN_EDITOR_STYLES, templateRouteKey } from '../admin-shared';
 
 /** E-mail templates sent automatically to customers and agents; built-in defaults until customised. */
 @Component({
@@ -26,7 +26,7 @@ import { ADMIN_EDITOR_STYLES } from '../admin-shared';
                 <span class="icon"><sd-icon name="mail" [size]="16" /></span>
                 <div class="grow">
                   <div class="title">
-                    <a [routerLink]="t.key" class="name">{{ t.name }}</a>
+                    <a [routerLink]="routeKey(t.key)" class="name">{{ t.name }}</a>
                     @if (t.isCustomized && t.isActive) {
                       <sd-badge size="sm" tone="primary">Customised</sd-badge>
                     } @else if (t.isCustomized) {
@@ -38,7 +38,7 @@ import { ADMIN_EDITOR_STYLES } from '../admin-shared';
                   <span class="sd-muted small">{{ t.description }}</span>
                   <span class="sd-muted small subject">Subject: {{ t.subject }}@if (t.updatedAt) { · updated {{ t.updatedAt | sdRelativeTime }}}</span>
                 </div>
-                <a sdButton size="sm" icon="pencil" [routerLink]="t.key" [attr.aria-label]="'Edit ' + t.name">Edit</a>
+                <a sdButton size="sm" icon="pencil" [routerLink]="routeKey(t.key)" [attr.aria-label]="'Edit ' + t.name">Edit</a>
               </li>
             }
           </ul>
@@ -63,6 +63,7 @@ import { ADMIN_EDITOR_STYLES } from '../admin-shared';
 export class TemplatesPage implements OnInit {
   private readonly api = inject(AdminNotificationsApi);
 
+  protected readonly routeKey = templateRouteKey;
   protected readonly templates = signal<NotificationTemplateDto[]>([]);
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);

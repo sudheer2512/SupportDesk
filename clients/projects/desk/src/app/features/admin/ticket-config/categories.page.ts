@@ -193,6 +193,8 @@ interface IssueTypeForm {
     .cols { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: var(--sd-space-4); align-items: start; }
     .cols .card + .card { margin-top: 0; }
     .head { display: flex; align-items: flex-start; gap: var(--sd-space-3); justify-content: space-between; margin-bottom: var(--sd-space-3); }
+    .head > div { flex: 1; min-width: 0; }
+    .head > button { flex: none; white-space: nowrap; }
     .head p { margin: 2px 0 0; }
     .rows > li { padding: 6px 8px; gap: var(--sd-space-2); }
     .rows > li.sub { padding-left: 32px; background: var(--sd-surface-2); }

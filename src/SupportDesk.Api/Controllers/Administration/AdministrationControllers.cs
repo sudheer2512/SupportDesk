@@ -212,6 +212,7 @@ public sealed class AdminBrandsController(BrandAdminService brands) : DeskContro
     [RequestSizeLimit(5 * 1024 * 1024)]
     public async Task<AdminBrandDto> UploadAsset(Guid id, string kind, IFormFile file, CancellationToken ct)
     {
+        if (file.Length > BrandAdminService.MaxAssetBytes) throw new Domain.DomainException("file_too_large", "Brand images may be at most 2 MB.", 413);
         await using var stream = file.OpenReadStream();
         return await brands.UploadAssetAsync(id, kind, stream, file.FileName, file.ContentType, Base, ct);
     }

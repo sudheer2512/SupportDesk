@@ -48,8 +48,8 @@ public sealed class RequestContextMiddleware(RequestDelegate next, ILogger<Reque
                         await Reject(http, 401, "account_disabled", "Your account is disabled.");
                         return;
                     }
-                    // Agent IP allow-list (administration → security). Sign-out/refresh stay reachable; platform operators and API clients are not subject to it.
-                    if (!http.Request.Path.StartsWithSegments("/api/v1/auth")
+                    // Agent IP allow-list (administration → security). Only sign-out and token refresh stay reachable; platform operators and API clients are not subject to it.
+                    if (!http.Request.Path.StartsWithSegments("/api/v1/auth/logout") && !http.Request.Path.StartsWithSegments("/api/v1/auth/refresh")
                         && !await http.RequestServices.GetRequiredService<IpAccessPolicy>().IsAllowedAsync(ctx.IpAddress, http.RequestAborted))
                     {
                         await Reject(http, 403, "ip_not_allowed", $"Access from your network ({ctx.IpAddress ?? "unknown address"}) is not allowed by your organisation.");
@@ -69,8 +69,14 @@ public sealed class RequestContextMiddleware(RequestDelegate next, ILogger<Reque
                         await Reject(http, 401, "client_disabled", "This API client is disabled.");
                         return;
                     }
-                    if (actAs is { } actor && await principals.LoadAgentAsync(actor, http.RequestAborted) is { IsActive: true } p)
+                    if (actAs is { } actor)
                     {
+                        // A key acting as a user never exceeds that user; if the user is gone or disabled the key stops working.
+                        if (await principals.LoadAgentAsync(actor, http.RequestAborted) is not { IsActive: true } p)
+                        {
+                            await Reject(http, 401, "client_disabled", "The user this API key acts as is disabled.");
+                            return;
+                        }
                         ctx.SetTenant(tenantId);
                         permissions.IntersectWith(p.Permissions);
                     }

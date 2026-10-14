@@ -399,7 +399,7 @@ public sealed class AuthService(
     public async Task<(OtpChallenge Challenge, string? DemoCode)> CreateOtpAsync(PrincipalKind kind, Guid principalId, OtpPurpose purpose, string? destination,
         bool sendEmail, bool demoMode, CancellationToken ct)
     {
-        var code = Random.Shared.Next(0, 1_000_000).ToString("D6");
+        var code = System.Security.Cryptography.RandomNumberGenerator.GetInt32(0, 1_000_000).ToString("D6");
         var challenge = new OtpChallenge
         {
             TenantId = ctx.HasTenant ? ctx.TenantId : null,

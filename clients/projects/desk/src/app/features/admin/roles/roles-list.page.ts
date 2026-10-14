@@ -121,7 +121,7 @@ const SCOPE_LABEL: Record<string, string> = { Own: 'Own tickets', Team: 'Team', 
     .name:hover, .name:focus-visible { color: var(--sd-primary); text-decoration: underline; }
     .meta { display: flex; gap: var(--sd-space-4); color: var(--sd-text-2); white-space: nowrap; }
     .meta span { display: inline-flex; align-items: center; gap: 4px; }
-    @media (max-width: 760px) { .meta { width: 100%; padding-left: 44px; flex-wrap: wrap; gap: var(--sd-space-2) var(--sd-space-3); } }
+    @media (max-width: 760px) { .meta { order: 3; width: 100%; padding-left: 44px; flex-wrap: wrap; gap: var(--sd-space-2) var(--sd-space-3); } }
   `,
 })
 export class RolesListPage implements OnInit {

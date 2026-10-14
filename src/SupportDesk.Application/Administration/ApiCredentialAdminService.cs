@@ -5,6 +5,7 @@ using SupportDesk.Application.Platform;
 using SupportDesk.Application.Tickets;
 using SupportDesk.Contracts.Administration;
 using SupportDesk.Domain;
+using SupportDesk.Domain.Identity;
 using SupportDesk.Domain.Integration;
 using SupportDesk.Domain.Rules;
 using SupportDesk.Persistence;
@@ -23,7 +24,8 @@ public sealed class ApiCredentialAdminService(
     RequestContext ctx,
     IAuditWriter audit,
     ApiKeyService apiKeys,
-    OAuthClientService oauthClients)
+    OAuthClientService oauthClients,
+    PrincipalLoader principals)
 {
     private static readonly IReadOnlyDictionary<string, string> ScopeDescriptions = new Dictionary<string, string>
     {
@@ -41,7 +43,8 @@ public sealed class ApiCredentialAdminService(
         return ApiScopes.Catalog.Append(ApiScopes.All).Select(s =>
         {
             var perms = ApiScopes.PermissionsFor([s]).OrderBy(p => p, StringComparer.Ordinal).ToList();
-            return new ApiScopeDto(s, ScopeDescriptions.GetValueOrDefault(s, s), perms, RoleRules.NotHeld(ctx.Permissions, perms).Count == 0);
+            var fullScope = ctx.TicketScope == TicketScope.All && ctx.CustomerScope == CustomerScope.All;
+            return new ApiScopeDto(s, ScopeDescriptions.GetValueOrDefault(s, s), perms, fullScope && RoleRules.NotHeld(ctx.Permissions, perms).Count == 0);
         }).ToList();
     }
 
@@ -103,6 +106,7 @@ public sealed class ApiCredentialAdminService(
         ctx.Require(Permissions.AdminIntegrations);
         var client = await db.ApiClients.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id, ct) ?? throw new NotFoundException("OAuth client", id);
         if (!client.IsActive) throw new ConflictException("client_revoked", "This client is revoked. Create a new one instead.");
+        EnsureFullDataScope();
         EnsureGrantable(Json.StringList(client.ScopesJson));
         var secret = await oauthClients.RotateSecretAsync(id, ct);
         var fresh = await db.ApiClients.AsNoTracking().FirstAsync(c => c.Id == id, ct);
@@ -134,8 +138,24 @@ public sealed class ApiCredentialAdminService(
         if (expiresAt is { } exp && (exp <= now.AddMinutes(5) || exp > now.AddYears(3))) errors["expiresAt"] = "Choose an expiry between now and three years ahead.";
         if (actAsUserId is { } uid && !await db.Users.AnyAsync(u => u.Id == uid && u.IsActive, ct)) errors["actAsUserId"] = "Choose an active user.";
         if (errors.Count > 0) throw new ValidationException(errors);
+        EnsureFullDataScope();
         EnsureGrantable(list);
+        if (actAsUserId is { } actAs && actAs != ctx.UserId)
+        {
+            // Acting as someone else is only allowed for users with no more access than the creator.
+            var target = await principals.LoadAgentAsync(actAs, ct);
+            if (target is null || RoleRules.NotHeld(ctx.Permissions, target.Permissions).Count > 0
+                || !RoleRules.ScopeWithin(ctx.TicketScope, ctx.CustomerScope, target.TicketScope, target.CustomerScope))
+                throw new DomainException("privilege_escalation", "The key cannot act as a user who has permissions or data scope you do not have.", 403);
+        }
         return list;
+    }
+
+    /// <summary>API clients see every ticket and customer their scopes allow, so only callers with organisation-wide data scope may issue them.</summary>
+    private void EnsureFullDataScope()
+    {
+        if (ctx.TicketScope != TicketScope.All || ctx.CustomerScope != CustomerScope.All)
+            throw new DomainException("privilege_escalation", "API credentials see all tickets and customers. Only administrators with organisation-wide data scope can issue them.", 403);
     }
 
     /// <summary>No escalation through credentials: the scopes may only grant permissions the caller holds.</summary>

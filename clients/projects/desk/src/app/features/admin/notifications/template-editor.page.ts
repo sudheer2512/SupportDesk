@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { Subject, debounceTime, switchMap, catchError, of } from 'rxjs';
 import { AdminNotificationsApi, ApiError, MetaApi, NotificationTemplateDto, TemplatePreviewDto } from '@sd/core';
 import { SdBadge, SdButton, SdDialogService, SdEmptyState, SdFormField, SdIcon, SdInput, SdSkeleton, SdToggle, ToastService } from '@sd/ui';
-import { ADMIN_EDITOR_STYLES, AdminLeaveGuarded, sameValue, saveErrors, warnOnUnload } from '../admin-shared';
+import { ADMIN_EDITOR_STYLES, AdminLeaveGuarded, sameValue, saveErrors, templateKeyFromRoute, warnOnUnload } from '../admin-shared';
 
 interface TemplateForm {
   subject: string;
@@ -134,8 +134,9 @@ export class TemplateEditorPage implements OnInit, AdminLeaveGuarded {
   private readonly destroyRef = inject(DestroyRef);
   private readonly bodyRef = viewChild<ElementRef<HTMLTextAreaElement>>('body');
 
-  /** Route param: the template key. */
-  readonly key = input.required<string>();
+  /** Route param: the template key with "--" for dots (see templateRouteKey). */
+  readonly routeKey = input.required<string>({ alias: 'key' });
+  private readonly key = computed(() => templateKeyFromRoute(this.routeKey()));
 
   protected readonly loading = signal(true);
   protected readonly loadError = signal<string | null>(null);

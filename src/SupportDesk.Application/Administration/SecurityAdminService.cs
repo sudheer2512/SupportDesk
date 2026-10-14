@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using SupportDesk.Application.Identity;
@@ -83,7 +84,8 @@ public sealed class SecurityAdminService(
     IpAccessPolicy ipPolicy,
     ISecretProtector secrets,
     LimitGuard limits,
-    PrincipalLoader principals)
+    PrincipalLoader principals,
+    IConfiguration config)
 {
     public const string MfaOptional = "Optional";
     public const string MfaAdmins = "RequiredForAdmins";
@@ -197,8 +199,9 @@ public sealed class SecurityAdminService(
         {
             var role = await db.Roles.AsNoTracking().Include(x => x.Permissions).FirstOrDefaultAsync(x => x.Id == roleId, ct);
             if (role is null) errors["defaultRoleId"] = "Unknown role.";
-            else if (RoleRules.NotHeld(ctx.Permissions, role.Permissions.Select(x => x.PermissionCode)).Count > 0)
-                errors["defaultRoleId"] = "You cannot give new users a role with permissions you do not have.";
+            else if (RoleRules.NotHeld(ctx.Permissions, role.Permissions.Select(x => x.PermissionCode)).Count > 0
+                     || !RoleRules.ScopeWithin(ctx.TicketScope, ctx.CustomerScope, role.TicketScope, role.CustomerScope))
+                errors["defaultRoleId"] = "You cannot give new users a role with permissions or data scope you do not have.";
         }
         if (r.AutoProvision && r.DefaultRoleId is null) errors["defaultRoleId"] = "Choose the role given to users created at their first sign-in.";
         if (r.ClientSecret is { Length: > 2000 }) errors["clientSecret"] = "The client secret is too long.";
@@ -206,7 +209,12 @@ public sealed class SecurityAdminService(
         if (r.Enabled) await limits.RequireFeatureAsync(PlanFeatures.Sso, ct);
 
         var (current, _) = await store.GetAsync<SsoSettings>(SettingKeys.Sso, ct);
-        var secret = r.ClearClientSecret ? null : string.IsNullOrEmpty(r.ClientSecret) ? current.ClientSecretProtected : secrets.Protect(r.ClientSecret);
+        // A stored secret belongs to one provider registration: it is dropped when the authority or client id changes
+        // (otherwise it would be sent to the new provider's token endpoint) unless a new secret is supplied.
+        var registrationChanged = !string.Equals(current.Authority, authority, StringComparison.OrdinalIgnoreCase) || !string.Equals(current.ClientId, clientId, StringComparison.Ordinal);
+        var secret = r.ClearClientSecret ? null
+            : !string.IsNullOrEmpty(r.ClientSecret) ? secrets.Protect(r.ClientSecret)
+            : registrationChanged ? null : current.ClientSecretProtected;
         var next = current with
         {
             Enabled = r.Enabled, Authority = authority, ClientId = clientId, ClientSecretProtected = secret, Scopes = scopes, EmailClaim = emailClaim, NameClaim = nameClaim,
@@ -234,16 +242,25 @@ public sealed class SecurityAdminService(
         {
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
             timeout.CancelAfter(TimeSpan.FromSeconds(10));
+            // SSRF guard: the server only contacts public addresses (private networks only when explicitly allowed).
+            var allowPrivate = config.GetValue("Automation:Webhooks:AllowPrivateNetworks", false);
+            var addresses = await Dns.GetHostAddressesAsync(u.Host, timeout.Token);
+            if (addresses.Length == 0 || addresses.Any(a => !Automation.OutboundHttpSender.IsAllowed(a, allowPrivate)))
+                return new SsoTestResultDto(false, null, null, null, 0, $"{u.Host} resolves to a private or reserved network address, which SupportDesk does not contact.");
             var manager = new ConfigurationManager<OpenIdConnectConfiguration>(authority + "/.well-known/openid-configuration",
                 new OpenIdConnectConfigurationRetriever(), new HttpDocumentRetriever { RequireHttps = true });
-            var config = await manager.GetConfigurationAsync(timeout.Token);
-            var ok = !string.IsNullOrEmpty(config.AuthorizationEndpoint) && !string.IsNullOrEmpty(config.TokenEndpoint) && config.SigningKeys.Count > 0;
-            return new SsoTestResultDto(ok, config.Issuer, config.AuthorizationEndpoint, config.TokenEndpoint, config.SigningKeys.Count,
+            var discovery = await manager.GetConfigurationAsync(timeout.Token);
+            var ok = !string.IsNullOrEmpty(discovery.AuthorizationEndpoint) && !string.IsNullOrEmpty(discovery.TokenEndpoint) && discovery.SigningKeys.Count > 0;
+            return new SsoTestResultDto(ok, discovery.Issuer, discovery.AuthorizationEndpoint, discovery.TokenEndpoint, discovery.SigningKeys.Count,
                 ok ? "The identity provider's discovery document and signing keys were loaded." : "The discovery document is incomplete (missing endpoints or signing keys).");
         }
         catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested)
         {
-            return new SsoTestResultDto(false, null, null, null, 0, $"Could not load {authority}/.well-known/openid-configuration: {ex.GetBaseException().Message}");
+            // Generic message: no server-side exception details are echoed back.
+            var reason = ex is System.Net.Sockets.SocketException ? "the host could not be resolved or reached"
+                : ex is OperationCanceledException ? "the provider did not answer within 10 seconds"
+                : "it is not reachable or is not an OpenID Connect provider";
+            return new SsoTestResultDto(false, null, null, null, 0, $"Could not load {authority}/.well-known/openid-configuration: {reason}.");
         }
     }
 
