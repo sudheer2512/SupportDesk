@@ -42,10 +42,11 @@ public sealed class SimulatorUniverse(DeskDbContext db)
             return new SimCustomer(r.ErpCustomerId!.Value, code, r.Name, r.Tier, r.Industry, r.ServiceRegion, cities.FirstOrDefault(c => c.CustomerId == r.Id)?.City ?? "Bengaluru",
                 domain, false);
         }).ToList();
+        // The simulator's own accounts always come from its definition (their desk copies may have been edited).
         foreach (var e in ErpOnlyCustomers)
         {
             var id = DeterministicGuid.From("erp-customer", e.Code);
-            if (list.Any(c => c.Id == id)) continue;
+            list.RemoveAll(c => c.Id == id);
             list.Add(new SimCustomer(id, e.Code, e.Name, e.Tier, e.Industry, e.Region, e.City, e.Domain, true));
         }
         _customers = list.GroupBy(c => c.Id).Select(g => g.First()).OrderBy(c => c.Code, StringComparer.Ordinal).ToList();
