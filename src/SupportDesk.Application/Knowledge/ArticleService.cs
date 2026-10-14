@@ -469,7 +469,7 @@ public sealed class ArticleService(
         await db.UserRoles.AsNoTracking()
             .Where(ur => db.RolePermissions.Any(rp => rp.RoleId == ur.RoleId && rp.PermissionCode == permission) && ur.UserId != ctx.UserId)
             .Where(ur => db.Users.Any(u => u.Id == ur.UserId && u.IsActive))
-            .Select(ur => ur.UserId).Distinct().Take(50).ToListAsync(ct);
+            .Select(ur => ur.UserId).Distinct().OrderBy(id => id).Take(50).ToListAsync(ct);
 
     public async Task DeleteAsync(Guid id, CancellationToken ct = default)
     {

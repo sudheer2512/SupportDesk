@@ -53,7 +53,7 @@ public sealed partial class SearchEngine(DeskDbContext db)
         if (query.Prefix is { } prefix)
         {
             var expansions = await db.SearchPostings.AsNoTracking().Where(p => p.Term.StartsWith(prefix))
-                .Select(p => p.Term).Distinct().Take(24).ToListAsync(ct);
+                .Select(p => p.Term).Distinct().OrderBy(t => t).Take(24).ToListAsync(ct);
             foreach (var e in expansions) factors.TryAdd(e, PrefixFactor);
         }
         if (factors.Count == 0) return [];

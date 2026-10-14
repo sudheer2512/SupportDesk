@@ -100,7 +100,7 @@ public sealed class ClassifierTests
     }
 
     [Fact]
-    public void Local_provider_classifies_with_whitelisted_values_and_confidence()
+    public async Task Local_provider_classifies_with_whitelisted_values_and_confidence()
     {
         var payroll = Guid.NewGuid().ToString();
         var tax = Guid.NewGuid().ToString();
@@ -113,7 +113,7 @@ public sealed class ClassifierTests
             ["priority"] = [new("Low", "Low", ["question"]), new("Medium", "Medium", ["issue"]), new("High", "High", ["urgent", "block"]), new("Critical", "Critical", ["down"])]
         };
         var task = new ClassificationTask("Urgent: payroll PF deduction is wrong for 23 employees", options, examples, $"test-{Guid.NewGuid():N}", ["payroll"]);
-        var response = new LocalAiProvider().CompleteAsync(new AiChatRequest { Feature = "classification", LocalTask = task }, default).Result;
+        var response = await new LocalAiProvider().CompleteAsync(new AiChatRequest { Feature = "classification", LocalTask = task }, default);
         using var json = JsonDocument.Parse(response.Text);
         var category = json.RootElement.GetProperty("fields").GetProperty("category");
         Assert.Equal(payroll, category.GetProperty("value").GetString());

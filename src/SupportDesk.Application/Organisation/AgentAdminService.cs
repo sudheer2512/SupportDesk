@@ -69,7 +69,7 @@ public sealed class AgentSeatGuard(DeskDbContext db, LimitGuard limits, UsageMet
 
     private async Task<int?> MaxLightAsync(PlanLimits plan, CancellationToken ct)
     {
-        var overrides = await db.Subscriptions.AsNoTracking().Select(s => s.LimitOverridesJson).FirstOrDefaultAsync(ct);
+        var overrides = await db.Subscriptions.AsNoTracking().OrderByDescending(s => s.StartedAt).Select(s => s.LimitOverridesJson).FirstOrDefaultAsync(ct);
         var o = Json.Object(overrides);
         var v = o.FirstOrDefault(kv => string.Equals(kv.Key, "MaxLightAgents", StringComparison.OrdinalIgnoreCase)).Value;
         return v.ValueKind == System.Text.Json.JsonValueKind.Number && v.TryGetInt32(out var n) ? n : plan.MaxAgents;

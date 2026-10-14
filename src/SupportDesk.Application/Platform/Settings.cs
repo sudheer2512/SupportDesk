@@ -106,7 +106,7 @@ public sealed class TenantSettingsService(DeskDbContext db, IAuditWriter audit)
 {
     private readonly Dictionary<string, object> _memo = new();
 
-    public async Task<T> GetAsync<T>(string key, CancellationToken ct = default) where T : new()
+    public async Task<T> GetAsync<T>(string key, CancellationToken ct = default) where T : notnull, new()
     {
         if (_memo.TryGetValue(key, out var cached)) return (T)cached;
         var row = await db.TenantSettings.AsNoTracking().FirstOrDefaultAsync(s => s.Key == key, ct);

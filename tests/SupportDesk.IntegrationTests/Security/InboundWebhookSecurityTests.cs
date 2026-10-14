@@ -165,7 +165,7 @@ public sealed class InboundWebhookSecurityTests(DeskApiFactory factory)
         }
 
         var notes = await factory.InTenantAsync(a.Id, sp => sp.GetRequiredService<DeskDbContext>().TicketThreads.AsNoTracking()
-            .CountAsync(x => x.TicketId == ticket.Id && x.BodyHtml.Contains("Webhook ran")));
+            .CountAsync(x => x.TicketId == ticket.Id && x.BodyHtml != null && x.BodyHtml.Contains("Webhook ran")));
         Assert.Equal(0, notes);
     }
 }

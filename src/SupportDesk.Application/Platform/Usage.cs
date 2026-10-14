@@ -94,7 +94,7 @@ public sealed class LimitGuard(DeskDbContext db, UsageMeter usage)
         var tenantId = db.Request.TenantId;
         var tenant = await db.Tenants.AsNoTracking().FirstOrDefaultAsync(t => t.Id == tenantId, ct)
                      ?? throw new NotFoundException("Tenant");
-        var sub = await db.Subscriptions.AsNoTracking().FirstOrDefaultAsync(ct);
+        var sub = await db.Subscriptions.AsNoTracking().OrderByDescending(s => s.StartedAt).FirstOrDefaultAsync(ct);
         var plan = sub is null ? null : await db.Plans.AsNoTracking().FirstOrDefaultAsync(p => p.Id == sub.PlanId, ct);
         var overrides = Json.Object(sub?.LimitOverridesJson);
         long? L(string key, long? planValue) => overrides.TryGetValue(key, out var v) && v.TryGetInt64(out var n) ? n : planValue;

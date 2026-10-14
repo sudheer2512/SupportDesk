@@ -40,7 +40,8 @@ public sealed class KnowledgeMaintenance(DeskDbContext db, ArticleService articl
     public async Task<(int Expired, int Reminders)> RunAsync(CancellationToken ct = default)
     {
         var now = db.Clock.UtcNow;
-        var expiring = await db.Articles.Where(a => a.PublishedVersionId != null && a.ExpiresAt != null && a.ExpiresAt <= now).Take(200).ToListAsync(ct);
+        var expiring = await db.Articles.Where(a => a.PublishedVersionId != null && a.ExpiresAt != null && a.ExpiresAt <= now)
+            .OrderBy(a => a.ExpiresAt).ThenBy(a => a.Id).Take(200).ToListAsync(ct);
         foreach (var a in expiring) await articles.ArchiveCoreAsync(a, ArticleStatus.Expired, "Expired automatically", ct);
         if (expiring.Count > 0) await db.SaveChangesAsync(ct);
         foreach (var a in expiring.Where(a => a.OwnerUserId is not null))
@@ -50,7 +51,7 @@ public sealed class KnowledgeMaintenance(DeskDbContext db, ArticleService articl
 
         var due = await db.Articles.AsNoTracking()
             .Where(a => a.PublishedVersionId != null && a.ReviewDueAt != null && a.ReviewDueAt <= now && a.OwnerUserId != null)
-            .Select(a => new { a.Id, a.Title, a.OwnerUserId, a.ReviewDueAt }).Take(500).ToListAsync(ct);
+            .OrderBy(a => a.ReviewDueAt).ThenBy(a => a.Id).Select(a => new { a.Id, a.Title, a.OwnerUserId, a.ReviewDueAt }).Take(500).ToListAsync(ct);
         var reminders = 0;
         foreach (var a in due)
             reminders += await notifications.NotifyAsync(new NotifyRequest([a.OwnerUserId!.Value], KnowledgeNotificationTypes.ReviewDue, $"Review due: {a.Title}",

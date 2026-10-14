@@ -456,7 +456,7 @@ public sealed class BusinessCalendarService(DeskDbContext db, RequestContext ctx
         var usedBy = new List<string>();
         usedBy.AddRange(await db.Departments.AsNoTracking().Where(d => d.BusinessCalendarId == id).Select(d => "Department: " + d.Name).ToListAsync(ct));
         usedBy.AddRange(await db.SlaPolicies.AsNoTracking().Where(p => p.CalendarId == id).Select(p => "SLA policy: " + p.Name).ToListAsync(ct));
-        usedBy.AddRange(await db.Contracts.AsNoTracking().Where(k => k.CalendarId == id).Take(20).Select(k => "Contract: " + k.Number).ToListAsync(ct));
+        usedBy.AddRange(await db.Contracts.AsNoTracking().Where(k => k.CalendarId == id).OrderBy(k => k.Number).Take(20).Select(k => "Contract: " + k.Number).ToListAsync(ct));
         return new BusinessCalendarDto(c.Id, c.Name, c.Description, c.TimeZone, c.Is24x7, c.IsDefault, WeeklyHours.FromJson(c.WeeklyHoursJson),
             c.Is24x7 ? 168 : WeeklyHours.TotalHours(c.WeeklyHoursJson), holidays.Select(MapHoliday).ToList(), usedBy, OrgRowVersion.Encode(c.RowVersion));
     }

@@ -45,12 +45,10 @@ public sealed class ConversationService(
     DeskDbContext db,
     RequestContext ctx,
     TicketService tickets,
-    TicketHistory history,
     IEventPublisher events,
     HtmlSanitization html,
     TenantSettingsService settings,
-    ISlaEngine sla,
-    TicketLookups lookups)
+    ISlaEngine sla)
 {
     private const int MaxSeqRetries = 15;
 

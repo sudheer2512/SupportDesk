@@ -44,7 +44,7 @@ public sealed class TicketHousekeepingProcessor(DeskDbContext db, TenantSettings
     public async Task RunAsync(DateTime now, CancellationToken ct)
     {
         // Follow-up reminders
-        var due = await db.TicketFollowUps.Where(f => f.Status == FollowUpStatus.Pending && f.RemindAt <= now).Take(200).ToListAsync(ct);
+        var due = await db.TicketFollowUps.Where(f => f.Status == FollowUpStatus.Pending && f.RemindAt <= now).OrderBy(f => f.RemindAt).ThenBy(f => f.Id).Take(200).ToListAsync(ct);
         foreach (var f in due)
         {
             var t = await db.Tickets.AsNoTracking().Where(x => x.Id == f.TicketId).Select(x => new { x.Number, x.Subject }).FirstOrDefaultAsync(ct);
@@ -62,7 +62,7 @@ public sealed class TicketHousekeepingProcessor(DeskDbContext db, TenantSettings
         {
             var cutoff = now.AddDays(-s.AutoCloseResolvedAfterDays);
             var ids = await db.Tickets.Where(t => t.StatusCategory == StatusCategory.Resolved && t.ResolvedAt != null && t.ResolvedAt < cutoff)
-                .Select(t => t.Id).Take(200).ToListAsync(ct);
+                .OrderBy(t => t.ResolvedAt).ThenBy(t => t.Id).Select(t => t.Id).Take(200).ToListAsync(ct);
             if (ids.Count > 0)
             {
                 var closed = await tickets.StatusForCategoryAsync(StatusCategory.Closed, ct);

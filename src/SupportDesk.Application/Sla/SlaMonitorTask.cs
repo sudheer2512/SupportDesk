@@ -54,7 +54,10 @@ public sealed class SlaMonitorProcessor(DeskDbContext db, IEventPublisher events
         var candidates = await db.SlaMilestones.AsNoTracking()
             .Where(m => (m.Status == MilestoneStatus.Active && ((!m.WarningRaised && m.WarningAt <= now) || m.DueAt <= now.AddDays(1))) ||
                         (m.Status == MilestoneStatus.Breached && m.CompletedAt == null))
-            .Select(m => new { m.TicketId, m.InstanceId }).Distinct().Take(500).ToListAsync(ct);
+            // Most urgent first, deterministically, so a backlog larger than one batch never starves the oldest breaches.
+            .GroupBy(m => new { m.TicketId, m.InstanceId })
+            .OrderBy(g => g.Min(m => m.DueAt)).ThenBy(g => g.Key.TicketId)
+            .Select(g => g.Key).Take(500).ToListAsync(ct);
 
         foreach (var c in candidates)
         {

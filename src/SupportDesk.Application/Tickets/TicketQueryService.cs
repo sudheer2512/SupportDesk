@@ -265,7 +265,7 @@ public sealed class TicketQueryService(
                     Recent = g.Count(x => x.CreatedAt >= since90),
                     Breaches = g.Count(x => x.CreatedAt >= since90 && x.SlaState == SlaState.Breached),
                     Csat = g.Where(x => x.CsatScore != null).Average(x => (double?)x.CsatScore)
-                }).FirstOrDefaultAsync(ct);
+                }).SingleOrDefaultAsync(ct); // one group at most
             customer = new CustomerSummaryDto(c.Id, c.Name, c.Code, c.Tier, c.Industry, lookups.User(c.AccountManagerUserId), c.ServiceRegion,
                 stats?.Open ?? 0, stats?.Recent ?? 0, stats?.Csat, stats?.Breaches ?? 0, c.Status.ToString());
         }

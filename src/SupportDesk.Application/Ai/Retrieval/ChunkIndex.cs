@@ -122,7 +122,7 @@ public sealed class ChunkVectorCache
     public async Task<TenantVectorIndex> GetAsync(DeskDbContext db, Guid tenantId, string model, CancellationToken ct)
     {
         var probe = await db.KnowledgeChunks.AsNoTracking().Where(c => c.EmbeddingModel == model)
-            .GroupBy(_ => 1).Select(g => new { Count = g.Count(), Max = g.Max(c => c.UpdatedAt) }).FirstOrDefaultAsync(ct);
+            .GroupBy(_ => 1).Select(g => new { Count = g.Count(), Max = g.Max(c => c.UpdatedAt) }).SingleOrDefaultAsync(ct); // one group at most
         var version = probe is null ? "0" : $"{probe.Count}:{probe.Max.Ticks}";
         var key = (tenantId, model);
         if (_indexes.TryGetValue(key, out var cached) && cached.Version == version) return cached;

@@ -75,7 +75,7 @@ public sealed class ConcurrencyAndRecoveryTests(DeskApiFactory factory)
         Assert.NotEmpty(claimed);
         Assert.False(TestCounterJobHandler.Executions.ContainsKey(key));
         // While the lease is valid nobody else may take it.
-        Assert.Empty((await processor.ClaimAsync(100, default)).Where(claimed.Contains));
+        Assert.DoesNotContain(await processor.ClaimAsync(100, default), claimed.Contains);
         // After the lease expires (simulated restart later), the job is reclaimed and executed exactly once.
         factory.Clock.Pin(DateTime.UtcNow.Add(JobProcessor.Lease).AddMinutes(1));
         try

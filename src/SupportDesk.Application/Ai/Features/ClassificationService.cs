@@ -48,7 +48,7 @@ public sealed class AiCorpusCache
     public async Task<(string Key, IReadOnlyList<ClassificationExample> Examples)> GetAsync(DeskDbContext db, Guid tenantId, CancellationToken ct)
     {
         var probe = await db.Tickets.AsNoTracking().Where(t => t.CategoryId != null || t.ProductId != null)
-            .GroupBy(_ => 1).Select(g => new { Count = g.Count(), Max = g.Max(t => t.CreatedAt) }).FirstOrDefaultAsync(ct);
+            .GroupBy(_ => 1).Select(g => new { Count = g.Count(), Max = g.Max(t => t.CreatedAt) }).SingleOrDefaultAsync(ct); // one group at most
         var key = probe is null ? $"{tenantId:N}:0" : $"{tenantId:N}:{probe.Count}:{probe.Max.Ticks}";
         var now = DateTime.UtcNow;
         if (_cache.TryGetValue(tenantId, out var cached) && cached.Key == key && now - cached.LoadedAt < TimeSpan.FromMinutes(10)) return (cached.Key, cached.Examples);

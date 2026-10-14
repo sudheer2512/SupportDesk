@@ -186,7 +186,7 @@ public sealed class PortalKnowledgeService(
         var catRef = article.CategoryId is { } cid ? await db.KbCategories.AsNoTracking().Where(c => c.Id == cid).Select(c => new { c.Name, c.Slug }).FirstOrDefaultAsync(ct) : null;
         var breadcrumb = await BreadcrumbAsync(article.CategoryId, ct);
         var relatedIds = Json.GuidList(article.RelatedArticleIdsJson);
-        var related = relatedIds.Count == 0 ? [] : await MapAsync(await Rows(readable.Where(a => relatedIds.Contains(a.Id))).Take(6).ToListAsync(ct), null, ct);
+        var related = relatedIds.Count == 0 ? [] : await MapAsync(await Rows(readable.Where(a => relatedIds.Contains(a.Id))).OrderBy(a => a.Title).Take(6).ToListAsync(ct), null, ct);
         if (related.Count < 3)
         {
             // Fill with articles from the same category.

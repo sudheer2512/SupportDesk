@@ -17,6 +17,13 @@ public sealed class DeskExceptionHandler(ILogger<DeskExceptionHandler> logger, I
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext http, Exception exception, CancellationToken ct)
     {
+        if (http.RequestAborted.IsCancellationRequested)
+        {
+            // The client went away (navigation, closed tab): SqlClient reports that as "Operation cancelled by user".
+            // Nobody is listening for a problem response, and it is not a server error.
+            logger.LogDebug(exception, "Request aborted by the client: {Method} {Path}", http.Request.Method, http.Request.Path);
+            return true;
+        }
         var problem = new ProblemDetails { Instance = http.Request.Path };
         switch (exception)
         {
@@ -88,8 +95,6 @@ public sealed class DeskExceptionHandler(ILogger<DeskExceptionHandler> logger, I
                 problem.Title = "Invalid cursor.";
                 problem.Extensions["code"] = ErrorCodes.Validation;
                 break;
-            case OperationCanceledException when http.RequestAborted.IsCancellationRequested:
-                return true;
             default:
                 logger.LogError(exception, "Unhandled error on {Method} {Path}", http.Request.Method, http.Request.Path);
                 problem.Status = 500;

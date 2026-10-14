@@ -317,7 +317,7 @@ public sealed class AiHousekeepingTask(TenantScopeRunner tenants) : IRecurringTa
     public Task RunAsync(CancellationToken ct) => tenants.ForEachActiveTenantAsync("AI housekeeping", async (sp, _, token) =>
     {
         var db = sp.GetRequiredService<DeskDbContext>();
-        var retention = await db.AiConfigurations.AsNoTracking().Select(c => (int?)c.ExecutionRetentionDays).FirstOrDefaultAsync(token) ?? 180;
+        var retention = await db.AiConfigurations.AsNoTracking().OrderBy(c => c.CreatedAt).Select(c => (int?)c.ExecutionRetentionDays).FirstOrDefaultAsync(token) ?? 180;
         var cutoff = db.Clock.UtcNow.AddDays(-Math.Max(7, retention));
         await db.AiExecutions.Where(e => e.CreatedAt < cutoff).ExecuteDeleteAsync(token);
         var stale = db.Clock.UtcNow.AddDays(-14);
