@@ -65,6 +65,8 @@ public sealed class OutboundService(
     {
         var thread = await db.TicketThreads.FirstOrDefaultAsync(t => t.Id == threadId, ct);
         if (thread is null || thread.Visibility != Visibility.Public || thread.Direction != MessageDirection.Outbound || thread.DeliveryStatus != ThreadDeliveryStatus.Queued) return;
+        // Replies typed in the live chat are delivered synchronously by the chat service.
+        if (thread.Channel == Channel.Chat && thread.ClientRequestId?.StartsWith(ChatService.ChatReplyPrefix, StringComparison.Ordinal) == true) return;
         if (await db.Messages.AnyAsync(m => m.ThreadId == threadId && m.Direction == MessageDirection.Outbound, ct)) return;
         var ticket = await db.Tickets.AsNoTracking().FirstOrDefaultAsync(t => t.Id == thread.TicketId, ct);
         if (ticket is null) return;

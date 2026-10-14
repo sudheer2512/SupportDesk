@@ -79,6 +79,8 @@ public sealed class ChatService(
     ILogger<ChatService> logger)
 {
     private const int MaxText = 4000;
+    /// <summary>Client request ids of replies sent from the live chat (delivered synchronously, skipped by the reply handler).</summary>
+    public const string ChatReplyPrefix = "chat:";
 
     // ───────────────────────────── Visitor (anonymous) ─────────────────────────────
 
@@ -276,7 +278,7 @@ public sealed class ChatService(
         }
         var thread = await conversation.ReplyAsync(conv.TicketId!.Value, new ReplyRequest
         {
-            BodyHtml = TextNormalization.TextToHtml(Trim(text)), Channel = Channel.Chat.ToString(), Force = true, ClientRequestId = clientRequestId ?? $"chat:{Guid.NewGuid():N}"
+            BodyHtml = TextNormalization.TextToHtml(Trim(text)), Channel = Channel.Chat.ToString(), Force = true, ClientRequestId = $"{ChatReplyPrefix}{TextNormalization.Truncate(clientRequestId ?? Guid.NewGuid().ToString("N"), 80)}"
         }, ct);
         var now = db.Clock.UtcNow;
         var msg = await db.Messages.FirstOrDefaultAsync(m => m.ThreadId == thread.Id && m.Direction == MessageDirection.Outbound, ct);
@@ -438,7 +440,7 @@ public sealed class ChatService(
         else
             recipients.AddRange(await db.AgentDepartments.AsNoTracking().Where(ad => ad.DepartmentId == t.DepartmentId)
                 .Join(db.Agents.AsNoTracking().Where(a => a.Availability == AgentAvailability.Online && !a.IsLightAgent), ad => ad.UserId, a => a.UserId, (ad, _) => ad.UserId)
-                .Distinct().Take(50).ToListAsync(ct));
+                .Distinct().OrderBy(id => id).Take(50).ToListAsync(ct));
         if (recipients.Count > 0)
             await notifications.NotifyAsync(new NotifyRequest(recipients, NotificationTypes.ChatWaiting, $"Chat waiting: {conv.VisitorName ?? "Visitor"}",
                 TextNormalization.Truncate(t.Subject, 200), $"/conversations/{conv.Id}", NotificationSeverity.Warning, false, "Conversation", conv.Id, $"chat-waiting:{conv.Id:N}"), ct);
