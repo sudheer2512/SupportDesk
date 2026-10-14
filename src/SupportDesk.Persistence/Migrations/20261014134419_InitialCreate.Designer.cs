@@ -12,7 +12,7 @@ using SupportDesk.Persistence;
 namespace SupportDesk.Persistence.Migrations
 {
     [DbContext(typeof(DeskDbContext))]
-    [Migration("20261014070400_InitialCreate")]
+    [Migration("20261014134419_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -24,6 +24,57 @@ namespace SupportDesk.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("SupportDesk.Domain.Administration.NotificationTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BodyHtml")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "Key")
+                        .IsUnique();
+
+                    b.ToTable("NotificationTemplates", (string)null);
+                });
 
             modelBuilder.Entity("SupportDesk.Domain.Ai.AiActionProposal", b =>
                 {
@@ -540,6 +591,9 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<int>("OnlineMinutes")
                         .HasColumnType("int");
 
+                    b.Property<int>("OpenAtEnd")
+                        .HasColumnType("int");
+
                     b.Property<int>("Reopens")
                         .HasColumnType("int");
 
@@ -619,6 +673,9 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TenantId", "Day", "DepartmentId", "Priority")
@@ -634,14 +691,17 @@ namespace SupportDesk.Persistence.Migrations
 
                     b.Property<string>("Audience")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatedById")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDefault")
                         .HasColumnType("bit");
@@ -651,11 +711,22 @@ namespace SupportDesk.Persistence.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<Guid?>("OwnerUserId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Period")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
@@ -674,7 +745,76 @@ namespace SupportDesk.Persistence.Migrations
 
                     b.HasIndex("TenantId", "Audience");
 
+                    b.HasIndex("TenantId", "OwnerUserId");
+
                     b.ToTable("Dashboards");
+                });
+
+            modelBuilder.Entity("SupportDesk.Domain.Analytics.ReportExport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Error")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid?>("FileId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FileName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Format")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(40)");
+
+                    b.Property<string>("ParametersJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReportKey")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<Guid>("RequestedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("RowCount")
+                        .HasColumnType("int");
+
+                    b.Property<long>("SizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(40)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "RequestedById", "CreatedAt");
+
+                    b.ToTable("ReportExports", (string)null);
                 });
 
             modelBuilder.Entity("SupportDesk.Domain.Analytics.ScheduledReport", b =>
@@ -713,13 +853,13 @@ namespace SupportDesk.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastStatus")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime>("NextRunAt")
                         .HasColumnType("datetime2");
@@ -737,8 +877,14 @@ namespace SupportDesk.Persistence.Migrations
 
                     b.Property<string>("ReportKey")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<TimeOnly>("RunAtLocal")
                         .HasColumnType("time");
@@ -748,8 +894,8 @@ namespace SupportDesk.Persistence.Migrations
 
                     b.Property<string>("TimeZone")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -761,7 +907,73 @@ namespace SupportDesk.Persistence.Migrations
 
                     b.HasIndex("IsActive", "NextRunAt");
 
+                    b.HasIndex("TenantId", "OwnerUserId");
+
                     b.ToTable("ScheduledReports");
+                });
+
+            modelBuilder.Entity("SupportDesk.Domain.Analytics.ScheduledReportRun", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Delivered")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Error")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("FileName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("Manual")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RecipientsJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RowCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ScheduledFor")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ScheduledReportId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<long>("SizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("StartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(40)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScheduledReportId", "ScheduledFor")
+                        .IsUnique()
+                        .HasFilter("[Manual] = 0");
+
+                    b.HasIndex("TenantId", "ScheduledReportId", "CreatedAt");
+
+                    b.ToTable("ScheduledReportRuns", (string)null);
                 });
 
             modelBuilder.Entity("SupportDesk.Domain.Analytics.TicketMetric", b =>
@@ -790,6 +1002,9 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<DateTime?>("ClosedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("ContactId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<decimal>("Cost")
                         .HasPrecision(18, 4)
                         .HasColumnType("decimal(18,4)");
@@ -810,14 +1025,23 @@ namespace SupportDesk.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("CustomerTier")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
 
                     b.Property<Guid>("DepartmentId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("EscalationCount")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Excluded")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("FirstContactResolution")
                         .HasColumnType("bit");
+
+                    b.Property<Guid?>("FirstResponderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("FirstResponseAt")
                         .HasColumnType("datetime2");
@@ -830,6 +1054,9 @@ namespace SupportDesk.Persistence.Migrations
 
                     b.Property<int?>("FirstResponseMinutes")
                         .HasColumnType("int");
+
+                    b.Property<bool>("FirstResponseSlaMet")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Handoffs")
                         .HasColumnType("int");
@@ -849,6 +1076,12 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<Guid?>("ModuleId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("NextResponseBreaches")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NextResponseMet")
+                        .HasColumnType("int");
+
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
@@ -864,8 +1097,15 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<int?>("ResolutionBusinessMinutes")
                         .HasColumnType("int");
 
+                    b.Property<string>("ResolutionCode")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<int?>("ResolutionMinutes")
                         .HasColumnType("int");
+
+                    b.Property<bool>("ResolutionSlaMet")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("ResolvedAt")
                         .HasColumnType("datetime2");
@@ -874,11 +1114,27 @@ namespace SupportDesk.Persistence.Migrations
                         .HasColumnType("date");
 
                     b.Property<string>("RootCause")
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Sentiment")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(40)");
+
+                    b.Property<bool>("SlaBreached")
+                        .HasColumnType("bit");
+
+                    b.Property<byte[]>("SourceVersion")
+                        .HasMaxLength(8)
+                        .HasColumnType("varbinary(8)");
 
                     b.Property<int>("StatusCategory")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("SubcategoryId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("TeamId")
                         .HasColumnType("uniqueidentifier");
@@ -895,6 +1151,9 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<int>("TimeSpentMinutes")
                         .HasColumnType("int");
 
+                    b.Property<int>("Transfers")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -906,13 +1165,26 @@ namespace SupportDesk.Persistence.Migrations
                     b.HasIndex("TicketId")
                         .IsUnique();
 
+                    b.HasIndex("TenantId", "CreatedAt")
+                        .HasDatabaseName("IX_TicketMetrics_Tenant_CreatedAt");
+
                     b.HasIndex("TenantId", "CreatedDay");
 
+                    b.HasIndex("TenantId", "ResolvedAt")
+                        .HasDatabaseName("IX_TicketMetrics_Tenant_ResolvedAt");
+
                     b.HasIndex("TenantId", "ResolvedDay");
+
+                    b.HasIndex("TenantId", "StatusCategory")
+                        .HasDatabaseName("IX_TicketMetrics_Open")
+                        .HasFilter("[StatusCategory] < 5 AND [Excluded] = 0");
 
                     b.HasIndex("TenantId", "AssigneeId", "CreatedDay");
 
                     b.HasIndex("TenantId", "CustomerId", "CreatedDay");
+
+                    b.HasIndex("TenantId", "DepartmentId", "CreatedAt")
+                        .HasDatabaseName("IX_TicketMetrics_Tenant_Department_CreatedAt");
 
                     b.HasIndex("TenantId", "ProductId", "CreatedDay");
 
@@ -2080,8 +2352,16 @@ namespace SupportDesk.Persistence.Migrations
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AppVersion")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<Guid?>("ContactId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DeactivatedReason")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -2111,8 +2391,14 @@ namespace SupportDesk.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TenantId", "ContactId")
+                        .HasFilter("[ContactId] IS NOT NULL AND [IsActive] = 1");
+
                     b.HasIndex("TenantId", "Token")
                         .IsUnique();
+
+                    b.HasIndex("TenantId", "UserId")
+                        .HasFilter("[UserId] IS NOT NULL AND [IsActive] = 1");
 
                     b.ToTable("PushDevices");
                 });
@@ -2184,6 +2470,16 @@ namespace SupportDesk.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("RequiredForStatusIdsJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.Property<int>("SortOrder")
                         .HasColumnType("int");
 
@@ -2219,6 +2515,10 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<Guid?>("BrandId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Channel")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -2249,6 +2549,12 @@ namespace SupportDesk.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("SectionsJson")
                         .IsRequired()
@@ -2838,6 +3144,39 @@ namespace SupportDesk.Persistence.Migrations
                     b.ToTable("CustomerLocations");
                 });
 
+            modelBuilder.Entity("SupportDesk.Domain.Customers.CustomerMergeLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("MergedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("MergedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MergedCustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SnapshotJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("SurvivorCustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "MergedCustomerId");
+
+                    b.HasIndex("TenantId", "SurvivorCustomerId");
+
+                    b.ToTable("CustomerMergeLog");
+                });
+
             modelBuilder.Entity("SupportDesk.Domain.Customers.ServiceActivity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3017,6 +3356,9 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsLightAgent")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsSystem")
                         .HasColumnType("bit");
 
@@ -3024,6 +3366,12 @@ namespace SupportDesk.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
@@ -3298,6 +3646,8 @@ namespace SupportDesk.Persistence.Migrations
 
                     b.HasIndex("PrincipalKind", "PrincipalId");
 
+                    b.HasIndex("TenantId", "PrincipalKind", "LastSeenAt");
+
                     b.ToTable("UserSessions");
                 });
 
@@ -3420,6 +3770,272 @@ namespace SupportDesk.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("ApiKeys");
+                });
+
+            modelBuilder.Entity("SupportDesk.Domain.Integration.CollaborationChannel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DepartmentIdsJson")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<string>("EventsJson")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastError")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime?>("LastSentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("LastStatusCode")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinPriority")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(40)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UrlHint")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("WebhookUrlProtected")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "IsActive");
+
+                    b.ToTable("CollaborationChannels", (string)null);
+                });
+
+            modelBuilder.Entity("SupportDesk.Domain.Integration.EngineeringItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AreaPath")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("AssignedTo")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeployedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ExternalChangedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("FixVersion")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("IntegrationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsOrphaned")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsReleased")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsResolved")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ItemType")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(40)");
+
+                    b.Property<string>("IterationPath")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("LastSyncError")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime?>("LastSyncedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OrphanReason")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<DateTime?>("OrphanedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Project")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(40)");
+
+                    b.Property<string>("ReleaseName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("ReleasedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("SnapshotJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("State")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("TrackerType")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Url")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "IntegrationId", "ExternalId")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "IntegrationId", "LastSyncedAt")
+                        .HasFilter("[IsOrphaned] = 0");
+
+                    b.ToTable("EngineeringItems", (string)null);
+                });
+
+            modelBuilder.Entity("SupportDesk.Domain.Integration.EngineeringWebhookDelivery", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DeliveryId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Detail")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("ExternalId")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("IntegrationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(40)");
+
+                    b.Property<DateTime>("ReceivedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(40)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IntegrationId", "DeliveryId")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "IntegrationId", "ReceivedAt");
+
+                    b.ToTable("EngineeringWebhookDeliveries", (string)null);
                 });
 
             modelBuilder.Entity("SupportDesk.Domain.Integration.Integration", b =>
@@ -3549,6 +4165,182 @@ namespace SupportDesk.Persistence.Migrations
                     b.HasIndex("TenantId", "CreatedAt");
 
                     b.ToTable("IntegrationLogs");
+                });
+
+            modelBuilder.Entity("SupportDesk.Domain.Integration.LocalRelease", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeployedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("IntegrationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("PlannedDate")
+                        .HasColumnType("date");
+
+                    b.Property<Guid?>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ProductReleaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ReleasedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "IntegrationId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("LocalReleases", (string)null);
+                });
+
+            modelBuilder.Entity("SupportDesk.Domain.Integration.LocalWorkItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AreaPath")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<Guid?>("AssigneeUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ClosedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CustomerImpactCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DescriptionHtml")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FixVersion")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("IntegrationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("IterationPath")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Rank")
+                        .HasColumnType("float");
+
+                    b.Property<Guid?>("ReleaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<int?>("Severity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(40)");
+
+                    b.Property<string>("TagsJson")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(40)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReleaseId");
+
+                    b.HasIndex("TenantId", "Number")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "UpdatedAt", "Id");
+
+                    b.HasIndex("TenantId", "IntegrationId", "State", "Rank");
+
+                    b.ToTable("LocalWorkItems", (string)null);
                 });
 
             modelBuilder.Entity("SupportDesk.Domain.Knowledge.Article", b =>
@@ -4453,6 +5245,9 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<DateTime>("EndsAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IncludeApprovals")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -4513,9 +5308,62 @@ namespace SupportDesk.Persistence.Migrations
                     b.ToTable("AgentDepartments");
                 });
 
+            modelBuilder.Entity("SupportDesk.Domain.Organisation.AgentInvitation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("AcceptedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CodeHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("InvitedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("TenantId", "Email");
+
+                    b.HasIndex("TenantId", "UserId", "CreatedAt");
+
+                    b.ToTable("AgentInvitations", (string)null);
+                });
+
             modelBuilder.Entity("SupportDesk.Domain.Organisation.AgentLeave", b =>
                 {
                     b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ApprovalRequestId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("ApprovedById")
@@ -4526,6 +5374,12 @@ namespace SupportDesk.Persistence.Migrations
 
                     b.Property<Guid?>("CreatedById")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DecidedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DecisionNote")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("EndsAt")
                         .HasColumnType("datetime2");
@@ -4561,6 +5415,10 @@ namespace SupportDesk.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApprovalRequestId");
+
+                    b.HasIndex("TenantId", "Status", "StartsAt");
 
                     b.HasIndex("TenantId", "UserId", "StartsAt");
 
@@ -4665,6 +5523,9 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<Guid?>("CreatedById")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("Is24x7")
                         .HasColumnType("bit");
 
@@ -4675,6 +5536,12 @@ namespace SupportDesk.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
@@ -4736,6 +5603,9 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("ArchivedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<Guid?>("BusinessCalendarId")
                         .HasColumnType("uniqueidentifier");
 
@@ -4777,6 +5647,12 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<Guid?>("ParentDepartmentId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.Property<int>("SortOrder")
                         .HasColumnType("int");
 
@@ -4812,11 +5688,18 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Color")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatedById")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -4826,13 +5709,19 @@ namespace SupportDesk.Persistence.Migrations
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("TimeZone")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -4896,6 +5785,9 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("ConsiderShifts")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -4908,11 +5800,17 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("FallbackTeamId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<Guid?>("LeadUserId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("MaxOpenTicketsPerAgent")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -4931,6 +5829,12 @@ namespace SupportDesk.Persistence.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(40)");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
 
@@ -4943,6 +5847,8 @@ namespace SupportDesk.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
+
+                    b.HasIndex("FallbackTeamId");
 
                     b.HasIndex("TenantId", "DepartmentId");
 
@@ -5160,8 +6066,17 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<DateTime>("IssuedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(40)");
+
                     b.Property<string>("LinesJson")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Number")
@@ -5171,6 +6086,10 @@ namespace SupportDesk.Persistence.Migrations
 
                     b.Property<DateTime?>("PaidAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentProvider")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PaymentReference")
                         .HasMaxLength(450)
@@ -5214,10 +6133,19 @@ namespace SupportDesk.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IssuedAt");
+
                     b.HasIndex("SubscriptionId");
+
+                    b.HasIndex("Status", "DueAt");
 
                     b.HasIndex("TenantId", "Number")
                         .IsUnique();
+
+                    b.HasIndex("TenantId", "SubscriptionId", "PeriodStart")
+                        .IsUnique()
+                        .HasDatabaseName("IX_BillingInvoices_OnePerPeriod")
+                        .HasFilter("[Kind] = 'Subscription' AND [Status] <> 'Void'");
 
                     b.ToTable("BillingInvoices");
                 });
@@ -5268,6 +6196,13 @@ namespace SupportDesk.Persistence.Migrations
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("EmailFooterHtml")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FaviconUrl")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("FooterHtml")
                         .HasColumnType("nvarchar(max)");
 
@@ -5308,6 +6243,12 @@ namespace SupportDesk.Persistence.Migrations
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.Property<string>("Slug")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -5346,6 +6287,68 @@ namespace SupportDesk.Persistence.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("Brands");
+                });
+
+            modelBuilder.Entity("SupportDesk.Domain.Platform.ConfigurationDraft", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BundleJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("FormatVersion")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("PublishedSnapshotId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ResolutionsJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResultJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SourceTenant")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(40)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "Status", "CreatedAt");
+
+                    b.ToTable("ConfigurationDraft");
                 });
 
             modelBuilder.Entity("SupportDesk.Domain.Platform.ConfigurationSnapshot", b =>
@@ -5405,6 +6408,12 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("ApprovedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ApprovedById")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("CompletedAt")
                         .HasColumnType("datetime2");
 
@@ -5417,11 +6426,31 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<Guid?>("CreatedById")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("DownloadExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DownloadTokenHash")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<DateTime?>("DownloadedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Error")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RejectionReason")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResultFileName")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<long?>("ResultSizeBytes")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("ResultStorageKey")
                         .HasMaxLength(450)
@@ -5450,6 +6479,12 @@ namespace SupportDesk.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DownloadTokenHash")
+                        .IsUnique()
+                        .HasFilter("[DownloadTokenHash] IS NOT NULL");
+
+                    b.HasIndex("TenantId", "ContactId");
+
                     b.HasIndex("TenantId", "Status");
 
                     b.ToTable("DataRequests");
@@ -5472,6 +6507,9 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<Guid?>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("FromDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(450)
@@ -5492,6 +6530,9 @@ namespace SupportDesk.Persistence.Migrations
 
                     b.Property<string>("TicketIdsJson")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ToDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -5669,6 +6710,9 @@ namespace SupportDesk.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("MaxChannels")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MaxLightAgents")
                         .HasColumnType("int");
 
                     b.Property<int?>("MaxPortalUsers")
@@ -5913,14 +6957,33 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("BillingAddress")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BillingContactEmail")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BillingContactName")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("BillingCycle")
                         .IsRequired()
                         .HasMaxLength(40)
                         .IsUnicode(false)
                         .HasColumnType("varchar(40)");
 
+                    b.Property<string>("BillingTaxId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<bool>("CancelAtPeriodEnd")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime?>("CancelledAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -5934,8 +6997,16 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<DateTime>("CurrentPeriodStart")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("GraceEndsAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("LimitOverridesJson")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentProvider")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<Guid?>("PendingPlanId")
                         .HasColumnType("uniqueidentifier");
@@ -5961,6 +7032,9 @@ namespace SupportDesk.Persistence.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(40)");
 
+                    b.Property<DateTime?>("SuspendedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
 
@@ -5983,10 +7057,80 @@ namespace SupportDesk.Persistence.Migrations
                     b.ToTable("Subscriptions");
                 });
 
+            modelBuilder.Entity("SupportDesk.Domain.Platform.SupportAccessGrant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DecidedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DecidedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DecidedByName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("DecisionNote")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("OperatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("OperatorName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(40)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OperatorId", "Status");
+
+                    b.HasIndex("TenantId", "Status", "CreatedAt");
+
+                    b.ToTable("SupportAccessGrant");
+                });
+
             modelBuilder.Entity("SupportDesk.Domain.Platform.Tenant", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CancelledAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Country")
                         .HasMaxLength(450)
@@ -6018,6 +7162,9 @@ namespace SupportDesk.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("DeletionScheduledAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -6122,6 +7269,90 @@ namespace SupportDesk.Persistence.Migrations
                     b.ToTable("TenantSettings");
                 });
 
+            modelBuilder.Entity("SupportDesk.Domain.Platform.TrialSignup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AdminEmail")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("AdminEmailNormalized")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("AdminName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CodeHash")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IpAddress")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("PlanCode")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(40)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdminEmailNormalized", "CreatedAt");
+
+                    b.HasIndex("IpAddress", "CreatedAt");
+
+                    b.HasIndex("Slug", "Status");
+
+                    b.ToTable("TrialSignup");
+                });
+
             modelBuilder.Entity("SupportDesk.Domain.Platform.UsageRecord", b =>
                 {
                     b.Property<Guid>("Id")
@@ -6150,6 +7381,38 @@ namespace SupportDesk.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("UsageRecords");
+                });
+
+            modelBuilder.Entity("SupportDesk.Domain.Platform.UsageSnapshot", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Day")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Metric")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<long>("Quantity")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Day", "Metric");
+
+                    b.HasIndex("TenantId", "Metric", "Day")
+                        .IsUnique();
+
+                    b.ToTable("UsageSnapshot");
                 });
 
             modelBuilder.Entity("SupportDesk.Domain.Products.CustomerAsset", b =>
@@ -6708,6 +7971,8 @@ namespace SupportDesk.Persistence.Migrations
                     b.HasIndex("TenantId", "EntityType", "EntityId")
                         .IsUnique();
 
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("TenantId", "EntityType", "EntityId"), new[] { "Visibility", "CustomerId", "TermCount" });
+
                     b.ToTable("SearchDocuments");
                 });
 
@@ -7029,6 +8294,9 @@ namespace SupportDesk.Persistence.Migrations
                         .HasMaxLength(40)
                         .IsUnicode(false)
                         .HasColumnType("varchar(40)");
+
+                    b.Property<int?>("AtPercent")
+                        .HasColumnType("int");
 
                     b.Property<int>("Level")
                         .HasColumnType("int");
@@ -8161,12 +9429,20 @@ namespace SupportDesk.Persistence.Migrations
 
                     b.HasIndex("TenantId", "CreatedAt");
 
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("TenantId", "CreatedAt"), new[] { "DepartmentId", "TeamId", "AssigneeId", "StatusCategory", "IsDeleted" });
+
                     b.HasIndex("TenantId", "DueAt")
                         .HasDatabaseName("IX_Tickets_OpenDue")
                         .HasFilter("[StatusCategory] < 5 AND [IsDeleted] = 0");
 
                     b.HasIndex("TenantId", "Number")
                         .IsUnique();
+
+                    b.HasIndex("TenantId", "ResolvedAt")
+                        .HasDatabaseName("IX_Tickets_Resolved")
+                        .HasFilter("[ResolvedAt] IS NOT NULL");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("TenantId", "ResolvedAt"), new[] { "CreatedAt", "CategoryId", "ProductId", "Priority", "IsSpam", "MergedIntoTicketId", "IsDeleted" });
 
                     b.HasIndex("TenantId", "AssigneeId", "StatusCategory")
                         .HasDatabaseName("IX_Tickets_OpenByAssignee")
@@ -8178,6 +9454,13 @@ namespace SupportDesk.Persistence.Migrations
 
                     b.HasIndex("TenantId", "LastActivityAt", "Id")
                         .HasDatabaseName("IX_Tickets_Keyset");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("TenantId", "LastActivityAt", "Id"), new[] { "DepartmentId", "TeamId", "AssigneeId", "StatusCategory", "IsDeleted", "Priority", "DueAt", "SlaState", "IsEscalated" });
+
+                    b.HasIndex("TenantId", "Priority", "LastActivityAt")
+                        .HasDatabaseName("IX_Tickets_PriorityKeyset");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("TenantId", "Priority", "LastActivityAt"), new[] { "DepartmentId", "TeamId", "AssigneeId", "StatusCategory", "IsDeleted" });
 
                     b.HasIndex("TenantId", "ProductId", "CreatedAt");
 
@@ -8583,6 +9866,12 @@ namespace SupportDesk.Persistence.Migrations
                     b.Property<bool>("PausesSla")
                         .HasColumnType("bit");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.Property<int>("SortOrder")
                         .HasColumnType("int");
 
@@ -8865,6 +10154,15 @@ namespace SupportDesk.Persistence.Migrations
                     b.ToTable("TicketWatchers");
                 });
 
+            modelBuilder.Entity("SupportDesk.Domain.Analytics.ScheduledReportRun", b =>
+                {
+                    b.HasOne("SupportDesk.Domain.Analytics.ScheduledReport", null)
+                        .WithMany()
+                        .HasForeignKey("ScheduledReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("SupportDesk.Domain.Analytics.TicketMetric", b =>
                 {
                     b.HasOne("SupportDesk.Domain.Tickets.Ticket", null)
@@ -9138,6 +10436,15 @@ namespace SupportDesk.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SupportDesk.Domain.Organisation.AgentInvitation", b =>
+                {
+                    b.HasOne("SupportDesk.Domain.Identity.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("SupportDesk.Domain.Organisation.AgentShiftAssignment", b =>
                 {
                     b.HasOne("SupportDesk.Domain.Organisation.Shift", null)
@@ -9185,6 +10492,11 @@ namespace SupportDesk.Persistence.Migrations
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("SupportDesk.Domain.Organisation.Team", null)
+                        .WithMany()
+                        .HasForeignKey("FallbackTeamId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("SupportDesk.Domain.Organisation.TeamMember", b =>

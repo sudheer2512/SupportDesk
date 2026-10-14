@@ -22,6 +22,7 @@ namespace SupportDesk.Persistence.Migrations
                     EndsAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Reason = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ReassignOpenTickets = table.Column<bool>(type: "bit", nullable: false),
+                    IncludeApprovals = table.Column<bool>(type: "bit", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -46,6 +47,9 @@ namespace SupportDesk.Persistence.Migrations
                     Status = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
                     Reason = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ApprovedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DecidedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DecisionNote = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ApprovalRequestId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -77,6 +81,7 @@ namespace SupportDesk.Persistence.Migrations
                     CsatSum = table.Column<int>(type: "int", nullable: false),
                     SlaBreaches = table.Column<int>(type: "int", nullable: false),
                     Reopens = table.Column<int>(type: "int", nullable: false),
+                    OpenAtEnd = table.Column<int>(type: "int", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -466,6 +471,7 @@ namespace SupportDesk.Persistence.Migrations
                     Age7To30 = table.Column<int>(type: "int", nullable: false),
                     Age30Plus = table.Column<int>(type: "int", nullable: false),
                     BreachedOpen = table.Column<int>(type: "int", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -479,6 +485,8 @@ namespace SupportDesk.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
                     TimeZone = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
                     Is24x7 = table.Column<bool>(type: "bit", nullable: false),
                     WeeklyHoursJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -561,6 +569,34 @@ namespace SupportDesk.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CollaborationChannels",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Provider = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    WebhookUrlProtected = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UrlHint = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    EventsJson = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+                    DepartmentIdsJson = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
+                    MinPriority = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    LastSentAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastStatusCode = table.Column<int>(type: "int", nullable: true),
+                    LastError = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CollaborationChannels", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CommunityTopics",
                 columns: table => new
                 {
@@ -608,6 +644,31 @@ namespace SupportDesk.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CommunityVotes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ConfigurationDraft",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Label = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    SourceTenant = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    FormatVersion = table.Column<int>(type: "int", nullable: false),
+                    BundleJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ResolutionsJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
+                    PublishedSnapshotId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    PublishedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ResultJson = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConfigurationDraft", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -668,6 +729,23 @@ namespace SupportDesk.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CustomerMergeLog",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SurvivorCustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MergedCustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MergedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    MergedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    SnapshotJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomerMergeLog", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CustomFields",
                 columns: table => new
                 {
@@ -687,8 +765,10 @@ namespace SupportDesk.Persistence.Migrations
                     VisibleInPortal = table.Column<bool>(type: "bit", nullable: false),
                     EditableInPortal = table.Column<bool>(type: "bit", nullable: false),
                     DepartmentIdsJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RequiredForStatusIdsJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     SortOrder = table.Column<int>(type: "int", nullable: false),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -705,12 +785,15 @@ namespace SupportDesk.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     OwnerUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Audience = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    Audience = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
                     IsShared = table.Column<bool>(type: "bit", nullable: false),
                     IsDefault = table.Column<bool>(type: "bit", nullable: false),
+                    Period = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
                     WidgetsJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -734,6 +817,14 @@ namespace SupportDesk.Persistence.Migrations
                     ResultStorageKey = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
                     CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     RejectionReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ApprovedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ApprovedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DownloadTokenHash = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true),
+                    DownloadExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DownloadedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ResultFileName = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    ResultSizeBytes = table.Column<long>(type: "bigint", nullable: true),
+                    Error = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -746,6 +837,68 @@ namespace SupportDesk.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "EngineeringItems",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IntegrationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Provider = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
+                    ExternalId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    ItemType = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
+                    TrackerType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    Project = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
+                    State = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    AssignedTo = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
+                    AreaPath = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
+                    IterationPath = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
+                    FixVersion = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ReleaseName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    ReleasedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeployedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsResolved = table.Column<bool>(type: "bit", nullable: false),
+                    IsReleased = table.Column<bool>(type: "bit", nullable: false),
+                    IsOrphaned = table.Column<bool>(type: "bit", nullable: false),
+                    OrphanReason = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
+                    OrphanedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ExternalChangedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastSyncedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastSyncError = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    SnapshotJson = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EngineeringItems", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EngineeringWebhookDeliveries",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IntegrationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Provider = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
+                    DeliveryId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    EventType = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
+                    ExternalId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    Status = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
+                    Detail = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    ReceivedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EngineeringWebhookDeliveries", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "FormLayouts",
                 columns: table => new
                 {
@@ -755,9 +908,11 @@ namespace SupportDesk.Persistence.Migrations
                     Kind = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
                     DepartmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     BrandId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Channel = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
                     SectionsJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsDefault = table.Column<bool>(type: "bit", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -945,6 +1100,8 @@ namespace SupportDesk.Persistence.Migrations
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ContactId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     TicketIdsJson = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FromDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ToDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ReleasedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ReleasedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -956,6 +1113,69 @@ namespace SupportDesk.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LegalHolds", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LocalReleases",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IntegrationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ProductReleaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    PlannedDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    ReleasedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeployedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LocalReleases", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LocalWorkItems",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IntegrationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Number = table.Column<int>(type: "int", nullable: false),
+                    Type = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    DescriptionHtml = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    State = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
+                    Severity = table.Column<int>(type: "int", nullable: true),
+                    Priority = table.Column<int>(type: "int", nullable: false),
+                    AssigneeUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    AreaPath = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
+                    IterationPath = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
+                    TagsJson = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+                    FixVersion = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ReleaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CustomerImpactCount = table.Column<int>(type: "int", nullable: false),
+                    Rank = table.Column<double>(type: "float", nullable: false),
+                    ResolvedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ClosedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LocalWorkItems", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -1042,6 +1262,27 @@ namespace SupportDesk.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_NotificationSettings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NotificationTemplates",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Key = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Subject = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    BodyHtml = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NotificationTemplates", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -1140,6 +1381,7 @@ namespace SupportDesk.Persistence.Migrations
                     IsPublic = table.Column<bool>(type: "bit", nullable: false),
                     TrialDays = table.Column<int>(type: "int", nullable: false),
                     MaxAgents = table.Column<int>(type: "int", nullable: true),
+                    MaxLightAgents = table.Column<int>(type: "int", nullable: true),
                     MaxPortalUsers = table.Column<int>(type: "int", nullable: true),
                     StorageMb = table.Column<long>(type: "bigint", nullable: true),
                     MaxChannels = table.Column<int>(type: "int", nullable: true),
@@ -1207,6 +1449,8 @@ namespace SupportDesk.Persistence.Migrations
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     RegisteredAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastSeenAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AppVersion = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    DeactivatedReason = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -1239,6 +1483,31 @@ namespace SupportDesk.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ReplyTemplates", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ReportExports",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RequestedById = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReportKey = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    ParametersJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Format = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
+                    Status = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
+                    FileId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    FileName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    SizeBytes = table.Column<long>(type: "bigint", nullable: false),
+                    RowCount = table.Column<int>(type: "int", nullable: false),
+                    Error = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReportExports", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -1275,6 +1544,8 @@ namespace SupportDesk.Persistence.Migrations
                     IsSystem = table.Column<bool>(type: "bit", nullable: false),
                     TicketScope = table.Column<int>(type: "int", nullable: false),
                     CustomerScope = table.Column<int>(type: "int", nullable: false),
+                    IsLightAgent = table.Column<bool>(type: "bit", nullable: false),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -1343,21 +1614,22 @@ namespace SupportDesk.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
-                    ReportKey = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    ReportKey = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
                     ParametersJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Format = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
                     Frequency = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
                     RunAtLocal = table.Column<TimeOnly>(type: "time", nullable: false),
                     DayOfWeek = table.Column<int>(type: "int", nullable: true),
                     DayOfMonth = table.Column<int>(type: "int", nullable: true),
-                    TimeZone = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    TimeZone = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     RecipientsJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     OwnerUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     NextRunAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastRunAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastStatus = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    LastStatus = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -1416,7 +1688,10 @@ namespace SupportDesk.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
-                    TimeZone = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Color = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    TimeZone = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     WeeklyHoursJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -1493,6 +1768,32 @@ namespace SupportDesk.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SupportAccessGrant",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OperatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OperatorName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Reason = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    DurationMinutes = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
+                    DecidedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DecidedByName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    DecidedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DecisionNote = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SupportAccessGrant", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tags",
                 columns: table => new
                 {
@@ -1540,6 +1841,8 @@ namespace SupportDesk.Persistence.Migrations
                     DataRegion = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
                     SuspensionReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SuspendedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CancelledAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletionScheduledAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -1601,6 +1904,7 @@ namespace SupportDesk.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
                     Category = table.Column<int>(type: "int", nullable: false),
                     Color = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
@@ -1621,6 +1925,33 @@ namespace SupportDesk.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TicketStatuses", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TrialSignup",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CompanyName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Slug = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    AdminName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    AdminEmail = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
+                    AdminEmailNormalized = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    PlanCode = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    CodeHash = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Attempts = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IpAddress = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrialSignup", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -1664,6 +1995,22 @@ namespace SupportDesk.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UsageRecords", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UsageSnapshot",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Day = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Metric = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    Quantity = table.Column<long>(type: "bigint", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UsageSnapshot", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -1850,6 +2197,8 @@ namespace SupportDesk.Persistence.Migrations
                     VisibleInPortal = table.Column<bool>(type: "bit", nullable: false),
                     TransferRequiresApproval = table.Column<bool>(type: "bit", nullable: false),
                     SortOrder = table.Column<int>(type: "int", nullable: false),
+                    ArchivedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -2145,6 +2494,37 @@ namespace SupportDesk.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ScheduledReportRuns",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ScheduledReportId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ScheduledFor = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Manual = table.Column<bool>(type: "bit", nullable: false),
+                    Status = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StartedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RecipientsJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Delivered = table.Column<int>(type: "int", nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    SizeBytes = table.Column<long>(type: "bigint", nullable: false),
+                    RowCount = table.Column<int>(type: "int", nullable: false),
+                    Error = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ScheduledReportRuns", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ScheduledReportRuns_ScheduledReports_ScheduledReportId",
+                        column: x => x.ScheduledReportId,
+                        principalTable: "ScheduledReports",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SearchPostings",
                 columns: table => new
                 {
@@ -2217,6 +2597,9 @@ namespace SupportDesk.Persistence.Migrations
                     Slug = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     CustomDomain = table.Column<string>(type: "nvarchar(253)", maxLength: 253, nullable: true),
                     LogoUrl = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    FaviconUrl = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    EmailFooterHtml = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
                     PrimaryColor = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
                     AccentColor = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
                     SupportEmail = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
@@ -2270,6 +2653,14 @@ namespace SupportDesk.Persistence.Migrations
                     CancelAtPeriodEnd = table.Column<bool>(type: "bit", nullable: false),
                     PendingPlanId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LimitOverridesJson = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GraceEndsAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    SuspendedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CancelledAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    BillingContactName = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    BillingContactEmail = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    BillingAddress = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    BillingTaxId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    PaymentProvider = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -2292,6 +2683,33 @@ namespace SupportDesk.Persistence.Migrations
                         principalTable: "Tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AgentInvitations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
+                    CodeHash = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    InvitedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AcceptedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RevokedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Attempts = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AgentInvitations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AgentInvitations_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -2509,7 +2927,11 @@ namespace SupportDesk.Persistence.Migrations
                     RoutingStrategy = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
                     RoundRobinCursorUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     OnlyAssignToOnlineAgents = table.Column<bool>(type: "bit", nullable: false),
+                    ConsiderShifts = table.Column<bool>(type: "bit", nullable: false),
+                    MaxOpenTicketsPerAgent = table.Column<int>(type: "int", nullable: true),
+                    FallbackTeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -2525,6 +2947,12 @@ namespace SupportDesk.Persistence.Migrations
                         principalTable: "Departments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Teams_Teams_FallbackTeamId",
+                        column: x => x.FallbackTeamId,
+                        principalTable: "Teams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -2536,6 +2964,7 @@ namespace SupportDesk.Persistence.Migrations
                     Milestone = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
                     Level = table.Column<int>(type: "int", nullable: false),
                     MinutesAfterBreach = table.Column<int>(type: "int", nullable: false),
+                    AtPercent = table.Column<int>(type: "int", nullable: true),
                     Action = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
                     NotifyJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReassignToUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -2804,6 +3233,7 @@ namespace SupportDesk.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SubscriptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Kind = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
                     Number = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
                     PeriodStart = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PeriodEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -2817,6 +3247,8 @@ namespace SupportDesk.Persistence.Migrations
                     DueAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PaidAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     PaymentReference = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    PaymentProvider = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -3828,14 +4260,20 @@ namespace SupportDesk.Persistence.Migrations
                     TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     AssigneeId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CustomerTier = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    CustomerTier = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: true),
+                    ContactId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModuleId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     VersionId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    SubcategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IssueTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    RootCause = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: true),
+                    RootCause = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ResolutionCode = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Sentiment = table.Column<string>(type: "varchar(40)", unicode: false, maxLength: 40, nullable: false),
+                    Excluded = table.Column<bool>(type: "bit", nullable: false),
+                    FirstResponderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     FirstResponseMinutes = table.Column<int>(type: "int", nullable: true),
                     FirstResponseBusinessMinutes = table.Column<int>(type: "int", nullable: true),
                     ResolutionMinutes = table.Column<int>(type: "int", nullable: true),
@@ -3844,11 +4282,18 @@ namespace SupportDesk.Persistence.Migrations
                     AgentReplies = table.Column<int>(type: "int", nullable: false),
                     CustomerReplies = table.Column<int>(type: "int", nullable: false),
                     Handoffs = table.Column<int>(type: "int", nullable: false),
+                    Transfers = table.Column<int>(type: "int", nullable: false),
                     FirstContactResolution = table.Column<bool>(type: "bit", nullable: false),
-                    FirstResponseBreached = table.Column<bool>(type: "bit", nullable: false),
-                    ResolutionBreached = table.Column<bool>(type: "bit", nullable: false),
                     HasSla = table.Column<bool>(type: "bit", nullable: false),
+                    FirstResponseSlaMet = table.Column<bool>(type: "bit", nullable: false),
+                    FirstResponseBreached = table.Column<bool>(type: "bit", nullable: false),
+                    ResolutionSlaMet = table.Column<bool>(type: "bit", nullable: false),
+                    ResolutionBreached = table.Column<bool>(type: "bit", nullable: false),
+                    NextResponseMet = table.Column<int>(type: "int", nullable: false),
+                    NextResponseBreaches = table.Column<int>(type: "int", nullable: false),
+                    SlaBreached = table.Column<bool>(type: "bit", nullable: false),
                     IsEscalated = table.Column<bool>(type: "bit", nullable: false),
+                    EscalationCount = table.Column<int>(type: "int", nullable: false),
                     CsatScore = table.Column<int>(type: "int", nullable: true),
                     FirstResponseAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ResolvedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -3857,6 +4302,7 @@ namespace SupportDesk.Persistence.Migrations
                     TimeSpentMinutes = table.Column<int>(type: "int", nullable: false),
                     BillableMinutes = table.Column<int>(type: "int", nullable: false),
                     Cost = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    SourceVersion = table.Column<byte[]>(type: "varbinary(8)", maxLength: 8, nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -4109,6 +4555,31 @@ namespace SupportDesk.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_AgentInvitations_TenantId_Email",
+                table: "AgentInvitations",
+                columns: new[] { "TenantId", "Email" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AgentInvitations_TenantId_UserId_CreatedAt",
+                table: "AgentInvitations",
+                columns: new[] { "TenantId", "UserId", "CreatedAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AgentInvitations_UserId",
+                table: "AgentInvitations",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AgentLeaves_ApprovalRequestId",
+                table: "AgentLeaves",
+                column: "ApprovalRequestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AgentLeaves_TenantId_Status_StartsAt",
+                table: "AgentLeaves",
+                columns: new[] { "TenantId", "Status", "StartsAt" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AgentLeaves_TenantId_UserId_StartsAt",
                 table: "AgentLeaves",
                 columns: new[] { "TenantId", "UserId", "StartsAt" });
@@ -4323,6 +4794,23 @@ namespace SupportDesk.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_BillingInvoices_IssuedAt",
+                table: "BillingInvoices",
+                column: "IssuedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BillingInvoices_OnePerPeriod",
+                table: "BillingInvoices",
+                columns: new[] { "TenantId", "SubscriptionId", "PeriodStart" },
+                unique: true,
+                filter: "[Kind] = 'Subscription' AND [Status] <> 'Void'");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BillingInvoices_Status_DueAt",
+                table: "BillingInvoices",
+                columns: new[] { "Status", "DueAt" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BillingInvoices_SubscriptionId",
                 table: "BillingInvoices",
                 column: "SubscriptionId");
@@ -4391,6 +4879,11 @@ namespace SupportDesk.Persistence.Migrations
                 filter: "[WebhookKey] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CollaborationChannels_TenantId_IsActive",
+                table: "CollaborationChannels",
+                columns: new[] { "TenantId", "IsActive" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CommunityPosts_TopicId",
                 table: "CommunityPosts",
                 column: "TopicId");
@@ -4406,6 +4899,11 @@ namespace SupportDesk.Persistence.Migrations
                 columns: new[] { "TopicId", "PostId", "VoterKey" },
                 unique: true,
                 filter: "[TopicId] IS NOT NULL AND [PostId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConfigurationDraft_TenantId_Status_CreatedAt",
+                table: "ConfigurationDraft",
+                columns: new[] { "TenantId", "Status", "CreatedAt" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ConfigurationSnapshots_TenantId_Version",
@@ -4540,6 +5038,16 @@ namespace SupportDesk.Persistence.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CustomerMergeLog_TenantId_MergedCustomerId",
+                table: "CustomerMergeLog",
+                columns: new[] { "TenantId", "MergedCustomerId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomerMergeLog_TenantId_SurvivorCustomerId",
+                table: "CustomerMergeLog",
+                columns: new[] { "TenantId", "SurvivorCustomerId" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Customers_AccountManagerUserId",
                 table: "Customers",
                 column: "AccountManagerUserId");
@@ -4583,6 +5091,23 @@ namespace SupportDesk.Persistence.Migrations
                 columns: new[] { "TenantId", "Audience" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Dashboards_TenantId_OwnerUserId",
+                table: "Dashboards",
+                columns: new[] { "TenantId", "OwnerUserId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DataRequests_DownloadTokenHash",
+                table: "DataRequests",
+                column: "DownloadTokenHash",
+                unique: true,
+                filter: "[DownloadTokenHash] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DataRequests_TenantId_ContactId",
+                table: "DataRequests",
+                columns: new[] { "TenantId", "ContactId" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DataRequests_TenantId_Status",
                 table: "DataRequests",
                 columns: new[] { "TenantId", "Status" });
@@ -4604,6 +5129,18 @@ namespace SupportDesk.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_EngineeringItems_TenantId_IntegrationId_ExternalId",
+                table: "EngineeringItems",
+                columns: new[] { "TenantId", "IntegrationId", "ExternalId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EngineeringItems_TenantId_IntegrationId_LastSyncedAt",
+                table: "EngineeringItems",
+                columns: new[] { "TenantId", "IntegrationId", "LastSyncedAt" },
+                filter: "[IsOrphaned] = 0");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_EngineeringLinks_TenantId_Provider_ExternalId",
                 table: "EngineeringLinks",
                 columns: new[] { "TenantId", "Provider", "ExternalId" });
@@ -4612,6 +5149,17 @@ namespace SupportDesk.Persistence.Migrations
                 name: "IX_EngineeringLinks_TicketId",
                 table: "EngineeringLinks",
                 column: "TicketId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EngineeringWebhookDeliveries_IntegrationId_DeliveryId",
+                table: "EngineeringWebhookDeliveries",
+                columns: new[] { "IntegrationId", "DeliveryId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EngineeringWebhookDeliveries_TenantId_IntegrationId_ReceivedAt",
+                table: "EngineeringWebhookDeliveries",
+                columns: new[] { "TenantId", "IntegrationId", "ReceivedAt" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Entitlements_ContractId",
@@ -4732,6 +5280,33 @@ namespace SupportDesk.Persistence.Migrations
                 column: "InstallationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_LocalReleases_TenantId_IntegrationId_Name",
+                table: "LocalReleases",
+                columns: new[] { "TenantId", "IntegrationId", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LocalWorkItems_ReleaseId",
+                table: "LocalWorkItems",
+                column: "ReleaseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LocalWorkItems_TenantId_IntegrationId_State_Rank",
+                table: "LocalWorkItems",
+                columns: new[] { "TenantId", "IntegrationId", "State", "Rank" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LocalWorkItems_TenantId_Number",
+                table: "LocalWorkItems",
+                columns: new[] { "TenantId", "Number" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LocalWorkItems_TenantId_UpdatedAt_Id",
+                table: "LocalWorkItems",
+                columns: new[] { "TenantId", "UpdatedAt", "Id" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_LookupValues_TenantId_Type_Value",
                 table: "LookupValues",
                 columns: new[] { "TenantId", "Type", "Value" },
@@ -4809,6 +5384,12 @@ namespace SupportDesk.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_NotificationTemplates_TenantId_Key",
+                table: "NotificationTemplates",
+                columns: new[] { "TenantId", "Key" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OtpChallenges_PrincipalId_Purpose",
                 table: "OtpChallenges",
                 columns: new[] { "PrincipalId", "Purpose" });
@@ -4882,15 +5463,32 @@ namespace SupportDesk.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_PushDevices_TenantId_ContactId",
+                table: "PushDevices",
+                columns: new[] { "TenantId", "ContactId" },
+                filter: "[ContactId] IS NOT NULL AND [IsActive] = 1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PushDevices_TenantId_Token",
                 table: "PushDevices",
                 columns: new[] { "TenantId", "Token" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_PushDevices_TenantId_UserId",
+                table: "PushDevices",
+                columns: new[] { "TenantId", "UserId" },
+                filter: "[UserId] IS NOT NULL AND [IsActive] = 1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ReplyTemplates_TenantId_Name",
                 table: "ReplyTemplates",
                 columns: new[] { "TenantId", "Name" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReportExports_TenantId_RequestedById_CreatedAt",
+                table: "ReportExports",
+                columns: new[] { "TenantId", "RequestedById", "CreatedAt" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_RetentionPolicies_TenantId",
@@ -4948,9 +5546,26 @@ namespace SupportDesk.Persistence.Migrations
                 columns: new[] { "TenantId", "Scope", "OwnerUserId" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_ScheduledReportRuns_ScheduledReportId_ScheduledFor",
+                table: "ScheduledReportRuns",
+                columns: new[] { "ScheduledReportId", "ScheduledFor" },
+                unique: true,
+                filter: "[Manual] = 0");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ScheduledReportRuns_TenantId_ScheduledReportId_CreatedAt",
+                table: "ScheduledReportRuns",
+                columns: new[] { "TenantId", "ScheduledReportId", "CreatedAt" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ScheduledReports_IsActive_NextRunAt",
                 table: "ScheduledReports",
                 columns: new[] { "IsActive", "NextRunAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ScheduledReports_TenantId_OwnerUserId",
+                table: "ScheduledReports",
+                columns: new[] { "TenantId", "OwnerUserId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ScheduledTasks_Name",
@@ -4962,7 +5577,8 @@ namespace SupportDesk.Persistence.Migrations
                 name: "IX_SearchDocuments_TenantId_EntityType_EntityId",
                 table: "SearchDocuments",
                 columns: new[] { "TenantId", "EntityType", "EntityId" },
-                unique: true);
+                unique: true)
+                .Annotation("SqlServer:Include", new[] { "Visibility", "CustomerId", "TermCount" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_SearchPostings_DocumentId",
@@ -5094,6 +5710,16 @@ namespace SupportDesk.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_SupportAccessGrant_OperatorId_Status",
+                table: "SupportAccessGrant",
+                columns: new[] { "OperatorId", "Status" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SupportAccessGrant_TenantId_Status_CreatedAt",
+                table: "SupportAccessGrant",
+                columns: new[] { "TenantId", "Status", "CreatedAt" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tags_TenantId_Name",
                 table: "Tags",
                 columns: new[] { "TenantId", "Name" },
@@ -5114,6 +5740,11 @@ namespace SupportDesk.Persistence.Migrations
                 name: "IX_Teams_DepartmentId",
                 table: "Teams",
                 column: "DepartmentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Teams_FallbackTeamId",
+                table: "Teams",
+                column: "FallbackTeamId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Teams_TenantId_DepartmentId",
@@ -5202,6 +5833,27 @@ namespace SupportDesk.Persistence.Migrations
                 column: "TargetTicketId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TicketMetrics_Open",
+                table: "TicketMetrics",
+                columns: new[] { "TenantId", "StatusCategory" },
+                filter: "[StatusCategory] < 5 AND [Excluded] = 0");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketMetrics_Tenant_CreatedAt",
+                table: "TicketMetrics",
+                columns: new[] { "TenantId", "CreatedAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketMetrics_Tenant_Department_CreatedAt",
+                table: "TicketMetrics",
+                columns: new[] { "TenantId", "DepartmentId", "CreatedAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketMetrics_Tenant_ResolvedAt",
+                table: "TicketMetrics",
+                columns: new[] { "TenantId", "ResolvedAt" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TicketMetrics_TenantId_AssigneeId_CreatedDay",
                 table: "TicketMetrics",
                 columns: new[] { "TenantId", "AssigneeId", "CreatedDay" });
@@ -5285,7 +5937,8 @@ namespace SupportDesk.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_Keyset",
                 table: "Tickets",
-                columns: new[] { "TenantId", "LastActivityAt", "Id" });
+                columns: new[] { "TenantId", "LastActivityAt", "Id" })
+                .Annotation("SqlServer:Include", new[] { "DepartmentId", "TeamId", "AssigneeId", "StatusCategory", "IsDeleted", "Priority", "DueAt", "SlaState", "IsEscalated" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_LocationId",
@@ -5326,9 +5979,22 @@ namespace SupportDesk.Persistence.Migrations
                 column: "ParentTicketId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Tickets_PriorityKeyset",
+                table: "Tickets",
+                columns: new[] { "TenantId", "Priority", "LastActivityAt" })
+                .Annotation("SqlServer:Include", new[] { "DepartmentId", "TeamId", "AssigneeId", "StatusCategory", "IsDeleted" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tickets_ProductId",
                 table: "Tickets",
                 column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_Resolved",
+                table: "Tickets",
+                columns: new[] { "TenantId", "ResolvedAt" },
+                filter: "[ResolvedAt] IS NOT NULL")
+                .Annotation("SqlServer:Include", new[] { "CreatedAt", "CategoryId", "ProductId", "Priority", "IsSpam", "MergedIntoTicketId", "IsDeleted" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_SlaPolicyId",
@@ -5358,7 +6024,8 @@ namespace SupportDesk.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_TenantId_CreatedAt",
                 table: "Tickets",
-                columns: new[] { "TenantId", "CreatedAt" });
+                columns: new[] { "TenantId", "CreatedAt" })
+                .Annotation("SqlServer:Include", new[] { "DepartmentId", "TeamId", "AssigneeId", "StatusCategory", "IsDeleted" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_TenantId_CustomerId_CreatedAt",
@@ -5458,6 +6125,21 @@ namespace SupportDesk.Persistence.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TrialSignup_AdminEmailNormalized_CreatedAt",
+                table: "TrialSignup",
+                columns: new[] { "AdminEmailNormalized", "CreatedAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TrialSignup_IpAddress_CreatedAt",
+                table: "TrialSignup",
+                columns: new[] { "IpAddress", "CreatedAt" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TrialSignup_Slug_Status",
+                table: "TrialSignup",
+                columns: new[] { "Slug", "Status" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TroubleshootingFlows_TenantId",
                 table: "TroubleshootingFlows",
                 column: "TenantId");
@@ -5466,6 +6148,17 @@ namespace SupportDesk.Persistence.Migrations
                 name: "IX_UsageRecords_TenantId_Metric_PeriodStart",
                 table: "UsageRecords",
                 columns: new[] { "TenantId", "Metric", "PeriodStart" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UsageSnapshot_Day_Metric",
+                table: "UsageSnapshot",
+                columns: new[] { "Day", "Metric" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UsageSnapshot_TenantId_Metric_Day",
+                table: "UsageSnapshot",
+                columns: new[] { "TenantId", "Metric", "Day" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -5500,6 +6193,11 @@ namespace SupportDesk.Persistence.Migrations
                 name: "IX_UserSessions_PrincipalKind_PrincipalId",
                 table: "UserSessions",
                 columns: new[] { "PrincipalKind", "PrincipalId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserSessions_TenantId_PrincipalKind_LastSeenAt",
+                table: "UserSessions",
+                columns: new[] { "TenantId", "PrincipalKind", "LastSeenAt" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserSessions_TokenHash",
@@ -5544,6 +6242,9 @@ namespace SupportDesk.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "AgentDepartments");
+
+            migrationBuilder.DropTable(
+                name: "AgentInvitations");
 
             migrationBuilder.DropTable(
                 name: "AgentLeaves");
@@ -5627,10 +6328,16 @@ namespace SupportDesk.Persistence.Migrations
                 name: "CallRecords");
 
             migrationBuilder.DropTable(
+                name: "CollaborationChannels");
+
+            migrationBuilder.DropTable(
                 name: "CommunityPosts");
 
             migrationBuilder.DropTable(
                 name: "CommunityVotes");
+
+            migrationBuilder.DropTable(
+                name: "ConfigurationDraft");
 
             migrationBuilder.DropTable(
                 name: "ConfigurationSnapshots");
@@ -5648,6 +6355,9 @@ namespace SupportDesk.Persistence.Migrations
                 name: "Conversations");
 
             migrationBuilder.DropTable(
+                name: "CustomerMergeLog");
+
+            migrationBuilder.DropTable(
                 name: "CustomFields");
 
             migrationBuilder.DropTable(
@@ -5657,7 +6367,13 @@ namespace SupportDesk.Persistence.Migrations
                 name: "DataRequests");
 
             migrationBuilder.DropTable(
+                name: "EngineeringItems");
+
+            migrationBuilder.DropTable(
                 name: "EngineeringLinks");
+
+            migrationBuilder.DropTable(
+                name: "EngineeringWebhookDeliveries");
 
             migrationBuilder.DropTable(
                 name: "Entitlements");
@@ -5687,6 +6403,12 @@ namespace SupportDesk.Persistence.Migrations
                 name: "Licences");
 
             migrationBuilder.DropTable(
+                name: "LocalReleases");
+
+            migrationBuilder.DropTable(
+                name: "LocalWorkItems");
+
+            migrationBuilder.DropTable(
                 name: "LookupValues");
 
             migrationBuilder.DropTable(
@@ -5700,6 +6422,9 @@ namespace SupportDesk.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "NotificationSettings");
+
+            migrationBuilder.DropTable(
+                name: "NotificationTemplates");
 
             migrationBuilder.DropTable(
                 name: "OtpChallenges");
@@ -5726,6 +6451,9 @@ namespace SupportDesk.Persistence.Migrations
                 name: "ReplyTemplates");
 
             migrationBuilder.DropTable(
+                name: "ReportExports");
+
+            migrationBuilder.DropTable(
                 name: "RetentionPolicies");
 
             migrationBuilder.DropTable(
@@ -5744,7 +6472,7 @@ namespace SupportDesk.Persistence.Migrations
                 name: "SavedViews");
 
             migrationBuilder.DropTable(
-                name: "ScheduledReports");
+                name: "ScheduledReportRuns");
 
             migrationBuilder.DropTable(
                 name: "ScheduledTasks");
@@ -5766,6 +6494,9 @@ namespace SupportDesk.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "SlaTargets");
+
+            migrationBuilder.DropTable(
+                name: "SupportAccessGrant");
 
             migrationBuilder.DropTable(
                 name: "TeamMembers");
@@ -5813,10 +6544,16 @@ namespace SupportDesk.Persistence.Migrations
                 name: "TimeEntries");
 
             migrationBuilder.DropTable(
+                name: "TrialSignup");
+
+            migrationBuilder.DropTable(
                 name: "TroubleshootingFlows");
 
             migrationBuilder.DropTable(
                 name: "UsageRecords");
+
+            migrationBuilder.DropTable(
+                name: "UsageSnapshot");
 
             migrationBuilder.DropTable(
                 name: "UserRoles");
@@ -5853,6 +6590,9 @@ namespace SupportDesk.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "AutomationRules");
+
+            migrationBuilder.DropTable(
+                name: "ScheduledReports");
 
             migrationBuilder.DropTable(
                 name: "SearchDocuments");
