@@ -1,0 +1,10 @@
+/* Portal application build + strict template type-check (`ngc -p projects/portal/tsconfig.app.json --noEmit`). */
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../out-tsc/portal",
+    "types": []
+  },
+  "files": ["src/main.ts"],
+  "include": ["src/**/*.d.ts"]
+}

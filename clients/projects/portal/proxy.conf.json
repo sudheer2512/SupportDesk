@@ -1,0 +1,15 @@
+{
+  "/api/": {
+    "target": "http://localhost:5830",
+    "secure": false,
+    "changeOrigin": false,
+    "logLevel": "warn"
+  },
+  "/hubs/": {
+    "target": "http://localhost:5830",
+    "secure": false,
+    "ws": true,
+    "changeOrigin": false,
+    "logLevel": "warn"
+  }
+}
