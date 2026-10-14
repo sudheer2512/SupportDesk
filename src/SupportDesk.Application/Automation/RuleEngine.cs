@@ -47,6 +47,9 @@ public sealed class RuleEngine(
     public const int MaxAutomaticAttempts = 3;
     public const int MaxScheduledTicketsPerRun = 500;
 
+    /// <summary>Error of a claimed execution until its actions complete (stays if the worker crashed mid-way; it can then be retried).</summary>
+    public const string InProgressMarker = "Execution was interrupted before completion.";
+
     // ───────────────────────────── Event-triggered rules ─────────────────────────────
 
     public async Task<List<RuleExecution>> RunTriggerAsync(RuleRunInput input, CancellationToken ct)
@@ -116,7 +119,7 @@ public sealed class RuleEngine(
 
             // Claim the (version, event, ticket) slot before acting: a concurrent or later delivery sees the row and skips.
             execution.Status = RuleExecutionStatus.Failed;
-            execution.Error = "Execution was interrupted before completion.";
+            execution.Error = InProgressMarker;
             if (!await TryInsertAsync(execution, ct)) continue;
             await ExecuteActionsAsync(rule, definition, execution, input.Extra, null, ct);
             results.Add(execution);
@@ -275,6 +278,9 @@ public sealed class RuleEngine(
             if (automatic) return execution;
             throw new ConflictException("not_retryable", "Only failed or partially failed executions can be retried.");
         }
+        // A claimed execution that has not completed yet may still be running on another worker.
+        if (execution.ActionResultsJson is null && execution.Error == InProgressMarker && db.Clock.UtcNow - execution.StartedAt < TimeSpan.FromMinutes(10))
+            throw new ConflictException("execution_in_progress", "This execution is still running. Try again in a few minutes.");
         var rule = await db.AutomationRules.AsNoTracking().FirstOrDefaultAsync(r => r.Id == execution.RuleId, ct)
                    ?? throw new DomainException("not_retryable", "The rule no longer exists.", 409);
         var version = await db.RuleVersions.AsNoTracking().FirstAsync(v => v.Id == execution.RuleVersionId, ct);
