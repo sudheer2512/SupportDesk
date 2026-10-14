@@ -72,6 +72,27 @@ public static partial class LocalNlAnalyticsParser
 
     private static string Dimension(string q)
     {
+        // An explicit "by X" / "per X" breakdown wins over words mentioned elsewhere ("frustrated customers by product").
+        if (ExplicitBreakdownRegex().Match(q) is { Success: true } explicitMatch)
+        {
+            var word = explicitMatch.Groups["d"].Value;
+            return word switch
+            {
+                _ when word.StartsWith("customer") || word.StartsWith("client") || word.StartsWith("account") => "customer",
+                _ when word.StartsWith("product") || word.StartsWith("module") => "product",
+                _ when word.StartsWith("categor") => "category",
+                _ when word.StartsWith("priorit") => "priority",
+                _ when word.StartsWith("channel") => "channel",
+                _ when word.StartsWith("department") => "department",
+                _ when word.StartsWith("team") => "team",
+                _ when word.StartsWith("agent") || word.StartsWith("assignee") || word.StartsWith("engineer") => "assignee",
+                _ when word.StartsWith("status") => "status",
+                _ when word.StartsWith("sentiment") => "sentiment",
+                _ when word.StartsWith("day") || word == "date" => "day",
+                _ when word.StartsWith("week") => "week",
+                _ => "month"
+            };
+        }
         if (DayRegex().IsMatch(q)) return "day";
         if (WeekRegex().IsMatch(q)) return "week";
         if (MonthRegex().IsMatch(q)) return "month";
@@ -137,6 +158,8 @@ public static partial class LocalNlAnalyticsParser
     [GeneratedRegex(@"\bfrustrat|\bangry\b|\bunhappy customers?\b|\bnegative sentiment\b|\bupset\b")] private static partial Regex FrustratedRegex();
     [GeneratedRegex(@"\bopen\b|\bbacklog\b|\bunresolved\b|\bpending\b|\boutstanding\b")] private static partial Regex OpenRegex();
     [GeneratedRegex(@"\bresolved\b|\bclosed\b|\bsolved\b|\bfixed\b")] private static partial Regex ResolvedRegex();
+    [GeneratedRegex(@"\b(?:by|per|for each|each|across|split by|broken down by|grouped by)\s+(?<d>customers?|clients?|accounts?|products?|modules?|categor(?:y|ies)|priorit(?:y|ies)|channels?|departments?|teams?|agents?|assignees?|engineers?|status(?:es)?|sentiments?|days?|date|weeks?|months?)\b")]
+    private static partial Regex ExplicitBreakdownRegex();
     [GeneratedRegex(@"\b(per day|daily|by day|each day|day by day|trend|over time|per date)\b")] private static partial Regex DayRegex();
     [GeneratedRegex(@"\b(per week|weekly|by week|each week|week by week)\b")] private static partial Regex WeekRegex();
     [GeneratedRegex(@"\b(per month|monthly|by month|each month|month by month)\b")] private static partial Regex MonthRegex();

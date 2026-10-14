@@ -47,8 +47,10 @@ public static partial class LexiconSentimentAnalyzer
         var cues = new List<string>();
         foreach (var (name, regex) in FrustrationCues)
             if (regex.IsMatch(text)) cues.Add(name);
-        var shouted = ShoutRegex().Matches(text).Select(m => m.Value).Count(w => !Acronyms.Contains(w));
-        if (shouted >= 2) cues.Add("shouting");
+        // Shouting = ordinary words in capitals ("STILL NOT FIXED"), not product/tax acronyms (GST, CGST, ERP…).
+        var capsWords = ShoutRegex().Matches(text).Select(m => m.Value).Where(w => !Acronyms.Contains(w)).ToList();
+        var words = WordRegex().Matches(text).Count;
+        if (capsWords.Count(ShoutWords.Contains) >= 1 || (capsWords.Count >= 3 && capsWords.Count >= 0.3 * Math.Max(1, words))) cues.Add("shouting");
 
         var tokens = TokenRegex().Matches(text.ToLowerInvariant()).Select(m => m.Value).ToList();
         double raw = 0;
@@ -105,7 +107,14 @@ public static partial class LexiconSentimentAnalyzer
     [GeneratedRegex(@"\b(unacceptable|ridiculous|pathetic|useless|waste of (my |our )?time|fed up|sick of|worst|incompetent|disgusting|furious)\b", RegexOptions.IgnoreCase)]
     private static partial Regex StrongRegex();
     [GeneratedRegex(@"[!?]{3,}|!!")] private static partial Regex ExclaimRegex();
+    private static readonly HashSet<string> ShoutWords = new(StringComparer.Ordinal)
+    {
+        "NOT", "STILL", "NOW", "WHY", "NEVER", "AGAIN", "NOTHING", "NOBODY", "ASAP", "URGENT", "HELP", "STOP", "FIX", "WORKING", "IMMEDIATELY", "PLEASE", "ANYONE",
+        "SERIOUSLY", "UNACCEPTABLE", "WORST", "TODAY"
+    };
+
     [GeneratedRegex(@"\b[A-Z]{3,}\b")] private static partial Regex ShoutRegex();
+    [GeneratedRegex(@"\b[A-Za-z]{3,}\b")] private static partial Regex WordRegex();
     [GeneratedRegex(@"[a-z]+(?:'[a-z]+)?")] private static partial Regex TokenRegex();
 }
 

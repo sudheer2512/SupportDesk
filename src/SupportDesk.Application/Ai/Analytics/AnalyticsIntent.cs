@@ -93,7 +93,8 @@ public static class AnalyticsCatalog
         return new AnalyticsIntent
         {
             Metric = metric, Dimension = dimension, Filters = filters, Period = period, Sort = sort,
-            Limit = Math.Clamp(intent.Limit <= 0 ? 10 : intent.Limit, 1, IsTimeDimension(dimension) ? 400 : 50)
+            // Time series always cover the whole period; "top N" applies to categorical breakdowns.
+            Limit = IsTimeDimension(dimension) ? 400 : Math.Clamp(intent.Limit <= 0 ? 10 : intent.Limit, 1, 50)
         };
     }
 

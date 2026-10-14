@@ -168,11 +168,11 @@ public sealed class KnowledgeIndexer(DeskDbContext db, AiGateway gateway, ILogge
         // Chunks whose source is gone or no longer eligible.
         var orphanArticles = await db.KnowledgeChunks.Where(c => c.SourceType == ChunkSources.Article &&
                 !db.Articles.Any(a => a.Id == c.SourceId && a.Status == ArticleStatus.Published && a.PublishedVersionId != null))
-            .Select(c => c.SourceId).Distinct().Take(500).ToListAsync(ct);
+            .Select(c => c.SourceId).Distinct().OrderBy(id => id).Take(500).ToListAsync(ct);
         foreach (var id in orphanArticles) removed += await RemoveSourceAsync(ChunkSources.Article, id, ct);
         var orphanTickets = await db.KnowledgeChunks.Where(c => c.SourceType == ChunkSources.Ticket &&
                 !db.Tickets.Any(t => t.Id == c.SourceId && t.StatusCategory >= StatusCategory.Resolved && t.MergedIntoTicketId == null))
-            .Select(c => c.SourceId).Distinct().Take(500).ToListAsync(ct);
+            .Select(c => c.SourceId).Distinct().OrderBy(id => id).Take(500).ToListAsync(ct);
         foreach (var id in orphanTickets) removed += await RemoveSourceAsync(ChunkSources.Ticket, id, ct);
 
         var articles = 0;

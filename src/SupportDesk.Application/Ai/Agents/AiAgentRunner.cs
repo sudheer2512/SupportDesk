@@ -69,7 +69,9 @@ public sealed class AiAgentRunner(
         var state = new RunState();
         if (!await gateway.IsAvailableAsync(AiFeatures.Agents, interactive: false, ct, requiresAgentsPlan: true))
             return Result(ticketId, state, "AI agents are turned off or not included in the plan.");
-        var agents = await db.AiAgents.AsNoTracking().Where(a => a.IsEnabled).OrderBy(a => a.Kind).ThenBy(a => a.Name).ToListAsync(ct);
+        // The auto-responder goes first: when it answers an approved scenario, the info collector and resolver stay quiet.
+        var agents = (await db.AiAgents.AsNoTracking().Where(a => a.IsEnabled).ToListAsync(ct))
+            .OrderBy(a => a.Kind == AiAgentKind.AutoResponder ? 0 : 1).ThenBy(a => a.Kind).ThenBy(a => a.Name).ToList();
         if (agents.Count == 0) return Result(ticketId, state, "No AI agents are enabled.");
         var ticket = await db.Tickets.AsNoTracking().Include(t => t.Tags).FirstOrDefaultAsync(t => t.Id == ticketId, ct);
         if (ticket is null || !ticket.StatusCategory.IsOpen() || ticket.MergedIntoTicketId is not null || ticket.IsSpam)
@@ -88,7 +90,9 @@ public sealed class AiAgentRunner(
             var applicable = agent.Kind switch
             {
                 AiAgentKind.Triage => trigger is AgentTriggers.Created or AgentTriggers.Manual,
-                AiAgentKind.InfoCollector => trigger is AgentTriggers.Created or AgentTriggers.Manual,
+                AiAgentKind.InfoCollector => trigger is AgentTriggers.Created or AgentTriggers.Manual && !state.AutoReplied && consequential is null,
+                // A request that needs a human decision never gets an AI-drafted resolution.
+                AiAgentKind.KnowledgeResolver => !state.AutoReplied && consequential is null,
                 _ => true
             };
             if (!applicable) continue;
@@ -99,7 +103,7 @@ public sealed class AiAgentRunner(
                 {
                     case AiAgentKind.Triage: await TriageAsync(agent, config, minConfidence, ticket, snapshot, injection.Count > 0, state, ct); break;
                     case AiAgentKind.InfoCollector: await CollectInfoAsync(agent, config, ticket, snapshot, state, ct); break;
-                    case AiAgentKind.KnowledgeResolver: await ResolveAsync(agent, config, ticket, snapshot, state, ct); break;
+                    case AiAgentKind.KnowledgeResolver: await ResolveAsync(agent, config, minConfidence, ticket, snapshot, state, ct); break;
                     case AiAgentKind.AutoResponder:
                         await AutoRespondAsync(agent, config, minConfidence, ticket, snapshot, customerText, trigger, eventActor, injection, consequential, settings, state, ct);
                         break;
@@ -236,12 +240,18 @@ public sealed class AiAgentRunner(
 
     // ───────────────────────────── Knowledge resolver ─────────────────────────────
 
-    private async Task ResolveAsync(AiAgent agent, AgentConfig config, Ticket ticket, TicketSnapshot snapshot, RunState state, CancellationToken ct)
+    private async Task ResolveAsync(AiAgent agent, AgentConfig config, double minConfidence, Ticket ticket, TicketSnapshot snapshot, RunState state,
+        CancellationToken ct)
     {
         if (!config.Allows("suggest_article") && !config.Allows("send_reply")) return;
-        if (await PendingExistsAsync(ticket.Id, AiActionCatalog.SendReply, agent.Id, ct)) return;
+        if (await PendingExistsAsync(ticket.Id, AiActionCatalog.SendReply, null, ct)) return;
         var reply = await replies.ComposeAsync(ticket, snapshot, customerFacingOnly: false, AiFeatures.Agents, interactive: false, agent.Id, agent.Instructions, ct);
-        if (!reply.Grounded) return;
+        // Only well-grounded drafts are worth an agent's attention; weak matches stay as panel suggestions.
+        if (!reply.Grounded || reply.Confidence < minConfidence)
+        {
+            state.Notes.Add($"{agent.Name}: no sufficiently grounded answer (confidence {reply.Confidence:P0}).");
+            return;
+        }
         await proposals.CreateAsync(ticket.Id, AiActionCatalog.SendReply, new { bodyHtml = reply.BodyHtml, citations = reply.Citations },
             $"{agent.Name} drafted a resolution grounded in {string.Join(", ", reply.Citations.Select(c => $"[{c.Index}] {c.Title}"))}.", reply.Confidence,
             AiRiskLevel.Medium, true, agent.Id, reply.ExecutionId, ct);

@@ -108,7 +108,8 @@ public static class AiPromptCatalog
         [PromptKeys.InfoCollector] = new(PromptKeys.InfoCollector,
             "You check whether a support ticket contains the information an engineer needs to start troubleshooting. Possible items: " +
             Join(InfoItems.All) + ". Respond with one JSON object: {\"missing\":[\"item\",...],\"request\":\"a short, polite message to the customer " +
-            "asking only for the missing items\"}. Return an empty list when nothing required is missing.",
+            "asking only for the missing items\"}. Return an empty list when nothing required is missing, and for how-to questions, billing or " +
+            "commercial requests that need no troubleshooting.",
             "Required items: {{required}}\n\nTicket:\n{{ticket}}",
             ["required", "ticket"]),
 

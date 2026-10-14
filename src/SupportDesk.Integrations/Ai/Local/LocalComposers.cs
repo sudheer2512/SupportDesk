@@ -109,7 +109,8 @@ public static partial class GroundedComposer
         var s = task.Ticket;
         var query = $"{s.Subject}\n{LatestCustomerText(s)}";
         var queryTokens = TextNormalization.Tokenize(query).ToHashSet();
-        var usable = task.Sources.Where(x => x.Score >= 0.2 && (!task.CustomerFacingOnly || (x.SourceType == "Article" && x.Visibility != "Internal"))).ToList();
+        var usable = task.Sources.Where(x => x.Score >= 0.2 && (!task.CustomerFacingOnly || (x.SourceType == "Article" && x.Visibility != "Internal")) &&
+                                             Relevant(x, queryTokens)).ToList();
         var articles = usable.Where(x => x.SourceType == "Article").Take(2).ToList();
         var tickets = task.CustomerFacingOnly ? [] : usable.Where(x => x.SourceType == "Ticket").Take(1).ToList();
         var sb = new StringBuilder();
@@ -154,7 +155,7 @@ public static partial class GroundedComposer
     public static Composition ComposeAnswer(AssistantTask task)
     {
         var queryTokens = TextNormalization.Tokenize(task.Question).ToHashSet();
-        var usable = task.Sources.Where(x => x.Score >= 0.2 && x.Visibility != "Internal").Take(2).ToList();
+        var usable = task.Sources.Where(x => x.Score >= 0.2 && x.Visibility != "Internal" && Relevant(x, queryTokens)).Take(2).ToList();
         if (usable.Count == 0)
             return new Composition("I couldn't find an answer to that in our help center. I can connect you with a support agent who will help.", [], 0.15, false);
         var sb = new StringBuilder("Here is what I found in our help center:\n\n");
@@ -173,6 +174,14 @@ public static partial class GroundedComposer
         var titleOverlap = usable.Where(u => cited.Contains(u.Index)).Select(u => TitleOverlap(u.Title, queryTokens)).DefaultIfEmpty(0).Max();
         var confidence = cited.Count == 0 ? 0.15 : Math.Round(Math.Clamp(0.3 + 0.5 * top + 0.3 * titleOverlap, 0, 0.95), 3);
         return new Composition(sb.ToString(), cited, confidence, cited.Count > 0);
+    }
+
+    /// <summary>A source is quoted only when it shares the question's vocabulary (title words or several content words).</summary>
+    private static bool Relevant(RetrievedSource source, IReadOnlySet<string> queryTokens)
+    {
+        if (TitleOverlap(source.Title, queryTokens) >= 0.34) return true;
+        var shared = TextNormalization.Tokenize(source.Text).Where(queryTokens.Contains).Distinct().Count();
+        return shared >= 3;
     }
 
     private static double TitleOverlap(string title, IReadOnlySet<string> queryTokens)
@@ -210,6 +219,8 @@ public static partial class InfoCollector
         var s = task.Ticket;
         var text = string.Join("\n", new[] { s.Subject, s.Description }.Concat(s.Messages.Where(m => m.AuthorType == "Customer").Select(m => m.Text)));
         var missing = new List<string>();
+        // Questions, billing and commercial requests need no troubleshooting details — only problem reports do.
+        if (!ProblemRegex().IsMatch(text) || (HowToRegex().IsMatch(text) && !ErrorRegex().IsMatch(text))) return (missing, "");
         foreach (var item in task.RequiredInfo)
         {
             var present = item switch
@@ -249,6 +260,10 @@ public static partial class InfoCollector
     private static partial Regex ErrorRegex();
     [GeneratedRegex(@"\b(all users|\d+\s*(users|people|branches|stores|locations|employees)|everyone|whole team|nobody can|no one can)\b", RegexOptions.IgnoreCase)]
     private static partial Regex ImpactRegex();
+    [GeneratedRegex(@"\b(error|exception|fail\w*|crash\w*|freez\w*|hang\w*|not working|doesn't work|does not work|stopped|broken|bug|wrong|incorrect|mismatch|missing|slow|time[sd]? ?out|timeout|cannot|can't|unable|blank|stuck|issue|problem|invalid|rejected|duplicate entries)\b", RegexOptions.IgnoreCase)]
+    private static partial Regex ProblemRegex();
+    [GeneratedRegex(@"\b(how (do|can|should|to)|where (do|can|is)|is there a way|is it possible|what is the (process|procedure|way))\b", RegexOptions.IgnoreCase)]
+    private static partial Regex HowToRegex();
 }
 
 /// <summary>Root causes ranked by similarity-weighted votes of similar resolved tickets.</summary>

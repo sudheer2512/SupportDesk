@@ -60,7 +60,7 @@ public sealed class AiConfigurationService(DeskDbContext db, ISecretProtector se
 
     public async Task<AiConfiguration> GetOrCreateEntityAsync(CancellationToken ct)
     {
-        var entity = await db.AiConfigurations.FirstOrDefaultAsync(ct);
+        var entity = await db.AiConfigurations.OrderBy(c => c.Id).FirstOrDefaultAsync(ct);
         if (entity is not null) return entity;
         entity = new AiConfiguration
         {
@@ -74,7 +74,7 @@ public sealed class AiConfigurationService(DeskDbContext db, ISecretProtector se
         catch (DbUpdateException)
         {
             db.Entry(entity).State = EntityState.Detached;
-            entity = await db.AiConfigurations.FirstAsync(ct);
+            entity = await db.AiConfigurations.OrderBy(c => c.Id).FirstAsync(ct);
         }
         return entity;
     }
@@ -82,7 +82,7 @@ public sealed class AiConfigurationService(DeskDbContext db, ISecretProtector se
     public async Task<AiSettings> GetAsync(CancellationToken ct)
     {
         if (_settings is not null) return _settings;
-        var e = await db.AiConfigurations.AsNoTracking().FirstOrDefaultAsync(ct) ?? await GetOrCreateEntityAsync(ct);
+        var e = await db.AiConfigurations.AsNoTracking().OrderBy(c => c.Id).FirstOrDefaultAsync(ct) ?? await GetOrCreateEntityAsync(ct);
         _settings = Build(e);
         return _settings;
     }

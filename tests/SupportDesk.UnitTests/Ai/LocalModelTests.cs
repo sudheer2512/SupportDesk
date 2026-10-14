@@ -135,6 +135,15 @@ public sealed class SentimentTests
     }
 
     [Fact]
+    public void Tax_acronyms_are_not_mistaken_for_shouting()
+    {
+        var r = LexiconSentimentAnalyzer.Analyze("The GST calculation on invoice SI/2026/04512 doesn't match. CGST + SGST shows ₹18,450.36 but the total is off. " +
+                                                 "This is blocking month-end closing.");
+        Assert.False(r.Frustrated);
+        Assert.DoesNotContain("shouting", r.Cues);
+    }
+
+    [Fact]
     public void Thanks_is_positive_and_negation_flips_polarity()
     {
         Assert.Equal("Positive", LexiconSentimentAnalyzer.Analyze("Thank you so much, that fixed it. Great support!").Sentiment);

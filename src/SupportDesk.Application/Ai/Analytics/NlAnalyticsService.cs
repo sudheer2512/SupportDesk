@@ -105,10 +105,17 @@ public sealed class SafeAnalyticsQuery(DeskDbContext db, RequestContext ctx, Tic
                     "month" => new DateTime(d.Year, d.Month, 1, 0, 0, 0, DateTimeKind.Utc),
                     _ => d
                 };
-                rows = byDay.GroupBy(x => Bucket(x.Key)).OrderBy(g => g.Key)
-                    .Select(g => Row(metric, g.Key.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-                        intent.Dimension == "month" ? g.Key.ToString("MMM yyyy", CultureInfo.InvariantCulture) : g.Key.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-                        g.Sum(x => x.Sum), g.Sum(x => x.Count))).ToList();
+                var buckets = byDay.GroupBy(x => Bucket(DateTime.SpecifyKind(x.Key, DateTimeKind.Utc)))
+                    .ToDictionary(g => g.Key, g => (Sum: g.Sum(x => x.Sum), Count: g.Sum(x => x.Count)));
+                // Continuous series for count metrics (empty days are zero, not missing); averages only show buckets with data.
+                var end = (to < db.Clock.UtcNow ? to.AddSeconds(-1) : db.Clock.UtcNow).Date;
+                var first = buckets.Count > 0 && from.Year <= 2000 ? buckets.Keys.Min() : Bucket(DateTime.SpecifyKind(from.Date, DateTimeKind.Utc));
+                if (metric.Kind == MetricKind.Count)
+                    for (var b = first; b <= end && buckets.Count < 400; b = intent.Dimension switch { "week" => b.AddDays(7), "month" => b.AddMonths(1), _ => b.AddDays(1) })
+                        buckets.TryAdd(b, (0, 0));
+                string Label(DateTime d) => intent.Dimension == "month" ? d.ToString("MMM yyyy", CultureInfo.InvariantCulture) : d.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+                rows = buckets.OrderBy(kv => kv.Key)
+                    .Select(kv => Row(metric, kv.Key.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), Label(kv.Key), kv.Value.Sum, kv.Value.Count)).ToList();
                 return (rows.TakeLast(intent.Limit).ToList(), from, to);
             }
             default:
