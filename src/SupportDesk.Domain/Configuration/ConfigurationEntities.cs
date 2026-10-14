@@ -6,7 +6,7 @@ public enum CustomFieldType
 }
 
 /// <summary>Tenant-defined field on tickets, contacts or customers. Values are stored in the entity's CustomFieldsJson.</summary>
-public class CustomFieldDefinition : AuditedEntity
+public class CustomFieldDefinition : AuditedEntity, IConcurrencyVersioned
 {
     /// <summary>Ticket, Contact, Customer</summary>
     public string Entity { get; set; } = "Ticket";
@@ -27,8 +27,11 @@ public class CustomFieldDefinition : AuditedEntity
     public bool EditableInPortal { get; set; }
     /// <summary>Departments where the field applies; empty = all.</summary>
     public string DepartmentIdsJson { get; set; } = "[]";
+    /// <summary>Ticket status ids that cannot be entered while the field is empty (e.g. a root cause before "Resolved").</summary>
+    public string RequiredForStatusIdsJson { get; set; } = "[]";
     public bool IsActive { get; set; } = true;
     public int SortOrder { get; set; }
+    public byte[] RowVersion { get; set; } = [];
 }
 
 public enum LayoutKind { AgentForm, PortalForm }
@@ -37,14 +40,17 @@ public enum LayoutKind { AgentForm, PortalForm }
 /// Form layout (form builder output). SectionsJson: [{"title":"Product","columns":2,"fields":[{"key":"productId","required":true},{"key":"cf:erp_module"}]}]
 /// Standard field keys are plain names; custom fields use the "cf:" prefix.
 /// </summary>
-public class FormLayout : AuditedEntity
+public class FormLayout : AuditedEntity, IConcurrencyVersioned
 {
     public string Entity { get; set; } = "Ticket";
     public string Name { get; set; } = "";
     public LayoutKind Kind { get; set; }
     public Guid? DepartmentId { get; set; }
     public Guid? BrandId { get; set; }
+    /// <summary>Channel the layout applies to (e.g. "Email", "Phone"); null = every channel.</summary>
+    public string? Channel { get; set; }
     public string SectionsJson { get; set; } = "[]";
     public bool IsDefault { get; set; }
     public bool IsActive { get; set; } = true;
+    public byte[] RowVersion { get; set; } = [];
 }

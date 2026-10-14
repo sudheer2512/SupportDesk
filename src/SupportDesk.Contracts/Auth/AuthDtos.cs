@@ -9,6 +9,10 @@ public static class LoginStatus
     public const string Ok = "ok";
     public const string MfaRequired = "mfa_required";
     public const string PasswordExpired = "password_expired";
+    /// <summary>The organisation's agent IP allow-list does not include the caller's address (HTTP 403).</summary>
+    public const string IpNotAllowed = "ip_not_allowed";
+    /// <summary>The organisation requires single sign-on for this user (HTTP 403).</summary>
+    public const string SsoRequired = "sso_required";
 }
 
 /// <summary>

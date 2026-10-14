@@ -41,7 +41,7 @@ public sealed class PrincipalLoader(DeskDbContext db, RequestContext ctx, ITenan
         var departments = await db.AgentDepartments.AsNoTracking().Where(a => a.UserId == userId).Select(a => a.DepartmentId).ToListAsync(ct);
         var teams = await db.TeamMembers.AsNoTracking().Where(t => t.UserId == userId).Select(t => t.TeamId).ToListAsync(ct);
         var agent = await db.Agents.AsNoTracking().FirstOrDefaultAsync(a => a.UserId == userId, ct);
-        var isLight = user.Kind == UserKind.LightAgent || agent?.IsLightAgent == true;
+        var isLight = user.Kind == UserKind.LightAgent || agent?.IsLightAgent == true || roles.Any(r => r.IsLightAgent);
         var permissionSet = permissions.ToHashSet();
         if (isLight)
         {

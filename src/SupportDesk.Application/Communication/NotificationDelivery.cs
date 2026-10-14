@@ -34,7 +34,8 @@ public sealed class NotificationDeliveryProcessor(
     ISecretProtector protector,
     TenantSettingsService settings,
     CommunicationKeys keys,
-    ILogger<NotificationDeliveryProcessor> logger)
+    ILogger<NotificationDeliveryProcessor> logger,
+    Administration.EmailTemplateService templates)
 {
     public const int MaxAttempts = 5;
 
@@ -64,15 +65,20 @@ public sealed class NotificationDeliveryProcessor(
                 continue;
             }
             var rows = items.Select(d => notifications[d.NotificationId]).OrderByDescending(n => n.CreatedAt).ToList();
-            var html = new StringBuilder($"<p>Hello {WebUtility.HtmlEncode(user.DisplayName)},</p><p>Here is your summary of {rows.Count} notification(s):</p><ul>");
+            var list = new StringBuilder("<ul>");
             foreach (var n in rows)
-                html.Append("<li><strong>").Append(WebUtility.HtmlEncode(n.Title)).Append("</strong>")
+                list.Append("<li><strong>").Append(WebUtility.HtmlEncode(n.Title)).Append("</strong>")
                     .Append(n.Body is null ? "" : " — " + WebUtility.HtmlEncode(n.Body))
-                    .Append(n.Link is null ? "" : $" (<a href=\"{baseUrl}{n.Link}\">open</a>)").Append("</li>");
-            html.Append("</ul>");
+                    .Append(n.Link is null ? "" : $" (<a href=\"{WebUtility.HtmlEncode(baseUrl + n.Link)}\">open</a>)").Append("</li>");
+            list.Append("</ul>");
+            // Tenant template (administration → notifications → e-mail templates) or the built-in default.
+            var (digestSubject, digestHtml) = await templates.RenderAsync(Administration.EmailTemplateCatalog.AgentDigest, new Dictionary<string, string?>
+            {
+                ["user.name"] = user.DisplayName, ["digest.count"] = rows.Count.ToString(System.Globalization.CultureInfo.InvariantCulture), ["digest.items"] = list.ToString()
+            }, ct);
             await SendAsync(items, async () =>
             {
-                await mailer.SendAsync(db.Request.TenantId, user.Email, $"Your SupportDesk digest ({rows.Count})", html.ToString(), ct: ct);
+                await mailer.SendAsync(db.Request.TenantId, user.Email, digestSubject, digestHtml, ct: ct);
                 return SendResult.Ok(null);
             }, ct);
             processed += items.Count;
@@ -96,10 +102,13 @@ public sealed class NotificationDeliveryProcessor(
             {
                 case NotificationChannel.Email:
                 {
-                    var body = $"<p>{WebUtility.HtmlEncode(n.Body ?? n.Title)}</p>" + (link is null ? "" : $"<p><a href=\"{link}\">Open in SupportDesk</a></p>");
+                    var (subject, body) = await templates.RenderAsync(Administration.EmailTemplateCatalog.AgentNotification, new Dictionary<string, string?>
+                    {
+                        ["user.name"] = user.DisplayName, ["notification.title"] = n.Title, ["notification.body"] = n.Body ?? n.Title, ["notification.link"] = link ?? baseUrl
+                    }, ct);
                     await SendAsync([d], async () =>
                     {
-                        await mailer.SendAsync(db.Request.TenantId, user.Email, n.Title, body, ct: ct);
+                        await mailer.SendAsync(db.Request.TenantId, user.Email, subject, body, ct: ct);
                         return SendResult.Ok(null);
                     }, ct);
                     break;

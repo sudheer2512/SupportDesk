@@ -102,7 +102,7 @@ public sealed class SsoService(
             if (!sso.AutoProvision) throw new DomainException("sso_user_unknown", "Your account has not been set up in SupportDesk. Ask an administrator.");
             user = new User
             {
-                Email = email, EmailNormalized = email, DisplayName = principal.FindFirst("name")?.Value ?? email, Kind = UserKind.Agent,
+                Email = email, EmailNormalized = email, DisplayName = principal.FindFirst(sso.NameClaim)?.Value ?? principal.FindFirst("name")?.Value ?? email, Kind = UserKind.Agent,
                 ExternalIssuer = config.Issuer, ExternalSubject = subject
             };
             db.Users.Add(user);

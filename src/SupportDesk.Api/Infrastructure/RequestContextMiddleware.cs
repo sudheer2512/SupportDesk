@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using SupportDesk.Application.Administration;
 using SupportDesk.Application.Identity;
 using SupportDesk.Domain.Platform;
 using SupportDesk.Persistence;
@@ -45,6 +46,13 @@ public sealed class RequestContextMiddleware(RequestDelegate next, ILogger<Reque
                     if (!await principals.ApplyAgentAsync(tenantId, subject, http.RequestAborted))
                     {
                         await Reject(http, 401, "account_disabled", "Your account is disabled.");
+                        return;
+                    }
+                    // Agent IP allow-list (administration → security). Sign-out/refresh stay reachable; platform operators and API clients are not subject to it.
+                    if (!http.Request.Path.StartsWithSegments("/api/v1/auth")
+                        && !await http.RequestServices.GetRequiredService<IpAccessPolicy>().IsAllowedAsync(ctx.IpAddress, http.RequestAborted))
+                    {
+                        await Reject(http, 403, "ip_not_allowed", $"Access from your network ({ctx.IpAddress ?? "unknown address"}) is not allowed by your organisation.");
                         return;
                     }
                     break;

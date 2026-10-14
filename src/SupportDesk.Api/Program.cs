@@ -48,6 +48,12 @@ builder.Services.Configure<ForwardedHeadersOptions>(o =>
     o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
     o.KnownIPNetworks.Clear();
     o.KnownProxies.Clear();
+    // Trusted reverse proxies. When none are configured every X-Forwarded-For is trusted (fine behind a proxy that
+    // overwrites it); configure them in production so the agent IP allow-list cannot be bypassed with a forged header.
+    foreach (var p in config.GetSection("ForwardedHeaders:KnownProxies").Get<string[]>() ?? [])
+        if (System.Net.IPAddress.TryParse(p, out var proxy)) o.KnownProxies.Add(proxy);
+    foreach (var n in config.GetSection("ForwardedHeaders:KnownNetworks").Get<string[]>() ?? [])
+        if (System.Net.IPNetwork.TryParse(n, out var network)) o.KnownIPNetworks.Add(network);
 });
 var corsOrigins = config.GetSection("Cors:Origins").Get<string[]>() ?? [];
 builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
