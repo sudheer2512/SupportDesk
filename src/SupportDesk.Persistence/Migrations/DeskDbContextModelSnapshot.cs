@@ -5003,7 +5003,12 @@ namespace SupportDesk.Persistence.Migrations
 
                     b.HasIndex("TenantId", "Sequence");
 
-                    b.ToTable("AuditLogs");
+                    b.ToTable("AuditLogs", t =>
+                        {
+                            t.HasTrigger("TR_AuditLogs_Protect");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("SupportDesk.Domain.Platform.BackgroundJob", b =>
