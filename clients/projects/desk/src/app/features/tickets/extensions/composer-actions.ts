@@ -1,4 +1,6 @@
-import { Permission, TicketDetailDto } from '@sd/core';
+import { inject } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { AiApi, Permission, TicketDetailDto } from '@sd/core';
 
 export type ComposerMode = 'reply' | 'note' | 'handover';
 
@@ -43,4 +45,25 @@ export interface ComposerActionDef {
  *   run: async (ctx) => { const ai = inject(AiApi); ctx.insertHtml((await firstValueFrom(ai.draftReply(ctx.ticket.id))).html); } },
  * ```
  */
-export const COMPOSER_ACTIONS: ComposerActionDef[] = [];
+export const COMPOSER_ACTIONS: ComposerActionDef[] = [
+  {
+    key: 'ai.draft-reply',
+    label: 'Draft with AI',
+    icon: 'sparkles',
+    permission: 'ai.use',
+    feature: 'ai',
+    modes: ['reply'],
+    run: async (ctx) => {
+      const ai = inject(AiApi);
+      const draft = await firstValueFrom(ai.suggestReply(ctx.ticket.id, {}, { silent: true }));
+      if (ctx.html().replace(/<[^>]*>/g, '').trim()) ctx.insertHtml(draft.bodyHtml);
+      else ctx.replaceHtml(draft.bodyHtml);
+      ctx.notify(
+        draft.grounded
+          ? `AI draft inserted (${draft.citations.length} source${draft.citations.length === 1 ? '' : 's'}) — review before sending.`
+          : 'AI draft inserted, but no matching article or resolved ticket was found — review it carefully.',
+        draft.grounded ? 'info' : 'error',
+      );
+    },
+  },
+];

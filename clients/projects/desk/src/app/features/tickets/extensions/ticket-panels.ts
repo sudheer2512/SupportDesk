@@ -37,4 +37,22 @@ export interface TicketPanelDef {
  *   loadComponent: () => import('../../ai/ticket-assistant.panel').then((m) => m.TicketAssistantPanel) },
  * ```
  */
-export const TICKET_PANELS: TicketPanelDef[] = [];
+export const TICKET_PANELS: TicketPanelDef[] = [
+  {
+    key: 'automation.blueprint',
+    label: 'Blueprint',
+    icon: 'workflow',
+    feature: 'blueprints',
+    order: 10,
+    loadComponent: () => import('../../automation/blueprint-panel/blueprint-tab.component').then((m) => m.BlueprintTabComponent),
+  },
+  {
+    key: 'ai.assistant',
+    label: 'AI',
+    icon: 'sparkles',
+    permission: 'ai.use',
+    feature: 'ai',
+    order: 20,
+    loadComponent: () => import('../../ai/ticket-ai-panel/ticket-ai-tab.component').then((m) => m.TicketAiTabComponent),
+  },
+];

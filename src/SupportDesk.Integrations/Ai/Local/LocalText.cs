@@ -155,7 +155,8 @@ public static partial class Sentences
         return t.Length > 0 ? char.ToUpper(t[0], CultureInfo.InvariantCulture) + t[1..] : t;
     }
 
-    [GeneratedRegex(@"(?<=[.!?])\s+|\n+")] private static partial Regex SplitRegex();
+    // Sentence ends only before a capital, digit or quote, so "rounding vs. invoice-level" stays one sentence.
+    [GeneratedRegex(@"(?<=[.!?])\s+(?=[A-Z0-9""“(])|\n+")] private static partial Regex SplitRegex();
     [GeneratedRegex(@"\s+")] private static partial Regex WhitespaceRegex();
     [GeneratedRegex(@"^(hi|hello|dear|hey|good (morning|afternoon|evening)|regards|best regards|thanks|thank you|many thanks|cheers|sincerely|please let (us|me) know|we('re| are) looking into|we will update|will update you|sorry for the inconvenience)\b", RegexOptions.IgnoreCase)]
     private static partial Regex BoilerplateRegex();

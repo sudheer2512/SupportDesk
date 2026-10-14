@@ -45,7 +45,7 @@ public sealed class AiTicketContextContributor(
         {
             var articles = await retriever.SearchAsync(new RetrievalQuery(text, KnowledgeAudience.Agent, SourceTypes: [ChunkSources.Article], Take: 5, MinScore: 0.2), ct);
             context.Articles.AddRange(articles.Select(a => new ArticleSuggestionDto(a.SourceId, a.Title, TextNormalization.Truncate(a.Text, 200), a.Visibility.ToString(),
-                a.Score, a.Url ?? $"/knowledge/articles/{a.SourceId}")));
+                a.Score, a.Url ?? $"/kb/articles/{a.SourceId}")));
             foreach (var s in await search.SimilarResolvedAsync(ticket.Id, text, 3, ct))
                 context.AiRecommendations.Add(new AiRecommendationDto("similar_ticket", $"Similar resolved ticket {s.DisplayNumber}: {s.Subject}",
                     s.ResolutionSnippet ?? "", s.Similarity, null, Json.ToElement(new { s.TicketId, s.Number, s.RootCause })));

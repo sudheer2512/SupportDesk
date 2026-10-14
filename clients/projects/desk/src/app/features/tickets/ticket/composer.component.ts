@@ -527,6 +527,16 @@ export class ComposerComponent {
         }
       });
     });
+    // A side panel asked to insert content (AI draft, article link): open the right tab and insert at the cursor.
+    effect(() => {
+      const request = this.ctx.composerInsert();
+      if (!request) return;
+      untracked(() => {
+        this.ctx.composerInsert.set(null);
+        this.open(request.mode);
+        this.insertWhenReady(request.html);
+      });
+    });
     const saveSub = this.save$.pipe(debounceTime(1200)).subscribe((kind) => void this.saveDraft(kind));
     inject(DestroyRef).onDestroy(() => {
       saveSub.unsubscribe();
@@ -546,6 +556,16 @@ export class ComposerComponent {
     this.expanded.set(true);
     if (mode === 'reply' && this.templates() === null) this.loadTemplates();
     this.focusEditor();
+  }
+
+  /** Inserts once the (possibly just expanded) editor exists. */
+  private insertWhenReady(html: string, attempt = 0): void {
+    const editor = this.editor();
+    if (editor) {
+      editor.insertHtml(html);
+      return;
+    }
+    if (attempt < 25) setTimeout(() => this.insertWhenReady(html, attempt + 1), 40);
   }
 
   /** The editor (TipTap) is created after render: retry briefly until it can take focus. */

@@ -21,6 +21,7 @@ export * from './lib/models/communication';
 export * from './lib/models/automation';
 export * from './lib/models/workbench';
 export * from './lib/models/approvals';
+export * from './lib/models/ai';
 
 // HTTP
 export * from './lib/http/api-client';
@@ -52,6 +53,7 @@ export * from './lib/api/blueprints.api';
 export * from './lib/api/webhooks.api';
 export * from './lib/api/workbench.api';
 export * from './lib/api/approvals.api';
+export * from './lib/api/ai.api';
 
 // Realtime
 export * from './lib/realtime/realtime.service';

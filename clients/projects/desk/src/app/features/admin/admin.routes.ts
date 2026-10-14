@@ -11,4 +11,6 @@ export const ROUTES: Routes = [
     canActivate: [permissionGuard('admin.integrations')],
     loadChildren: () => import('./webhooks/webhooks.routes').then((m) => m.ROUTES),
   },
+  // AI administration (owned by the AI module): provider, budget, features, prompts, agents, usage, execution log.
+  { path: 'ai', canActivate: [permissionGuard('admin.ai')], loadChildren: () => import('./ai/admin-ai.routes').then((m) => m.ROUTES) },
 ];

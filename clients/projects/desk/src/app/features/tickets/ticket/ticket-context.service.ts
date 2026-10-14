@@ -51,6 +51,8 @@ export class TicketContext {
   readonly busy = signal(false);
   /** Set after the agent posts something: the view scrolls to the newest entry once the timeline reloads. */
   readonly scrollToEnd = signal(false);
+  /** Content a side panel (AI draft, article link…) asked the composer to insert; the composer consumes and clears it. */
+  readonly composerInsert = signal<{ html: string; mode: 'reply' | 'note' } | null>(null);
 
   readonly id = computed(() => this.ticket()?.id ?? null);
   readonly can = computed(() => this.ticket()?.can ?? null);
@@ -83,6 +85,11 @@ export class TicketContext {
       },
     });
     this.loadTimeline(id);
+  }
+
+  /** Opens the composer in `mode` and inserts `html` at the cursor (used by contributed side panels). */
+  insertIntoComposer(html: string, mode: 'reply' | 'note' = 'reply'): void {
+    this.composerInsert.set({ html, mode });
   }
 
   /** Refetches the detail quietly (realtime changes, after actions that return something else). */

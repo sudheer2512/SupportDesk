@@ -21,6 +21,11 @@ The component receives two inputs: `ticketId: Guid` and `ticket: TicketDetailDto
 object whenever the ticket changes (edits, realtime updates), so derive state with `computed()` and refetch your own
 data in an `effect()` keyed on `ticketId()`. Use the `@sd/core` API clients only; show loading/empty/error states.
 
+Declare **both** inputs (Angular reports an unknown-input error otherwise). The panel runs inside the ticket view's
+injector, so it may `inject(TicketContext)` to refresh the ticket (`refresh()`, `loadTimeline()`) or hand content to
+the composer with `insertIntoComposer(html, 'reply' | 'note')`. Registered today: `automation.blueprint`
+(`automation/blueprint-panel/blueprint-tab.component.ts`) and `ai.assistant` (`ai/ticket-ai-panel/ticket-ai-tab.component.ts`).
+
 ## `composer-actions.ts` → `COMPOSER_ACTIONS`
 
 Buttons in the composer toolbar (Reply / Internal note / Handover tabs).
@@ -34,5 +39,6 @@ Buttons in the composer toolbar (Reply / Internal note / Handover tabs).
 
 `ctx` gives `ticket`, `mode`, `html()`, `insertHtml(html)`, `replaceHtml(html)` and `notify(message, kind)`.
 Inserted HTML is sanitised by the editor and again by the server. A thrown/rejected error is shown to the agent.
+Registered today: `ai.draft-reply` (reply tab).
 
 Keep entries small and lazy: import heavy code inside `loadComponent` / `run`, not at the top of these files.
