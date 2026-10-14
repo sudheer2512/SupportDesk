@@ -883,13 +883,15 @@ Open **Sign in** and choose a method.
 
 * **Password**: enter your e-mail and password. After 5 wrong attempts the account locks for 15 minutes. You can still
   sign in with a code.
-* **E-mail code**: enter your e-mail and select the option to e-mail a code. Enter the 6-digit code within 10 minutes.
+* **E-mail code**: open the **E-mail code** tab, enter your e-mail and select **Send code**. Enter the 6-digit code
+  within 10 minutes. Select **Send a new code** if it did not arrive.
 
-If the brand allows it, select **Register** to create an account. Enter your name, work e-mail, optional phone and a
-password. If your e-mail domain belongs to a customer, you are linked to that customer.
+If the brand allows it, select **Create an account** (under "New here?"). Enter your name, work e-mail, optional phone
+and a password, then **Create account**. If your e-mail domain belongs to a customer, you are linked to that customer.
 
-**Forgot your password?** Sign in with an e-mail code instead. **Not built yet:** you cannot set a new password without
-the current one. Ask support to send you an invitation or reset code.
+**Forgot your password?** Select **Forgot your password? Sign in with an e-mail code**. **Not built yet:** you cannot
+replace a forgotten password, because **Account › Password** always asks for the current one. Keep signing in with
+e-mail codes.
 
 ### Ticket scopes
 
@@ -916,28 +918,29 @@ under **Account**.
 3. Fill in the form: department, category, product, installation, priority and any extra fields your support team asks
    for. Leave priority as **Normal (let support decide)** if you are unsure.
 4. Describe the problem and drag files onto the form to attach them.
-5. Select **Submit**. The confirmation page links to your new ticket.
+5. Select **Submit ticket**. The confirmation page links to your new ticket.
 
 ### To reply to a ticket
 
-Open the ticket, write your reply, attach files if needed, and select **Send** (or press **Ctrl+Enter**). You only see
-public messages. A reply to a resolved ticket, or to a closed ticket within 30 days, reopens it. After that, submit a new
-ticket.
+Open the ticket, write your reply, attach files if needed, and select **Send reply** (or press **Ctrl+Enter**).
+You only see public messages. A reply to a resolved ticket, or to a closed ticket within 30 days, reopens it. After
+that, submit a new ticket.
 
 ### To confirm a resolution
 
 When support asks you to confirm, the ticket shows **Is your issue resolved?**
 
 * Select **Yes** to close the ticket. You can add a comment.
-* Select **No** and tell us **What is still not working?** The ticket reopens.
+* Select **No**, describe **What is still not working?**, and select **Send and keep it open**. The ticket reopens.
 
 ### To reopen a ticket
 
-Select **Reopen**, enter a reason, and confirm. The page shows the last date you can reopen.
+Select **Reopen**, enter a reason, and select **Reopen ticket**. The page shows the last date you can reopen.
 
 ### To rate the support you received
 
-On a resolved or closed ticket, **How did we do?** offers 1–5 stars and a comment. You can rate each ticket once.
+On a resolved or closed ticket, **How did we do?** offers 1–5 stars and a comment. Select **Submit rating**. You can
+rate each ticket once.
 
 **Partial:** the satisfaction survey e-mail links to a portal page that does not exist yet. Rate the ticket from the
 ticket page instead.
@@ -953,7 +956,8 @@ ticket page instead.
 
 Anyone can read the community. Sign in to post.
 
-1. Select **New topic**. Choose **Question** or **Discussion**, enter a title and details, and add up to 5 tags.
+1. Select **Start a topic**. Choose **Question** or **Discussion**, enter a title and details, add up to 5 tags, and
+   select **Post topic**. Answer with **Post reply**.
 2. Up-vote helpful topics and replies. You cannot vote on your own posts.
 3. If you asked a question, **accept** the reply that answered it.
 
@@ -973,7 +977,8 @@ solves the problem, say so. If nothing works, select **Create a ticket**; the st
 ### Submitting without an account
 
 If the brand allows anonymous tickets, **Submit a ticket** works without signing in. Enter your name, e-mail, subject and
-description. You get a ticket number and replies by e-mail. Anonymous forms cannot take attachments.
+description, then **Submit ticket**. You get a ticket number and replies by e-mail. Anonymous forms cannot take
+attachments.
 
 ### Live chat on a website
 
