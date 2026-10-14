@@ -52,6 +52,9 @@ public abstract class E2ETestBase(DeskServerFixture server, ITestOutputHelper ou
         try
         {
             await body();
+            // The CSP must never block the app itself (scripts, styles, SignalR websockets, data: images, video embeds).
+            lock (_consoleErrors)
+                Assert.DoesNotContain(_consoleErrors, e => e.Contains("Content Security Policy", StringComparison.OrdinalIgnoreCase));
         }
         catch (Exception)
         {

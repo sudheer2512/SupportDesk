@@ -52,4 +52,32 @@ public sealed class KnowledgeBaseTests(DeskServerFixture server, ITestOutputHelp
         Assert.Contains(PublicTitle, results);
         Assert.DoesNotContain(InternalTitle, results);
     });
+
+    [E2EFact]
+    public Task Article_with_a_video_embed_and_inline_image_renders_under_the_portal_csp() => RunAsync(async () =>
+    {
+        // The SPA's CSP must allow what articles legitimately contain: YouTube/Vimeo embeds and data: images.
+        var admin = await Api.AgentTokenAsync(Demo.Admin);
+        var title = Marker("E2E video walkthrough");
+        const string pixel = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+        var created = await Api.PostOkAsync(admin, "/api/v1/kb/articles", new
+        {
+            title, articleType = "HowTo", visibility = "Public",
+            bodyHtml = "<p>Watch the walkthrough.</p>" +
+                       "<iframe src=\"https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ\" width=\"560\" height=\"315\" allowfullscreen></iframe>" +
+                       $"<p><img src=\"data:image/png;base64,{pixel}\" alt=\"Inline pixel\"></p>"
+        });
+        var id = created["id"]!.GetValue<string>();
+        var published = await Api.PostOkAsync(admin, $"/api/v1/kb/articles/{id}/transition", new { action = "publish" });
+        Assert.Equal("Published", published["status"]!.GetValue<string>());
+
+        var page = await NewPageAsync();
+        await page.GotoAsync($"/portal/{Demo.Brand}/kb/{published["slug"]!.GetValue<string>()}");
+        await Expect(page.GetByRole(AriaRole.Heading, new() { Name = title, Level = 1 })).ToBeVisibleAsync();
+        var frame = page.Locator("iframe[src^='https://www.youtube-nocookie.com/embed/']");
+        await Expect(frame).ToHaveCountAsync(1);
+        await Expect(frame).ToHaveAttributeAsync("sandbox", new Regex("allow-scripts"));
+        await Expect(page.GetByRole(AriaRole.Img, new() { Name = "Inline pixel" })).ToBeVisibleAsync();
+        await page.WaitForTimeoutAsync(1000); // let the frame request start; RunAsync then fails on any CSP violation
+    });
 }

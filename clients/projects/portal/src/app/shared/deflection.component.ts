@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, output, si
 import { rxResource, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { PortalArticleDto, PortalArticleSummaryDto, PortalContentApi } from '@sd/core';
-import { SdButton, SdDrawer, SdIcon, SdSkeleton } from '@sd/ui';
+import { SdButton, SdDrawer, SdIcon, SdProseHtmlPipe, SdSkeleton } from '@sd/ui';
 import { catchError, debounceTime, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 import { BrandService } from '../brand.service';
 import { ErrorStateComponent } from './error-state.component';
@@ -16,7 +16,7 @@ import { ProseLinksDirective } from './prose-links.directive';
  */
 @Component({
   selector: 'portal-deflection',
-  imports: [RouterLink, SdIcon, SdButton, SdDrawer, SdSkeleton, ErrorStateComponent, ProseLinksDirective],
+  imports: [RouterLink, SdIcon, SdButton, SdDrawer, SdSkeleton, SdProseHtmlPipe, ErrorStateComponent, ProseLinksDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <p class="sd-visually-hidden" aria-live="polite">{{ announcement() }}</p>
@@ -51,7 +51,7 @@ import { ProseLinksDirective } from './prose-links.directive';
         @if (d.summary) {
           <p class="lead">{{ d.summary }}</p>
         }
-        <div class="sd-prose portal-prose portal-prose--compact" [innerHTML]="d.bodyHtml" portalProseLinks></div>
+        <div class="sd-prose portal-prose portal-prose--compact" [innerHTML]="d.bodyHtml | sdProseHtml" portalProseLinks></div>
       } @else {
         <sd-skeleton [lines]="8" />
       }

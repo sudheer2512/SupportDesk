@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input } f
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { PortalArticleDto, PortalAuthService, PortalContentApi } from '@sd/core';
-import { SdBadge, SdButton, SdIcon, SdRelativeTimePipe, SdSkeleton } from '@sd/ui';
+import { SdBadge, SdButton, SdIcon, SdProseHtmlPipe, SdRelativeTimePipe, SdSkeleton } from '@sd/ui';
 import { BrandService } from '../../brand.service';
 import { ArticleListComponent } from '../../shared/article-list.component';
 import { AttachmentListComponent } from '../../shared/attachment-list.component';
@@ -35,6 +35,7 @@ const TYPE_LABELS: Record<string, string> = {
     SdButton,
     SdSkeleton,
     SdRelativeTimePipe,
+    SdProseHtmlPipe,
     BreadcrumbComponent,
     ArticleListComponent,
     AttachmentListComponent,
@@ -113,7 +114,7 @@ const TYPE_LABELS: Record<string, string> = {
             @if (a.summary) {
               <p class="summary">{{ a.summary }}</p>
             }
-            <div class="sd-prose portal-prose body" [innerHTML]="a.bodyHtml" portalProseLinks></div>
+            <div class="sd-prose portal-prose body" [innerHTML]="a.bodyHtml | sdProseHtml" portalProseLinks></div>
 
             @if (a.attachments.length) {
               <section class="section" aria-labelledby="att-title">

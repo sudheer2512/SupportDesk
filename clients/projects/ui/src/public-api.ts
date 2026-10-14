@@ -59,4 +59,5 @@ export * from './lib/layout/split-layout.component';
 
 // Pipes & directives
 export * from './lib/pipes/time.pipes';
+export * from './lib/pipes/prose-html.pipe';
 export * from './lib/permissions/if-can.directive';
