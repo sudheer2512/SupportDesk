@@ -477,8 +477,7 @@ export class TicketListComponent {
       if (!outcome) return;
       const failed = new Set(outcome.result.failures.map((f) => f.id));
       this.selection.set(ids.filter((id) => failed.has(id)));
-      this.list.load();
-      this.store.refreshCounts();
+      this.reload();
     });
   }
 }

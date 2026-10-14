@@ -37,10 +37,10 @@ const FIELD_LABELS: Record<string, string> = {
     <sd-dialog title="Someone else changed this ticket" [description]="data.message">
       <p class="lead">
         <sd-icon name="info" [size]="16" />
-        The ticket now shows the latest saved values
-        @if (data.current; as c) {
-          (updated {{ c.updatedAt | sdRelativeTime }})
-        }. Compare, then re-apply your change or keep theirs.
+        <span>
+          The ticket now shows the latest saved values@if (data.current; as c) {<span> (updated {{ c.updatedAt | sdRelativeTime }})</span>}. Compare, then
+          re-apply your change or keep theirs.
+        </span>
       </p>
       <table class="cmp">
         <thead>

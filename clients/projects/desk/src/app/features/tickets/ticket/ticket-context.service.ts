@@ -22,6 +22,8 @@ export interface FieldEdit {
   changes: Omit<UpdateTicketRequest, 'rowVersion'>;
   /** field key → label of the agent's value (for "your change" in the conflict dialog). */
   labels: Record<string, string>;
+  /** Called when the agent keeps the other person's values after a conflict (drop local edits). */
+  onDiscard?: () => void;
 }
 
 /**
@@ -287,6 +289,7 @@ export class TicketContext {
     });
     const choice = await firstValueFrom(ref.closed);
     if (choice === 'reapply') return retry();
+    edit.onDiscard?.();
     this.toast.info('Kept the latest saved values');
     return false;
   }

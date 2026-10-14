@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, linkedSignal, signal, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Guid, InstallationLookupDto, JsonValue, SEVERITIES, Severity, TicketDetailDto, WorkbenchApi } from '@sd/core';
+import { Guid, InstallationLookupDto, JsonValue, SEVERITIES, TicketDetailDto, UpdateTicketRequest, WorkbenchApi } from '@sd/core';
 import { SdButton, SdChipsInput, SdCombobox, SdDateTimePipe, SdDurationPipe, SdFormField, SdInput, SdOption } from '@sd/ui';
 import { CustomFieldsComponent, applicableCustomFields, validateCustomFields } from '../../shared/custom-fields.component';
 import { TicketContext } from '../ticket-context.service';
@@ -204,8 +204,27 @@ export class PropertiesPanelComponent {
   private readonly meta = this.ctx.meta;
 
   protected readonly severities: SdOption[] = SEVERITIES.map((s) => ({ value: s, label: s }));
-  /** Edits snap back to the server's values whenever the ticket changes (save, realtime, conflict). */
-  protected readonly form = linkedSignal(() => fromTicket(this.ctx.ticket()));
+  /**
+   * Local edits on top of the server's values. When the ticket changes (save, realtime update by someone else),
+   * fields the agent has not touched follow the server; fields being edited keep the agent's value.
+   */
+  protected readonly form = linkedSignal<TicketDetailDto | null, PropsForm>({
+    source: () => this.ctx.ticket(),
+    computation: (t, previous) => {
+      const fresh = fromTicket(t);
+      if (!previous?.source || !t || previous.source.id !== t.id) return fresh;
+      const oldBase = fromTicket(previous.source);
+      const mine = previous.value;
+      const merged: PropsForm = { ...fresh, customFields: { ...fresh.customFields } };
+      for (const k of FIELDS) {
+        if ((mine[k] ?? null) !== (oldBase[k] ?? null)) (merged as unknown as Record<string, unknown>)[k] = mine[k];
+      }
+      for (const [k, v] of Object.entries(mine.customFields)) {
+        if (JSON.stringify(v) !== JSON.stringify(oldBase.customFields[k])) merged.customFields[k] = v;
+      }
+      return merged;
+    },
+  });
   protected readonly tags = linkedSignal(() => this.ctx.ticket()?.tags ?? []);
   protected readonly cfErrors = signal<Record<string, string>>({});
   private readonly installations = signal<InstallationLookupDto[]>([]);
@@ -301,7 +320,11 @@ export class PropertiesPanelComponent {
         .join(', ');
     }
     await this.ctx.update(
-      { changes: { ...(changes as { severity?: Severity }), clear: clear.length ? clear : null }, labels },
+      {
+        changes: { ...(changes as Omit<UpdateTicketRequest, 'rowVersion'>), clear: clear.length ? clear : null },
+        labels,
+        onDiscard: () => this.reset(),
+      },
       'Ticket updated',
     );
   }
