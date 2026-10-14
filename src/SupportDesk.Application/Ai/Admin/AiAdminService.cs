@@ -41,7 +41,8 @@ public sealed class AiAdminService(
         var e = await config.GetOrCreateEntityAsync(ct);
         var period = UsageMeter.PeriodOf(db.Clock.UtcNow);
         var usage = await db.AiUsage.AsNoTracking().Where(u => u.PeriodStart == period)
-            .GroupBy(_ => 1).Select(g => new { Cost = g.Sum(u => u.Cost), Tokens = g.Sum(u => u.InputTokens + u.OutputTokens) }).FirstOrDefaultAsync(ct);
+            .GroupBy(_ => 1).Select(g => new { Cost = g.Sum(u => u.Cost), // Only external-provider tokens count against the plan allowance (local and built-in calls are free and unmetered).
+                Tokens = g.Sum(u => u.Model.StartsWith("Local:") || u.Model.StartsWith("Builtin:") ? 0 : u.InputTokens + u.OutputTokens) }).FirstOrDefaultAsync(ct);
         var plan = await limits.GetLimitsAsync(ct);
         var features = AiConfigurationService.ParseFeatures(e.FeaturesJson);
         return new AiConfigurationDto(e.IsEnabled, AiProviderNames.Normalize(e.Provider) is { Length: > 0 } p ? p : AiProviderNames.Local, e.Model, e.Endpoint,
@@ -267,13 +268,15 @@ public sealed class AiAdminService(
         var plan = await limits.GetLimitsAsync(ct);
         static AiUsageGroupDto Group(string key, IEnumerable<AiUsage> g) =>
             new(key, g.Sum(x => x.Requests), g.Sum(x => x.InputTokens + x.OutputTokens), g.Sum(x => x.Cost));
-        return new AiUsageSummaryDto(period, e.MonthlyBudget, e.Currency, current.Sum(x => x.Cost), current.Sum(x => x.InputTokens + x.OutputTokens), plan.AiTokensMonthly,
+        return new AiUsageSummaryDto(period, e.MonthlyBudget, e.Currency, current.Sum(x => x.Cost), current.Where(IsMetered).Sum(x => x.InputTokens + x.OutputTokens), plan.AiTokensMonthly,
             current.GroupBy(x => x.Feature).Select(g => Group(g.Key, g)).OrderByDescending(g => g.Requests).ToList(),
             current.GroupBy(x => x.Model).Select(g => Group(g.Key, g)).OrderByDescending(g => g.Requests).ToList(),
             rows.GroupBy(x => x.PeriodStart).OrderBy(g => g.Key).Select(g => Group(g.Key.ToString("yyyy-MM"), g)).ToList(),
             outcomes.OrderByDescending(o => o.Total).ToList(),
             rows.Select(x => new AiUsageRowDto(x.PeriodStart, x.Feature, x.Model, x.Requests, x.InputTokens, x.OutputTokens, x.Cost)).ToList());
     }
+
+    private static bool IsMetered(AiUsage u) => !u.Model.StartsWith("Local:", StringComparison.Ordinal) && !u.Model.StartsWith("Builtin:", StringComparison.Ordinal);
 
     public async Task<PageResult<AiExecutionDto>> ExecutionsAsync(string? feature, string? status, string? outcome, Guid? entityId, DateTime? from, DateTime? to,
         int page, int pageSize, CancellationToken ct)

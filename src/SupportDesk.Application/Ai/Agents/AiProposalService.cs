@@ -339,16 +339,67 @@ public sealed class AiProposalService(
     {
         await lookups.LoadAsync(ct);
         var ticketIds = rows.Select(r => r.TicketId).Distinct().ToList();
-        var ticketInfo = await db.Tickets.AsNoTracking().Where(t => ticketIds.Contains(t.Id)).Select(t => new { t.Id, t.Number, t.Subject }).ToDictionaryAsync(t => t.Id, ct);
+        var tickets = await db.Tickets.AsNoTracking().Where(t => ticketIds.Contains(t.Id)).ToDictionaryAsync(t => t.Id, ct);
+        var tags = (await db.TicketTags.AsNoTracking().Where(tt => ticketIds.Contains(tt.TicketId)).Select(tt => new { tt.TicketId, tt.Tag!.Name }).ToListAsync(ct))
+            .GroupBy(x => x.TicketId).ToDictionary(g => g.Key, g => g.Select(x => x.Name).OrderBy(n => n).ToList());
         var agentIds = rows.Where(r => r.AgentId.HasValue).Select(r => r.AgentId!.Value).Distinct().ToList();
         var agents = await db.AiAgents.AsNoTracking().Where(a => agentIds.Contains(a.Id)).ToDictionaryAsync(a => a.Id, a => a.Name, ct);
         return rows.Select(p =>
         {
             var info = AiActionCatalog.Info(p.ActionType);
-            var t = ticketInfo.GetValueOrDefault(p.TicketId);
+            var t = tickets.GetValueOrDefault(p.TicketId);
             return new AiProposalDto(p.Id, p.TicketId, t?.Number, t?.Subject, p.ActionType, info.Label, Json.Element(p.PayloadJson), p.Rationale, p.Confidence,
                 p.Risk.ToString(), p.RequiresApproval, info.Reversible, p.Status.ToString(), p.AgentId, p.AgentId is { } a ? agents.GetValueOrDefault(a) : null,
-                p.AiExecutionId, p.CreatedAt, lookups.User(p.DecidedById), p.DecidedAt, p.AppliedAt, p.RevertedAt, p.Error);
+                p.AiExecutionId, p.CreatedAt, lookups.User(p.DecidedById), p.DecidedAt, p.AppliedAt, p.RevertedAt, p.Error,
+                Changes(p, t, t is null ? [] : tags.GetValueOrDefault(t.Id) ?? []));
         }).ToList();
+    }
+
+    /// <summary>
+    /// Before → after with names resolved: while pending, "before" is the ticket's current value; once applied, the
+    /// recorded before-state (BeforeStateJson) and the applied value.
+    /// </summary>
+    private List<AiProposalChangeDto> Changes(AiActionProposal p, Ticket? t, List<string> currentTags)
+    {
+        var changes = new List<AiProposalChangeDto>();
+        var payload = Json.Element(p.PayloadJson);
+        var state = string.IsNullOrEmpty(p.BeforeStateJson) ? (JsonElement?)null : Json.Element(p.BeforeStateJson);
+        string? S(JsonElement e, string n) => e.ValueKind == JsonValueKind.Object && e.TryGetProperty(n, out var v) && v.ValueKind == JsonValueKind.String ? v.GetString() : null;
+        string? Name(string field, string? value) => value is null ? null : field switch
+        {
+            ClassificationFields.Category => Guid.TryParse(value, out var c) ? lookups.Category(c) ?? value : value,
+            ClassificationFields.Product => Guid.TryParse(value, out var pr) ? lookups.Product(pr) ?? value : value,
+            ClassificationFields.Department => Guid.TryParse(value, out var d) ? lookups.Department(d) ?? value : value,
+            _ => value
+        };
+        switch (p.ActionType)
+        {
+            case AiActionCatalog.SetClassification when payload.TryGetProperty("values", out var values) && values.ValueKind == JsonValueKind.Object:
+            {
+                var current = t is null ? new Dictionary<string, string?>() : AiClassificationService.CurrentValues(t);
+                foreach (var prop in values.EnumerateObject().Where(x => ClassificationFields.All.Contains(x.Name)))
+                {
+                    var before = state is { } st && st.TryGetProperty("before", out var b) ? S(b, prop.Name) : current.GetValueOrDefault(prop.Name);
+                    changes.Add(new AiProposalChangeDto(prop.Name, Name(prop.Name, before), Name(prop.Name, prop.Value.GetString())));
+                }
+                break;
+            }
+            case AiActionCatalog.SetPriority:
+                changes.Add(new AiProposalChangeDto("priority", state is { } sp ? S(sp, "priority") : t?.Priority.ToString(), S(payload, "priority")));
+                break;
+            case AiActionCatalog.AddTags:
+            {
+                var before = state is { } stt && stt.TryGetProperty("tags", out var bt) && bt.ValueKind == JsonValueKind.Array
+                    ? bt.EnumerateArray().Select(x => x.GetString() ?? "").ToList() : currentTags;
+                var add = payload.TryGetProperty("tags", out var at) && at.ValueKind == JsonValueKind.Array ? at.EnumerateArray().Select(x => x.GetString() ?? "").ToList() : [];
+                changes.Add(new AiProposalChangeDto("tags", before.Count == 0 ? null : string.Join(", ", before), string.Join(", ", before.Union(add))));
+                break;
+            }
+            case AiActionCatalog.SendReply or AiActionCatalog.RequestInfo or AiActionCatalog.AddNote:
+                changes.Add(new AiProposalChangeDto(p.ActionType == AiActionCatalog.AddNote ? "internal note" : "reply to customer", null,
+                    TextNormalization.Truncate(TextNormalization.HtmlToText(S(payload, "bodyHtml")), 400)));
+                break;
+        }
+        return changes;
     }
 }

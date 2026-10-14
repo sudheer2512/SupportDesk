@@ -128,7 +128,11 @@ public sealed record AiProposalDto(
     DateTime? DecidedAt,
     DateTime? AppliedAt,
     DateTime? RevertedAt,
-    string? Error);
+    string? Error,
+    IReadOnlyList<AiProposalChangeDto> Changes);
+
+/// <summary>Human-readable before → after of a proposal (current → proposed while pending; recorded before → applied once applied).</summary>
+public sealed record AiProposalChangeDto(string Field, string? Before, string? After);
 
 public sealed record DecideProposalRequest(string? Note = null);
 

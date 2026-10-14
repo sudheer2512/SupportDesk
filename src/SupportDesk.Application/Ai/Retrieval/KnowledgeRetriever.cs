@@ -180,7 +180,7 @@ public sealed class KnowledgeRetriever(
     }
 
     private static string ArticleUrl(RetrievalQuery q, Guid id, ArticleInfo? info) => q.Audience == KnowledgeAudience.Agent
-        ? $"/knowledge/articles/{id}"
+        ? $"/kb/articles/{id}"
         : q.BrandSlug is { Length: > 0 } slug ? $"/portal/{slug}/kb/{info?.Slug ?? id.ToString()}" : $"/kb/{info?.Slug ?? id.ToString()}";
 
     private async Task<List<RetrievedChunk>> MergeKnowledgeModuleHitsAsync(List<RetrievedChunk> results, RetrievalQuery q, string text, CancellationToken ct)
