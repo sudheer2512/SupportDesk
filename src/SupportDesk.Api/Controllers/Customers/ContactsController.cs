@@ -64,7 +64,7 @@ public sealed class ContactsController(ContactService contacts, ContactMergeServ
     // ───── Duplicates & merge ─────
 
     [HttpGet("{id:guid}/duplicates")]
-    public Task<List<DuplicateCandidateDto>> DuplicatesOf(Guid id, [FromQuery] double? minScore, CancellationToken ct) => merge.DuplicatesOfAsync(id, minScore, ct);
+    public Task<List<DuplicateContactCandidateDto>> DuplicatesOf(Guid id, [FromQuery] double? minScore, CancellationToken ct) => merge.DuplicatesOfAsync(id, minScore, ct);
 
     [HttpGet("duplicates")]
     public Task<List<DuplicatePairDto>> Duplicates([FromQuery] Guid? customerId, [FromQuery] double? minScore, [FromQuery] int limit = 50, CancellationToken ct = default) =>

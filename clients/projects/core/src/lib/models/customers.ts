@@ -505,7 +505,7 @@ export interface PortalInviteResultDto {
   demoCode: string | null;
 }
 
-export interface DuplicateCandidateDto {
+export interface DuplicateContactCandidateDto {
   contact: ContactListItemDto;
   score: number;
   confidence: 'High' | 'Medium' | 'Low';

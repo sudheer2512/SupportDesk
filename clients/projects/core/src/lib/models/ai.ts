@@ -166,7 +166,7 @@ export interface SimilarTicketDto {
   resolvedAt: IsoDateTime | null;
 }
 
-export interface DuplicateCandidateDto {
+export interface DuplicateTicketCandidateDto {
   ticketId: Guid;
   number: number;
   displayNumber: string;
@@ -183,7 +183,7 @@ export interface DuplicateCandidateDto {
 export interface DuplicateCheckDto {
   executionId: Guid | null;
   ticketId: Guid;
-  candidates: DuplicateCandidateDto[];
+  candidates: DuplicateTicketCandidateDto[];
 }
 
 export interface MergeDuplicateRequest {

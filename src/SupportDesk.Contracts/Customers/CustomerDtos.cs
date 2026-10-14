@@ -439,7 +439,7 @@ public sealed record PortalInviteRequest(string Mode = "invite", Guid? BrandId =
 public sealed record PortalInviteResultDto(string Mode, string SentTo, string LoginUrl, DateTime ExpiresAt, string? DemoCode);
 
 /// <summary>A possible duplicate of a contact, with a score in [0,1] and the reasons that produced it.</summary>
-public sealed record DuplicateCandidateDto(ContactListItemDto Contact, double Score, string Confidence, IReadOnlyList<string> Reasons);
+public sealed record DuplicateContactCandidateDto(ContactListItemDto Contact, double Score, string Confidence, IReadOnlyList<string> Reasons);
 
 public sealed record DuplicatePairDto(ContactListItemDto First, ContactListItemDto Second, double Score, string Confidence, IReadOnlyList<string> Reasons);
 

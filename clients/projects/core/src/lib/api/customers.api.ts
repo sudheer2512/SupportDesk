@@ -17,7 +17,7 @@ import {
   CustomerGroupDto,
   CustomerListItemDto,
   CustomerQuery,
-  DuplicateCandidateDto,
+  DuplicateContactCandidateDto,
   DuplicatePairDto,
   LocationDto,
   MergeContactsRequest,
@@ -176,8 +176,8 @@ export class ContactsApi {
     return this.api.post<PortalInviteResultDto>(`contacts/${enc(id)}/portal-invite`, { mode, brandId: brandId ?? null }, { silent: true });
   }
 
-  duplicatesOf(id: Guid, minScore?: number): Observable<DuplicateCandidateDto[]> {
-    return this.api.get<DuplicateCandidateDto[]>(`contacts/${enc(id)}/duplicates`, { params: { minScore } });
+  duplicatesOf(id: Guid, minScore?: number): Observable<DuplicateContactCandidateDto[]> {
+    return this.api.get<DuplicateContactCandidateDto[]>(`contacts/${enc(id)}/duplicates`, { params: { minScore } });
   }
 
   duplicates(customerId?: Guid | null, minScore?: number, limit = 50): Observable<DuplicatePairDto[]> {

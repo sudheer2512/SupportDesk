@@ -149,20 +149,20 @@ public sealed class AiSearchService(
         }, async () =>
         {
             var candidates = await FindDuplicatesAsync(t, ct);
-            return new AiOutput<List<DuplicateCandidateDto>>(candidates, candidates.FirstOrDefault()?.Similarity,
+            return new AiOutput<List<DuplicateTicketCandidateDto>>(candidates, candidates.FirstOrDefault()?.Similarity,
                 Logged: candidates.Select(c => new { c.TicketId, c.Number, c.Similarity, c.Reason }));
         }, ct);
         return new DuplicateCheckDto(result.ExecutionId, t.Id, result.Value);
     }
 
-    public async Task<List<DuplicateCandidateDto>> FindDuplicatesAsync(Ticket t, CancellationToken ct)
+    public async Task<List<DuplicateTicketCandidateDto>> FindDuplicatesAsync(Ticket t, CancellationToken ct)
     {
         await lookups.LoadAsync(ct);
         Expression<Func<Ticket, bool>> sameParty = x => (t.ContactId != null && x.ContactId == t.ContactId) || (t.CustomerId != null && x.CustomerId == t.CustomerId);
         var ranked = await RankOpenTicketsAsync($"{t.Subject}\n{TextNormalization.Truncate(t.DescriptionText, 800)}", sameParty, 20, ct, excludeId: t.Id,
             createdFrom: t.CreatedAt.AddDays(-14), createdTo: t.CreatedAt.AddDays(14));
         var canMerge = ctx.IsSystem || ctx.Has(Permissions.TicketsMerge);
-        var list = new List<DuplicateCandidateDto>();
+        var list = new List<DuplicateTicketCandidateDto>();
         foreach (var r in ranked)
         {
             var sameContact = t.ContactId is not null && r.Ticket.ContactId == t.ContactId;
@@ -173,7 +173,7 @@ public sealed class AiSearchService(
             if (score < threshold) continue;
             var reason = $"{Math.Round(r.Similarity * 100)}% similar text" + (sameContact ? ", same contact" : sameCustomer ? ", same customer" : "") +
                          $", created {Math.Abs((r.Ticket.CreatedAt - t.CreatedAt).TotalDays):0.#} days apart";
-            list.Add(new DuplicateCandidateDto(r.Ticket.Id, r.Ticket.Number, lookups.Display(r.Ticket.Number), r.Ticket.Subject, lookups.Status(r.Ticket.StatusId),
+            list.Add(new DuplicateTicketCandidateDto(r.Ticket.Id, r.Ticket.Number, lookups.Display(r.Ticket.Number), r.Ticket.Subject, lookups.Status(r.Ticket.StatusId),
                 r.Ticket.CreatedAt, Math.Round(Math.Min(1, score), 4), sameContact, sameCustomer, reason, canMerge));
         }
         return list.OrderByDescending(x => x.Similarity).Take(5).ToList();

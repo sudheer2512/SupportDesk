@@ -9,7 +9,7 @@ import {
   ContactMergeLogDto,
   ContactMergeResultDto,
   ContactsApi,
-  DuplicateCandidateDto,
+  DuplicateContactCandidateDto,
   PORTAL_ACCESS_SCOPES,
   PortalAccessScope,
   PortalInviteResultDto,
@@ -402,7 +402,7 @@ export class ContactDetailPage {
   protected readonly portalScopes = PORTAL_ACCESS_SCOPES;
   protected readonly identityChannels = ['Email', 'Phone', 'WhatsApp', 'Sms', 'Facebook', 'Instagram', 'Chat'];
   protected readonly contact = signal<ContactDetailDto | null>(null);
-  protected readonly duplicates = signal<DuplicateCandidateDto[]>([]);
+  protected readonly duplicates = signal<DuplicateContactCandidateDto[]>([]);
   protected readonly history = signal<ContactMergeLogDto[]>([]);
   protected readonly notFound = signal(false);
   protected readonly sending = signal<'invite' | 'reset' | null>(null);
@@ -541,7 +541,7 @@ export class ContactDetailPage {
     });
   }
 
-  protected merge(d: DuplicateCandidateDto): void {
+  protected merge(d: DuplicateContactCandidateDto): void {
     const c = this.contact();
     if (!c) return;
     this.dialog

@@ -6,7 +6,7 @@ import {
   AiApi,
   AiProposalDto,
   ClassificationSuggestionDto,
-  DuplicateCandidateDto,
+  DuplicateTicketCandidateDto,
   KnowledgeDraftDto,
   MeStore,
   ResolutionPredictionDto,
@@ -565,7 +565,7 @@ export class TicketAiPanelComponent {
   protected readonly selected = signal<string[]>([]);
   protected readonly reply = signal<SuggestedReplyDto | null>(null);
   protected readonly similar = signal<SimilarTicketDto[] | null>(null);
-  protected readonly duplicates = signal<DuplicateCandidateDto[] | null>(null);
+  protected readonly duplicates = signal<DuplicateTicketCandidateDto[] | null>(null);
   protected readonly rootCause = signal<RootCauseDto | null>(null);
   protected readonly draft = signal<KnowledgeDraftDto | null>(null);
   protected readonly proposals = signal<AiProposalDto[]>([]);
@@ -703,7 +703,7 @@ export class TicketAiPanelComponent {
     });
   }
 
-  protected async merge(d: DuplicateCandidateDto): Promise<void> {
+  protected async merge(d: DuplicateTicketCandidateDto): Promise<void> {
     const t = this.ticket();
     const ok = await this.dialogs.confirm({
       title: `Merge ${t?.displayNumber ?? 'this ticket'} into ${d.displayNumber}?`,

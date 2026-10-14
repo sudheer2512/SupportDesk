@@ -33,7 +33,7 @@ public sealed class ContactMergeService(
     // ───────────────────────────── Duplicate detection ─────────────────────────────
 
     /// <summary>Possible duplicates of one contact, best first.</summary>
-    public async Task<List<DuplicateCandidateDto>> DuplicatesOfAsync(Guid contactId, double? minScore = null, CancellationToken ct = default)
+    public async Task<List<DuplicateContactCandidateDto>> DuplicatesOfAsync(Guid contactId, double? minScore = null, CancellationToken ct = default)
     {
         ctx.Require(Permissions.CustomersView);
         var k = await db.Contacts.AsNoTracking().VisibleTo(ctx, db).FirstOrDefaultAsync(x => x.Id == contactId, ct) ?? throw new NotFoundException("Contact", contactId);
@@ -61,7 +61,7 @@ public sealed class ContactMergeService(
         var scored = pool.Select(c => (Contact: c, Score: DuplicateScoring.Score(probe, probes[c.Id])))
             .Where(x => x.Score.Score >= threshold).OrderByDescending(x => x.Score.Score).Take(25).ToList();
         var mapped = await contacts.MapListAsync(scored.Select(x => x.Contact).ToList(), ct);
-        return scored.Select((x, i) => new DuplicateCandidateDto(mapped[i], x.Score.Score, x.Score.Confidence, x.Score.Reasons)).ToList();
+        return scored.Select((x, i) => new DuplicateContactCandidateDto(mapped[i], x.Score.Score, x.Score.Confidence, x.Score.Reasons)).ToList();
     }
 
     /// <summary>

@@ -55,10 +55,10 @@ public sealed record SemanticSearchResultDto(string Query, IReadOnlyList<Semanti
 public sealed record SimilarTicketDto(Guid TicketId, long Number, string DisplayNumber, string Subject, string Status, string StatusCategory,
     double Similarity, string? ResolutionSnippet, string? RootCause, DateTime CreatedAt, DateTime? ResolvedAt);
 
-public sealed record DuplicateCandidateDto(Guid TicketId, long Number, string DisplayNumber, string Subject, string Status, DateTime CreatedAt,
+public sealed record DuplicateTicketCandidateDto(Guid TicketId, long Number, string DisplayNumber, string Subject, string Status, DateTime CreatedAt,
     double Similarity, bool SameContact, bool SameCustomer, string Reason, bool CanMerge);
 
-public sealed record DuplicateCheckDto(Guid? ExecutionId, Guid TicketId, IReadOnlyList<DuplicateCandidateDto> Candidates);
+public sealed record DuplicateCheckDto(Guid? ExecutionId, Guid TicketId, IReadOnlyList<DuplicateTicketCandidateDto> Candidates);
 
 public sealed record MergeDuplicateRequest(Guid TargetTicketId, string? Note = null);
 

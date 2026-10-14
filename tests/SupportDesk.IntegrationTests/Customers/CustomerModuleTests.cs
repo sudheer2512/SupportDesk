@@ -131,7 +131,7 @@ public sealed class CustomerModuleTests(DeskApiFactory factory)
             await db.SaveChangesAsync();
         });
 
-        var candidates = await ReadAsync<List<DuplicateCandidateDto>>(await admin.GetAsync($"/api/v1/contacts/{ramesh.Id}/duplicates"));
+        var candidates = await ReadAsync<List<DuplicateContactCandidateDto>>(await admin.GetAsync($"/api/v1/contacts/{ramesh.Id}/duplicates"));
         var byId = candidates.ToDictionary(c => c.Contact.Id);
         Assert.Contains(legacyEmail, byId.Keys);
         Assert.Contains("Same e-mail address", byId[legacyEmail].Reasons);
