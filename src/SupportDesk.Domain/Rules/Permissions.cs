@@ -49,6 +49,8 @@ public static class Permissions
     public const string SupervisorMonitor = "supervisor.monitor";
     public const string AgentsManage = "agents.manage";
     public const string EngineeringLink = "engineering.link";
+    public const string EngineeringView = "engineering.view";
+    public const string EngineeringManage = "engineering.manage";
 
     // Analytics
     public const string AnalyticsView = "analytics.view";
@@ -113,6 +115,8 @@ public static class Permissions
         new(SupervisorMonitor, "Collaboration", "Supervisor monitoring (live queues, agent status)"),
         new(AgentsManage, "Collaboration", "Manage agent availability, shifts, leave and delegation"),
         new(EngineeringLink, "Collaboration", "Create and link engineering work items"),
+        new(EngineeringView, "Collaboration", "View the engineering board, work items and releases"),
+        new(EngineeringManage, "Collaboration", "Create, update and move engineering work items; publish releases"),
         new(AnalyticsView, "Analytics", "View personal dashboards and reports"),
         new(AnalyticsTeam, "Analytics", "View team, department and organisation analytics"),
         new(AnalyticsExport, "Analytics", "Export reports (CSV/Excel/PDF)"),
@@ -141,20 +145,20 @@ public static class Permissions
     /// <summary>Default role templates created for every new tenant.</summary>
     public static class Templates
     {
-        public static readonly string[] LightAgent = [TicketsView, TicketsNote, CustomersView, ProductsView, KbViewInternal, AnalyticsView];
+        public static readonly string[] LightAgent = [TicketsView, TicketsNote, CustomersView, ProductsView, KbViewInternal, AnalyticsView, EngineeringView, EngineeringManage];
 
         public static readonly string[] Agent =
         [
             TicketsView, TicketsCreate, TicketsEdit, TicketsReply, TicketsNote, TicketsAssign, TicketsEscalate, TicketsResolve,
             TicketsReopen, TicketsMerge, TicketsSplit, TicketsTime, CustomersView, CustomersManage, ProductsView, ContractsView,
-            KbViewInternal, KbAuthor, AnalyticsView, AiUse, EngineeringLink
+            KbViewInternal, KbAuthor, AnalyticsView, AiUse, EngineeringLink, EngineeringView
         ];
 
         public static readonly string[] Supervisor =
         [
             .. Agent, TicketsTransfer, TicketsBulk, TicketsDelete, TicketsViewCosts, TicketsOverrideEntitlement, TicketsExport,
             ContactsMerge, ContractsManage, KbReview, KbPublish, CommunityModerate, ApprovalsDecide, SupervisorMonitor,
-            AgentsManage, AnalyticsTeam, AnalyticsExport, AnalyticsSchedule, AiApprove
+            AgentsManage, AnalyticsTeam, AnalyticsExport, AnalyticsSchedule, AiApprove, EngineeringManage
         ];
 
         public static readonly string[] KnowledgeManager =
