@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MeStore, ProductDto, ProductFamilyDto, ProductReleaseDto, ProductVersionDto, ProductsApi, saveErrorMessage } from '@sd/core';
-import { SdBadge, SdButton, SdCard, SdDialogService, SdEmptyState, SdPageHeader, SdSkeleton, ToastService } from '@sd/ui';
+import { SdBadge, SdButton, SdCard, SdDialogService, SdEmptyState, SdIcon, SdPageHeader, SdSkeleton, ToastService } from '@sd/ui';
 import { DateOnlyPipe, HumanizePipe, statusTone } from '../customers/shared/customer-ui';
 import { ModuleTabsComponent, PRODUCT_TABS } from '../customers/shared/module-tabs.component';
 import { SECTION_STYLES, TABLE_STYLES } from '../customers/shared/styles';
@@ -11,7 +11,7 @@ import { ProductFormData, ProductFormDialog, ReleaseFormData, ReleaseFormDialog,
 /** /products — product catalog: families, products, modules, versions (status, end of support) and releases. */
 @Component({
   selector: 'desk-catalog-page',
-  imports: [RouterLink, SdPageHeader, SdButton, SdBadge, SdCard, SdSkeleton, SdEmptyState, DateOnlyPipe, HumanizePipe, ModuleTabsComponent],
+  imports: [RouterLink, SdPageHeader, SdButton, SdBadge, SdCard, SdIcon, SdSkeleton, SdEmptyState, DateOnlyPipe, HumanizePipe, ModuleTabsComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="desk-page">
@@ -48,6 +48,7 @@ import { ProductFormData, ProductFormDialog, ReleaseFormData, ReleaseFormDialog,
                   <div sdCardActions>
                     @if (canManage) {
                       <button sdButton size="sm" icon="pencil" (click)="editProduct(p)">Edit</button>
+                      <button sdButton size="sm" variant="ghost" icon="trash" iconOnly [attr.aria-label]="'Delete ' + p.name" (click)="removeProduct(p)"></button>
                     }
                   </div>
                   <dl class="meta">
@@ -130,7 +131,21 @@ import { ProductFormData, ProductFormDialog, ReleaseFormData, ReleaseFormDialog,
                                     <button type="button" class="rel" (click)="editRelease(p, v, r)" [title]="r.releaseNotes ?? ''">
                                       {{ r.name }}@if (r.buildNumber) {&ngsp;<span class="sd-xs sd-muted">build {{ r.buildNumber }}</span>}
                                     </button>
-                                    <span class="sd-xs sd-muted">{{ r.type }} · {{ r.installationCount }} inst.</span>
+                                    <span class="sd-xs sd-muted rel-meta">
+                                      {{ r.type }} · {{ r.installationCount }} inst.
+                                      @if (canManage) {
+                                        <button
+                                          type="button"
+                                          class="rel-del"
+                                          [attr.aria-label]="'Delete release ' + r.name"
+                                          [disabled]="r.installationCount > 0"
+                                          [title]="r.installationCount > 0 ? 'Installations run this release' : 'Delete release'"
+                                          (click)="removeRelease(p, v, r)"
+                                        >
+                                          <sd-icon name="trash" [size]="12" />
+                                        </button>
+                                      }
+                                    </span>
                                   </li>
                                 }
                               </ul>
@@ -139,6 +154,7 @@ import { ProductFormData, ProductFormDialog, ReleaseFormData, ReleaseFormDialog,
                               @if (canManage) {
                                 <button sdButton size="sm" variant="ghost" icon="plus" iconOnly [attr.aria-label]="'Add release to ' + v.version" (click)="editRelease(p, v, null)"></button>
                                 <button sdButton size="sm" variant="ghost" icon="pencil" iconOnly [attr.aria-label]="'Edit ' + v.version" (click)="editVersion(p, v)"></button>
+                                <button sdButton size="sm" variant="ghost" icon="trash" iconOnly [attr.aria-label]="'Delete version ' + v.version" (click)="removeVersion(p, v)"></button>
                               }
                             </td>
                           </tr>
@@ -243,6 +259,32 @@ import { ProductFormData, ProductFormDialog, ReleaseFormData, ReleaseFormDialog,
         cursor: pointer;
         font: inherit;
       }
+      .rel-meta {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .rel-del {
+        display: inline-flex;
+        padding: 2px;
+        border: 0;
+        border-radius: var(--sd-radius-xs);
+        background: transparent;
+        color: var(--sd-text-3);
+        cursor: pointer;
+      }
+      .rel-del:hover:not(:disabled) {
+        color: var(--sd-danger);
+        background: var(--sd-surface-3);
+      }
+      .rel-del:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .rel-del:focus-visible {
+        outline: none;
+        box-shadow: var(--sd-focus-ring);
+      }
       .detail sd-card {
         display: flex;
       }
@@ -321,6 +363,77 @@ export class CatalogPage {
     this.dialog
       .open<ProductVersionDto, VersionFormData>(VersionFormDialog, { data: { productId: p.id, version }, size: 'md' })
       .closed.subscribe((saved) => saved && this.load());
+  }
+
+  /** DELETE /products/{id}: referenced products (tickets, installations, entitlements) are retired instead of deleted. */
+  protected async removeProduct(p: ProductDto): Promise<void> {
+    const ok = await this.dialog.confirm({
+      title: `Delete ${p.name}?`,
+      message:
+        p.installationCount > 0 || p.openTickets > 0
+          ? `${p.name} is in use (${p.installationCount} installations, ${p.openTickets} open tickets), so it will be retired instead: it stays on existing records but can no longer be chosen.`
+          : 'If tickets, installations or contracts reference it, it is retired instead of deleted so their history stays intact.',
+      confirmLabel: p.installationCount > 0 || p.openTickets > 0 ? 'Retire product' : 'Delete product',
+      danger: true,
+      typeToConfirm: p.code,
+    });
+    if (!ok) return;
+    this.api.delete(p.id).subscribe({
+      next: () => this.afterDelete(() => this.products().find((x) => x.id === p.id), p.name, (x) => !x.isActive, 'Product retired', 'Product deleted'),
+      error: (err: unknown) => this.toast.error('Could not delete the product', saveErrorMessage(err)),
+    });
+  }
+
+  /** DELETE /products/{id}/versions/{versionId}: versions used by installations or tickets are marked End of life instead. */
+  protected async removeVersion(p: ProductDto, v: ProductVersionDto): Promise<void> {
+    const inUse = v.installationCount > 0;
+    const ok = await this.dialog.confirm({
+      title: `Delete version ${v.version}?`,
+      message: inUse
+        ? `${v.installationCount} installations run ${v.version}, so it will be marked End of life instead of deleted.`
+        : `If tickets reference ${v.version} it is marked End of life instead; otherwise it is deleted with its ${v.releases.length} release(s).`,
+      confirmLabel: inUse ? 'Mark End of life' : 'Delete version',
+      danger: true,
+    });
+    if (!ok) return;
+    this.api.deleteVersion(p.id, v.id).subscribe({
+      next: () =>
+        this.afterDelete(
+          () => this.products().find((x) => x.id === p.id)?.versions.find((x) => x.id === v.id),
+          v.version,
+          (x) => x.status === 'EndOfLife',
+          'Version marked End of life',
+          'Version deleted',
+        ),
+      error: (err: unknown) => this.toast.error('Could not delete the version', saveErrorMessage(err)),
+    });
+  }
+
+  /** DELETE …/releases/{id}: refused (409) while installations run the release. */
+  protected async removeRelease(p: ProductDto, v: ProductVersionDto, r: ProductReleaseDto): Promise<void> {
+    if (r.installationCount > 0) return;
+    const ok = await this.dialog.confirm({ title: `Delete release ${r.name}?`, message: `Removes the release from ${p.name} ${v.version}.`, confirmLabel: 'Delete release', danger: true });
+    if (!ok) return;
+    this.api.deleteRelease(p.id, v.id, r.id).subscribe({
+      next: () => {
+        this.toast.success('Release deleted', r.name);
+        this.load();
+      },
+      error: (err: unknown) => this.toast.error('Could not delete the release', saveErrorMessage(err)),
+    });
+  }
+
+  /** Reloads and reports whether the server deleted the item or retired it (kept because it is referenced). */
+  private afterDelete<T>(find: () => T | undefined, name: string, retired: (item: T) => boolean, retiredTitle: string, deletedTitle: string): void {
+    this.api.list(true).subscribe({
+      next: (list) => {
+        this.products.set(list);
+        const item = find();
+        if (item && retired(item)) this.toast.info(retiredTitle, `${name} is still referenced, so it was kept for history.`);
+        else this.toast.success(deletedTitle, name);
+      },
+      error: () => this.load(),
+    });
   }
 
   protected editRelease(p: ProductDto, v: ProductVersionDto, release: ProductReleaseDto | null): void {

@@ -9,6 +9,12 @@ const catalogGuard: CanActivateFn = () => (inject(MeStore).can('products.view') 
 export const ROUTES: Routes = [
   { path: '', title: 'Products & Assets', canActivate: [catalogGuard], loadComponent: () => import('./catalog.page').then((m) => m.CatalogPage) },
   {
+    path: 'families',
+    title: 'Product families',
+    canActivate: [permissionGuard('products.view')],
+    loadComponent: () => import('./families.page').then((m) => m.ProductFamiliesPage),
+  },
+  {
     path: 'installations',
     title: 'Installations',
     canActivate: [permissionGuard('products.view')],

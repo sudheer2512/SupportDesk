@@ -69,6 +69,11 @@ export class ProductsApi {
       : this.api.post<ProductFamilyDto>('product-families', body, { silent: true });
   }
 
+  /** 409 `in_use` while products belong to the family. */
+  deleteFamily(id: Guid): Observable<void> {
+    return this.api.delete<void>(`product-families/${enc(id)}`, { silent: true });
+  }
+
   saveModule(productId: Guid, moduleId: Guid | null, request: SaveProductModuleRequest): Observable<ProductModuleDto> {
     return moduleId
       ? this.api.put<ProductModuleDto>(`products/${enc(productId)}/modules/${enc(moduleId)}`, request, { silent: true })

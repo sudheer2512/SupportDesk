@@ -16,11 +16,14 @@ import {
   CustomerFacetsDto,
   CustomerGroupDto,
   CustomerListItemDto,
+  CustomerMergeLogDto,
+  CustomerMergeResultDto,
   CustomerQuery,
   DuplicateContactCandidateDto,
   DuplicatePairDto,
   LocationDto,
   MergeContactsRequest,
+  MergeCustomersRequest,
   PortalAccessScope,
   PortalInviteResultDto,
   SaveContactRequest,
@@ -82,6 +85,16 @@ export class CustomersApi {
 
   contactDuplicates(id: Guid): Observable<DuplicatePairDto[]> {
     return this.api.get<DuplicatePairDto[]>(`customers/${enc(id)}/contact-duplicates`);
+  }
+
+  /** Organisation merge (customers.merge): moves everything of `mergeId` to `keepId`; idempotent; audited. */
+  merge(request: MergeCustomersRequest): Observable<CustomerMergeResultDto> {
+    return this.api.post<CustomerMergeResultDto>('customers/merge', request, { silent: true });
+  }
+
+  /** Merges involving the customer: as survivor, or — for a merged customer — the merge that folded it away. */
+  mergeHistory(id: Guid, options: { silent?: boolean } = {}): Observable<CustomerMergeLogDto[]> {
+    return this.api.get<CustomerMergeLogDto[]>(`customers/${enc(id)}/merge-history`, options);
   }
 
   // ───── Locations & departments ─────

@@ -13,6 +13,7 @@ public sealed class CustomersController(
     CustomerService customers,
     Customer360Service customer360,
     ContactMergeService merge,
+    CustomerMergeService customerMerge,
     ErpIntegrationService erp) : DeskControllerBase
 {
     [HttpGet]
@@ -60,6 +61,14 @@ public sealed class CustomersController(
         await customers.RestoreAsync(id, ct);
         return await customers.GetAsync(id, ct);
     }
+
+    /// <summary>Organisation merge (customers.merge): folds MergeId into KeepId; idempotent; audited.</summary>
+    [HttpPost("merge")]
+    public Task<CustomerMergeResultDto> Merge(MergeCustomersRequest request, CancellationToken ct) => customerMerge.MergeAsync(request, ct);
+
+    /// <summary>Merges involving the customer — as survivor, or (for a merged customer) the merge that folded it away.</summary>
+    [HttpGet("{id:guid}/merge-history")]
+    public Task<List<CustomerMergeLogDto>> MergeHistory(Guid id, CancellationToken ct) => customerMerge.HistoryAsync(id, ct);
 
     // ───── Locations ─────
 

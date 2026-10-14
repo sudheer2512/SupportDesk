@@ -94,10 +94,12 @@ export const CUSTOMER_TABS: readonly ModuleTab[] = [
   { link: '/customers/contacts', label: 'Contacts', icon: 'users' },
   { link: '/customers/duplicates', label: 'Duplicates', icon: 'merge' },
   { link: '/customers/activities', label: 'Service activities', icon: 'calendar' },
+  { link: '/customers/groups', label: 'Groups', icon: 'layers' },
 ];
 
 export const PRODUCT_TABS: readonly ModuleTab[] = [
   { link: '/products', label: 'Catalog', icon: 'package', exact: true, permissions: ['products.view'] },
+  { link: '/products/families', label: 'Families', icon: 'folder-tree', permissions: ['products.view'] },
   { link: '/products/installations', label: 'Installations', icon: 'server', permissions: ['products.view'] },
   { link: '/products/licences', label: 'Licences', icon: 'key', permissions: ['products.view'] },
   { link: '/products/assets', label: 'Assets', icon: 'devices', permissions: ['products.view'] },
