@@ -17,6 +17,7 @@ export * from './lib/models/files';
 export * from './lib/models/notifications';
 export * from './lib/models/realtime';
 export * from './lib/models/portal';
+export * from './lib/models/automation';
 
 // HTTP
 export * from './lib/http/api-client';
@@ -40,6 +41,9 @@ export * from './lib/api/tickets.api';
 export * from './lib/api/views.api';
 export * from './lib/api/files.api';
 export * from './lib/api/notifications.api';
+export * from './lib/api/automation.api';
+export * from './lib/api/blueprints.api';
+export * from './lib/api/webhooks.api';
 
 // Realtime
 export * from './lib/realtime/realtime.service';
