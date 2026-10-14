@@ -89,7 +89,7 @@ import { debounceTime, merge } from 'rxjs';
     }
     .row {
       display: grid;
-      grid-template-columns: 112px 64px 1fr auto auto;
+      grid-template-columns: 158px 64px 1fr auto auto;
       align-items: center;
       gap: 8px;
       width: 100%;
@@ -122,7 +122,7 @@ import { debounceTime, merge } from 'rxjs';
     }
     @media (max-width: 560px) {
       .row {
-        grid-template-columns: 100px 1fr auto;
+        grid-template-columns: 150px 1fr auto;
       }
       .num,
       sd-priority-badge {

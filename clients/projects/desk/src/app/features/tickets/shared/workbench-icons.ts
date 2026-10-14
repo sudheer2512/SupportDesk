@@ -1,6 +1,7 @@
 import { registerIcons } from '@sd/ui';
 import {
   AlarmClock,
+  ArrowUpDown,
   ArrowUpRight,
   BellRing,
   Forward,
@@ -23,6 +24,8 @@ import {
  * Imported for its side effect by ticket-ui.ts and the Command Center pages.
  */
 registerIcons({
+  // Used by <sd-data-table> sortable headers.
+  'arrow-up-down': ArrowUpDown,
   reply: Reply,
   // Used by <sd-split-layout>'s collapse toggles.
   'panel-left-open': PanelLeftOpen,

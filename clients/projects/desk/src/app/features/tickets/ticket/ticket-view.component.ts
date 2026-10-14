@@ -297,13 +297,15 @@ export class TicketViewComponent {
     // Keep the newest message in view: on first load, and when new entries arrive while near the bottom.
     effect(() => {
       const length = this.ctx.timeline().length;
+      const el = this.scroller()?.nativeElement;
       untracked(() => {
-        const el = this.scroller()?.nativeElement;
+        if (!el || length === 0) return;
         const wasEmpty = this.lastTimelineLength === 0;
         this.lastTimelineLength = length;
-        if (!el || length === 0) return;
         const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 160;
-        if (wasEmpty || nearBottom) setTimeout(() => el.scrollTo({ top: el.scrollHeight }), 0);
+        const own = this.ctx.scrollToEnd();
+        if (own) this.ctx.scrollToEnd.set(false);
+        if (wasEmpty || nearBottom || own) setTimeout(() => el.scrollTo({ top: el.scrollHeight }), 0);
       });
     });
 

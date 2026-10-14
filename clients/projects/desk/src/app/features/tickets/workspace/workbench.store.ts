@@ -107,7 +107,9 @@ export class TicketWorkbenchStore {
   private countsInFlight = false;
 
   constructor() {
-    // Switch state when the signed-in user changes (sign-out / different agent on the same browser).
+    // Initialise for the current user right away (init() may be called before the effect below first runs)…
+    this.onUser(this.me.user()?.id ?? null);
+    // …and switch state when the signed-in user changes (sign-out / different agent on the same browser).
     effect(() => {
       const uid = this.me.user()?.id ?? null;
       untracked(() => this.onUser(uid));

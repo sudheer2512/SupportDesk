@@ -47,6 +47,8 @@ export class TicketContext {
   readonly timelineError = signal<ApiError | null>(null);
   /** An action is in flight (disables quick editors). */
   readonly busy = signal(false);
+  /** Set after the agent posts something: the view scrolls to the newest entry once the timeline reloads. */
+  readonly scrollToEnd = signal(false);
 
   readonly id = computed(() => this.ticket()?.id ?? null);
   readonly can = computed(() => this.ticket()?.can ?? null);

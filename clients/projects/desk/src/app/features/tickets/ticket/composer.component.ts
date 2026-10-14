@@ -545,10 +545,21 @@ export class ComposerComponent {
     this.switchMode(mode);
     this.expanded.set(true);
     if (mode === 'reply' && this.templates() === null) this.loadTemplates();
+    this.focusEditor();
+  }
+
+  /** The editor (TipTap) is created after render: retry briefly until it can take focus. */
+  private focusEditor(attempt = 0): void {
     setTimeout(() => {
-      this.editor()?.focus();
-      this.host.nativeElement.scrollIntoView({ block: 'nearest' });
-    });
+      const el = this.host.nativeElement.querySelector<HTMLElement>('[contenteditable="true"]');
+      if (el) {
+        el.focus({ preventScroll: true });
+        this.editor()?.focus();
+        this.host.nativeElement.scrollIntoView({ block: 'nearest' });
+      } else if (attempt < 20) {
+        this.focusEditor(attempt + 1);
+      }
+    }, attempt === 0 ? 0 : 40);
   }
 
   protected switchMode(mode: ComposerMode): void {
@@ -682,6 +693,7 @@ export class ComposerComponent {
       this.expanded.set(false);
       this.setActivity('viewing');
       this.toast.success(mode === 'reply' ? (statusId ? 'Reply sent and status updated' : 'Reply sent') : mode === 'handover' ? 'Handover note added' : 'Note added');
+      this.ctx.scrollToEnd.set(true);
       this.ctx.loadTimeline();
       this.ctx.refresh();
     } catch (err) {
