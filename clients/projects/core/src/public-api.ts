@@ -98,3 +98,6 @@ export * from './lib/utils/validation-errors';
 // Mobile app: push-device registration
 export * from './lib/models/mobile';
 export * from './lib/api/devices.api';
+// Analytics: metric catalogue, queries, reports, dashboards, exports and scheduled reports
+export * from './lib/models/analytics';
+export * from './lib/api/analytics.api';

@@ -24,19 +24,19 @@ public sealed record MetricDefinition(string Key, string Label, MetricKind Kind,
 
 public static class AnalyticsCatalog
 {
-    public static readonly IReadOnlyDictionary<string, MetricDefinition> Metrics = new Dictionary<string, MetricDefinition>(StringComparer.OrdinalIgnoreCase)
-    {
-        ["ticket_count"] = new("ticket_count", "Tickets created", MetricKind.Count, "tickets", false),
-        ["open_tickets"] = new("open_tickets", "Open tickets", MetricKind.Count, "tickets", false),
-        ["resolved_tickets"] = new("resolved_tickets", "Tickets resolved", MetricKind.Count, "tickets", true),
-        ["sla_breaches"] = new("sla_breaches", "Tickets with SLA violations", MetricKind.Count, "tickets", false),
-        ["avg_resolution_hours"] = new("avg_resolution_hours", "Average resolution time", MetricKind.Average, "hours", true),
-        ["avg_first_response_hours"] = new("avg_first_response_hours", "Average first response time", MetricKind.Average, "hours", false),
-        ["csat_avg"] = new("csat_avg", "Average CSAT", MetricKind.Average, "score", false),
-        ["reopened_tickets"] = new("reopened_tickets", "Reopened tickets", MetricKind.Count, "tickets", false),
-        ["escalated_tickets"] = new("escalated_tickets", "Escalated tickets", MetricKind.Count, "tickets", false),
-        ["frustrated_tickets"] = new("frustrated_tickets", "Tickets with frustrated customers", MetricKind.Count, "tickets", false)
-    };
+    /// <summary>Metrics the assistant can answer. Definitions (label, unit, aggregation, date basis) come from the single
+    /// analytics <see cref="global::SupportDesk.Application.Analytics.MetricCatalog"/> so AI answers match reports and dashboards.</summary>
+    public static readonly IReadOnlyList<string> MetricKeys =
+    [
+        "ticket_count", "open_tickets", "resolved_tickets", "sla_breaches", "avg_resolution_hours", "avg_first_response_hours", "csat_avg",
+        "reopened_tickets", "escalated_tickets", "frustrated_tickets"
+    ];
+
+    public static readonly IReadOnlyDictionary<string, MetricDefinition> Metrics = MetricKeys
+        .Select(k => global::SupportDesk.Application.Analytics.MetricCatalog.Metrics[k])
+        .ToDictionary(m => m.Key, m => new MetricDefinition(m.Key, m.Label,
+            m.Aggregation == global::SupportDesk.Application.Analytics.MetricAggregation.Count ? MetricKind.Count : MetricKind.Average, m.Unit,
+            m.Basis == global::SupportDesk.Application.Analytics.DateBasis.Resolved), StringComparer.OrdinalIgnoreCase);
 
     public static readonly IReadOnlyDictionary<string, string> Dimensions = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
     {
@@ -98,32 +98,9 @@ public static class AnalyticsCatalog
         };
     }
 
-    /// <summary>Period boundaries [from, to) in UTC, computed on the tenant's local calendar.</summary>
-    public static (DateTime From, DateTime To) ResolvePeriod(string period, DateTime nowUtc, TimeZoneInfo tz)
-    {
-        var local = TimeZoneInfo.ConvertTimeFromUtc(nowUtc, tz);
-        var today = local.Date;
-        DateTime Utc(DateTime localDate) => TimeZoneInfo.ConvertTimeToUtc(DateTime.SpecifyKind(localDate, DateTimeKind.Unspecified), tz);
-        var weekStart = today.AddDays(-(((int)today.DayOfWeek + 6) % 7));
-        var monthStart = new DateTime(today.Year, today.Month, 1);
-        var quarterStart = new DateTime(today.Year, (today.Month - 1) / 3 * 3 + 1, 1);
-        return period switch
-        {
-            "today" => (Utc(today), nowUtc.AddSeconds(1)),
-            "yesterday" => (Utc(today.AddDays(-1)), Utc(today)),
-            "this_week" => (Utc(weekStart), nowUtc.AddSeconds(1)),
-            "last_week" => (Utc(weekStart.AddDays(-7)), Utc(weekStart)),
-            "this_month" => (Utc(monthStart), nowUtc.AddSeconds(1)),
-            "last_month" => (Utc(monthStart.AddMonths(-1)), Utc(monthStart)),
-            "last_7_days" => (Utc(today.AddDays(-6)), nowUtc.AddSeconds(1)),
-            "last_90_days" => (Utc(today.AddDays(-89)), nowUtc.AddSeconds(1)),
-            "this_quarter" => (Utc(quarterStart), nowUtc.AddSeconds(1)),
-            "this_year" => (Utc(new DateTime(today.Year, 1, 1)), nowUtc.AddSeconds(1)),
-            "last_365_days" => (Utc(today.AddDays(-364)), nowUtc.AddSeconds(1)),
-            "all_time" => (new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc), nowUtc.AddSeconds(1)),
-            _ => (Utc(today.AddDays(-29)), nowUtc.AddSeconds(1))
-        };
-    }
+    /// <summary>Period boundaries [from, to) in UTC, computed on the tenant's local calendar (shared with the analytics module).</summary>
+    public static (DateTime From, DateTime To) ResolvePeriod(string period, DateTime nowUtc, TimeZoneInfo tz) =>
+        global::SupportDesk.Application.Analytics.AnalyticsPeriods.Resolve(period, nowUtc, tz);
 
     public static string PeriodLabel(string period) => period switch
     {
