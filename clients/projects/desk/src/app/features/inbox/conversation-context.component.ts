@@ -25,7 +25,7 @@ import { channelLabel, conversationStatusLabel, conversationStatusTone, metaStri
             <dt>E-mail</dt>
             <dd class="sd-truncate">{{ d.visitorEmail }}</dd>
           }
-          <dt>{{ s.channel === 'Email' ? 'Thread' : s.channel === 'Chat' ? 'Session' : 'From' }}</dt>
+          <dt>{{ s.channel === 'Email' ? 'Thread' : s.channel === 'Chat' ? 'Session' : s.channel === 'Phone' ? 'Call id' : 'From' }}</dt>
           <dd class="sd-mono sd-xs sd-truncate" [title]="d.externalKey">{{ d.externalKey }}</dd>
           @if (s.channel === 'Chat') {
             <dt>Identity</dt>

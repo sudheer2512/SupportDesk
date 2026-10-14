@@ -148,7 +148,7 @@ function displayHtml(html: string | null): string {
           </article>
         }
         @for (m of d.messages; track m.id) {
-          @if (m.author === 'system') {
+          @if (m.author === 'system' && !isEmail()) {
             <p class="system sd-small">{{ m.bodyText }} <time class="sd-xs sd-muted">{{ m.occurredAt | sdDateTime }}</time></p>
           } @else if (isEmail()) {
             <article class="mail" [class.out]="m.direction === 'Outbound'">

@@ -162,7 +162,9 @@ public sealed class ConversationQueryService(DeskDbContext db, RequestContext ct
         var userIds = rows.Where(r => r.AssignedUserId != null).Select(r => r.AssignedUserId!.Value).Distinct().ToList();
         var users = await db.Users.AsNoTracking().Where(u => userIds.Contains(u.Id)).ToDictionaryAsync(u => u.Id, u => u.DisplayName, ct);
         var convIds = rows.Select(r => r.Id).ToList();
-        var last = (await db.Messages.AsNoTracking().Where(m => m.ConversationId != null && convIds.Contains(m.ConversationId.Value))
+        var last = (await db.Messages.AsNoTracking().Where(m => m.ConversationId != null && convIds.Contains(m.ConversationId.Value)
+                    // Previews skip automatic chat notices (greeting, handoff, joined…): agents want the last real message.
+                    && !(m.Channel == Channel.Chat && m.Direction == MessageDirection.Outbound && m.AuthorUserId == null))
                 .GroupBy(m => m.ConversationId!.Value)
                 .Select(g => g.OrderByDescending(m => m.OccurredAt).ThenByDescending(m => m.CreatedAt).Select(m => new { m.ConversationId, m.BodyText, m.Direction }).First())
                 .ToListAsync(ct))
