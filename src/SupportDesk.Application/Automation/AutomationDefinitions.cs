@@ -257,7 +257,8 @@ public sealed class StringOrArrayConverter : JsonConverter<List<string>>
 }
 
 /// <summary>Condition context that overlays extra values (inbound webhook payload, transition field input) on a ticket context.</summary>
-public sealed class OverlayConditionContext(IConditionContext inner, IReadOnlyDictionary<string, object?> overlay) : IConditionContext
+public sealed class OverlayConditionContext(IConditionContext inner, IReadOnlyDictionary<string, object?> overlay,
+    IReadOnlyDictionary<string, object?>? previousOverlay = null) : IConditionContext
 {
     public DateTime Now => inner.Now;
 
@@ -267,7 +268,45 @@ public sealed class OverlayConditionContext(IConditionContext inner, IReadOnlyDi
         return inner.TryGetValue(field, out value);
     }
 
-    public bool TryGetPrevious(string field, out object? previous) => inner.TryGetPrevious(field, out previous);
+    public bool TryGetPrevious(string field, out object? previous)
+    {
+        if (previousOverlay is not null && previousOverlay.TryGetValue(field, out previous)) return true;
+        return inner.TryGetPrevious(field, out previous);
+    }
+}
+
+/// <summary>
+/// Condition context for automation: the shared ticket fields (<see cref="Tickets.TicketConditionContext"/>) plus
+/// automation-specific fields (blueprint and blueprint state) and optional extra values (inbound webhook payload).
+/// </summary>
+public static class AutomationConditions
+{
+    public static readonly IReadOnlyList<(string Field, string Label, string Type)> ExtraFields =
+    [
+        ("blueprintId", "Blueprint", "blueprint"), ("blueprintState", "Blueprint state", "text")
+    ];
+
+    public static IEnumerable<(string Field, string Label, string Type)> AllFields => Tickets.TicketConditionContext.FieldCatalog.Concat(ExtraFields);
+
+    public static async Task<IConditionContext> BuildAsync(Persistence.DeskDbContext db, Domain.Tickets.Ticket ticket,
+        IReadOnlyList<Domain.Events.FieldChange>? changes, IReadOnlyDictionary<string, object?>? extra, CancellationToken ct)
+    {
+        var inner = await Tickets.TicketConditionContext.BuildAsync(db, ticket, changes, ct);
+        var values = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["blueprintId"] = ticket.WorkflowId?.ToString(),
+            ["blueprintState"] = ticket.WorkflowStateKey
+        };
+        if (extra is not null)
+            foreach (var (k, v) in extra) values[k] = v;
+        var previous = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
+        foreach (var c in changes ?? [])
+        {
+            if (c.Field == "workflowState") previous["blueprintState"] = c.From;
+            if (c.Field == "workflow") previous["blueprintId"] = c.From;
+        }
+        return new OverlayConditionContext(inner, values, previous);
+    }
 }
 
 /// <summary>Errors that a retry may fix (concurrency, timeouts, network).</summary>

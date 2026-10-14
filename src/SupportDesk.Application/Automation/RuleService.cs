@@ -249,7 +249,7 @@ public sealed class RuleService(
         foreach (var t in candidates)
         {
             var trace = new List<ConditionTrace>();
-            var cond = await TicketConditionContext.BuildAsync(db, t, null, ct);
+            var cond = await AutomationConditions.BuildAsync(db, t, null, null, ct);
             var matched = ConditionEvaluator.Evaluate(definition.Conditions, cond, trace);
             string? note = null;
             if (trigger == RuleTriggers.TicketUpdated && definition.Trigger?.Fields is { Count: > 0 } fields)

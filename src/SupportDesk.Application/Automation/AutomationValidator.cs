@@ -38,7 +38,7 @@ public static partial class AutomationValidator
     private static readonly HashSet<string> NoValueOps = [ConditionOps.IsEmpty, ConditionOps.IsNotEmpty, ConditionOps.Changed];
     private static readonly HashSet<string> ChangeOps = [ConditionOps.Changed, ConditionOps.ChangedTo, ConditionOps.ChangedFrom];
     private static readonly HashSet<string> StandardFields =
-        new(TicketConditionContext.FieldCatalog.Select(f => f.Field).Concat(["id", "number"]), StringComparer.OrdinalIgnoreCase);
+        new(AutomationConditions.AllFields.Select(f => f.Field).Concat(["id", "number"]), StringComparer.OrdinalIgnoreCase);
     private static readonly HashSet<string> ForbiddenHeaders = new(["host", "content-length", "transfer-encoding", "connection"], StringComparer.OrdinalIgnoreCase);
 
     [GeneratedRegex(@"\{\{[^}]*\}\}")] private static partial Regex PlaceholderRegex();

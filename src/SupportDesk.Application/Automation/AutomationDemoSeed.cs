@@ -157,7 +157,7 @@ public sealed class AutomationDemoSeed : IDemoSeedContributor
                         logic = "and",
                         conditions = new[]
                         {
-                            Cond("statusId", ConditionOps.Equals, waiting.ToString()),
+                            Cond("statusId", ConditionOps.Equals, waiting.ToString()), Cond("blueprintId", ConditionOps.IsEmpty),
                             Cond("lastActivityAt", ConditionOps.OlderThanMinutes, 3 * 24 * 60),
                             Cond("tags", ConditionOps.NotContains, "awaiting-reply-reminder")
                         }
@@ -171,7 +171,7 @@ public sealed class AutomationDemoSeed : IDemoSeedContributor
                 }, 10, interval: 60);
 
             await Rule("Waiting on Customer for 7 days → auto-close",
-                "Closes tickets that stayed unanswered for 4 more days after the reminder (7 days in total).",
+                "Closes tickets (not on a blueprint) that stayed unanswered for 4 more days after the reminder (7 days in total).",
                 RuleTriggers.Scheduled,
                 new
                 {
@@ -180,7 +180,7 @@ public sealed class AutomationDemoSeed : IDemoSeedContributor
                         logic = "and",
                         conditions = new[]
                         {
-                            Cond("statusId", ConditionOps.Equals, waiting.ToString()),
+                            Cond("statusId", ConditionOps.Equals, waiting.ToString()), Cond("blueprintId", ConditionOps.IsEmpty),
                             Cond("tags", ConditionOps.Contains, "awaiting-reply-reminder"),
                             Cond("lastActivityAt", ConditionOps.OlderThanMinutes, 4 * 24 * 60)
                         }

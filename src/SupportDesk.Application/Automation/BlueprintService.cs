@@ -279,7 +279,7 @@ public sealed class BlueprintService(
         var pending = await PendingApprovalAsync(t.Id, ct);
         var roles = await CallerRolesAsync(ct);
         var labels = await FieldLabelsAsync(ct);
-        var cond = await TicketConditionContext.BuildAsync(db, t, null, ct);
+        var cond = await AutomationConditions.BuildAsync(db, t, null, null, ct);
         var transitions = new List<BlueprintTransitionDto>();
         if (!state.IsFinal)
             foreach (var tr in def.From(state.Key).Where(tr => RoleAllowed(tr, roles)))
@@ -525,9 +525,8 @@ public sealed class BlueprintService(
     {
         if (tr.Validation is not { IsEmpty: false } validation) return true;
         var snapshot = await db.Tickets.AsNoTracking().Include(x => x.Tags).ThenInclude(x => x.Tag).FirstAsync(x => x.Id == t.Id, ct);
-        IConditionContext cond = await TicketConditionContext.BuildAsync(db, snapshot, null, ct);
-        if (fields.Count > 0)
-            cond = new OverlayConditionContext(cond, fields.ToDictionary(f => f.Key, f => ToValue(f.Value), StringComparer.OrdinalIgnoreCase));
+        var cond = await AutomationConditions.BuildAsync(db, snapshot, null,
+            fields.ToDictionary(f => f.Key, f => ToValue(f.Value), StringComparer.OrdinalIgnoreCase), ct);
         return ConditionEvaluator.Evaluate(validation, cond);
     }
 

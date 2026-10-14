@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SupportDesk.Application.Common;
 using SupportDesk.Application.Platform;
 using SupportDesk.Domain;
@@ -16,10 +17,16 @@ namespace SupportDesk.Application.Automation;
 /// Maps outbox events to rule triggers (ticket.*, sla.warning/breached, customer.activity) and runs the matching rules.
 /// Runs with the dispatcher's system context: ChainDepth = event depth + 1, CausationEventId = event id.
 /// </summary>
-public sealed class AutomationOutboxHandler(DeskDbContext db, RequestContext ctx, RuleEngine engine) : IOutboxHandler
+public sealed class AutomationOutboxHandler(DeskDbContext db, RequestContext ctx, RuleEngine engine, ILogger<AutomationOutboxHandler> logger) : IOutboxHandler
 {
     /// <summary>ticket.updated changes that are not field edits (soft locks) and never trigger rules.</summary>
     private static readonly HashSet<string> IgnoredChanges = new(["lock"], StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Events older than this (replayed backlogs, restored databases, imported history) do not trigger rules: acting on
+    /// today's ticket state because of a days-old event would surprise agents and customers.
+    /// </summary>
+    public static readonly TimeSpan MaxEventAge = TimeSpan.FromHours(72);
 
     public string Name => "automation-rules";
     public int Order => HandlerOrder.Automation;
@@ -29,6 +36,11 @@ public sealed class AutomationOutboxHandler(DeskDbContext db, RequestContext ctx
     {
         if (ev.TenantId is null) return;
         if (!await db.AutomationRules.AnyAsync(r => r.Trigger == ev.Type && r.IsActive && r.PublishedVersionId != null, ct)) return;
+        if (ev.OccurredAt < db.Clock.UtcNow - MaxEventAge)
+        {
+            logger.LogInformation("Automation skipped stale event {Event} ({Type}) from {OccurredAt:u}", ev.Id, ev.Type, ev.OccurredAt);
+            return;
+        }
 
         IReadOnlyList<FieldChange>? changes = null;
         List<Guid> ticketIds;

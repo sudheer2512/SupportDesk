@@ -85,8 +85,7 @@ public sealed class RuleEngine(
             {
                 ticket = await LoadTicketAsync(input.TicketId, ct);
                 if (ticket is null) break;
-                var tcc = await TicketConditionContext.BuildAsync(db, ticket, input.Changes, ct);
-                conditions = input.Extra is { Count: > 0 } extra ? new OverlayConditionContext(tcc, extra) : tcc;
+                conditions = await AutomationConditions.BuildAsync(db, ticket, input.Changes, input.Extra, ct);
                 dirty = false;
             }
 
@@ -206,16 +205,27 @@ public sealed class RuleEngine(
             {
                 run = await executor.ExecuteAsync(new ActionRunContext(execution.EntityId, rule.Name, rule.Id, execution.Id, execution.Attempt, extra, execution.Trigger),
                     definition.Actions, onlyIndexes, ct);
-                var summary = string.Join("; ", run.Outcomes.Select(o => o.Status == ActionStatus.Failed ? $"{o.Type} failed: {o.Error}" : o.Message ?? o.Type));
-                await executor.RecordHistoryAsync(execution.EntityId, TicketEventTypes.RuleApplied,
-                    $"{(onlyIndexes is null ? "Rule" : "Retried rule")} '{rule.Name}' applied: {summary}",
-                    new { executionId = execution.Id, ruleId = rule.Id, attempt = execution.Attempt, actions = run.Outcomes.Select(o => new { o.Type, o.Status, o.Message, o.Error }) }, ct);
             }
             catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested)
             {
+                // Only preparation can fail here (each action's own failure is captured in its outcome).
                 logger.LogWarning(ex, "Rule {Rule} failed on ticket {Ticket}", rule.Name, execution.EntityId);
                 run = new ActionRunResult([], []);
                 execution.Error = $"{ex.GetType().Name}: {ex.Message}";
+            }
+            if (run.Outcomes.Count > 0)
+            {
+                try
+                {
+                    var summary = string.Join("; ", run.Outcomes.Select(o => o.Status == ActionStatus.Failed ? $"{o.Type} failed: {o.Error}" : o.Message ?? o.Type));
+                    await executor.RecordHistoryAsync(execution.EntityId, TicketEventTypes.RuleApplied,
+                        $"{(onlyIndexes is null ? "Rule" : "Retried rule")} '{rule.Name}' applied: {summary}",
+                        new { executionId = execution.Id, ruleId = rule.Id, attempt = execution.Attempt, actions = run.Outcomes.Select(o => new { o.Type, o.Status, o.Message, o.Error }) }, ct);
+                }
+                catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested)
+                {
+                    logger.LogWarning(ex, "Could not record the history of rule {Rule} on ticket {Ticket}", rule.Name, execution.EntityId);
+                }
             }
         }
 

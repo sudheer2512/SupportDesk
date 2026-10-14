@@ -146,7 +146,7 @@ public static class AutomationCatalog
 
     public static AutomationCatalogDto ToDto() => new(
         Triggers,
-        TicketConditionContext.FieldCatalog.Select(f => new ConditionFieldDto(f.Field, f.Label, f.Type)).ToList(),
+        AutomationConditions.AllFields.Select(f => new ConditionFieldDto(f.Field, f.Label, f.Type)).ToList(),
         Operators,
         Actions.Select(a => new ActionTypeDto(a.Type, a.Label, a.Category, a.Description,
             a.Params.Select(p => new ActionParamDto(p.Name, p.Label, p.Type, p.Required, p.Description, p.Options)).ToList())).ToList(),

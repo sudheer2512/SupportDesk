@@ -113,6 +113,7 @@ public static class TemplateValues
             values["department.name"] = lookups.Department(t.DepartmentId);
             values["category.name"] = lookups.Category(t.CategoryId);
             values["product.name"] = lookups.Product(t.ProductId);
+            values["blueprintState"] = t.WorkflowStateKey;
         }
         values["rule.name"] = sourceName;
         values["now"] = db.Clock.UtcNow.ToString("O", CultureInfo.InvariantCulture);
