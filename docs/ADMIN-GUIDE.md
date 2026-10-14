@@ -372,7 +372,83 @@ delegated, agents who are not online or off shift (when those settings are on), 
 
 ---
 
-<!-- CHANNELS -->
+## 6. Channels
+
+Open **Channels** (`admin.channels`). Channels are mailboxes, messaging numbers, chat widgets, voice lines and social
+pages. Each channel belongs to a brand and sends its new tickets to a department. The number of channels is capped by
+the plan.
+
+### To add a channel
+
+1. Select **New channel**.
+2. Choose the **Type** and **Provider**. They cannot change later.
+3. Enter the **Name**, the **Address** (mailbox address, WhatsApp number, sender number, page or account id; leave the
+   widget key empty to generate one) and a **Display name**.
+4. Choose the **Brand** and **Department** ("New tickets from this channel go here").
+5. Set the toggles: **Active**, **Send automatic acknowledgements** (e-mail), **Accept messages from unknown senders**
+   (all types except chat).
+6. Fill in **Connection settings** and **Credentials** for the provider (table below). Credentials are stored encrypted
+   and never shown again; type a new value to replace one.
+7. For e-mail, add a **Mailbox signature** (added below the agent's own signature).
+8. Select **Create channel**, then **Test connection**.
+
+| Type | Provider | Settings | Credentials | How messages arrive |
+|---|---|---|---|---|
+| E-mail | IMAP/SMTP | IMAP host/port (993)/security, SMTP host/port (587)/security, user name, authentication (password or OAuth 2.0 XOAUTH2 token), folder, mark fetched mail as read, check interval | Password or access token | Polling |
+| E-mail | SMTP | Outbound only | Password or access token | — |
+| E-mail | Microsoft 365 (Graph) | Entra ID tenant id, client (application) id, mailbox (UPN), check interval | Client secret | Polling |
+| E-mail | Gmail | Client id, Gmail user id (`me`), check interval | Client secret, refresh token | Polling |
+| E-mail | FileDrop | Check interval | — | Development only: reads `.eml` files from the data folder |
+| WhatsApp | MetaCloud (WhatsApp Cloud API) | Phone number id, business account id, Graph API version, webhook verify token, template for outside the 24-hour window, template language | Access token, app secret | Webhook |
+| Messenger, Instagram | MetaGraph | Page or Instagram account id, Graph API version, webhook verify token | Page access token, app secret | Webhook |
+| SMS | Twilio | Account SID, messaging service SID, public webhook URL | Auth token | Webhook |
+| SMS | GenericSms | Send URL, HTTP method, body format (JSON or form), body template (`{{to}}`, `{{from}}`, `{{text}}`, `{{messageId}}`, `{{apiKey}}`), auth header, message-id path | API key, webhook secret | Webhook |
+| Voice | GenericVoice | Create tickets for answered calls (missed calls and voicemail always do) | Webhook secret | Webhook (inbound only) |
+| Live chat | Widget | Widget title, greeting, **Bot answers first**, **Ask for e-mail before chatting**, **Offer e-mail verification**, offline message | — | Chat widget |
+| WhatsApp, SMS, social, voice | Simulator | — | — | Demo and testing only; nothing is sent |
+
+E-mail security options are Automatic, SSL/TLS on connect, STARTTLS and None (not recommended). Mark one mailbox as the
+**Default outbound mailbox**. IMAP, Microsoft 365, Gmail, Meta, Twilio and the generic SMS provider are real
+connectors. There is no Teams channel type (see [Teams and Slack](#17-microsoft-teams-and-slack)).
+
+The side panel of a saved channel shows the status, **Test connection**, **Poll now** (polling providers), and for
+webhook providers the **callback URL** with **Copy URL** and **Rotate key**. Configure that URL at the provider (for Meta,
+also the verify token; signatures use the app secret). Rotating the key stops the old URL at once.
+
+**Partial:** the desk builds the callback URL from the address in your browser. If you administer through an internal
+host name, replace the host with the public address before you give the URL to the provider.
+
+Acknowledgement e-mails need both the channel toggle and the workspace setting **Acknowledge new e-mail tickets
+automatically**. They are capped at 3 per sender per hour. When **Accept messages from unknown senders** is off, new
+e-mail threads and messages from unknown senders are rejected.
+
+A channel with message history cannot be deleted; **Delete channel** deactivates it instead. If the server's
+`Security:MasterKey` changes, stored credentials cannot be decrypted; enter them again.
+
+### Chat widget
+
+For a **Live chat** channel, the panel **Embed the widget** shows the snippet with **Copy embed code** and a
+**Live preview**:
+
+```html
+<script src="https://desk.example.com/widget/widget.js" data-widget-key="wk_XXXXXXXXXXXXXXXXXXXX" async></script>
+```
+
+Paste it before `</body>` on your website. Optional attributes: `data-name`, `data-email`, `data-open="true"`,
+`data-position="left"`. Agents need a **Max concurrent chats** limit above 0 in their routing profile to take chats.
+
+### Channel simulator
+
+**Simulator** (`/admin/channels/simulator`) injects inbound traffic through the same pipeline real providers use, on
+any active channel:
+
+* **E-mail**: from, subject, body, In-Reply-To (threads into a ticket), Message-ID (reuse it to test duplicates),
+  attachment. Select **Deliver e-mail**.
+* **WhatsApp, SMS, Messenger, Instagram**: sender, text, provider message id, media. Select **Deliver message**.
+* **Voice**: call events (ringing, answered, ended, missed, voicemail) with caller, agent, duration and recording URL.
+
+The result links to the ticket and the inbox. **Outbound messages** lists what SupportDesk sent and lets you simulate
+delivery receipts (Sent, Delivered, Read, Failed).
 
 ---
 
@@ -675,17 +751,302 @@ coverage) are never overwritten. For ERP screens to create tickets, issue an API
 
 ---
 
-<!-- ENGINEERING-COLLAB -->
+## 16. Engineering trackers
+
+Open **Engineering** (`/admin/engineering`, `admin.integrations`). Details for each tracker are in
+[integrations/ENGINEERING.md](integrations/ENGINEERING.md).
+
+1. Select **Add tracker**: **Azure DevOps Services / Server (TFS)**, **GitHub** or **Built-in engineering board**.
+   External trackers need the plan feature `engineering_integration`; the built-in board is on every plan.
+2. Azure DevOps: organization or collection URL, project (**Load projects**), personal access token or OAuth token.
+   GitHub: API URL, owner, repository (**Load repositories**), a token or a GitHub App installation (app id,
+   installation id, private key).
+3. Map types (Bug, Feature, Task), fields (repro steps, severity, priority, fix version, customer impact, area and
+   iteration) and the states that mean **resolved** and **released**.
+4. Set **Poll every (minutes)** as a fallback when webhooks are not configured.
+5. Save, then **Test** and **Sync now**.
+6. Configure the tracker's webhook with the URL shown (`…/api/v1/engineering/hooks/{github|azure-devops}/{trackerId}`)
+   and the secret, which is shown once. Use **Rotate webhook secret** if it leaks.
+
+**Sync-back rules** decide what linked tickets get: an internal note when an item is resolved or released, a
+notification to the assignee, a reply to the customer when the fix is released (off by default; built-in text or a
+reply template), and the substatus **Engineering** on escalation. Choose the **Default tracker** and select
+**Save rules**. **Deliveries & call log** shows webhook deliveries and API calls.
+
+Agents need the built-in board enabled before **Engineering** in the left rail works.
+
+## 17. Microsoft Teams and Slack
+
+Open **Teams & Slack** (`/admin/collaboration`, `admin.integrations`) to post ticket events to team channels.
+
+1. Create an incoming webhook in the team tool. Teams: channel › *Workflows* › "Post to a channel when a webhook request
+   is received". Slack: an app with *Incoming Webhooks*.
+2. Select **Add channel**. Choose **Microsoft Teams** or **Slack**, enter a name and paste the **Incoming webhook URL**
+   (https; stored encrypted).
+3. Choose **Post these events**: New urgent ticket (with a minimum priority), SLA breach, Escalation, Mention,
+   Escalated to engineering, Engineering fix done, Fix released.
+4. Optionally limit the channel to departments, then save and select **Send test**.
+
+Messages are Adaptive Cards (Teams) or Block Kit (Slack) with ticket facts and an **Open in SupportDesk** link. The
+**Post log** lists every attempt. Agents can also share a ticket from the internal-note composer.
 
 ---
 
-<!-- AUDIT-COMPLIANCE-CONFIG-BILLING -->
+## 18. Audit log
+
+Open **Audit log** (`admin.audit`). It records sensitive actions: sign-ins and MFA, role and permission changes,
+settings, exports, deletions, merges, entitlement overrides, credentials, AI actions and subscription changes.
+
+* Filter by actor, action, entity type, entity id, date range, IP address and summary text, then **Apply**.
+* Open an entry to see who, what, when, IP, correlation id and a **Changes** table (field, before, after).
+* **Export CSV** (plan feature `audit_export`) downloads up to 50,000 rows. Cells that could run as spreadsheet
+  formulas are escaped. The export itself is audited.
+* **Verify chain** checks the tamper-evident chain and reports "Audit chain intact." or "Audit chain broken!" with the
+  first bad entry (**Open entry #N**).
+
+How it works: entries are written in the same transaction as the change. A background task seals them every few seconds
+into a per-tenant SHA-256 hash chain (sequence, previous hash). A database trigger rejects changes to sealed rows.
+Verification detects deleted entries (sequence gaps), rewritten chains and modified entries. Recent entries show
+"sealing" until they are sealed. When retention purges old audit entries, verification continues from a recorded anchor.
+
+## 19. Compliance
+
+Open **Compliance** (`admin.compliance`). The tabs are **Retention**, **Legal holds**, **Data requests** and
+**Support access**.
+
+### Retention policies
+
+| Data | Actions | Minimum age |
+|---|---|---|
+| Closed tickets | Archive, Anonymize, Delete | 30 days |
+| Channel messages | Anonymize, Delete | 30 days |
+| Ticket attachments | Delete | 30 days |
+| Audit log | Delete | 365 days |
+| AI execution log | Anonymize, Delete | 7 days |
+
+1. Create a policy: name, data, action, **After (days)**, and **Run automatically every day**.
+2. The preview shows how many records would be affected now and how many legal holds keep.
+3. Use **Dry run** first, then **Run now** (up to 1,000 records per run).
+
+Anonymising a ticket replaces the subject with "[redacted]", clears the description, resolution, CSAT comment, AI
+summary and custom fields, and replaces message bodies and addresses. Deleting purges tickets, their search entries and
+unreferenced files. **Deleted records cannot be recovered.** Audit purges remove only the oldest sealed entries (up to
+10,000 a run) and keep the chain verifiable.
+
+Automatic policies run every 6 hours in batches (the page says "daily"). Every run is audited.
+
+### Legal holds
+
+Select **Place legal hold**. Enter a name and the reason or matter, then at least one criterion: customer, contact,
+ticket numbers, or a creation date range. A hold covers tickets that match **all** the criteria you set.
+
+Held tickets (and their messages, attachments and AI logs) are skipped by retention, cannot be deleted, and block
+erasure of the contacts involved. Holds cannot be edited. **Release hold** returns the records to normal retention.
+
+### Data-subject requests
+
+Select **New request**, choose the contact, record how the request arrived and how you verified the identity.
+
+* **Export** builds a zip with the contact's profile, identities, consents, tickets, public conversation, messages and
+  attachments. When it is ready, select **Get link**. The download link works **once** and expires after 24 hours
+  (`Compliance:DownloadLinkHours`).
+* **Erasure** waits for approval (**Approve erasure** or **Reject** with a reason). If another user holds
+  `admin.compliance`, a second person must approve (four-eyes rule, 403 `four_eyes_required`). The job pseudonymises
+  the contact ("Erased contact …"), clears personal fields, identities, consents and portal access, replaces their
+  messages with "[erased at the customer's request]" and deletes their uploads. Ticket statistics stay.
+
+Only one open request of each type is allowed per contact. Legal holds block erasure at request, approval and execution.
+**Caution:** **Approve erasure** asks for no confirmation and cannot be undone.
+
+### Support access
+
+SupportDesk staff never impersonate users. An operator can request time-boxed, read-only access for diagnostics. The
+request appears here with the reason and duration. **Approve** (for the stated minutes), **Reject**, or **Revoke** while
+active. During a grant the operator sees usage, configuration counts, failed jobs and recent audit entries, never
+tickets or customer data. Every step is audited in your trail and the platform trail.
+
+**Partial:** while the workspace is suspended, approving support access is blocked (402) like other writes.
+
+## 20. Configuration transfer
+
+Open **Configuration transfer** (`admin.config_transfer`) to copy configuration between workspaces, for example from a
+test workspace to production.
+
+### To export
+
+Tick sections and select **Export N section(s)** (or **Export everything**). The file is
+`supportdesk-config-<workspace>-<date>.json`. Sections, in dependency order: business calendars, ticket statuses, issue
+types, pick lists (resolution codes, root causes…), ticket categories, custom fields, form layouts, SLA policies, shared
+reply templates, knowledge-base categories, AI prompt templates, channel definitions, blueprints and automation rules.
+
+References to departments, teams, users, roles, brands, products and skills are exported by name and matched in the
+target; they are never created by an import. **Secrets are never exported.** Imported channels start inactive and need
+their credentials entered again.
+
+### To import
+
+1. Under **Import**, choose the `.json` file. Nothing changes yet: the import becomes a **draft**.
+2. Select **Review**. Each item is **new**, **changed** or **unchanged**, with a field-by-field comparison.
+3. Choose a resolution per item: **Create**, **Overwrite**, **Skip** or **Import as copy (rename)**. **Save choices**.
+4. Select **Publish**. The chosen items are applied and the result is recorded as a snapshot.
+
+The first publish also captures a "Baseline before the first import" snapshot.
+
+### Snapshots and rollback
+
+**Capture snapshot** records the current configuration. **Roll back** (type `vN` to confirm) captures the current state
+first, then re-applies the snapshot. Items added since are deactivated, never deleted. Every import, publish and
+rollback is audited.
+
+## 21. Subscription and billing
+
+Open **Subscription** (`admin.billing`).
+
+* **Current plan**: price per agent, seats, billing cycle, period, next invoice estimate and plan features.
+* **Usage vs limits** (updated every 15 minutes): agents, light agents, portal users, storage, channels, AI tokens and
+  API calls this month. Meters turn amber at 80 %. Exceeding a hard limit returns 402 `limit_exceeded`.
+* **Usage history** for 30 days, 90 days or 12 months.
+* **Invoices** with PDF download, and the **Billing contact** (name, e-mail, address, tax id).
+
+### To change the plan
+
+1. Select **Compare & change plan**.
+2. Set **Seats** (never fewer than active agents) and the **Billing cycle** (monthly, or annual with 2 months free).
+3. Select a plan. The preview shows what is charged now and later.
+4. Confirm with **Upgrade now**, **Apply now** or **Schedule change**.
+
+| Change | Takes effect | Billing |
+|---|---|---|
+| Trial to paid | Now | A new period and an invoice |
+| Upgrade (higher price) | Now | A pro-rata invoice for the rest of the period |
+| Downgrade | At the end of the period (**Keep <plan>** cancels it) | — |
+| Fewer seats, same plan | Now | No refund |
+
+Any change is refused with **409 `plan_usage_exceeded`** when current usage (agents, light agents, portal users,
+storage, channels) does not fit the target plan.
+
+### Payment and suspension
+
+Invoices are paid offline ("Bank transfer (offline)"); the instructions are printed on the invoice. A platform operator
+marks them paid. Card data is never stored.
+
+1. When a trial ends or an invoice is overdue, the subscription becomes **past due** with a grace period (default 7
+   days). The workspace keeps working.
+2. After the grace period the workspace is **suspended**. Users can still sign in, read and pay, but every other write
+   is refused with **402 `tenant_suspended`**. `/subscription`, sign-in and the customer portal stay writable.
+3. Paying the outstanding invoices reactivates the workspace.
+
+There is no self-service cancellation; contact the operator.
 
 ---
 
 # Part B — Platform operator console
 
-<!-- PLATFORM -->
+The platform console is for the people who run the SupportDesk service. It is separate from every workspace: operator
+tokens have no tenant, cannot call tenant APIs, and tenant tokens cannot call platform APIs. There is no impersonation.
+
+## To sign in
+
+Open `/platform/login` (or **Platform console** on the desk sign-in page). Enter the **Operator e-mail** and
+**Password**, plus an **Authenticator code** when the operator has one enrolled. Sessions last 30 minutes.
+
+**Not built yet:** operators cannot enrol an authenticator from the console.
+
+The console has **Overview**, **Tenants**, **Plans**, **Invoices**, **Support access** and **Audit**.
+
+## Overview
+
+KPIs for tenants, trials, active and suspended workspaces, monthly recurring revenue, open receivables, overdue
+invoices and pending support requests, plus the newest trials and recent platform activity.
+
+## Tenants
+
+The list filters by name or workspace and by status (Trial, Active, Suspended, Cancelled, Pending deletion), with plan,
+agents, storage, created and last activity. A tenant's page shows the workspace, database mode, subscription, usage
+against limits, invoices (**Mark paid**, PDF), support access and recent activity. The **Actions** menu:
+
+| Action | Effect |
+|---|---|
+| Reactivate | Lifts a suspension or past-due state. An unconverted trial returns to trial. |
+| Suspend… | Blocks writes at once (402); users can still sign in, read and pay. Requires a reason. Payments do not lift an operator suspension. |
+| Extend trial… | 1–90 days from the later of the trial end and now; also lifts a past-due state or suspension |
+| Change plan… | Applies at once, with no pro-rata invoice and no usage check (operator override) |
+| Request support access… | Reason (10–1000 characters) and duration (30 minutes to 24 hours); the tenant must approve |
+| Move to dedicated database… | See below |
+| Cancel subscription… | Access stops now. Data is kept for 0–365 days, then the tenant becomes pending deletion. |
+
+## Plans
+
+**New plan**, **Edit** and **Delete** (refused while tenants use the plan; hide it instead). Fields: code (cannot change),
+name, description, monthly and annual price per agent, currency, trial days, sort order, limits (agents, light agents,
+portal users, storage, channels, AI tokens per month, API calls per month, attachment size, brands; empty means
+unlimited), **Offered at sign-up and in plan comparison**, and features.
+
+Feature keys: `automation`, `blueprints`, `ai`, `ai_agents`, `sso`, `advanced_analytics`, `multi_brand`, `community`,
+`telephony`, `erp_integration`, `engineering_integration`, `audit_export`, `custom_roles`, `dedicated_database`.
+The seeded plans are trial, starter, professional and enterprise; only enterprise includes `dedicated_database`.
+
+**Partial:** `automation`, `blueprints`, `advanced_analytics`, `community`, `telephony` and `erp_integration` are not
+enforced on the server yet. Per-tenant limit overrides exist in the data model but have no screen or API.
+
+## Invoices
+
+Filter by status (Open, Overdue, Paid, Void). Open an invoice to download the PDF, **Mark paid…** (optional payment
+reference) or **Void…** (reason required). Marking the last open invoice paid lifts a billing suspension and a past-due
+state.
+
+## Support access and diagnostics
+
+**Support access** lists your requests. Once the tenant approves, **Diagnostics** shows usage meters, configuration
+counts (users, departments, statuses, categories, SLA policies, rules, channels), open tickets, failed jobs, dead-letter
+events and the last 25 audit entries. It never shows tickets or customer data. Only the requesting operator can open it,
+until the grant expires. Every view is audited.
+
+## Platform audit
+
+A tamper-evident trail of platform operations, with search and an action filter. **Verify chain** checks the platform
+chain (tenant chains are verified inside each workspace).
+
+## Public sign-up
+
+New customers start a trial at `/signup`: company, workspace name (checked live; reserved and taken names are refused),
+their name, work e-mail, password and plan. A 6-digit code is e-mailed (valid 30 minutes, 5 attempts). After
+verification the workspace is provisioned with 3 seats, a trial of at least 14 days and the person as administrator.
+Sign-ups are limited per IP and per e-mail. Never set `Signup:ShowVerificationCode` in production.
+
+## Dedicated databases
+
+Large tenants can move to their own database. The tenant catalog always stays in the shared database. The plan must
+include `dedicated_database`.
+
+### Before you start
+
+* Add a connection string named for the tenant, `ConnectionStrings:<name>`, or define a template
+  `ConnectionStrings:DedicatedTemplate` with `{name}`, for example
+  `Server=sql01;Database=SupportDesk_{name};…`. The UI never accepts a raw connection string.
+* The target must be on the **same SQL Server instance** as the shared database, and the SQL login needs `dbcreator`.
+* The name is 3–40 lower-case letters, digits or underscores and is not used by another tenant.
+
+### Runbook
+
+1. **Suspend** the tenant (no writes during the copy).
+2. On the tenant page, select **Move to dedicated database…**, enter the **Connection name** and select
+   **Provision and move**.
+3. The provisioner creates the database, applies the schema and the audit-protection trigger, copies every tenant-owned
+   row (plus the tenant, plans and permissions), retires the tenant's pending events and jobs in the shared database,
+   and switches the tenant's routing. The result shows the rows and tables copied.
+4. **Verify** sign-in and data. Users must sign in again (sessions are not copied).
+5. **Reactivate** the tenant.
+6. After verification, purge the frozen copy of the tenant's rows in the shared database. It is kept for rollback.
+   **Not built yet:** there is no tool for the purge or for rolling back; both are manual database work.
+
+To place the tenant on **another server**, restore a copy of its rows there, configure the connection name, then switch
+the tenant. Background work (outbox, jobs, audit sealing, SLA monitor, contract lifecycle, ERP sync) runs for the shared
+database and every dedicated database; an unreachable dedicated database is logged and skipped.
+
+For local development: `ConnectionStrings__DedicatedTemplate=Server=(localdb)\MSSQLLocalDB;Database=SupportDesk_{name};Trusted_Connection=True;TrustServerCertificate=True`.
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for installation, configuration keys, scaling, backups and upgrades.
 
 ---
 
