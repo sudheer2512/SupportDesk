@@ -97,13 +97,13 @@ public sealed class InjectionDetectionTests
     public void Consequential_and_customer_facing_actions_always_require_approval()
     {
         var refund = AiActionCatalog.Info(AiActionCatalog.ConsequentialReview);
-        Assert.True(AiActionCatalog.RequiresApproval(refund, Domain.Ai.AiRiskLevel.Low, Domain.Ai.AiAgentMode.AutoLowRisk, 0.99, 0.5, false));
+        Assert.True(AiActionCatalog.RequiresApproval(refund, SupportDesk.Domain.Ai.AiRiskLevel.Low, SupportDesk.Domain.Ai.AiAgentMode.AutoLowRisk, 0.99, 0.5, false));
         var reply = AiActionCatalog.Info(AiActionCatalog.SendReply);
-        Assert.True(AiActionCatalog.RequiresApproval(reply, Domain.Ai.AiRiskLevel.Low, Domain.Ai.AiAgentMode.AutoLowRisk, 0.99, 0.5, false));
+        Assert.True(AiActionCatalog.RequiresApproval(reply, SupportDesk.Domain.Ai.AiRiskLevel.Low, SupportDesk.Domain.Ai.AiAgentMode.AutoLowRisk, 0.99, 0.5, false));
         var tags = AiActionCatalog.Info(AiActionCatalog.AddTags);
-        Assert.False(AiActionCatalog.RequiresApproval(tags, Domain.Ai.AiRiskLevel.Low, Domain.Ai.AiAgentMode.AutoLowRisk, 0.9, 0.8, false));
-        Assert.True(AiActionCatalog.RequiresApproval(tags, Domain.Ai.AiRiskLevel.Low, Domain.Ai.AiAgentMode.SuggestOnly, 0.9, 0.8, false));
-        Assert.True(AiActionCatalog.RequiresApproval(tags, Domain.Ai.AiRiskLevel.Low, Domain.Ai.AiAgentMode.AutoLowRisk, 0.9, 0.8, injectionFlagged: true));
+        Assert.False(AiActionCatalog.RequiresApproval(tags, SupportDesk.Domain.Ai.AiRiskLevel.Low, SupportDesk.Domain.Ai.AiAgentMode.AutoLowRisk, 0.9, 0.8, false));
+        Assert.True(AiActionCatalog.RequiresApproval(tags, SupportDesk.Domain.Ai.AiRiskLevel.Low, SupportDesk.Domain.Ai.AiAgentMode.SuggestOnly, 0.9, 0.8, false));
+        Assert.True(AiActionCatalog.RequiresApproval(tags, SupportDesk.Domain.Ai.AiRiskLevel.Low, SupportDesk.Domain.Ai.AiAgentMode.AutoLowRisk, 0.9, 0.8, injectionFlagged: true));
     }
 
     [Theory]
