@@ -242,7 +242,8 @@ export class LoginPage {
     return this.run(async () => {
       this.mode.setBrand(this.brand);
       const res = await this.customerAuth.requestOtp(this.mode.brand(), this.email);
-      if (res.status === 'otp_sent' || res.status === 'ok') {
+      // The API answers 'sent' (older builds: 'otp_sent') whether or not the address exists (no enumeration).
+      if (res.status === 'sent' || res.status === 'otp_sent' || res.status === 'ok') {
         this.codeSent.set(true);
         this.demoCode.set(res.demoCode ?? null);
         this.info.set(res.message ?? 'If the address has portal access, a code is on its way.');

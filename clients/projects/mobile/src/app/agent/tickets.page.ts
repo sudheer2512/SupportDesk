@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   ActionSheetController,
@@ -36,7 +36,7 @@ import {
   formatRelative,
 } from '@sd/core';
 import { Subscription, debounceTime, firstValueFrom } from 'rxjs';
-import { NetworkService, isUnreachableStatus } from '../core/network.service';
+import { NetworkService, isUnreachable } from '../core/network.service';
 import { OfflineCache } from '../core/offline-cache.service';
 import { SessionCoordinator } from '../core/session-coordinator';
 import { SessionSnapshotStore } from '../core/session-snapshot';
@@ -303,9 +303,22 @@ export class AgentTicketsPage implements OnInit {
   protected readonly priorityColor = priorityColor;
   protected readonly statusColor = statusColor;
 
+  private initialized = false;
+
+  constructor() {
+    // Home tiles navigate here with ?filter=… while this tab page stays alive: follow the query string.
+    effect(() => {
+      const wanted = TICKET_FILTERS.find((f) => f.key === this.filter());
+      untracked(() => {
+        if (this.initialized && wanted && wanted.key !== this.current()) this.setFilter(wanted.key);
+      });
+    });
+  }
+
   ngOnInit(): void {
     const initial = TICKET_FILTERS.find((f) => f.key === this.filter());
     if (initial) this.current.set(initial.key);
+    this.initialized = true;
     void this.load();
 
     const live = this.realtime.ticketChanged$.pipe(debounceTime(2000)).subscribe(() => {
@@ -398,7 +411,7 @@ export class AgentTicketsPage implements OnInit {
       }
     } catch (e) {
       const err = ApiError.from(e);
-      void this.toasts.error(isUnreachableStatus(err.status) ? 'You are offline — more tickets load when you reconnect.' : err.userMessage);
+      void this.toasts.error(isUnreachable(err) ? 'You are offline — more tickets load when you reconnect.' : err.userMessage);
     } finally {
       await target.complete();
     }
@@ -470,9 +483,9 @@ export class AgentTicketsPage implements OnInit {
     const err = ApiError.from(e);
     this.loading.set(false);
     this.loaded.set(true);
-    if (isUnreachableStatus(err.status)) this.network.markUnreachable();
+    if (isUnreachable(err)) this.network.markUnreachable();
     // Keep showing whatever is on screen (cached or previous) when the network fails.
     if (!this.items().length) this.error.set(err.userMessage);
-    else if (!isUnreachableStatus(err.status)) void this.toasts.error(err.userMessage);
+    else if (!isUnreachable(err)) void this.toasts.error(err.userMessage);
   }
 }

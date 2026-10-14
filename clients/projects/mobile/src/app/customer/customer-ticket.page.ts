@@ -205,18 +205,18 @@ import { fileSize, statusColor, textToHtml } from '../shared/format';
     @if (t()?.actions?.reply) {
       <ion-footer>
         <div class="composer">
-          <ion-textarea [autoGrow]="true" [rows]="2" placeholder="Write a reply…" aria-label="Reply to support" [ngModel]="text()" (ngModelChange)="onText($event)" />
-          <m-attachment-picker [(files)]="files" />
-          <div class="bar">
-            <span class="hint">{{ online() ? '' : 'Offline — sends when you reconnect' }}</span>
+          <ion-textarea [autoGrow]="true" [rows]="1" placeholder="Write a reply…" aria-label="Reply to support" [ngModel]="text()" (ngModelChange)="onText($event)" />
+          <m-attachment-picker [(files)]="files" [compact]="true">
+            <span class="hint">{{ online() ? '' : 'Offline · sends later' }}</span>
             <ion-button size="small" [disabled]="sending() || (!text().trim() && !files().length)" (click)="send()">
               @if (sending()) {
                 <ion-spinner name="crescent" aria-label="Sending" />
               } @else {
+                <ion-icon slot="end" [name]="online() ? 'send' : 'cloud-upload-outline'" aria-hidden="true" />
                 {{ online() ? 'Send' : 'Queue' }}
               }
             </ion-button>
-          </div>
+          </m-attachment-picker>
         </div>
       </ion-footer>
     }
@@ -328,21 +328,18 @@ import { fileSize, statusColor, textToHtml } from '../shared/format';
       border-top: 1px solid var(--sd-border);
     }
     .composer ion-textarea {
-      --padding-start: 8px;
+      --padding-start: 10px;
+      min-height: 44px;
       border: 1px solid var(--sd-border);
       border-radius: 10px;
       max-height: 35vh;
       overflow: auto;
     }
-    .bar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
     .hint {
       flex: 1;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--sd-text-2);
+      text-align: right;
     }
   `,
 })
@@ -392,7 +389,7 @@ export class CustomerTicketPage implements OnInit {
         if (this.draftLoaded === id) return;
         this.draftLoaded = id;
         void this.drafts.get<string>(`portal:reply:${id}`).then((v) => {
-          if (this.draftLoaded === id && v) this.text.set(v);
+          if (this.draftLoaded === id && v && !this.text()) this.text.set(v);
         });
       });
     });

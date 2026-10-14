@@ -343,7 +343,8 @@ export class NewTicketPage implements OnInit {
   ngOnInit(): void {
     void this.formRes.load();
     void this.drafts.get<NewTicketDraft>(DRAFT_KEY).then((draft) => {
-      if (draft) this.d.set({ ...emptyDraft(), ...draft, cf: { ...draft.cf } });
+      // Restore unless the user already started typing.
+      if (draft && !this.d().subject && !this.d().description) this.d.set({ ...emptyDraft(), ...draft, cf: { ...draft.cf } });
     });
     const sub = this.subjectChanges
       .pipe(

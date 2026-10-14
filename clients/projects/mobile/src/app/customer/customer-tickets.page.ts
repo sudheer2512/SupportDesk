@@ -32,7 +32,7 @@ import {
 } from '@sd/core';
 import { Subscription, debounceTime, firstValueFrom, merge } from 'rxjs';
 import { ModeService } from '../core/mobile-session';
-import { NetworkService, isUnreachableStatus } from '../core/network.service';
+import { NetworkService, isUnreachable } from '../core/network.service';
 import { OfflineCache } from '../core/offline-cache.service';
 import { OutboxService } from '../core/outbox.service';
 import { SessionCoordinator } from '../core/session-coordinator';
@@ -44,7 +44,7 @@ import { statusColor } from '../shared/format';
 
 type StatusFilter = 'open' | 'awaiting' | 'closed' | 'all';
 
-const SCOPE_LABELS: Record<PortalTicketScope, string> = { own: 'Mine', location: 'My location', organisation: 'Organisation' };
+const SCOPE_LABELS: Record<PortalTicketScope, string> = { own: 'Mine', location: 'Location', organisation: 'Organisation' };
 const PAGE = 20;
 
 /** Customer: my tickets (own / location / organisation scope as allowed), status filter, search, live updates. */
@@ -80,7 +80,7 @@ const PAGE = 20;
       <ion-toolbar><ion-title>My tickets</ion-title></ion-toolbar>
       @if (scopes().length > 1) {
         <ion-toolbar>
-          <ion-segment [value]="scope()" (ionChange)="setScope($any($event).detail.value)" aria-label="Whose tickets">
+          <ion-segment [scrollable]="true" [value]="scope()" (ionChange)="setScope($any($event).detail.value)" aria-label="Whose tickets">
             @for (s of scopes(); track s) {
               <ion-segment-button [value]="s"><ion-label>{{ scopeLabel(s) }}</ion-label></ion-segment-button>
             }
@@ -88,7 +88,7 @@ const PAGE = 20;
         </ion-toolbar>
       }
       <ion-toolbar>
-        <ion-segment [value]="status()" (ionChange)="setStatus($any($event).detail.value)" aria-label="Status">
+        <ion-segment [scrollable]="true" [value]="status()" (ionChange)="setStatus($any($event).detail.value)" aria-label="Status">
           <ion-segment-button value="open"><ion-label>Open</ion-label></ion-segment-button>
           <ion-segment-button value="awaiting"><ion-label>Needs me</ion-label></ion-segment-button>
           <ion-segment-button value="closed"><ion-label>Closed</ion-label></ion-segment-button>
@@ -290,7 +290,7 @@ export class CustomerTicketsPage implements OnInit {
               const err = ApiError.from(e);
               this.loading.set(false);
               this.loaded.set(true);
-              if (isUnreachableStatus(err.status)) this.network.markUnreachable();
+              if (isUnreachable(err)) this.network.markUnreachable();
               if (!this.items().length) this.error.set(err.userMessage);
             }
             resolve();

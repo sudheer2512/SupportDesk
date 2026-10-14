@@ -48,8 +48,8 @@ export class MobileToasts {
       message,
       color: COLORS[kind],
       duration: durationMs,
-      position: 'bottom',
-      positionAnchor: undefined,
+      // Top: never covers the tab bar or a composer.
+      position: 'top',
       buttons: [{ text: 'Dismiss', role: 'cancel' }],
       cssClass: 'm-toast',
     });

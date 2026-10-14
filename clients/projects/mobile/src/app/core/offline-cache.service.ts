@@ -60,10 +60,9 @@ export class OfflineCache {
     if (scope) await this.db.delete('cache', `${scope}|${key}`);
   }
 
-  /** Drops everything cached for the current identity (sign-out). */
-  async clearCurrent(): Promise<void> {
-    const scope = this.session.scope();
-    if (scope) await this.db.clearScope('cache', scope);
+  /** Drops everything cached for an identity (sign-out). */
+  async clearScope(scope: string): Promise<void> {
+    await this.db.clearScope('cache', scope);
   }
 
   private async trim(scope: string, kind: CacheKind): Promise<void> {

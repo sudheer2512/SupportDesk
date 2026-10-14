@@ -125,8 +125,10 @@ export class SessionCoordinator {
   /** Ends the session: push unregister (while still authorised), the identity's local data, then the server session. */
   async signOut(): Promise<void> {
     await this.push.unregister();
-    await Promise.all([this.cache.clearCurrent(), this.drafts.clearCurrent(), this.clearOutbox()]);
+    const scope = this.snapshot.scope();
+    // Forget the identity first so late writes (realtime events, debounced drafts) cannot recreate its data.
     await this.snapshot.clear();
+    if (scope) await Promise.all([this.cache.clearScope(scope), this.drafts.clearScope(scope), this.outbox.clearScope(scope)]);
     this.offlineSession.set(false);
     if (this.mode.mode() === 'agent') {
       await this.auth.logout();
@@ -134,10 +136,6 @@ export class SessionCoordinator {
       await this.portalAuth.logout();
       await this.router.navigateByUrl('/login', { replaceUrl: true });
     }
-  }
-
-  private async clearOutbox(): Promise<void> {
-    for (const e of this.outbox.entries()) await this.outbox.discard(e.id);
   }
 
   private onResume(): void {

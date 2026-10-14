@@ -70,7 +70,7 @@ import { OutboxItem } from '../shared/outbox-item.component';
         <ion-list lines="none">
           <ion-list-header><ion-label>Availability</ion-label></ion-list-header>
           <ion-item>
-            <ion-segment [value]="availability()" [disabled]="readOnly()" (ionChange)="setAvailability($any($event).detail.value)" aria-label="Availability">
+            <ion-segment [scrollable]="true" [value]="availability()" [disabled]="readOnly()" (ionChange)="setAvailability($any($event).detail.value)" aria-label="Availability">
               @for (a of availabilities; track a) {
                 <ion-segment-button [value]="a"><ion-label>{{ a }}</ion-label></ion-segment-button>
               }

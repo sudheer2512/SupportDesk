@@ -1,7 +1,7 @@
 import { DestroyRef, Signal, computed, inject, signal } from '@angular/core';
 import { ApiError } from '@sd/core';
 import { Observable, Subscription } from 'rxjs';
-import { NetworkService, isUnreachableStatus } from './network.service';
+import { NetworkService, isUnreachable } from './network.service';
 import { CacheKind, OfflineCache } from './offline-cache.service';
 
 export interface CachedResource<T> {
@@ -80,7 +80,7 @@ export function cachedResource<T>(options: {
           if (gen === generation) {
             const err = ApiError.from(e);
             error.set(err);
-            if (isUnreachableStatus(err.status)) network.markUnreachable();
+            if (isUnreachable(err)) network.markUnreachable();
             loading.set(false);
           }
           resolve();

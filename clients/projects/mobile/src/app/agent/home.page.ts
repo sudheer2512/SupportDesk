@@ -78,10 +78,12 @@ export const AVAILABILITY_COLORS: Record<Availability, string> = { Online: 'succ
       <ion-toolbar>
         <ion-title>Home</ion-title>
         <ion-buttons slot="end">
+          @if (live()) {
           <ion-button [disabled]="readOnly()" (click)="chooseAvailability()" [attr.aria-label]="'Availability: ' + availability() + '. Change'">
             <span class="presence" [attr.data-a]="availability()" aria-hidden="true"></span>
             {{ availability() }}
           </ion-button>
+          }
         </ion-buttons>
       </ion-toolbar>
       <m-offline-banner [staleSince]="queues.resource.staleSince()" />
@@ -266,6 +268,8 @@ export class AgentHomePage implements OnInit {
   protected readonly tiles = TILES;
   protected readonly priorityColor = priorityColor;
   protected readonly readOnly = this.session.readOnly;
+  /** Availability lives on the server: hidden in an offline session (the saved copy would be stale). */
+  protected readonly live = this.session.live;
   protected readonly counts = this.queues.counts;
   protected readonly availability = this.availabilityStore.current;
   protected readonly canDecide = computed(() => this.me.can('approvals.decide'));

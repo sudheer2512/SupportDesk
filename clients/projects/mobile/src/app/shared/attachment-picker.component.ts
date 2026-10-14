@@ -6,7 +6,7 @@ import { fileSize } from './format';
  * Photo / file attachments for composers. "Camera" opens the device camera (`capture`), "Files" the document picker —
  * plain `<input type=file>` works inside the Capacitor WebView, no camera plugin needed. Files are uploaded when the
  * message is sent (also from the offline outbox).
- * `<m-attachment-picker [(files)]="files" [maxMb]="25" />`
+ * `<m-attachment-picker [(files)]="files" [maxMb]="25" [compact]="true"><ion-button>Send</ion-button></m-attachment-picker>`
  */
 @Component({
   selector: 'm-attachment-picker',
@@ -14,14 +14,25 @@ import { fileSize } from './format';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="actions">
-      <ion-button fill="clear" size="small" [disabled]="disabled()" (click)="camera.click()">
-        <ion-icon slot="start" name="camera-outline" aria-hidden="true" />Camera
-      </ion-button>
-      <ion-button fill="clear" size="small" [disabled]="disabled()" (click)="picker.click()">
-        <ion-icon slot="start" name="attach-outline" aria-hidden="true" />Files
-      </ion-button>
+      @if (compact()) {
+        <ion-button fill="clear" size="small" [disabled]="disabled()" aria-label="Take a photo" (click)="camera.click()">
+          <ion-icon slot="icon-only" name="camera-outline" aria-hidden="true" />
+        </ion-button>
+        <ion-button fill="clear" size="small" [disabled]="disabled()" aria-label="Attach files" (click)="picker.click()">
+          <ion-icon slot="icon-only" name="attach-outline" aria-hidden="true" />
+        </ion-button>
+      } @else {
+        <ion-button fill="clear" size="small" [disabled]="disabled()" (click)="camera.click()">
+          <ion-icon slot="start" name="camera-outline" aria-hidden="true" />Camera
+        </ion-button>
+        <ion-button fill="clear" size="small" [disabled]="disabled()" (click)="picker.click()">
+          <ion-icon slot="start" name="attach-outline" aria-hidden="true" />Files
+        </ion-button>
+      }
       <input #camera type="file" accept="image/*" capture="environment" hidden aria-label="Take a photo" (change)="add($event)" />
       <input #picker type="file" multiple hidden aria-label="Choose files" (change)="add($event)" />
+      <!-- Extra actions of the host composer (templates, send…) share the row. -->
+      <ng-content />
     </div>
     @if (error()) {
       <ion-note color="danger" role="alert">{{ error() }}</ion-note>
@@ -44,6 +55,7 @@ import { fileSize } from './format';
   styles: `
     .actions {
       display: flex;
+      align-items: center;
       gap: 4px;
     }
     .files {
@@ -79,6 +91,8 @@ export class AttachmentPicker {
   readonly maxMb = input(25);
   readonly maxFiles = input(10);
   readonly disabled = input(false);
+  /** Icon-only buttons (composer toolbars). */
+  readonly compact = input(false);
 
   protected readonly error = signal<string | null>(null);
 

@@ -5,14 +5,16 @@ import { SessionCoordinator } from './core/session-coordinator';
 
 /** Agent screens need an agent session — live, or an offline session restored from this device's saved data. */
 const agentGuard: CanActivateFn = async () => {
+  const router = inject(Router); // inject before any await (injection context)
   const ok = await inject(SessionCoordinator).canEnter('agent');
-  return ok ? true : inject(Router).parseUrl('/login');
+  return ok ? true : router.parseUrl('/login');
 };
 
 /** Customer screens need a portal session for the remembered help center (live or offline). */
 const customerGuard: CanActivateFn = async () => {
+  const router = inject(Router);
   const ok = await inject(SessionCoordinator).canEnter('customer');
-  return ok ? true : inject(Router).parseUrl('/login');
+  return ok ? true : router.parseUrl('/login');
 };
 
 /** Opening the app with a saved session skips the sign-in screen. */

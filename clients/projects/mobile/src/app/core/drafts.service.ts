@@ -53,8 +53,13 @@ export class DraftStore {
   }
 
   /** Sign-out: forget the identity's drafts. */
-  async clearCurrent(): Promise<void> {
-    const scope = this.session.scope();
-    if (scope) await this.db.clearScope('drafts', scope);
+  async clearScope(scope: string): Promise<void> {
+    for (const [key, timer] of this.timers) {
+      if (key.startsWith(scope + '|')) {
+        clearTimeout(timer);
+        this.timers.delete(key);
+      }
+    }
+    await this.db.clearScope('drafts', scope);
   }
 }

@@ -41,7 +41,9 @@ export class PortalAuthService implements AuthSession {
   ready(brand: string): Promise<void> {
     const key = brand.toLowerCase();
     if (this._brand() !== key) {
-      this.clearLocal();
+      // The first selection after start-up keeps a stored (mobile) refresh token — it is what restores the session;
+      // switching to another brand drops the previous brand's session.
+      this.clearLocal(true, this._brand() === null);
       this._brand.set(key);
       this.restored.clear();
     }
@@ -160,7 +162,7 @@ export class PortalAuthService implements AuthSession {
   private selectBrand(brand: string): void {
     const key = brand.toLowerCase();
     if (this._brand() !== key) {
-      this.clearLocal();
+      this.clearLocal(true, this._brand() === null);
       this._brand.set(key);
       this.restored.clear();
     }

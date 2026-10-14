@@ -32,7 +32,7 @@ export type ComposerMode = 'reply' | 'note';
       }
       <ion-textarea
         [autoGrow]="true"
-        [rows]="2"
+        [rows]="1"
         [maxlength]="20000"
         [placeholder]="mode() === 'reply' ? 'Reply to ' + (ticket().contactName || 'the customer') + '…' : 'Internal note (agents only)…'"
         [attr.aria-label]="mode() === 'reply' ? 'Reply to the customer' : 'Internal note'"
@@ -41,10 +41,9 @@ export type ComposerMode = 'reply' | 'note';
         (ionFocus)="activity.emit(mode() === 'reply' ? 'replying' : 'noting')"
         (ionBlur)="activity.emit('viewing')"
       />
-      <m-attachment-picker [(files)]="files" />
-      <div class="bar">
-        <ion-button fill="clear" size="small" (click)="pickTemplate()" [disabled]="busy()">
-          <ion-icon slot="start" name="document-text-outline" aria-hidden="true" />Templates
+      <m-attachment-picker [(files)]="files" [compact]="true">
+        <ion-button fill="clear" size="small" aria-label="Insert a template" (click)="pickTemplate()" [disabled]="busy()">
+          <ion-icon slot="icon-only" name="document-text-outline" aria-hidden="true" />
         </ion-button>
         <span class="hint">{{ hint() }}</span>
         <ion-button size="small" [disabled]="busy() || !canSend()" (click)="send()">
@@ -55,7 +54,7 @@ export type ComposerMode = 'reply' | 'note';
             {{ online() ? (mode() === 'reply' ? 'Send' : 'Add note') : 'Queue' }}
           }
         </ion-button>
-      </div>
+      </m-attachment-picker>
     </div>
   `,
   styles: `
@@ -70,24 +69,27 @@ export type ComposerMode = 'reply' | 'note';
     }
     ion-segment {
       margin-bottom: 4px;
+      min-height: 36px;
+    }
+    ion-segment-button {
+      min-height: 36px;
     }
     ion-textarea {
-      --padding-start: 8px;
-      --padding-end: 8px;
-      max-height: 40vh;
+      --padding-start: 10px;
+      --padding-end: 10px;
+      --padding-top: 8px;
+      --padding-bottom: 8px;
+      min-height: 44px;
+      max-height: 35vh;
       overflow: auto;
       border: 1px solid var(--sd-border);
       border-radius: 10px;
       background: var(--sd-bg);
     }
-    .bar {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
     .hint {
       flex: 1;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
+      line-height: 1.2;
       color: var(--sd-text-2);
       text-align: right;
     }
@@ -114,7 +116,7 @@ export class AgentComposer {
   protected readonly busy = signal(false);
   protected readonly online = this.network.online;
   protected readonly canSend = computed(() => this.text().trim().length > 0 || this.files().length > 0);
-  protected readonly hint = computed(() => (this.online() ? '' : 'Offline — sends when you reconnect'));
+  protected readonly hint = computed(() => (this.online() ? '' : 'Offline · sends later'));
   private loadedFor: string | null = null;
 
   constructor() {
@@ -130,8 +132,10 @@ export class AgentComposer {
         const key = this.draftKey(t.id, mode);
         if (this.loadedFor === key) return;
         this.loadedFor = key;
+        this.text.set('');
         void this.drafts.get<string>(key).then((text) => {
-          if (this.loadedFor === key) this.text.set(text ?? '');
+          // Never overwrite what the user started typing while the draft was loading.
+          if (this.loadedFor === key && text && !this.text()) this.text.set(text);
         });
       });
     });

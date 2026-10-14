@@ -10,7 +10,7 @@ import {
   newClientRequestId,
 } from '@sd/core';
 import { Observable, Subject, filter, firstValueFrom, map } from 'rxjs';
-import { NetworkService, isUnreachableStatus } from './network.service';
+import { NetworkService, isUnreachable } from './network.service';
 import { OfflineDb } from './offline-cache.service';
 import { SessionSnapshotStore } from './session-snapshot';
 
@@ -160,6 +160,12 @@ export class OutboxService {
     this.kick();
   }
 
+  /** Sign-out: deletes the identity's unsent entries. */
+  async clearScope(scope: string): Promise<void> {
+    await this.db.clearScope('outbox', scope);
+    this._entries.update((list) => list.filter((e) => e.scope !== scope));
+  }
+
   async discard(id: string): Promise<void> {
     await this.db.delete('outbox', id);
     this._entries.update((list) => list.filter((e) => e.id !== id));
@@ -219,17 +225,17 @@ export class OutboxService {
       return true;
     } catch (e) {
       const err = ApiError.from(e);
-      if (isUnreachableStatus(err.status) || err.status === 401 || err.status === 429 || err.status >= 500) {
+      if (isUnreachable(err) || err.status === 401 || err.status === 429 || err.status >= 500) {
         const attempts = entry.attempts + 1;
         await this.patch(entry.id, {
           status: 'queued',
           attempts,
           nextAttemptAt: Date.now() + BACKOFF_MS[Math.min(attempts - 1, BACKOFF_MS.length - 1)],
-          lastError: isUnreachableStatus(err.status) ? 'Waiting for a connection' : err.userMessage,
+          lastError: isUnreachable(err) ? 'Waiting for a connection' : err.userMessage,
         });
-        if (isUnreachableStatus(err.status)) this.network.markUnreachable();
+        if (isUnreachable(err)) this.network.markUnreachable();
         // Offline or signed out: stop; 429/5xx: try the next entry.
-        return !(isUnreachableStatus(err.status) || err.status === 401);
+        return !(isUnreachable(err) || err.status === 401);
       }
       const collision = err.replyCollision;
       if (collision) {

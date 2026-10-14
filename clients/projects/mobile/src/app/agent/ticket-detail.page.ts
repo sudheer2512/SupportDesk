@@ -481,6 +481,8 @@ export class AgentTicketDetailPage implements OnInit {
 
   ngOnInit(): void {
     void this.loadAll();
+    // Statuses, priorities and agents for the quick-edit pickers (cached for the session).
+    if (this.session.live()) this.meta.load();
     this.realtime.joinTicket(this.id());
     const events = this.realtime.ticketEvents(this.id());
     this.live = merge(

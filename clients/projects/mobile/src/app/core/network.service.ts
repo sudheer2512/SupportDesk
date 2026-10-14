@@ -1,10 +1,25 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
+import { ApiError } from '@sd/core';
 import { Observable, Subject, tap } from 'rxjs';
 
 /** HTTP statuses that mean "the server is not reachable" rather than "the server said no". */
 export function isUnreachableStatus(status: number): boolean {
   return status === 0 || status === 502 || status === 503 || status === 504;
+}
+
+/**
+ * A failed call that never reached the SupportDesk API: network errors, gateway errors, and a bare 500 without
+ * problem details (what dev proxies answer when the API is down — the API itself always returns problem+json).
+ */
+export function isUnreachable(error: unknown): boolean {
+  if (error instanceof HttpErrorResponse) {
+    const body = error.error;
+    const empty = body === null || body === undefined || (typeof body === 'string' && body.trim() === '');
+    return isUnreachableStatus(error.status) || (error.status === 500 && empty);
+  }
+  if (error instanceof ApiError) return isUnreachableStatus(error.status) || (error.status === 500 && !error.problem && !error.detail);
+  return false;
 }
 
 /**
@@ -68,7 +83,7 @@ export const connectivityInterceptor: HttpInterceptorFn = (req, next) => {
       },
       error: (error: unknown) => {
         if (error instanceof HttpErrorResponse) {
-          if (isUnreachableStatus(error.status)) network.markUnreachable();
+          if (isUnreachable(error)) network.markUnreachable();
           else network.markReachable();
         }
       },
