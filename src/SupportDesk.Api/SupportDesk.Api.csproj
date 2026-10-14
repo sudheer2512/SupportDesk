@@ -29,6 +29,10 @@
     <None Remove="data\**" />
   </ItemGroup>
   <ItemGroup>
+    <!-- Embeddable chat widget (served by WidgetController at /widget/*) -->
+    <EmbeddedResource Include="Widget\*.js;Widget\*.html" LogicalName="Widget/%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup>
     <InternalsVisibleTo Include="SupportDesk.IntegrationTests" />
   </ItemGroup>
 </Project>

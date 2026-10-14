@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wings Software — chat widget demo</title>
+  <style>
+    :root { color-scheme: light; }
+    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: #f8fafc; color: #0f172a; }
+    header { background: #0f172a; color: #fff; padding: 18px 24px; }
+    header strong { font-size: 18px; }
+    main { max-width: 860px; margin: 0 auto; padding: 32px 16px 120px; }
+    h1 { font-size: 30px; margin: 0 0 12px; }
+    p { line-height: 1.6; color: #334155; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 24px; }
+    .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; }
+    code { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 13px; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <header><strong>Wings Software</strong> · ERP, accounting and retail software</header>
+  <main>
+    <h1>Need help with Wings ERP?</h1>
+    <p>This page demonstrates the embeddable SupportDesk chat widget. Open the chat bubble in the bottom-right corner,
+      start a conversation, ask for a person to hand the chat to an agent (it creates a ticket and notifies agents), and
+      reply from the agent desk under <em>Conversations</em>.</p>
+    <div class="cards">
+      <div class="card"><strong>Bot first</strong><p>An assistant answers when one is configured; otherwise the chat goes straight to an agent.</p></div>
+      <div class="card"><strong>Verified identity</strong><p>"Verify my e-mail" sends a one-time code and links the chat to your contact record.</p></div>
+      <div class="card"><strong>Embed anywhere</strong><p><code>&lt;script src="/widget/widget.js" data-widget-key="wk_wingsdemo" async&gt;&lt;/script&gt;</code></p></div>
+    </div>
+  </main>
+  <script src="/widget/widget.js" data-widget-key="wk_wingsdemo" data-name="Demo visitor" async></script>
+</body>
+</html>
