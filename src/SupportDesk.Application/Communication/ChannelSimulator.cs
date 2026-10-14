@@ -124,19 +124,14 @@ public sealed class CommunicationRealtimeHandler(DeskDbContext db, IRealtimePubl
                 if (msg is null) return;
                 await chat.MessageAsync(tenantId, p.ConversationId, ChatService.MapForVisitor(msg), ct);
                 await realtime.ToConversationAsync(tenantId, p.ConversationId, "conversation.message", ConversationQueryService.MapMessage(msg), ct);
+                await PushConversationAsync(tenantId, p.ConversationId, "message", msg.Id, ct);
                 break;
             }
             case EventTypes.ConversationUpdated:
             {
                 var p = Json.Deserialize<ChatEventPayload>(ev.PayloadJson);
                 if (p is null) return;
-                var conv = await db.Conversations.AsNoTracking().Where(c => c.Id == p.ConversationId)
-                    .Select(c => new { c.Id, c.Channel, c.Status, c.TicketId, c.AssignedUserId, c.LastMessageAt }).FirstOrDefaultAsync(ct);
-                if (conv is null) return;
-                await realtime.ToTenantAsync(tenantId, "conversation.updated", new
-                {
-                    conversationId = conv.Id, channel = conv.Channel.ToString(), status = conv.Status.ToString(), conv.TicketId, conv.AssignedUserId, conv.LastMessageAt
-                }, ct);
+                await PushConversationAsync(tenantId, p.ConversationId, "status", null, ct);
                 break;
             }
             case EventTypes.MessageReceived:
@@ -146,16 +141,35 @@ public sealed class CommunicationRealtimeHandler(DeskDbContext db, IRealtimePubl
                 Guid? G(string name) => root.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.String && Guid.TryParse(v.GetString(), out var g) ? g : null;
                 var payload = new { messageId = G("messageId"), conversationId = G("conversationId"), ticketId = G("ticketId"), channel = root.TryGetProperty("channel", out var c) ? c.GetString() : null };
                 await realtime.ToTenantAsync(tenantId, "conversation.message", payload, ct);
-                if (payload.conversationId is { } cid) await realtime.ToConversationAsync(tenantId, cid, "conversation.message", payload, ct);
+                if (payload.conversationId is { } cid)
+                {
+                    await realtime.ToConversationAsync(tenantId, cid, "conversation.message", payload, ct);
+                    await PushConversationAsync(tenantId, cid, "message", payload.messageId, ct);
+                }
                 break;
             }
             case EventTypes.MessageStatusChanged or EventTypes.MessageQueued:
             {
                 var p = Json.Deserialize<MessageStatusPayload>(ev.PayloadJson);
-                if (p?.TicketId is not { } ticketId) return;
-                await realtime.ToTicketAsync(tenantId, ticketId, "message.status", p, ct);
+                if (p is null) return;
+                if (p.TicketId is { } ticketId) await realtime.ToTicketAsync(tenantId, ticketId, "message.status", p, ct);
+                var convId = await db.Messages.AsNoTracking().Where(m => m.Id == p.MessageId).Select(m => m.ConversationId).FirstOrDefaultAsync(ct);
+                if (convId is { } c2) await PushConversationAsync(tenantId, c2, "delivery", p.MessageId, ct);
                 break;
             }
         }
+    }
+
+    /// <summary>`conversation.updated` on the desk hub (tenant group): inbox lists and open conversations refresh from it.</summary>
+    private async Task PushConversationAsync(Guid tenantId, Guid conversationId, string kind, Guid? messageId, CancellationToken ct)
+    {
+        var conv = await db.Conversations.AsNoTracking().Where(c => c.Id == conversationId)
+            .Select(c => new { c.Id, c.Channel, c.Status, c.TicketId, c.AssignedUserId, c.LastMessageAt }).FirstOrDefaultAsync(ct);
+        if (conv is null) return;
+        await realtime.ToTenantAsync(tenantId, "conversation.updated", new
+        {
+            conversationId = conv.Id, channel = conv.Channel.ToString(), status = conv.Status.ToString(), ticketId = conv.TicketId,
+            assignedUserId = conv.AssignedUserId, lastMessageAt = conv.LastMessageAt, kind, messageId
+        }, ct);
     }
 }
