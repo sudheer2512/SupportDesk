@@ -187,7 +187,7 @@ import { SAAS_CSS, humanize } from '../../subscription/saas-ui';
   `,
   styles: `
     ${SAAS_CSS}
-    .filters { display: grid; gap: 10px 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr)); align-items: end; margin-bottom: var(--sd-space-4); }
+    .filters { display: grid; gap: 10px 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); align-items: end; margin-bottom: var(--sd-space-4); }
     .filter-actions { display: flex; gap: 8px; }
     .nowrap { white-space: nowrap; }
     code { font-family: var(--sd-font-mono); font-size: var(--sd-text-xs); }

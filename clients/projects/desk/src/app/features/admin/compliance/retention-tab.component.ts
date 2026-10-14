@@ -104,7 +104,7 @@ import { SAAS_CSS } from '../../subscription/saas-ui';
   `,
   styles: `
     ${SAAS_CSS}
-    .grow { flex: 1; margin: 0; }
+    .grow { flex: 1 1 240px; margin: 0; }
     tr.result td { background: var(--sd-surface-2); }
   `,
 })

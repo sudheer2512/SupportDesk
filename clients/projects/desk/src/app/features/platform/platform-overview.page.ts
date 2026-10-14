@@ -76,7 +76,7 @@ import { SAAS_CSS, money, tenantTone } from '../subscription/saas-ui';
   `,
   styles: `
     ${SAAS_CSS}
-    .kpis { display: grid; gap: var(--sd-space-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); margin-bottom: var(--sd-space-5); }
+    .kpis { display: grid; gap: var(--sd-space-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); margin-bottom: var(--sd-space-5); }
     .grid { display: grid; gap: var(--sd-space-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
     .list { list-style: none; margin: 0; padding: 0; display: grid; }
     .list li { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--sd-divider); min-width: 0; }

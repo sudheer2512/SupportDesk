@@ -150,8 +150,7 @@ import { SAAS_CSS } from '../../subscription/saas-ui';
                         <span class="muted small">{{ item.naturalKey }}</span>
                       }
                       <span class="sd-spacer"></span>
-                      <label class="sd-visually-hidden" [attr.for]="'res-' + item.key">Resolution for {{ item.name }}</label>
-                      <select sdInput size="sm" [id]="'res-' + item.key" [ngModel]="action(item)" (ngModelChange)="setAction(item, $event)">
+                      <select sdInput size="sm" [attr.aria-label]="'Resolution for ' + item.name" [ngModel]="action(item)" (ngModelChange)="setAction(item, $event)">
                         @for (a of actionsFor(item); track a) {
                           <option [value]="a">{{ actionLabel(a) }}</option>
                         }
@@ -211,7 +210,7 @@ import { SAAS_CSS } from '../../subscription/saas-ui';
     .drop.busy { opacity: 0.6; }
     .list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
     .list li { display: flex; align-items: center; gap: 8px; }
-    .grow { flex: 1; min-width: 0; margin: 0; }
+    .grow { flex: 1 1 240px; min-width: 0; margin: 0; }
     .summary { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; }
     .items { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
     .items li { padding: 10px 12px; border: 1px solid var(--sd-border); border-radius: var(--sd-radius-md); display: grid; gap: 8px; }
