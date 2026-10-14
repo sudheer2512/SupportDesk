@@ -40,11 +40,22 @@ function walk(dir, out = []) {
 const permSrc = readFileSync(join(root, 'src/SupportDesk.Domain/Rules/Permissions.cs'), 'utf8');
 const permByConst = new Map([...permSrc.matchAll(/public const string (\w+) = "([^"]+)";/g)].map((m) => [m[1], m[2]]));
 
-const permsIn = (text) => {
+const directPermsIn = (text) => {
   const found = new Set();
-  for (const m of text.matchAll(/Permissions\.(\w+)/g)) {
+  for (const m of text.matchAll(/\bPermissions\.(\w+)/g)) {
     const code = permByConst.get(m[1]);
     if (code) found.add(code);
+  }
+  return found;
+};
+
+// Permissions referenced directly, plus those of helper classes such as SlaAdminAccess.Read or OrgPermissions.ReadStructure
+// (static arrays of Permissions.X) that the text uses.
+const permsIn = (text) => {
+  const found = directPermsIn(text);
+  for (const m of text.matchAll(/\b([A-Z]\w*(?:Access|Permissions))\.[A-Z]\w*/g)) {
+    if (m[1] === 'Permissions') continue;
+    for (const p of directPermsIn(classText.get(m[1]) ?? '')) found.add(p);
   }
   return found;
 };
@@ -92,7 +103,9 @@ for (const file of walk(join(root, 'src/SupportDesk.Api/Controllers'))) {
       .replace(/\s+/g, ' ')
       .trim();
     const baseClass = m[4];
-    const body = text.slice(start, end);
+    // The class body ends at the last closing brace before the next class (drops the next class's attributes).
+    const slice = text.slice(start, end);
+    const body = slice.lastIndexOf('\n}') > 0 ? slice.slice(0, slice.lastIndexOf('\n}') + 2) : slice;
     let auth = 'see code';
     if (/\[AllowAnonymous\]/.test(header)) auth = 'anonymous';
     else if (/Policies\.(\w+)/.test(header)) auth = header.match(/Policies\.(\w+)/)[1];
