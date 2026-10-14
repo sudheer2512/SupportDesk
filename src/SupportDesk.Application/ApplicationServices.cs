@@ -38,6 +38,14 @@ public static class ApplicationServices
         s.AddSingleton<TenantScopeRunner>();
         s.AddScoped<IRecurringTask, AuditSealerTask>();
 
+        // Cross-module ports (null defaults; owning modules register real implementations)
+        s.TryAddScoped<IConversationAssistant, NullConversationAssistant>();
+        s.TryAddScoped<IAiActionGateway, NullAiActionGateway>();
+        s.TryAddScoped<IErpRecordUpdater, NullErpRecordUpdater>();
+        s.TryAddScoped<IOutboundMessenger, NullOutboundMessenger>();
+        s.TryAddScoped<IKnowledgeSearch, NullKnowledgeSearch>();
+        s.TryAddScoped<IArticleDraftWriter, NullArticleDraftWriter>();
+
         // Identity & tenancy
         s.AddSingleton<SigningKeyProvider>();
         s.AddSingleton<TokenService>();
