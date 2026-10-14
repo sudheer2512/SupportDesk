@@ -95,7 +95,7 @@ export class ApiError extends Error {
         title,
         detail: problem?.detail ?? (typeof error.error === 'string' && error.error.length < 500 ? error.error : null),
         code: problem?.code ?? defaultCode(status),
-        errors: problem?.errors,
+        errors: normalizeErrors(problem?.errors),
         problem,
         url: error.url,
       });
@@ -136,4 +136,15 @@ function defaultCode(status: number): ApiErrorCode | null {
     default:
       return null;
   }
+}
+
+/** Domain validation sends `{field: "message"}`; ASP.NET model binding sends `{field: ["message", …]}`. */
+function normalizeErrors(errors: unknown): Record<string, string[]> | undefined {
+  if (!errors || typeof errors !== 'object') return undefined;
+  const result: Record<string, string[]> = {};
+  for (const [key, value] of Object.entries(errors as Record<string, unknown>)) {
+    if (Array.isArray(value)) result[key] = value.map(String);
+    else if (value != null) result[key] = [String(value)];
+  }
+  return result;
 }

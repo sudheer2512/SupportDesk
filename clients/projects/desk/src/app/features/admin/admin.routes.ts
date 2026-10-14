@@ -6,4 +6,9 @@ import { AdminHomePage } from './admin-home.page';
 export const ROUTES: Routes = [
   { path: '', title: 'Administration', component: AdminHomePage },
   { path: 'channels', canActivate: [permissionGuard('admin.channels')], loadChildren: () => import('./channels/channels.routes').then((m) => m.ROUTES) },
+  {
+    path: 'webhooks',
+    canActivate: [permissionGuard('admin.integrations')],
+    loadChildren: () => import('./webhooks/webhooks.routes').then((m) => m.ROUTES),
+  },
 ];

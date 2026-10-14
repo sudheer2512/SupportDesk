@@ -50,6 +50,15 @@ public sealed class RuleService(
         return AutomationCatalog.ToDto();
     }
 
+    /// <summary>Roles and active reply templates for the rule/blueprint designers.</summary>
+    public async Task<AutomationLookupsDto> LookupsAsync(CancellationToken ct = default)
+    {
+        ctx.RequireAny(Permissions.AdminAutomation, Permissions.AdminIntegrations);
+        var roles = await db.Roles.AsNoTracking().OrderBy(r => r.Name).Select(r => new IdName(r.Id, r.Name)).ToListAsync(ct);
+        var templates = await db.ReplyTemplates.AsNoTracking().Where(t => t.IsActive).OrderBy(t => t.Name).Select(t => new IdName(t.Id, t.Name)).ToListAsync(ct);
+        return new AutomationLookupsDto(roles, templates);
+    }
+
     // ───────────────────────────── Queries ─────────────────────────────
 
     public async Task<List<RuleSummaryDto>> ListAsync(string? trigger, bool? active, CancellationToken ct = default)

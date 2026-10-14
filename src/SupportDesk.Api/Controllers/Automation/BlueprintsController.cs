@@ -21,6 +21,9 @@ public sealed class BlueprintsController(BlueprintService blueprints) : DeskCont
     [HttpGet("{id:guid}")]
     public Task<BlueprintDetailDto> Get(Guid id, CancellationToken ct) => blueprints.GetAsync(id, ct);
 
+    [HttpGet("{id:guid}/versions/{versionId:guid}")]
+    public Task<RuleVersionDto> Version(Guid id, Guid versionId, CancellationToken ct) => blueprints.GetVersionAsync(id, versionId, ct);
+
     [HttpPut("{id:guid}")]
     public Task<BlueprintDetailDto> Update(Guid id, SaveBlueprintRequest request, CancellationToken ct) => blueprints.UpdateAsync(id, request, ct);
 

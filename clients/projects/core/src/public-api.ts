@@ -18,6 +18,7 @@ export * from './lib/models/notifications';
 export * from './lib/models/realtime';
 export * from './lib/models/portal';
 export * from './lib/models/communication';
+export * from './lib/models/automation';
 
 // HTTP
 export * from './lib/http/api-client';
@@ -44,6 +45,9 @@ export * from './lib/api/notifications.api';
 export * from './lib/api/channels.api';
 export * from './lib/api/conversations.api';
 export * from './lib/api/chat.api';
+export * from './lib/api/automation.api';
+export * from './lib/api/blueprints.api';
+export * from './lib/api/webhooks.api';
 
 // Realtime
 export * from './lib/realtime/realtime.service';

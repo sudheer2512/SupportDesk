@@ -58,6 +58,16 @@ public sealed class BlueprintService(
         return await DetailAsync(wf.Id, ct);
     }
 
+    public async Task<RuleVersionDto> GetVersionAsync(Guid id, Guid versionId, CancellationToken ct = default)
+    {
+        ctx.Require(Permissions.AdminAutomation);
+        var v = await db.WorkflowVersions.AsNoTracking().FirstOrDefaultAsync(x => x.Id == versionId && x.WorkflowId == id, ct)
+                ?? throw new NotFoundException("Blueprint version", versionId);
+        await lookups.LoadAsync(ct);
+        return new RuleVersionDto(v.Id, v.VersionNumber, v.State.ToString(), Json.Element(v.DefinitionJson), v.ChangeNote, v.CreatedAt,
+            lookups.User(v.CreatedById), v.PublishedAt, lookups.User(v.PublishedById));
+    }
+
     public async Task<BlueprintDetailDto> CreateAsync(SaveBlueprintRequest r, CancellationToken ct = default)
     {
         ctx.Require(Permissions.AdminAutomation);
