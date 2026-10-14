@@ -42,7 +42,8 @@ export class TicketActions {
       closed
         ? { id: 'reopen', label: 'Reopen…', icon: 'history', disabled: !c.reopen, run: () => this.reopen() }
         : { id: 'resolve', label: 'Resolve…', icon: 'circle-check', disabled: !c.resolve, run: () => this.resolve() },
-      { id: 'close', label: 'Close', icon: 'archive', disabled: !c.resolve || t.statusCategory === 'Closed', run: () => void this.close() },
+      // Resolved tickets can still be closed (server flag `can.close`: tickets.resolve and not closed yet).
+      { id: 'close', label: 'Close', icon: 'archive', disabled: !c.close, run: () => void this.close() },
       { id: 'd2', divider: true },
       { id: 'merge', label: 'Merge tickets into this…', icon: 'merge', disabled: !c.merge, run: () => this.merge() },
       { id: 'split', label: 'Split messages…', icon: 'split', disabled: !c.split, run: () => this.split() },
@@ -106,7 +107,7 @@ export class TicketActions {
 
   async close(): Promise<void> {
     const t = this.ctx.ticket();
-    if (!t) return;
+    if (!t?.can.close) return;
     const ok = await this.dialogs.confirm({ title: `Close ${t.displayNumber}?`, message: 'Closed tickets can still be reopened.', confirmLabel: 'Close ticket' });
     if (ok) await this.ctx.run(this.tickets.close(t.id), 'Ticket closed', 'Could not close');
   }

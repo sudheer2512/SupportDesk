@@ -12,7 +12,9 @@ namespace SupportDesk.Application.Products;
 
 /// <summary>
 /// Product catalog: families, products (default department/team used to route tickets), modules, versions (status,
-/// end of support) and releases (build, notes). Reads need products.view, changes products.manage.
+/// end of support) and releases (build, notes). Reads need products.view, changes products.manage. Deleting keeps
+/// history intact: referenced products are deactivated, versions marked End of life, modules deactivated; releases run
+/// by installations and families that still have products are refused (409).
 /// </summary>
 public sealed class ProductCatalogService(DeskDbContext db, RequestContext ctx)
 {
@@ -196,8 +198,12 @@ public sealed class ProductCatalogService(DeskDbContext db, RequestContext ctx)
         ctx.Require(Permissions.ProductsManage);
         var v = await db.ProductVersions.FirstOrDefaultAsync(x => x.Id == id && x.ProductId == productId, ct) ?? throw new NotFoundException("Version", id);
         if (await db.Installations.AnyAsync(i => i.VersionId == id, ct) || await db.Tickets.IgnoreQueryFilters([DeskDbContext.SoftDeleteFilter]).AnyAsync(t => t.VersionId == id, ct))
-            throw new ConflictException("in_use", "Installations or tickets reference this version; mark it End of life instead.");
-        db.ProductVersions.Remove(v);
+        {
+            v.Status = VersionStatus.EndOfLife; // referenced by installations or tickets: retire instead of deleting (like products)
+            await db.SaveChangesAsync(ct);
+            return;
+        }
+        db.ProductVersions.Remove(v); // its releases go with it (no installation runs them: installations reference the version)
         await db.SaveChangesAsync(ct);
     }
 

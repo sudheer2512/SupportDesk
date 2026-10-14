@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { ApiError, Customer360Dto, CustomerDetailDto, CustomersApi, MeStore } from '@sd/core';
+import { ApiError, Customer360Dto, CustomerDetailDto, CustomerMergeLogDto, CustomerMergeResultDto, CustomersApi, MeStore } from '@sd/core';
 import {
   SdBadge,
   SdBreadcrumb,
@@ -28,6 +28,7 @@ import { C360ErpComponent } from './c360-erp.component';
 import { C360LocationsComponent } from './c360-locations.component';
 import { C360TicketsComponent } from './c360-tickets.component';
 import { CustomerFormData, CustomerFormDialog } from './customer-form.dialog';
+import { CustomerMergeWizardData, CustomerMergeWizardDialog } from './customer-merge-wizard.dialog';
 import { DateOnlyPipe, HumanizePipe, statusTone, tierTone } from './shared/customer-ui';
 import { SECTION_STYLES, TABLE_STYLES } from './shared/styles';
 
@@ -62,7 +63,11 @@ import { SECTION_STYLES, TABLE_STYLES } from './shared/styles';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="desk-page">
-      @if (notFound()) {
+      @if (mergedInto(); as m) {
+        <sd-empty-state icon="merge" title="This customer was merged" [message]="'Its contacts, tickets and records now belong to ' + (m.survivorName ?? 'another customer') + '.'">
+          <a sdButton variant="primary" icon="building" [routerLink]="['/customers', m.survivorCustomerId]">Open {{ m.survivorName ?? 'the surviving customer' }}</a>
+        </sd-empty-state>
+      } @else if (notFound()) {
         <sd-empty-state icon="building" title="Customer not found" message="It may have been deleted, or it is not one of your accounts." />
       } @else if (!data()) {
         <div class="desk-page__body loading"><sd-skeleton [lines]="10" /></div>
@@ -75,6 +80,9 @@ import { SECTION_STYLES, TABLE_STYLES } from './shared/styles';
               <button sdButton icon="pencil" (click)="edit()">Edit</button>
               <button sdButton icon="plus" (click)="addSubsidiary()">Subsidiary</button>
             </ng-container>
+          }
+          @if (me.can('customers.merge')) {
+            <button sdButton sdPageActions icon="merge" (click)="mergeWizard()">Merge…</button>
           }
           @if (c.permissions.delete) {
             <button sdButton sdPageActions variant="ghost" icon="trash" iconOnly aria-label="Delete customer" (click)="remove()"></button>
@@ -94,6 +102,21 @@ import { SECTION_STYLES, TABLE_STYLES } from './shared/styles';
               <span class="sd-small sd-muted"><sd-icon name="user-check" [size]="13" /> {{ c.accountManagerName }}</span>
             }
           </div>
+          @if (merges().length) {
+            <details class="merges">
+              <summary class="sd-small">
+                <sd-icon name="merge" [size]="13" /> Merged from {{ merges().length }} other customer{{ merges().length === 1 ? '' : 's' }}
+              </summary>
+              <ul>
+                @for (m of merges(); track m.id) {
+                  <li class="sd-small">
+                    <strong>{{ m.mergedCustomerName ?? 'A customer' }}</strong>
+                    <span class="sd-muted"> — {{ m.mergedAt | sdDateTime }}{{ m.mergedByName ? ' by ' + m.mergedByName : '' }}</span>
+                  </li>
+                }
+              </ul>
+            </details>
+          }
 
           <sd-tabs [selected]="tab()" (selectedChange)="tab.set($event ?? 'overview')" ariaLabel="Customer 360 sections">
             <sd-tab id="overview" label="Overview" icon="dashboard">
@@ -395,6 +418,20 @@ import { SECTION_STYLES, TABLE_STYLES } from './shared/styles';
     TABLE_STYLES,
     SECTION_STYLES,
     `
+      .merges {
+        margin: 0 0 var(--sd-space-3);
+        color: var(--sd-text-2);
+      }
+      .merges summary {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+      }
+      .merges ul {
+        margin: 6px 0 0;
+        padding-left: 22px;
+      }
       .loading {
         padding-top: var(--sd-space-6);
       }
@@ -493,6 +530,10 @@ export class Customer360Page {
   protected readonly statusTone = statusTone;
   protected readonly data = signal<Customer360Dto | null>(null);
   protected readonly notFound = signal(false);
+  /** Set when the requested customer was merged into another one (it is hidden). */
+  protected readonly mergedInto = signal<CustomerMergeLogDto | null>(null);
+  /** Customers merged into this one. */
+  protected readonly merges = signal<CustomerMergeLogDto[]>([]);
   protected readonly tab = signal('overview');
 
   protected readonly subtitle = computed(() => {
@@ -589,12 +630,39 @@ export class Customer360Page {
 
   private load(id: string): void {
     this.notFound.set(false);
+    this.mergedInto.set(null);
+    this.merges.set([]);
     this.api.get360(id).subscribe({
-      next: (d) => this.data.set(d),
+      next: (d) => {
+        this.data.set(d);
+        // Organisations folded into this one (merge history); decorative — failures are ignored.
+        this.api.mergeHistory(id, { silent: true }).subscribe({
+          next: (logs) => this.merges.set(logs.filter((l) => l.survivorCustomerId === id)),
+          error: () => undefined,
+        });
+      },
       error: (err: unknown) => {
-        if (ApiError.from(err).status === 404) this.notFound.set(true);
+        if (ApiError.from(err).status !== 404) return;
+        this.notFound.set(true);
+        // A merged customer is hidden: point to the customer it was merged into.
+        this.api.mergeHistory(id, { silent: true }).subscribe({
+          next: (logs) => this.mergedInto.set(logs.find((l) => l.mergedCustomerId === id) ?? null),
+          error: () => undefined,
+        });
       },
     });
+  }
+
+  protected mergeWizard(): void {
+    const c = this.data()?.customer;
+    if (!c) return;
+    this.dialog
+      .open<CustomerMergeResultDto, CustomerMergeWizardData>(CustomerMergeWizardDialog, { data: { customer: c }, size: 'lg', disableClose: true })
+      .closed.subscribe((result) => {
+        if (!result) return;
+        if (result.survivorId === c.id) this.reload();
+        else void this.router.navigate(['/customers', result.survivorId]);
+      });
   }
 
   protected reload(): void {

@@ -87,6 +87,15 @@ public sealed record AgentChatMessageRequest(string Text, string? ClientRequestI
 
 public sealed record CloseConversationRequest(string? Reason = null);
 
+/// <summary>
+/// Hands a live chat to another agent (<c>AgentId</c>) and/or department (<c>DepartmentId</c>, needs tickets.transfer).
+/// The linked ticket follows: reassigned to the agent, or transferred under the department's transfer rules.
+/// </summary>
+public sealed record TransferChatRequest(Guid? AgentId, Guid? DepartmentId, string? Note = null);
+
+/// <summary>The caller's live-chat capacity: active chats against the routing profile's MaxConcurrentChats.</summary>
+public sealed record ChatCapacityDto(int Active, int Limit, bool AtLimit);
+
 // ───────────────────────────── CSAT (public) ─────────────────────────────
 
 public sealed record CsatSurveyDto(string Status, string TicketNumber, string Subject, string? AgentName, string? BrandName, string? PrimaryColor,

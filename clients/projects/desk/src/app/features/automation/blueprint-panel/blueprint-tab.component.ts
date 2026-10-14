@@ -8,7 +8,7 @@ import { BlueprintPanelComponent } from './blueprint-panel.component';
   selector: 'desk-blueprint-tab',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [BlueprintPanelComponent],
-  template: `<desk-blueprint-panel [ticketId]="ticketId()" (changed)="changed()" />`,
+  template: `<desk-blueprint-panel [ticketId]="ticketId()" [showEmpty]="true" (changed)="changed()" />`,
 })
 export class BlueprintTabComponent {
   readonly ticketId = input.required<Guid>();

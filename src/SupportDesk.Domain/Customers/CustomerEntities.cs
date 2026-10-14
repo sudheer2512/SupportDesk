@@ -1,6 +1,7 @@
 namespace SupportDesk.Domain.Customers;
 
-public enum CustomerStatus { Active, Inactive, Prospect, OnHold }
+/// <summary>Merged: folded into another customer by an organisation merge (hidden, read-only; see CustomerMergeLog).</summary>
+public enum CustomerStatus { Active, Inactive, Prospect, OnHold, Merged }
 
 /// <summary>A customer organisation (account). May have a parent (hierarchy), branches, contacts, products and contracts.</summary>
 public class Customer : AuditedEntity, ISoftDeletable, IConcurrencyVersioned

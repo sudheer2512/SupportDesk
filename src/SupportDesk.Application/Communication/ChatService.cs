@@ -234,6 +234,7 @@ public sealed class ChatService(
             if (other != ctx.UserId) throw new ConflictException("chat_taken", "Another agent already accepted this chat.");
             return;
         }
+        await EnsureChatCapacityAsync(ctx.UserId!.Value, conv.Id, self: true, ct);
         if (conv.TicketId is null) await HandoffAsync(conv.Id, "Accepted by an agent", ct);
         conv = await db.Conversations.FirstAsync(c => c.Id == conversationId, ct);
         conv.Status = ConversationStatus.AgentActive;
@@ -268,6 +269,8 @@ public sealed class ChatService(
         var conv = await LoadAgentConversationAsync(conversationId, ct);
         if (conv.Status == ConversationStatus.Closed) throw new ConflictException("chat_closed", "This chat has ended. Reply on the ticket instead (it will be e-mailed).");
         if (string.IsNullOrWhiteSpace(text)) throw new ValidationException(new Dictionary<string, string> { ["text"] = "Write a message first." });
+        // Replying to a chat nobody owns takes it over: the same capacity rule as accepting applies.
+        if (conv.Status != ConversationStatus.AgentActive && conv.AssignedUserId is null) await EnsureChatCapacityAsync(ctx.UserId!.Value, conv.Id, self: true, ct);
         if (conv.TicketId is null) await HandoffAsync(conv.Id, "Agent replied", ct);
         conv = await db.Conversations.FirstAsync(c => c.Id == conversationId, ct);
         if (conv.Status != ConversationStatus.AgentActive)
@@ -322,6 +325,143 @@ public sealed class ChatService(
         var conv = await LoadAgentConversationAsync(conversationId, ct);
         if (conv.Status == ConversationStatus.Closed) return;
         await CloseCoreAsync(conv.Id, reason ?? $"Closed by {ctx.ActorName ?? "the agent"}", ct);
+    }
+
+    // ───────────────────────────── Transfer & capacity ─────────────────────────────
+
+    /// <summary>409 code when an agent already handles as many live chats as their routing profile allows.</summary>
+    public const string ChatLimitReached = "chat_limit_reached";
+
+    /// <summary>
+    /// Hands a live chat to another agent and/or department. Agent: the chat (AgentActive) and its ticket move to that agent
+    /// (who must be in the ticket's department and below their chat limit). Department (tickets.transfer): the ticket is
+    /// transferred under the department's transfer rules (approval → 202, nothing moves) and the chat waits for an agent
+    /// there. The visitor sees "Transferred to …"; the receiving agent (or the department's online agents) is notified.
+    /// Only the agent handling the chat or a supervisor may transfer it.
+    /// </summary>
+    public async Task TransferAsync(Guid conversationId, TransferChatRequest r, CancellationToken ct)
+    {
+        ctx.Require(Permissions.TicketsReply);
+        if (r.AgentId is null && r.DepartmentId is null)
+            throw new ValidationException(new Dictionary<string, string> { ["agentId"] = "Choose an agent or a department to transfer the chat to." });
+        if (r.DepartmentId is not null) ctx.Require(Permissions.TicketsTransfer);
+        var conv = await LoadAgentConversationAsync(conversationId, ct);
+        if (conv.Channel != Channel.Chat) throw new DomainException(Contracts.Common.ErrorCodes.Validation, "Only live chats can be transferred.");
+        if (conv.Status == ConversationStatus.Closed) throw new ConflictException("chat_closed", "This chat has already ended.");
+        if (conv.AssignedUserId is { } owner && owner != ctx.UserId && !ctx.Has(Permissions.SupervisorMonitor))
+            throw new ForbiddenException("Only the agent handling this chat or a supervisor can transfer it.");
+        if (r.AgentId is { } same && same == conv.AssignedUserId && r.DepartmentId is null)
+            throw new ValidationException(new Dictionary<string, string> { ["agentId"] = "The chat is already with this agent." });
+        var note = Clean(r.Note, 500);
+
+        string? agentName = null;
+        if (r.AgentId is { } agentId)
+        {
+            var user = await db.Users.AsNoTracking().Where(u => u.Id == agentId && u.IsActive).Select(u => new { u.DisplayName, u.Kind }).FirstOrDefaultAsync(ct);
+            var agent = await db.Agents.AsNoTracking().FirstOrDefaultAsync(a => a.UserId == agentId, ct);
+            if (user is null || agent is null || agent.IsLightAgent || user.Kind == UserKind.LightAgent)
+                throw new ValidationException(new Dictionary<string, string> { ["agentId"] = "Choose an active agent who can take chats." });
+            if (r.DepartmentId is { } d && !await db.AgentDepartments.AnyAsync(x => x.UserId == agentId && x.DepartmentId == d, ct))
+                throw new ValidationException(new Dictionary<string, string> { ["agentId"] = $"{user.DisplayName} is not a member of that department." });
+            await EnsureChatCapacityAsync(agentId, conv.Id, self: agentId == ctx.UserId, ct);
+            agentName = user.DisplayName;
+        }
+        string? departmentName = null;
+        if (r.DepartmentId is { } deptId)
+            departmentName = await db.Departments.AsNoTracking().Where(x => x.Id == deptId && x.IsActive).Select(x => x.Name).FirstOrDefaultAsync(ct)
+                             ?? throw new NotFoundException("Department", deptId);
+
+        // The ticket follows the chat, using the ticket rules (department transfer approvals, department membership).
+        if (conv.TicketId is null) await HandoffAsync(conv.Id, "Transferred by an agent", ct);
+        conv = await LoadAsync(conversationId, ct);
+        var ticket = await tickets.LoadForUpdateAsync(conv.TicketId!.Value, ct);
+        var reason = note ?? "Live chat transferred";
+        if (r.DepartmentId is { } toDept && toDept != ticket.DepartmentId)
+        {
+            await tickets.TransferAsync(ticket.Id, new TransferTicketRequest(toDept, null, r.AgentId, reason), ct);
+        }
+        else if (r.AgentId is { } toAgent && ticket.AssigneeId != toAgent)
+        {
+            if (!await db.AgentDepartments.AnyAsync(x => x.UserId == toAgent && x.DepartmentId == ticket.DepartmentId, ct))
+                throw new ValidationException(new Dictionary<string, string>
+                {
+                    ["agentId"] = $"{agentName} is not in the ticket's department. Transfer the chat to their department instead."
+                });
+            await tickets.AssignCoreAsync(ticket, toAgent, null, reason, ct);
+            await tickets.SaveAsync(ticket, ct);
+        }
+
+        conv = await LoadAsync(conversationId, ct);
+        if (r.AgentId is { } newOwner)
+        {
+            conv.Status = ConversationStatus.AgentActive;
+            conv.AssignedUserId = newOwner;
+        }
+        else
+        {
+            conv.Status = ConversationStatus.WaitingForAgent;
+            conv.AssignedUserId = null;
+        }
+        var label = agentName is null ? departmentName! : departmentName is null ? agentName : $"{agentName} ({departmentName})";
+        var line = AddMessage(conv, MessageDirection.Outbound, $"Transferred to {label}.", "system", "System", null, $"transfer:{conv.Id:N}:{SequentialGuid.New():N}");
+        events.Publish(EventTypes.ConversationUpdated, "Conversation", conv.Id, new ChatEventPayload(conv.Id, null, conv.Status.ToString()));
+        await db.SaveChangesAsync(ct);
+        await PushStatusAsync(conv, ct);
+        await PushLatestAsync(conv.Id, ct);
+
+        var visitor = conv.VisitorName ?? "Visitor";
+        var from = ctx.ActorName ?? "An agent";
+        var body = note is null ? $"From {from}." : $"From {from}: {note}";
+        if (r.AgentId is { } to)
+        {
+            if (to != ctx.UserId)
+                await notifications.NotifyAsync(new NotifyRequest([to], NotificationTypes.ChatTransferred, $"Chat transferred to you: {visitor}", body,
+                    DeskLinks.Chat(conv.Id), NotificationSeverity.Warning, false, "Conversation", conv.Id, $"chat-transfer:{line.Id:N}"), ct);
+        }
+        else
+        {
+            var t = await db.Tickets.AsNoTracking().FirstAsync(x => x.Id == conv.TicketId, ct);
+            var recipients = t.AssigneeId is { } assignee ? [assignee]
+                : await db.AgentDepartments.AsNoTracking().Where(ad => ad.DepartmentId == t.DepartmentId && ad.UserId != ctx.UserId)
+                    .Join(db.Agents.AsNoTracking().Where(a => a.Availability == AgentAvailability.Online && !a.IsLightAgent), ad => ad.UserId, a => a.UserId, (ad, _) => ad.UserId)
+                    .Distinct().OrderBy(id => id).Take(50).ToListAsync(ct);
+            if (recipients.Count > 0)
+                await notifications.NotifyAsync(new NotifyRequest(recipients, NotificationTypes.ChatTransferred, $"Chat transferred to {departmentName}: {visitor}", body,
+                    DeskLinks.Chat(conv.Id), NotificationSeverity.Warning, false, "Conversation", conv.Id, $"chat-transfer:{line.Id:N}"), ct);
+            await realtime.ToDepartmentsAsync(ctx.TenantId, [t.DepartmentId], "chat.waiting",
+                new { conversationId = conv.Id, ticketId = t.Id, number = t.Number, visitor, assigneeId = t.AssigneeId }, ct);
+        }
+    }
+
+    /// <summary>The caller's live-chat load against MaxConcurrentChats (their agent routing profile).</summary>
+    public async Task<ChatCapacityDto> CapacityAsync(CancellationToken ct)
+    {
+        ctx.RequireAgent();
+        var (active, limit) = await CapacityCoreAsync(ctx.UserId!.Value, null, ct);
+        return new ChatCapacityDto(active, limit, active >= limit);
+    }
+
+    private async Task<(int Active, int Limit)> CapacityCoreAsync(Guid userId, Guid? exceptConversationId, CancellationToken ct)
+    {
+        // Users without an agent profile get the profile default.
+        var limit = await db.Agents.AsNoTracking().Where(a => a.UserId == userId).Select(a => (int?)a.MaxConcurrentChats).FirstOrDefaultAsync(ct)
+                    ?? new Agent().MaxConcurrentChats;
+        var active = await db.Conversations.AsNoTracking().CountAsync(c => c.Channel == Channel.Chat && c.Status == ConversationStatus.AgentActive &&
+                                                                        c.AssignedUserId == userId && c.Id != exceptConversationId, ct);
+        return (active, limit);
+    }
+
+    /// <summary>Enforces MaxConcurrentChats (0 = the agent takes no live chats) with a 409 <see cref="ChatLimitReached"/>.</summary>
+    private async Task EnsureChatCapacityAsync(Guid userId, Guid conversationId, bool self, CancellationToken ct)
+    {
+        var (active, limit) = await CapacityCoreAsync(userId, conversationId, ct);
+        if (active < limit) return;
+        if (self)
+            throw new ConflictException(ChatLimitReached, limit == 0
+                ? "Your routing profile does not allow live chats (chat limit 0)."
+                : $"You're at your chat limit ({limit}). End or transfer a chat before accepting another.");
+        var name = await db.Users.AsNoTracking().Where(u => u.Id == userId).Select(u => u.DisplayName).FirstOrDefaultAsync(ct) ?? "The agent";
+        throw new ConflictException(ChatLimitReached, $"{name} is at their chat limit ({limit}).");
     }
 
     /// <summary>Checks that the agent may see the conversation (ticket visibility for linked chats).</summary>
@@ -443,7 +583,7 @@ public sealed class ChatService(
                 .Distinct().OrderBy(id => id).Take(50).ToListAsync(ct));
         if (recipients.Count > 0)
             await notifications.NotifyAsync(new NotifyRequest(recipients, NotificationTypes.ChatWaiting, $"Chat waiting: {conv.VisitorName ?? "Visitor"}",
-                TextNormalization.Truncate(t.Subject, 200), $"/conversations/{conv.Id}", NotificationSeverity.Warning, false, "Conversation", conv.Id, $"chat-waiting:{conv.Id:N}"), ct);
+                TextNormalization.Truncate(t.Subject, 200), DeskLinks.Chat(conv.Id), NotificationSeverity.Warning, false, "Conversation", conv.Id, $"chat-waiting:{conv.Id:N}"), ct);
         await realtime.ToDepartmentsAsync(ctx.TenantId, [t.DepartmentId], "chat.waiting",
             new { conversationId = conv.Id, ticketId = t.Id, number = t.Number, visitor = conv.VisitorName ?? "Visitor", assigneeId = t.AssigneeId }, ct);
     }

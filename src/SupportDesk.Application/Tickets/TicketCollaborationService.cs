@@ -268,6 +268,17 @@ public sealed class TicketCollaborationService(
         v.SortJson = r.Sort?.GetRawText();
         v.IsDefault = r.IsDefault;
         v.SortOrder = r.SortOrder;
+        // One default per owner among personal views, and one shared default per scope. The desk opens the caller's
+        // personal default first, then the shared default (when the URL names no queue/view).
+        if (r.IsDefault)
+        {
+            var shared = visibility == ViewVisibility.Shared;
+            var owner = v.OwnerUserId;
+            var keep = v.Id;
+            await db.SavedViews.Where(x => x.Id != keep && x.Scope == r.Scope && x.IsDefault &&
+                                           (shared ? x.Visibility == ViewVisibility.Shared : x.Visibility == ViewVisibility.Personal && x.OwnerUserId == owner))
+                .ExecuteUpdateAsync(u => u.SetProperty(x => x.IsDefault, false), ct);
+        }
         await db.SaveChangesAsync(ct);
         return (await ListViewsAsync(r.Scope, false, ct)).First(x => x.Id == v.Id);
     }

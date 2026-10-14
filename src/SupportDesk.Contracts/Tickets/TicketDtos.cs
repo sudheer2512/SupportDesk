@@ -146,8 +146,17 @@ public sealed record TicketDetailDto(
     TicketPermissionsDto Can);
 
 /// <summary>What the current user may do on this ticket (computed server-side from permissions and scope).</summary>
+/// <summary>
+/// What the caller may do on the ticket. <c>Resolve</c> applies to open tickets; <c>Close</c> to open and resolved ones
+/// (tickets.resolve); <c>OverrideEntitlement</c> also honours the tenant setting AllowAgentsToOverrideEntitlement.
+/// </summary>
 public sealed record TicketPermissionsDto(bool Edit, bool Reply, bool Note, bool Assign, bool Transfer, bool Escalate, bool Resolve,
-    bool Reopen, bool Merge, bool Split, bool Delete, bool LogTime, bool ViewCosts, bool OverrideEntitlement);
+    bool Reopen, bool Merge, bool Split, bool Delete, bool LogTime, bool ViewCosts, bool OverrideEntitlement, bool Close);
+
+/// <summary>A deleted (or spam) ticket in the recycle bin (GET /tickets/deleted, tickets.delete).</summary>
+public sealed record DeletedTicketDto(Guid Id, long Number, string DisplayNumber, string Subject, string Status, string StatusCategory,
+    string? CustomerName, string? ContactName, string DepartmentName, DateTime CreatedAt, DateTime? DeletedAt, string? DeletedByName,
+    bool IsSpam, bool UnderLegalHold);
 
 public sealed record WatcherDto(Guid UserId, string Name, string Kind, DateTime AddedAt, DateTime? ExpiresAt);
 

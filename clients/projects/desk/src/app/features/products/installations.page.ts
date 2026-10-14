@@ -11,6 +11,7 @@ import {
   ProductDto,
   ProductsApi,
   cursorList,
+  saveErrorMessage,
 } from '@sd/core';
 import {
   SdBadge,
@@ -217,6 +218,9 @@ import { InstallationFormData, InstallationFormDialog } from './installation-for
       <div sdDrawerFooter class="foot">
         @if (canManage && detail()) {
           <button sdButton icon="pencil" (click)="editOpen()">Edit</button>
+          @if (detail()!.summary.status !== 'Decommissioned') {
+            <button sdButton variant="ghost" icon="trash" (click)="removeOpen()">Delete</button>
+          }
         }
         @if (detail(); as dd) {
           <a sdButton variant="ghost" icon="building" [routerLink]="['/customers', dd.summary.customerId]">Customer 360</a>
@@ -400,5 +404,37 @@ export class InstallationsPage {
   protected editOpen(): void {
     const d = this.detail();
     if (d) this.edit(d);
+  }
+
+  /** DELETE /installations/{id}: installations referenced by tickets or entitlements are decommissioned instead. */
+  protected async removeOpen(): Promise<void> {
+    const d = this.detail();
+    if (!d) return;
+    const referenced = d.summary.openTickets > 0 || d.ticketsLast90Days > 0;
+    const ok = await this.dialog.confirm({
+      title: `Delete ${d.summary.name}?`,
+      message: referenced
+        ? 'Tickets reference this installation, so it will be marked Decommissioned instead of deleted (history stays intact).'
+        : 'If tickets or contract entitlements reference it, it is marked Decommissioned instead; otherwise it is deleted and its assets are unlinked.',
+      confirmLabel: referenced ? 'Decommission' : 'Delete installation',
+      danger: true,
+    });
+    if (!ok) return;
+    this.api.delete(d.summary.id).subscribe({
+      next: () => {
+        this.list.load();
+        this.api.get(d.summary.id).subscribe({
+          next: (still) => {
+            this.detail.set(still);
+            this.toast.info('Installation decommissioned', `${d.summary.name} is still referenced, so it was kept for history.`);
+          },
+          error: () => {
+            this.drawerOpen.set(false);
+            this.toast.success('Installation deleted', d.summary.name);
+          },
+        });
+      },
+      error: (err: unknown) => this.toast.error('Could not delete the installation', saveErrorMessage(err)),
+    });
   }
 }

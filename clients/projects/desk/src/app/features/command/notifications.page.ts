@@ -29,6 +29,7 @@ const TYPE_LABELS: Record<string, string> = {
   'ai.proposal': 'AI proposals',
   'anomaly.detected': 'Anomalies',
   'chat.waiting': 'Waiting chats',
+  'chat.transferred': 'Chat transfers',
   system: 'System',
 };
 
