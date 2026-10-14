@@ -94,3 +94,7 @@ export * from './lib/api/customers.api';
 export * from './lib/api/products.api';
 export * from './lib/api/erp.api';
 export * from './lib/utils/validation-errors';
+
+// Administration console (roles, ticket configuration, brands, notifications, security, API credentials)
+export * from './lib/models/administration';
+export * from './lib/api/administration.api';

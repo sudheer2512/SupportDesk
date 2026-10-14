@@ -1,4 +1,4 @@
-import { Injectable, Signal, computed, effect, inject, signal, untracked } from '@angular/core';
+import { Injectable, Injector, Signal, computed, effect, inject, signal, untracked } from '@angular/core';
 import { Router } from '@angular/router';
 import type { HubConnection, IRetryPolicy, RetryContext } from '@microsoft/signalr';
 import { Observable, Subject, filter } from 'rxjs';
@@ -7,9 +7,11 @@ import { SD_CONFIG } from '../config';
 import { Guid } from '../models/common';
 import { Availability } from '../models/enums';
 import { severityRank } from '../models/notifications';
+import { MetaApi } from '../api/meta.api';
 import {
   AgentAvailabilityEvent,
   ChatMessageEvent,
+  ConfigChangedEvent,
   ConversationUpdatedEvent,
   NotificationEvent,
   PresenceActivity,
@@ -46,6 +48,8 @@ export class RealtimeService {
   private readonly config = inject(SD_CONFIG);
   private readonly notifier = inject(DesktopNotifier);
   private readonly router = inject(Router);
+  private readonly injector = inject(Injector);
+  private configRefreshTimer: ReturnType<typeof setTimeout> | null = null;
 
   private connection: HubConnection | null = null;
   private starting: Promise<void> | null = null;
@@ -74,7 +78,10 @@ export class RealtimeService {
   private readonly conversationUpdatedSubject = new Subject<ConversationUpdatedEvent>();
   private readonly slaAlertSubject = new Subject<SlaAlertEvent>();
   private readonly reconnectedSubject = new Subject<void>();
+  private readonly configChangedSubject = new Subject<ConfigChangedEvent>();
 
+  /** Configuration changed by an administrator (cached ticket metadata is refreshed automatically). */
+  readonly configChanged$: Observable<ConfigChangedEvent> = this.configChangedSubject.asObservable();
   readonly ticketChanged$: Observable<TicketChangedEvent> = this.ticketChangedSubject.asObservable();
   readonly ticketThread$: Observable<TicketThreadEvent> = this.ticketThreadSubject.asObservable();
   readonly ticketPresence$: Observable<TicketPresenceEvent> = this.ticketPresenceSubject.asObservable();
@@ -183,6 +190,15 @@ export class RealtimeService {
     connection.on('chat.message', (e: ChatMessageEvent) => this.chatMessageSubject.next(e));
     connection.on('conversation.updated', (e: ConversationUpdatedEvent) => this.conversationUpdatedSubject.next(e));
     connection.on('sla.alert', (e: SlaAlertEvent) => this.slaAlertSubject.next(e));
+    connection.on('config.changed', (e: ConfigChangedEvent) => {
+      this.configChangedSubject.next(e);
+      // Coalesce bursts of admin changes into one metadata refresh.
+      if (this.configRefreshTimer) clearTimeout(this.configRefreshTimer);
+      this.configRefreshTimer = setTimeout(() => {
+        this.configRefreshTimer = null;
+        this.injector.get(MetaApi).refresh();
+      }, 750);
+    });
 
     connection.onreconnecting(() => this._state.set('reconnecting'));
     connection.onreconnected(() => {

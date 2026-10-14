@@ -61,3 +61,9 @@ export interface SlaAlertEvent {
 }
 
 export type RealtimeConnectionState = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
+
+/** `config.changed`: an administrator changed configuration (statuses, fields, layouts, roles, brands…). */
+export interface ConfigChangedEvent {
+  area: string;
+  entityId: Guid | null;
+}

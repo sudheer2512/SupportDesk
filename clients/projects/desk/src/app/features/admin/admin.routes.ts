@@ -13,4 +13,23 @@ export const ROUTES: Routes = [
   },
   // AI administration (owned by the AI module): provider, budget, features, prompts, agents, usage, execution log.
   { path: 'ai', canActivate: [permissionGuard('admin.ai')], loadChildren: () => import('./ai/admin-ai.routes').then((m) => m.ROUTES) },
+  // Administration console (H1): roles, ticket configuration, brands, notifications, security, API credentials.
+  { path: 'roles', canActivate: [permissionGuard('admin.roles')], loadChildren: () => import('./roles/roles.routes').then((m) => m.ROUTES) },
+  {
+    path: 'ticket-config',
+    canActivate: [permissionGuard('admin.ticket_config')],
+    loadChildren: () => import('./ticket-config/ticket-config.routes').then((m) => m.ROUTES),
+  },
+  { path: 'brands', canActivate: [permissionGuard('admin.organisation')], loadChildren: () => import('./brands/brands.routes').then((m) => m.ROUTES) },
+  {
+    path: 'notifications',
+    canActivate: [permissionGuard('admin.organisation', 'admin.channels')],
+    loadChildren: () => import('./notifications/notifications.routes').then((m) => m.ROUTES),
+  },
+  { path: 'security', canActivate: [permissionGuard('admin.security')], loadChildren: () => import('./security/security.routes').then((m) => m.ROUTES) },
+  {
+    path: 'api-credentials',
+    canActivate: [permissionGuard('admin.integrations')],
+    loadChildren: () => import('./api-credentials/api-credentials.routes').then((m) => m.ROUTES),
+  },
 ];
