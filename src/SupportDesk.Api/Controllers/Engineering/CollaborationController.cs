@@ -42,8 +42,8 @@ public sealed class CollaborationController(CollaborationService collaboration) 
     public Task<List<CollaborationLogDto>> Logs(Guid id, [FromQuery] int limit = 50, CancellationToken ct = default) => collaboration.LogsAsync(id, limit, ct);
 
     [HttpGet("share-targets")]
-    public Task<List<ShareTargetDto>> ShareTargets(CancellationToken ct) => collaboration.ShareTargetsAsync(ct);
+    public Task<List<CollaborationShareTargetDto>> ShareTargets(CancellationToken ct) => collaboration.ShareTargetsAsync(ct);
 
     [HttpPost("tickets/{ticketId:guid}/share")]
-    public Task<CollaborationSendResultDto> Share(Guid ticketId, ShareTicketRequest request, CancellationToken ct) => collaboration.ShareTicketAsync(ticketId, request, ct);
+    public Task<CollaborationSendResultDto> Share(Guid ticketId, ShareTicketToChannelRequest request, CancellationToken ct) => collaboration.ShareTicketAsync(ticketId, request, ct);
 }

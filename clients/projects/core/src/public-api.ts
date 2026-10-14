@@ -94,3 +94,7 @@ export * from './lib/api/customers.api';
 export * from './lib/api/products.api';
 export * from './lib/api/erp.api';
 export * from './lib/utils/validation-errors';
+
+// Engineering escalation (Azure DevOps / GitHub / built-in tracker) and Teams / Slack collaboration
+export * from './lib/models/engineering';
+export * from './lib/api/engineering.api';

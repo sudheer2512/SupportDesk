@@ -39,6 +39,6 @@ public sealed record CollaborationSendResultDto(bool Success, int? StatusCode, i
 public sealed record CollaborationLogDto(Guid Id, string Operation, int? StatusCode, bool Success, int DurationMs, string? ResponseExcerpt, DateTime CreatedAt);
 
 /// <summary>A channel agents can share a ticket to (no secrets).</summary>
-public sealed record ShareTargetDto(Guid Id, string Provider, string Name);
+public sealed record CollaborationShareTargetDto(Guid Id, string Provider, string Name);
 
-public sealed record ShareTicketRequest(Guid ChannelId, string? Comment);
+public sealed record ShareTicketToChannelRequest(Guid ChannelId, string? Comment);

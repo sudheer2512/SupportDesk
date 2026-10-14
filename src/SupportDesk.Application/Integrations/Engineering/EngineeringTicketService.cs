@@ -124,7 +124,7 @@ public sealed class EngineeringTicketService(
     }
 
     /// <summary>Tickets linked to the same work item as <paramref name="linkId"/> (scope-filtered; hidden ones are only counted).</summary>
-    public async Task<AffectedTicketsDto> AffectedTicketsAsync(Guid ticketId, Guid linkId, CancellationToken ct = default)
+    public async Task<EngineeringAffectedTicketsDto> AffectedTicketsAsync(Guid ticketId, Guid linkId, CancellationToken ct = default)
     {
         ctx.RequireAny(Permissions.EngineeringLink, Permissions.EngineeringView, Permissions.TicketsView);
         await LoadVisibleAsync(ticketId, ct);
@@ -133,7 +133,7 @@ public sealed class EngineeringTicketService(
         return await AffectedAsync(link.IntegrationId, link.ExternalId, ticketId, ct);
     }
 
-    internal async Task<AffectedTicketsDto> AffectedAsync(Guid? integrationId, string externalId, Guid? excludeTicketId, CancellationToken ct)
+    internal async Task<EngineeringAffectedTicketsDto> AffectedAsync(Guid? integrationId, string externalId, Guid? excludeTicketId, CancellationToken ct)
     {
         var ids = await db.EngineeringLinks.AsNoTracking().Where(l => l.IntegrationId == integrationId && l.ExternalId == externalId && l.TicketId != excludeTicketId)
             .Select(l => l.TicketId).Distinct().ToListAsync(ct);
@@ -145,9 +145,9 @@ public sealed class EngineeringTicketService(
         var customerIds = visible.Where(v => v.CustomerId != null).Select(v => v.CustomerId!.Value).Distinct().ToList();
         var customers = await db.Customers.AsNoTracking().Where(c => customerIds.Contains(c.Id)).ToDictionaryAsync(c => c.Id, c => c.Name, ct);
         var prefix = (await settings.TicketsAsync(ct)).NumberPrefix;
-        var list = visible.OrderByDescending(v => v.CreatedAt).Select(v => new AffectedTicketDto(v.Id, v.Number, $"{prefix}{v.Number}", v.Subject,
+        var list = visible.OrderByDescending(v => v.CreatedAt).Select(v => new EngineeringAffectedTicketDto(v.Id, v.Number, $"{prefix}{v.Number}", v.Subject,
             statuses.GetValueOrDefault(v.StatusId) ?? "", v.CustomerId is { } c ? customers.GetValueOrDefault(c) : null, v.CreatedAt)).ToList();
-        return new AffectedTicketsDto(existing.Count, existing.Count - list.Count, list);
+        return new EngineeringAffectedTicketsDto(existing.Count, existing.Count - list.Count, list);
     }
 
     // ───────────────────────────── Prefill ─────────────────────────────

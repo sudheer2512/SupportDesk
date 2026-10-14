@@ -49,37 +49,37 @@ public sealed class EngineeringController(EngineeringTicketService tickets, Engi
 
     /// <summary>Other tickets linked to the same work item (scope-filtered).</summary>
     [HttpGet("tickets/{ticketId:guid}/links/{linkId:guid}/tickets")]
-    public Task<AffectedTicketsDto> Affected(Guid ticketId, Guid linkId, CancellationToken ct) => tickets.AffectedTicketsAsync(ticketId, linkId, ct);
+    public Task<EngineeringAffectedTicketsDto> Affected(Guid ticketId, Guid linkId, CancellationToken ct) => tickets.AffectedTicketsAsync(ticketId, linkId, ct);
 
     // ───── Built-in board ─────
 
     [HttpGet("board")]
-    public Task<BoardDto> Board([FromQuery] Guid? trackerId, CancellationToken ct) => board.BoardAsync(trackerId, ct);
+    public Task<EngineeringBoardDto> Board([FromQuery] Guid? trackerId, CancellationToken ct) => board.BoardAsync(trackerId, ct);
 
     [HttpGet("assignees")]
     public Task<List<EngineeringAssigneeDto>> Assignees(CancellationToken ct) => board.AssigneesAsync(ct);
 
     /// <summary>Keyset-paged work items (most recently updated first).</summary>
     [HttpGet("work-items")]
-    public Task<PagedResult<WorkItemDto>> WorkItems([FromQuery] Guid? trackerId, [FromQuery] string? state, [FromQuery] Guid? assigneeId, [FromQuery] Guid? releaseId,
+    public Task<PagedResult<EngineeringWorkItemDto>> WorkItems([FromQuery] Guid? trackerId, [FromQuery] string? state, [FromQuery] Guid? assigneeId, [FromQuery] Guid? releaseId,
         [FromQuery] string? q, [FromQuery] bool includeClosed = false, [FromQuery] string? cursor = null, [FromQuery] int limit = 100, CancellationToken ct = default) =>
         board.ListAsync(trackerId, state, assigneeId, releaseId, q, includeClosed, cursor, limit, ct);
 
     [HttpGet("work-items/{id:guid}")]
-    public Task<WorkItemDetailDto> WorkItem(Guid id, CancellationToken ct) => board.GetAsync(id, ct);
+    public Task<EngineeringWorkItemDetailDto> WorkItem(Guid id, CancellationToken ct) => board.GetAsync(id, ct);
 
     [HttpPost("work-items")]
-    public async Task<ActionResult<WorkItemDto>> CreateWorkItem(SaveWorkItemRequest request, CancellationToken ct)
+    public async Task<ActionResult<EngineeringWorkItemDto>> CreateWorkItem(SaveEngineeringWorkItemRequest request, CancellationToken ct)
     {
         var item = await board.CreateAsync(request, ct);
         return CreatedAtAction(nameof(WorkItem), new { id = item.Id }, item);
     }
 
     [HttpPut("work-items/{id:guid}")]
-    public Task<WorkItemDto> UpdateWorkItem(Guid id, SaveWorkItemRequest request, CancellationToken ct) => board.UpdateAsync(id, request, ct);
+    public Task<EngineeringWorkItemDto> UpdateWorkItem(Guid id, SaveEngineeringWorkItemRequest request, CancellationToken ct) => board.UpdateAsync(id, request, ct);
 
     [HttpPost("work-items/{id:guid}/move")]
-    public Task<WorkItemDto> Move(Guid id, MoveWorkItemRequest request, CancellationToken ct) => board.MoveAsync(id, request, ct);
+    public Task<EngineeringWorkItemDto> Move(Guid id, MoveEngineeringWorkItemRequest request, CancellationToken ct) => board.MoveAsync(id, request, ct);
 
     [HttpDelete("work-items/{id:guid}")]
     public async Task<IActionResult> DeleteWorkItem(Guid id, CancellationToken ct)
@@ -89,17 +89,17 @@ public sealed class EngineeringController(EngineeringTicketService tickets, Engi
     }
 
     [HttpGet("releases")]
-    public Task<List<ReleaseDto>> Releases([FromQuery] Guid? trackerId, CancellationToken ct) => board.ReleasesAsync(trackerId, ct);
+    public Task<List<EngineeringReleaseDto>> Releases([FromQuery] Guid? trackerId, CancellationToken ct) => board.ReleasesAsync(trackerId, ct);
 
     [HttpPost("releases")]
-    public Task<ReleaseDto> CreateRelease(SaveReleaseRequest request, CancellationToken ct) => board.SaveReleaseAsync(null, request, ct);
+    public Task<EngineeringReleaseDto> CreateRelease(SaveEngineeringReleaseRequest request, CancellationToken ct) => board.SaveReleaseAsync(null, request, ct);
 
     [HttpPut("releases/{id:guid}")]
-    public Task<ReleaseDto> UpdateRelease(Guid id, SaveReleaseRequest request, CancellationToken ct) => board.SaveReleaseAsync(id, request, ct);
+    public Task<EngineeringReleaseDto> UpdateRelease(Guid id, SaveEngineeringReleaseRequest request, CancellationToken ct) => board.SaveReleaseAsync(id, request, ct);
 
     /// <summary>Publishes the release (and optionally records the deployment): linked tickets are updated and notified.</summary>
     [HttpPost("releases/{id:guid}/publish")]
-    public Task<ReleaseDto> PublishRelease(Guid id, PublishReleaseRequest request, CancellationToken ct) => board.PublishReleaseAsync(id, request, ct);
+    public Task<EngineeringReleaseDto> PublishRelease(Guid id, PublishEngineeringReleaseRequest request, CancellationToken ct) => board.PublishReleaseAsync(id, request, ct);
 
     [HttpDelete("releases/{id:guid}")]
     public async Task<IActionResult> DeleteRelease(Guid id, CancellationToken ct)

@@ -194,14 +194,14 @@ public sealed record LinkWorkItemRequest
 
 public sealed record EscalationResultDto(EngineeringLinkViewDto Link, bool SubstatusApplied, string? Message);
 
-public sealed record AffectedTicketDto(Guid Id, long Number, string DisplayNumber, string Subject, string Status, string? CustomerName, DateTime CreatedAt);
+public sealed record EngineeringAffectedTicketDto(Guid Id, long Number, string DisplayNumber, string Subject, string Status, string? CustomerName, DateTime CreatedAt);
 
 /// <summary>Tickets linked to the same work item. <see cref="Hidden"/> counts the ones outside the caller's ticket scope.</summary>
-public sealed record AffectedTicketsDto(int Total, int Hidden, IReadOnlyList<AffectedTicketDto> Tickets);
+public sealed record EngineeringAffectedTicketsDto(int Total, int Hidden, IReadOnlyList<EngineeringAffectedTicketDto> Tickets);
 
 // ───────────────────────────── Local tracker board ─────────────────────────────
 
-public sealed record WorkItemDto(
+public sealed record EngineeringWorkItemDto(
     Guid Id,
     Guid TrackerId,
     int Number,
@@ -232,9 +232,9 @@ public sealed record WorkItemDto(
     DateTime? ClosedAt,
     string RowVersion);
 
-public sealed record WorkItemDetailDto(WorkItemDto Item, AffectedTicketsDto Tickets);
+public sealed record EngineeringWorkItemDetailDto(EngineeringWorkItemDto Item, EngineeringAffectedTicketsDto Tickets);
 
-public sealed record SaveWorkItemRequest
+public sealed record SaveEngineeringWorkItemRequest
 {
     public Guid? TrackerId { get; init; }
     public string? Type { get; init; }
@@ -252,12 +252,12 @@ public sealed record SaveWorkItemRequest
 }
 
 /// <summary>Kanban move: new state and optional neighbour (the card is placed before <see cref="BeforeId"/>, or last).</summary>
-public sealed record MoveWorkItemRequest(string State, Guid? BeforeId = null, string? RowVersion = null);
+public sealed record MoveEngineeringWorkItemRequest(string State, Guid? BeforeId = null, string? RowVersion = null);
 
-public sealed record ReleaseDto(Guid Id, Guid TrackerId, string Name, string? Notes, Guid? ProductId, string? ProductName, DateOnly? PlannedDate, DateTime? ReleasedAt,
+public sealed record EngineeringReleaseDto(Guid Id, Guid TrackerId, string Name, string? Notes, Guid? ProductId, string? ProductName, DateOnly? PlannedDate, DateTime? ReleasedAt,
     DateTime? DeployedAt, int ItemCount, int OpenItemCount, string RowVersion);
 
-public sealed record SaveReleaseRequest
+public sealed record SaveEngineeringReleaseRequest
 {
     public Guid? TrackerId { get; init; }
     public string Name { get; init; } = "";
@@ -268,16 +268,16 @@ public sealed record SaveReleaseRequest
 }
 
 /// <summary>Publishes (releases) a version; <see cref="Deployed"/> also records the deployment.</summary>
-public sealed record PublishReleaseRequest(bool Deployed = false, string? RowVersion = null);
+public sealed record PublishEngineeringReleaseRequest(bool Deployed = false, string? RowVersion = null);
 
 public sealed record EngineeringAssigneeDto(Guid Id, string Name, string? Title, bool IsLightAgent);
 
 /// <summary>Board header: the local tracker, its states, releases and assignable engineers. Items come from the keyset-paged work item list.</summary>
-public sealed record BoardDto(
+public sealed record EngineeringBoardDto(
     Guid? TrackerId,
     string? TrackerName,
     IReadOnlyList<string> States,
-    IReadOnlyList<ReleaseDto> Releases,
+    IReadOnlyList<EngineeringReleaseDto> Releases,
     IReadOnlyList<EngineeringAssigneeDto> Assignees,
     IReadOnlyList<IdName> Products,
     bool CanManage);

@@ -46,13 +46,13 @@ public sealed class EngineeringBoardService(
 
     // ───────────────────────────── Board ─────────────────────────────
 
-    public async Task<BoardDto> BoardAsync(Guid? trackerId, CancellationToken ct = default)
+    public async Task<EngineeringBoardDto> BoardAsync(Guid? trackerId, CancellationToken ct = default)
     {
         ctx.RequireAny(Permissions.EngineeringView, Permissions.EngineeringManage);
         var tracker = await LocalTrackerAsync(trackerId, ct);
-        if (tracker is null) return new BoardDto(null, null, States, [], [], [], ctx.Has(Permissions.EngineeringManage));
+        if (tracker is null) return new EngineeringBoardDto(null, null, States, [], [], [], ctx.Has(Permissions.EngineeringManage));
         var products = await db.Products.AsNoTracking().Where(p => p.IsActive).OrderBy(p => p.Name).Select(p => new IdName(p.Id, p.Name)).ToListAsync(ct);
-        return new BoardDto(tracker.Id, tracker.Name, States, await ReleasesCoreAsync(tracker.Id, ct), await AssigneesAsync(ct), products,
+        return new EngineeringBoardDto(tracker.Id, tracker.Name, States, await ReleasesCoreAsync(tracker.Id, ct), await AssigneesAsync(ct), products,
             ctx.Has(Permissions.EngineeringManage) && tracker.IsActive);
     }
 
@@ -71,12 +71,12 @@ public sealed class EngineeringBoardService(
     }
 
     /// <summary>Keyset-paged work items, most recently updated first (cursor = updatedAt + id).</summary>
-    public async Task<PagedResult<WorkItemDto>> ListAsync(Guid? trackerId, string? state, Guid? assigneeId, Guid? releaseId, string? q, bool includeClosed,
+    public async Task<PagedResult<EngineeringWorkItemDto>> ListAsync(Guid? trackerId, string? state, Guid? assigneeId, Guid? releaseId, string? q, bool includeClosed,
         string? cursor, int limit, CancellationToken ct = default)
     {
         ctx.RequireAny(Permissions.EngineeringView, Permissions.EngineeringManage);
         var tracker = await LocalTrackerAsync(trackerId, ct);
-        if (tracker is null) return new PagedResult<WorkItemDto>([], null, 0);
+        if (tracker is null) return new PagedResult<EngineeringWorkItemDto>([], null, 0);
         limit = Math.Clamp(limit, 1, 200);
         var query = db.Set<LocalWorkItem>().AsNoTracking().Where(w => w.IntegrationId == tracker.Id);
         if (!string.IsNullOrWhiteSpace(state))
@@ -103,19 +103,19 @@ public sealed class EngineeringBoardService(
         var page = rows.Take(limit).ToList();
         var items = await MapAsync(page, withDescription: false, ct);
         var next = rows.Count > limit ? DbExtensions.EncodeCursor(page[^1].UpdatedAt.ToString("O", CultureInfo.InvariantCulture), page[^1].Id) : null;
-        return new PagedResult<WorkItemDto>(items, next, total);
+        return new PagedResult<EngineeringWorkItemDto>(items, next, total);
     }
 
-    public async Task<WorkItemDetailDto> GetAsync(Guid id, CancellationToken ct = default)
+    public async Task<EngineeringWorkItemDetailDto> GetAsync(Guid id, CancellationToken ct = default)
     {
         ctx.RequireAny(Permissions.EngineeringView, Permissions.EngineeringManage);
         var w = await db.Set<LocalWorkItem>().AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, ct) ?? throw new NotFoundException("Work item", id);
         var dto = (await MapAsync([w], withDescription: true, ct)).Single();
         var affected = await tickets.AffectedAsync(w.IntegrationId, w.Number.ToString(CultureInfo.InvariantCulture), null, ct);
-        return new WorkItemDetailDto(dto, affected);
+        return new EngineeringWorkItemDetailDto(dto, affected);
     }
 
-    private async Task<List<WorkItemDto>> MapAsync(IReadOnlyList<LocalWorkItem> rows, bool withDescription, CancellationToken ct)
+    private async Task<List<EngineeringWorkItemDto>> MapAsync(IReadOnlyList<LocalWorkItem> rows, bool withDescription, CancellationToken ct)
     {
         if (rows.Count == 0) return [];
         var userIds = rows.Where(r => r.AssigneeUserId != null).Select(r => r.AssigneeUserId!.Value).Distinct().ToList();
@@ -132,7 +132,7 @@ public sealed class EngineeringBoardService(
         {
             var rel = w.ReleaseId is { } rid ? releases.GetValueOrDefault(rid) : null;
             var key = w.Number.ToString(CultureInfo.InvariantCulture);
-            return new WorkItemDto(w.Id, w.IntegrationId, w.Number, LocalTracker.KeyPrefix + key, w.Type.ToString(), w.Title, withDescription ? w.DescriptionHtml : null,
+            return new EngineeringWorkItemDto(w.Id, w.IntegrationId, w.Number, LocalTracker.KeyPrefix + key, w.Type.ToString(), w.Title, withDescription ? w.DescriptionHtml : null,
                 w.State.ToString(), w.Severity?.ToString(), w.Priority.ToString(), w.AssigneeUserId, w.AssigneeUserId is { } a ? users.GetValueOrDefault(a) : null,
                 w.AreaPath, w.IterationPath, Json.StringList(w.TagsJson), rel?.Name ?? w.FixVersion, w.ReleaseId, rel?.Name, rel?.ReleasedAt is not null, w.ProductId,
                 w.ProductId is { } p ? products.GetValueOrDefault(p) : null,
@@ -143,7 +143,7 @@ public sealed class EngineeringBoardService(
 
     // ───────────────────────────── Work items ─────────────────────────────
 
-    public async Task<WorkItemDto> CreateAsync(SaveWorkItemRequest r, CancellationToken ct = default)
+    public async Task<EngineeringWorkItemDto> CreateAsync(SaveEngineeringWorkItemRequest r, CancellationToken ct = default)
     {
         ctx.Require(Permissions.EngineeringManage);
         var tracker = await RequireTrackerAsync(r.TrackerId, ct);
@@ -156,7 +156,7 @@ public sealed class EngineeringBoardService(
         return (await MapAsync([w], withDescription: true, ct)).Single();
     }
 
-    public async Task<WorkItemDto> UpdateAsync(Guid id, SaveWorkItemRequest r, CancellationToken ct = default)
+    public async Task<EngineeringWorkItemDto> UpdateAsync(Guid id, SaveEngineeringWorkItemRequest r, CancellationToken ct = default)
     {
         ctx.Require(Permissions.EngineeringManage);
         var w = await LoadForUpdateAsync(id, r.RowVersion, ct);
@@ -187,7 +187,7 @@ public sealed class EngineeringBoardService(
         catch (DbUpdateConcurrencyException) { throw new ConflictException(ErrorCodes.ConcurrencyConflict, "The work item was changed by someone else. Reload and try again."); }
     }
 
-    private async Task ApplyAsync(LocalWorkItem w, SaveWorkItemRequest r, Guid trackerId, CancellationToken ct)
+    private async Task ApplyAsync(LocalWorkItem w, SaveEngineeringWorkItemRequest r, Guid trackerId, CancellationToken ct)
     {
         var errors = new Dictionary<string, string>();
         var title = Parse.Clean(r.Title, 500);
@@ -218,7 +218,7 @@ public sealed class EngineeringBoardService(
         w.ProductId = r.ProductId;
     }
 
-    public async Task<WorkItemDto> MoveAsync(Guid id, MoveWorkItemRequest r, CancellationToken ct = default)
+    public async Task<EngineeringWorkItemDto> MoveAsync(Guid id, MoveEngineeringWorkItemRequest r, CancellationToken ct = default)
     {
         ctx.Require(Permissions.EngineeringManage);
         var w = await LoadForUpdateAsync(id, r.RowVersion, ct);
@@ -259,14 +259,14 @@ public sealed class EngineeringBoardService(
 
     // ───────────────────────────── Releases ─────────────────────────────
 
-    public async Task<List<ReleaseDto>> ReleasesAsync(Guid? trackerId, CancellationToken ct = default)
+    public async Task<List<EngineeringReleaseDto>> ReleasesAsync(Guid? trackerId, CancellationToken ct = default)
     {
         ctx.RequireAny(Permissions.EngineeringView, Permissions.EngineeringManage);
         var tracker = await LocalTrackerAsync(trackerId, ct);
         return tracker is null ? [] : await ReleasesCoreAsync(tracker.Id, ct);
     }
 
-    private async Task<List<ReleaseDto>> ReleasesCoreAsync(Guid trackerId, CancellationToken ct)
+    private async Task<List<EngineeringReleaseDto>> ReleasesCoreAsync(Guid trackerId, CancellationToken ct)
     {
         var rows = await db.Set<LocalRelease>().AsNoTracking().Where(r => r.IntegrationId == trackerId).ToListAsync(ct);
         var ids = rows.Select(r => r.Id).ToList();
@@ -279,12 +279,12 @@ public sealed class EngineeringBoardService(
             .Select(r =>
             {
                 var c = counts.FirstOrDefault(x => x.Key == r.Id);
-                return new ReleaseDto(r.Id, r.IntegrationId, r.Name, r.Notes, r.ProductId, r.ProductId is { } p ? products.GetValueOrDefault(p) : null, r.PlannedDate,
+                return new EngineeringReleaseDto(r.Id, r.IntegrationId, r.Name, r.Notes, r.ProductId, r.ProductId is { } p ? products.GetValueOrDefault(p) : null, r.PlannedDate,
                     r.ReleasedAt, r.DeployedAt, c?.Total ?? 0, c?.Open ?? 0, Convert.ToBase64String(r.RowVersion));
             }).ToList();
     }
 
-    public async Task<ReleaseDto> SaveReleaseAsync(Guid? id, SaveReleaseRequest r, CancellationToken ct = default)
+    public async Task<EngineeringReleaseDto> SaveReleaseAsync(Guid? id, SaveEngineeringReleaseRequest r, CancellationToken ct = default)
     {
         ctx.Require(Permissions.EngineeringManage);
         LocalRelease release;
@@ -324,7 +324,7 @@ public sealed class EngineeringBoardService(
     }
 
     /// <summary>Publishes the release: every assigned work item is released in this version (linked tickets get notes / customer notifications).</summary>
-    public async Task<ReleaseDto> PublishReleaseAsync(Guid id, PublishReleaseRequest r, CancellationToken ct = default)
+    public async Task<EngineeringReleaseDto> PublishReleaseAsync(Guid id, PublishEngineeringReleaseRequest r, CancellationToken ct = default)
     {
         ctx.Require(Permissions.EngineeringManage);
         var release = await db.Set<LocalRelease>().FirstOrDefaultAsync(x => x.Id == id, ct) ?? throw new NotFoundException("Release", id);

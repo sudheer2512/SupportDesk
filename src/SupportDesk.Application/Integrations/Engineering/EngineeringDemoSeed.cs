@@ -87,7 +87,7 @@ public sealed class EngineeringDemoSeed(ILogger<EngineeringDemoSeed> logger) : I
                 {
                     var item = await board.GetAsync(await WorkItemIdAsync(c, trackerId, eng1.ExternalId, ct), ct);
                     var w = item.Item;
-                    await board.UpdateAsync(w.Id, new SaveWorkItemRequest
+                    await board.UpdateAsync(w.Id, new SaveEngineeringWorkItemRequest
                     {
                         Title = w.Title, Type = w.Type, Severity = w.Severity, Priority = w.Priority, AssigneeUserId = w.AssigneeUserId, AreaPath = w.AreaPath,
                         IterationPath = w.IterationPath, Tags = [.. w.Tags], ReleaseId = release801, ProductId = c.Products["erp"],
@@ -95,9 +95,9 @@ public sealed class EngineeringDemoSeed(ILogger<EngineeringDemoSeed> logger) : I
                         RowVersion = w.RowVersion
                     }, ct);
                     var moved = await board.GetAsync(w.Id, ct);
-                    await board.MoveAsync(w.Id, new MoveWorkItemRequest("Resolved", null, moved.Item.RowVersion), ct);
+                    await board.MoveAsync(w.Id, new MoveEngineeringWorkItemRequest("Resolved", null, moved.Item.RowVersion), ct);
                 });
-                await BoardAsync(c, "lakshmi", 8, board => board.PublishReleaseAsync(release801, new PublishReleaseRequest(Deployed: true), ct));
+                await BoardAsync(c, "lakshmi", 8, board => board.PublishReleaseAsync(release801, new PublishEngineeringReleaseRequest(Deployed: true), ct));
             }
 
             // ENG-2: the POS billing counter freeze (ticket already in "Escalated to Engineering").
@@ -149,14 +149,14 @@ public sealed class EngineeringDemoSeed(ILogger<EngineeringDemoSeed> logger) : I
             var w = (await board.GetAsync(await WorkItemIdAsync(c, trackerId, link.ExternalId, ct), ct)).Item;
             if (releaseId is not null)
             {
-                await board.UpdateAsync(w.Id, new SaveWorkItemRequest
+                await board.UpdateAsync(w.Id, new SaveEngineeringWorkItemRequest
                 {
                     Title = w.Title, Type = w.Type, Severity = w.Severity, Priority = w.Priority, AssigneeUserId = w.AssigneeUserId, AreaPath = w.AreaPath,
                     IterationPath = w.IterationPath, Tags = [.. w.Tags], ReleaseId = releaseId, ProductId = w.ProductId, DescriptionHtml = w.DescriptionHtml, RowVersion = w.RowVersion
                 }, ct);
                 w = (await board.GetAsync(w.Id, ct)).Item;
             }
-            if (activate) await board.MoveAsync(w.Id, new MoveWorkItemRequest("Active", null, w.RowVersion), ct);
+            if (activate) await board.MoveAsync(w.Id, new MoveEngineeringWorkItemRequest("Active", null, w.RowVersion), ct);
         });
         return link;
     }

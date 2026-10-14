@@ -231,14 +231,14 @@ public sealed class CollaborationService(
 
     // ───────────────────────────── Share a ticket (agents) ─────────────────────────────
 
-    public async Task<List<ShareTargetDto>> ShareTargetsAsync(CancellationToken ct = default)
+    public async Task<List<CollaborationShareTargetDto>> ShareTargetsAsync(CancellationToken ct = default)
     {
         ctx.Require(Permissions.TicketsNote);
         return await db.Set<CollaborationChannel>().AsNoTracking().Where(c => c.IsActive).OrderBy(c => c.Name)
-            .Select(c => new ShareTargetDto(c.Id, c.Provider.ToString(), c.Name)).ToListAsync(ct);
+            .Select(c => new CollaborationShareTargetDto(c.Id, c.Provider.ToString(), c.Name)).ToListAsync(ct);
     }
 
-    public async Task<CollaborationSendResultDto> ShareTicketAsync(Guid ticketId, ShareTicketRequest r, CancellationToken ct = default)
+    public async Task<CollaborationSendResultDto> ShareTicketAsync(Guid ticketId, ShareTicketToChannelRequest r, CancellationToken ct = default)
     {
         ctx.Require(Permissions.TicketsNote);
         var ticket = await tickets.LoadForUpdateAsync(ticketId, ct);
