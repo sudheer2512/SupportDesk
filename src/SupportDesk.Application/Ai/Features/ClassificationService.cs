@@ -38,20 +38,32 @@ public sealed record ClassificationResult(
     IReadOnlyList<string> InjectionFlags);
 
 /// <summary>
-/// Per-tenant training corpus for the local classifier (recent labelled tickets). Reloaded when new tickets arrive or after
-/// ten minutes; never shared across tenants (keyed by tenant id).
+/// Per-tenant training corpus for the local classifier (recent labelled tickets). Checked for new tickets at most once a
+/// minute and reloaded when they arrived (or after ten minutes); never shared across tenants (keyed by tenant id).
 /// </summary>
 public sealed class AiCorpusCache
 {
-    private readonly ConcurrentDictionary<Guid, (string Key, DateTime LoadedAt, IReadOnlyList<ClassificationExample> Examples)> _cache = new();
+    /// <summary>
+    /// During a burst of new tickets every classification used to see a new corpus key, so each ticket reloaded 2,000
+    /// examples and retrained the local model (the most expensive step of the outbox pipeline). A minute of staleness
+    /// in the training examples is harmless.
+    /// </summary>
+    private static readonly TimeSpan CheckInterval = TimeSpan.FromMinutes(1);
+
+    private readonly ConcurrentDictionary<Guid, (string Key, DateTime LoadedAt, DateTime CheckedAt, IReadOnlyList<ClassificationExample> Examples)> _cache = new();
 
     public async Task<(string Key, IReadOnlyList<ClassificationExample> Examples)> GetAsync(DeskDbContext db, Guid tenantId, CancellationToken ct)
     {
+        var now = DateTime.UtcNow;
+        if (_cache.TryGetValue(tenantId, out var cached) && now - cached.CheckedAt < CheckInterval) return (cached.Key, cached.Examples);
         var probe = await db.Tickets.AsNoTracking().Where(t => t.CategoryId != null || t.ProductId != null)
             .GroupBy(_ => 1).Select(g => new { Count = g.Count(), Max = g.Max(t => t.CreatedAt) }).SingleOrDefaultAsync(ct); // one group at most
         var key = probe is null ? $"{tenantId:N}:0" : $"{tenantId:N}:{probe.Count}:{probe.Max.Ticks}";
-        var now = DateTime.UtcNow;
-        if (_cache.TryGetValue(tenantId, out var cached) && cached.Key == key && now - cached.LoadedAt < TimeSpan.FromMinutes(10)) return (cached.Key, cached.Examples);
+        if (cached.Examples is not null && cached.Key == key && now - cached.LoadedAt < TimeSpan.FromMinutes(10))
+        {
+            _cache[tenantId] = cached with { CheckedAt = now };
+            return (cached.Key, cached.Examples);
+        }
         var rows = await db.Tickets.AsNoTracking()
             .Where(t => (t.CategoryId != null || t.ProductId != null) && !t.IsSpam && t.MergedIntoTicketId == null)
             .OrderByDescending(t => t.CreatedAt).Take(2000)
@@ -66,7 +78,7 @@ public sealed class AiCorpusCache
             labels[ClassificationFields.Department] = r.DepartmentId.ToString();
             return new ClassificationExample($"{r.Subject}\n{TextNormalization.Truncate(r.DescriptionText, 600)}", labels);
         }).ToList();
-        _cache[tenantId] = (key, now, examples);
+        _cache[tenantId] = (key, now, now, examples);
         return (key, examples);
     }
 }

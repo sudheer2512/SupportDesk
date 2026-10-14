@@ -105,7 +105,11 @@ public sealed class GlobalSearchService(DeskDbContext db, RequestContext ctx, Se
         if (allowed.Contains(SearchTypes.Ticket) && !(ctx.IsSystem || ctx.ActorType == ActorType.ApiClient && ctx.UserId is null))
         {
             var visibleTickets = db.Tickets.VisibleTo(ctx, db).Select(t => t.Id);
-            docs = docs.Where(d => d.EntityType != SearchTypes.Ticket || visibleTickets.Contains(d.EntityId));
+            // Two branches (UNION ALL) rather than "not a ticket OR a visible ticket": SQL Server evaluates the OR form row by
+            // row (a lookup into Tickets per search document, ~40k reads per query at 20k tickets); split, it joins the
+            // visible ticket ids once. Same rows either way.
+            docs = docs.Where(d => d.EntityType != SearchTypes.Ticket)
+                .Concat(docs.Where(d => d.EntityType == SearchTypes.Ticket && visibleTickets.Contains(d.EntityId)));
         }
         // Articles: drafts need editorial permissions, internal needs kb.view_internal (or editorial).
         var editor = KbAccess.EditorialPermissions.Any(ctx.Has);

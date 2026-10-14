@@ -50,7 +50,17 @@ Reset the demo database: stop the API, drop LocalDB database `SupportDesk`, star
 * **Demo data** for a module: implement `IDemoSeedContributor` (ordered) and register it; use
   `DemoSeedContext` (ids of seeded users/customers/products/tickets, `AsAgentAsync`, `AsSystemAsync`, clock pinning).
 * **Tests:** unit tests for pure rules (`tests/SupportDesk.UnitTests`); integration tests against LocalDB through
-  `DeskApiFactory` (`tests/SupportDesk.IntegrationTests/Infrastructure`), each test creating its own tenant.
+  `DeskApiFactory` (`tests/SupportDesk.IntegrationTests/Infrastructure`), each test creating its own tenant; security
+  regression tests in `tests/SupportDesk.IntegrationTests/Security`.
+* **Browser E2E tests** (`tests/SupportDesk.E2ETests`, xunit + Playwright on the installed Google Chrome — no Playwright
+  browser download): the fixture builds the SPAs (`npm run build`), starts the API's build output as a separate process
+  on a free port of `127.0.0.21` against a throwaway database `SupportDesk_E2E_<random>` with the demo seed, waits for
+  `/health/ready` and a working demo login, and afterwards kills the process by PID and drops the database.
+  `dotnet test tests/SupportDesk.E2ETests` (~2 min with the SPA build already done). Environment switches:
+  `SUPPORTDESK_E2E=0` skips the suite, `SUPPORTDESK_E2E_SKIP_CLIENT_BUILD=1` reuses the built `wwwroot`,
+  `SUPPORTDESK_E2E_HEADED=1` shows the browser, `SUPPORTDESK_E2E_CHROME` points at another Chrome. Failures leave
+  screenshots and the API log in `TestResults/e2e`. Every test also fails on a Content-Security-Policy violation.
+* **Load tests:** `tests/SupportDesk.LoadTests` — see `docs/PERFORMANCE.md`.
 
 ## Frontend conventions
 

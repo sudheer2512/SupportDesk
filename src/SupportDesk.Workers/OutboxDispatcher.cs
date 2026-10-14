@@ -22,53 +22,69 @@ public sealed class OutboxProcessor(IServiceScopeFactory scopes, WorkerOptions o
 {
     public const int MaxAttempts = 8;
     public static readonly ActivitySource Activity = new("SupportDesk.Outbox");
-    private List<(string Name, int Order)>? _handlerCatalog;
+
+    /// <summary>A registered handler: its name/order, and a cached constructor so only that handler is built per run.</summary>
+    private sealed record HandlerInfo(string Name, int Order, Type Type, ObjectFactory Create);
+
+    private List<HandlerInfo>? _handlerCatalog;
+    /// <summary>Interested handlers per event type (CanHandle depends on the type only).</summary>
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, HandlerInfo[]> _handlersByType = new(StringComparer.Ordinal);
 
     /// <summary>Processes one batch. Returns the number of events handled.</summary>
     public async Task<int> ProcessBatchAsync(int batchSize, CancellationToken ct)
     {
-        List<Guid> ids;
+        List<ClaimedEvent> claimed;
         using (var scope = scopes.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<DeskDbContext>();
             var now = clock.UtcNow;
-            ids = await db.Database.SqlQueryRaw<Guid>("""
+            claimed = await db.Database.SqlQueryRaw<ClaimedEvent>("""
                 WITH due AS (
                     SELECT TOP (@take) * FROM dbo.OutboxEvents WITH (ROWLOCK, UPDLOCK, READPAST)
                     WHERE ((Status IN ('Pending','Failed') AND NextAttemptAt <= @now) OR (Status = 'Processing' AND LockedUntil < @now))
                     ORDER BY OccurredAt, Id)
                 UPDATE due SET Status = 'Processing', LockedUntil = @lease, LockedBy = @owner
-                OUTPUT inserted.Id AS Value;
+                OUTPUT inserted.Id, inserted.OccurredAt;
                 """,
                 new SqlParameter("@take", batchSize), new SqlParameter("@now", now), new SqlParameter("@lease", now.AddMinutes(2)),
                 new SqlParameter("@owner", options.InstanceName)).ToListAsync(ct);
         }
-        foreach (var id in ids) await ProcessEventAsync(id, ct);
-        return ids.Count;
+        // OUTPUT does not guarantee row order: process in event order.
+        foreach (var e in claimed.OrderBy(e => e.OccurredAt).ThenBy(e => e.Id)) await ProcessEventAsync(e.Id, ct);
+        return claimed.Count;
+    }
+
+    private sealed class ClaimedEvent
+    {
+        public Guid Id { get; set; }
+        public DateTime OccurredAt { get; set; }
     }
 
     private async Task ProcessEventAsync(Guid id, CancellationToken ct)
     {
         OutboxEvent ev;
         HashSet<string> done;
+        HashSet<string> attempted;
         using (var scope = scopes.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<DeskDbContext>();
             ev = await db.OutboxEvents.AsNoTracking().FirstAsync(e => e.Id == id, ct);
-            done = (await db.OutboxDeliveries.AsNoTracking().Where(d => d.EventId == id && d.Succeeded).Select(d => d.Handler).ToListAsync(ct)).ToHashSet();
+            var deliveries = await db.OutboxDeliveries.AsNoTracking().Where(d => d.EventId == id).Select(d => new { d.Handler, d.Succeeded }).ToListAsync(ct);
+            done = deliveries.Where(d => d.Succeeded).Select(d => d.Handler).ToHashSet();
+            attempted = deliveries.Select(d => d.Handler).ToHashSet();
         }
         using var activity = Activity.StartActivity($"outbox {ev.Type}");
         activity?.SetTag("outbox.event_id", ev.Id);
         activity?.SetTag("tenant.id", ev.TenantId);
-        var catalog = HandlerCatalog();
         var failures = new List<string>();
-        foreach (var (name, _) in catalog)
+        foreach (var info in HandlersFor(ev.Type))
         {
+            var name = info.Name;
             if (done.Contains(name)) continue;
             using var scope = scopes.CreateScope();
             var sp = scope.ServiceProvider;
-            var handler = sp.GetServices<IOutboxHandler>().First(h => h.Name == name);
-            if (!handler.CanHandle(ev.Type)) continue;
+            // Build just this handler (resolving IEnumerable<IOutboxHandler> here constructed every handler, per handler).
+            var handler = (IOutboxHandler)info.Create(sp, null);
             var ctx = sp.GetRequiredService<RequestContext>();
             if (ev.TenantId is { } tenant) ctx.SetSystem(tenant, "Automation", ActorType.System);
             ctx.ChainDepth = ev.ChainDepth + 1;
@@ -85,16 +101,23 @@ public sealed class OutboxProcessor(IServiceScopeFactory scopes, WorkerOptions o
                 failures.Add($"{name}: {error}");
                 logger.LogWarning(ex, "Outbox handler {Handler} failed for event {Event} ({Type})", name, ev.Id, ev.Type);
             }
-            await RecordDeliveryAsync(ev.Id, name, error, ct);
+            finally
+            {
+                // Built by the cached factory, so the scope does not track the handler itself.
+                if (handler is IAsyncDisposable asyncDisposable) await asyncDisposable.DisposeAsync();
+                else if (handler is IDisposable disposable) disposable.Dispose();
+            }
+            await RecordDeliveryAsync(ev.Id, name, error, attempted.Contains(name), ct);
         }
         await CompleteAsync(ev, failures, ct);
     }
 
-    private async Task RecordDeliveryAsync(Guid eventId, string handler, string? error, CancellationToken ct)
+    private async Task RecordDeliveryAsync(Guid eventId, string handler, string? error, bool existing, CancellationToken ct)
     {
         using var scope = scopes.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<DeskDbContext>();
-        var d = await db.OutboxDeliveries.FirstOrDefaultAsync(x => x.EventId == eventId && x.Handler == handler, ct);
+        // First attempt (the common case): no row yet, insert without looking it up.
+        var d = existing ? await db.OutboxDeliveries.FirstOrDefaultAsync(x => x.EventId == eventId && x.Handler == handler, ct) : null;
         if (d is null)
         {
             d = new OutboxDelivery { EventId = eventId, Handler = handler };
@@ -129,13 +152,24 @@ public sealed class OutboxProcessor(IServiceScopeFactory scopes, WorkerOptions o
         if (status == OutboxStatus.DeadLetter) logger.LogError("Outbox event {Event} ({Type}) dead-lettered: {Error}", ev.Id, ev.Type, error);
     }
 
-    private List<(string Name, int Order)> HandlerCatalog()
+    private List<HandlerInfo> HandlerCatalog()
     {
         if (_handlerCatalog is not null) return _handlerCatalog;
         using var scope = scopes.CreateScope();
-        _handlerCatalog = scope.ServiceProvider.GetServices<IOutboxHandler>().Select(h => (h.Name, h.Order)).OrderBy(h => h.Order).ThenBy(h => h.Name).ToList();
+        _handlerCatalog = scope.ServiceProvider.GetServices<IOutboxHandler>()
+            .Select(h => new HandlerInfo(h.Name, h.Order, h.GetType(), ActivatorUtilities.CreateFactory(h.GetType(), Type.EmptyTypes)))
+            .OrderBy(h => h.Order).ThenBy(h => h.Name).ToList();
         return _handlerCatalog;
     }
+
+    /// <summary>The handlers interested in an event type, in order (computed once per type).</summary>
+    private HandlerInfo[] HandlersFor(string eventType) => _handlersByType.GetOrAdd(eventType, type =>
+    {
+        var catalog = HandlerCatalog();
+        using var scope = scopes.CreateScope();
+        var instances = scope.ServiceProvider.GetServices<IOutboxHandler>().GroupBy(h => h.Name).ToDictionary(g => g.Key, g => g.First());
+        return catalog.Where(h => instances[h.Name].CanHandle(type)).ToArray();
+    });
 
     private static string Truncate(string s, int max) => s.Length <= max ? s : s[..max];
 }

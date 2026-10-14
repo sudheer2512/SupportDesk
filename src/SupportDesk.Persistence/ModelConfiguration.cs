@@ -328,14 +328,28 @@ internal static class ModelConfiguration
         m.Entity<Ticket>(e =>
         {
             e.HasIndex(x => new { x.TenantId, x.Number }).IsUnique();
-            e.HasIndex(x => new { x.TenantId, x.LastActivityAt, x.Id }).HasDatabaseName("IX_Tickets_Keyset");
+            // Keyset/list indexes carry the columns of the agent visibility filter (department, team, assignee) and of the
+            // queue predicates, so a list page is an ordered scan of a narrow index that stops after one page (plus a key
+            // lookup per row), and the queue badges are counted from the index alone — not from the full ticket rows.
+            // See docs/PERFORMANCE.md.
+            e.HasIndex(x => new { x.TenantId, x.LastActivityAt, x.Id }).HasDatabaseName("IX_Tickets_Keyset")
+                .IncludeProperties(x => new
+                {
+                    x.DepartmentId, x.TeamId, x.AssigneeId, x.StatusCategory, x.IsDeleted, x.Priority, x.DueAt, x.SlaState, x.IsEscalated
+                });
+            e.HasIndex(x => new { x.TenantId, x.Priority, x.LastActivityAt }).HasDatabaseName("IX_Tickets_PriorityKeyset")
+                .IncludeProperties(x => new { x.DepartmentId, x.TeamId, x.AssigneeId, x.StatusCategory, x.IsDeleted });
+            // Resolution-time history (AI resolution ETA, analytics): newest resolved first with the similarity columns.
+            e.HasIndex(x => new { x.TenantId, x.ResolvedAt }).HasDatabaseName("IX_Tickets_Resolved").HasFilter("[ResolvedAt] IS NOT NULL")
+                .IncludeProperties(x => new { x.CreatedAt, x.CategoryId, x.ProductId, x.Priority, x.IsSpam, x.MergedIntoTicketId, x.IsDeleted });
             e.HasIndex(x => new { x.TenantId, x.AssigneeId, x.StatusCategory }).HasFilter(OpenTicketFilter).HasDatabaseName("IX_Tickets_OpenByAssignee");
             e.HasIndex(x => new { x.TenantId, x.DepartmentId, x.StatusCategory, x.Priority }).HasFilter(OpenTicketFilter).HasDatabaseName("IX_Tickets_OpenByDepartment");
             e.HasIndex(x => new { x.TenantId, x.DueAt }).HasFilter(OpenTicketFilter).HasDatabaseName("IX_Tickets_OpenDue");
             e.HasIndex(x => new { x.TenantId, x.CustomerId, x.CreatedAt });
             e.HasIndex(x => new { x.TenantId, x.ContactId, x.CreatedAt });
             e.HasIndex(x => new { x.TenantId, x.ProductId, x.CreatedAt });
-            e.HasIndex(x => new { x.TenantId, x.CreatedAt });
+            e.HasIndex(x => new { x.TenantId, x.CreatedAt })
+                .IncludeProperties(x => new { x.DepartmentId, x.TeamId, x.AssigneeId, x.StatusCategory, x.IsDeleted });
             e.HasIndex(x => x.ParentTicketId);
             e.HasMany(x => x.Tags).WithOne().HasForeignKey(x => x.TicketId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne<Customer>().WithMany().HasForeignKey(x => x.CustomerId).OnDelete(DeleteBehavior.Restrict);
@@ -682,7 +696,10 @@ internal static class ModelConfiguration
     {
         m.Entity<SearchDocument>(e =>
         {
-            e.HasIndex(x => new { x.TenantId, x.EntityType, x.EntityId }).IsUnique();
+            // Covers the permission filters and the BM25 collection statistics of every search (count and average length
+            // of the documents the user may see) without reading the wide document rows.
+            e.HasIndex(x => new { x.TenantId, x.EntityType, x.EntityId }).IsUnique()
+                .IncludeProperties(x => new { x.Visibility, x.CustomerId, x.TermCount });
             e.Property(x => x.EntityType).HasMaxLength(40);
         });
         m.Entity<SearchPosting>(e =>

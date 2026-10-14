@@ -333,17 +333,30 @@ public sealed class TicketQueryService(
     {
         ctx.Require(Permissions.TicketsView);
         var now = db.Clock.UtcNow;
+        var uid = ctx.UserId;
         var open = Scoped().Where(t => t.StatusCategory < StatusCategory.Resolved);
+        // One pass over the visible open tickets (conditional counts) instead of a query per badge; "watching" needs a
+        // subquery, which SQL Server does not allow inside an aggregate, so it stays separate.
+        var c = await open.GroupBy(_ => 1).Select(g => new
+        {
+            Mine = g.Count(t => t.AssigneeId == uid),
+            Unassigned = g.Count(t => t.AssigneeId == null),
+            Open = g.Count(),
+            Overdue = g.Count(t => t.DueAt != null && t.DueAt < now),
+            AtRisk = g.Count(t => t.SlaState == SlaState.AtRisk),
+            Escalated = g.Count(t => t.IsEscalated),
+            Waiting = g.Count(t => t.StatusCategory == StatusCategory.Waiting)
+        }).SingleOrDefaultAsync(ct);
         return new Dictionary<string, int>
         {
-            ["mine"] = await open.CountAsync(t => t.AssigneeId == ctx.UserId, ct),
-            ["unassigned"] = await open.CountAsync(t => t.AssigneeId == null, ct),
-            ["open"] = await open.CountAsync(ct),
-            ["overdue"] = await open.CountAsync(t => t.DueAt != null && t.DueAt < now, ct),
-            ["atRisk"] = await open.CountAsync(t => t.SlaState == SlaState.AtRisk, ct),
-            ["escalated"] = await open.CountAsync(t => t.IsEscalated, ct),
-            ["watching"] = await open.CountAsync(t => db.TicketWatchers.Any(w => w.TicketId == t.Id && w.UserId == ctx.UserId), ct),
-            ["waiting"] = await open.CountAsync(t => t.StatusCategory == StatusCategory.Waiting, ct)
+            ["mine"] = c?.Mine ?? 0,
+            ["unassigned"] = c?.Unassigned ?? 0,
+            ["open"] = c?.Open ?? 0,
+            ["overdue"] = c?.Overdue ?? 0,
+            ["atRisk"] = c?.AtRisk ?? 0,
+            ["escalated"] = c?.Escalated ?? 0,
+            ["watching"] = await open.CountAsync(t => db.TicketWatchers.Any(w => w.TicketId == t.Id && w.UserId == uid), ct),
+            ["waiting"] = c?.Waiting ?? 0
         };
     }
 }

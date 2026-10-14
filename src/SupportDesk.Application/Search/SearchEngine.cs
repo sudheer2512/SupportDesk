@@ -59,9 +59,11 @@ public sealed partial class SearchEngine(DeskDbContext db)
         if (factors.Count == 0) return [];
         var keys = factors.Keys.ToList();
 
-        var n = await documents.CountAsync(ct);
-        if (n == 0) return [];
-        var avgdl = Math.Max(1, await documents.AverageAsync(d => (double)d.TermCount, ct));
+        // BM25 collection statistics in one pass over the (permission-filtered) documents.
+        var stats = await documents.GroupBy(_ => 1).Select(g => new { N = g.Count(), Avg = g.Average(d => (double)d.TermCount) }).SingleOrDefaultAsync(ct);
+        if (stats is null || stats.N == 0) return [];
+        var n = stats.N;
+        var avgdl = Math.Max(1, stats.Avg);
 
         var postings = from p in db.SearchPostings.AsNoTracking()
                        join d in documents on p.DocumentId equals d.Id
