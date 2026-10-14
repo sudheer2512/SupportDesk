@@ -17,6 +17,7 @@ public static class KnowledgeModule
         s.AddScoped<KbAccess>();
         s.AddScoped<ArticleService>();
         s.AddScoped<ArticleAuthoringService>();
+        s.AddScoped<KbAssetService>();
         s.AddScoped<ArticleTranslationService>();
         s.AddScoped<KbCategoryService>();
         s.AddScoped<KbFeedbackService>();
