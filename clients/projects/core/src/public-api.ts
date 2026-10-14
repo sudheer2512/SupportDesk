@@ -122,3 +122,4 @@ export * from './lib/api/config-transfer.api';
 // Administration console (roles, ticket configuration, brands, notifications, security, API credentials)
 export * from './lib/models/administration';
 export * from './lib/api/administration.api';
+export * from './lib/portal/csat.api';

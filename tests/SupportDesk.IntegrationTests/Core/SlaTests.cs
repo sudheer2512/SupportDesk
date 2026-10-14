@@ -58,6 +58,9 @@ public sealed class SlaTests(DeskApiFactory factory)
             // 10:30 agent replies → first response met. 11:00 waiting on customer → resolution clock paused (60 min used).
             clock.Pin(Ist(12, 10, 30));
             await factory.InTenantAsync(tenant.Id, sp => sp.GetRequiredService<ConversationService>().ReplyAsync(ticketId, new ReplyRequest { BodyHtml = "<p>Looking</p>" }, default));
+            // Met on time → an "sla.met" event for webhooks, automation and analytics.
+            Assert.True(await factory.InTenantAsync(tenant.Id, sp => sp.GetRequiredService<DeskDbContext>().OutboxEvents
+                .AnyAsync(e => e.Type == EventTypes.SlaMet && e.AggregateId == ticketId)), "sla.met was not published");
             clock.Pin(Ist(12, 11));
             await factory.InTenantAsync(tenant.Id, sp => sp.GetRequiredService<TicketService>().ChangeStatusAsync(ticketId, new ChangeStatusRequest(waiting, null, null, null), default));
             (ticket, ms) = await LoadAsync(tenant.Id, ticketId);

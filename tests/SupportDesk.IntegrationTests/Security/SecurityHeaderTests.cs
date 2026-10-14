@@ -67,6 +67,22 @@ public sealed class SecurityHeaderTests(DeskApiFactory factory)
     }
 
     [Fact]
+    public async Task Errors_raised_by_handlers_keep_the_security_headers_and_a_correlation_id()
+    {
+        // A domain "not found" goes through the exception handler, which clears the response before writing problem details.
+        var t = await factory.CreateTenantAsync();
+        var admin = await t.AdminClientAsync();
+        var r = await admin.GetAsync($"/api/v1/tickets/{Guid.NewGuid()}");
+        Assert.Equal(HttpStatusCode.NotFound, r.StatusCode);
+        Assert.Equal("nosniff", Header(r, "X-Content-Type-Options"));
+        Assert.Equal("DENY", Header(r, "X-Frame-Options"));
+        Assert.Contains("default-src 'none'", Header(r, "Content-Security-Policy"));
+        var correlation = Header(r, "X-Correlation-Id");
+        Assert.False(string.IsNullOrEmpty(correlation));
+        Assert.Contains($"\"correlationId\":\"{correlation}\"", await r.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
     public async Task Downloads_without_their_own_policy_are_still_covered()
     {
         // KB export is an attachment built by the knowledge module; it relies on the API-wide policy.

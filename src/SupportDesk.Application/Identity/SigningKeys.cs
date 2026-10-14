@@ -86,6 +86,8 @@ public static class DeskClaims
     public const string Scope = "scope";
     public const string Brand = "brand";
     public const string AuthMethods = "amr";
+    /// <summary>Per-credential API rate limit (requests per minute) of an API key or OAuth client.</summary>
+    public const string RateLimit = "rlm";
 
     public const string TypeAgent = "agent";
     public const string TypeContact = "contact";
@@ -100,7 +102,8 @@ public sealed class TokenService(SigningKeyProvider keys, Domain.IClock clock)
     private readonly JwtSecurityTokenHandler _handler = new() { MapInboundClaims = false };
 
     public IssuedToken Issue(string type, Guid subject, Guid? tenantId, string? tenantSlug, string name, TimeSpan lifetime,
-        Guid? sessionId = null, string? email = null, IEnumerable<string>? scopes = null, string? brand = null, bool mfa = false)
+        Guid? sessionId = null, string? email = null, IEnumerable<string>? scopes = null, string? brand = null, bool mfa = false,
+        int? rateLimitPerMinute = null)
     {
         var now = clock.UtcNow;
         var claims = new List<Claim>
@@ -116,6 +119,7 @@ public sealed class TokenService(SigningKeyProvider keys, Domain.IClock clock)
         if (email is not null) claims.Add(new Claim(DeskClaims.Email, email));
         if (scopes is not null) claims.Add(new Claim(DeskClaims.Scope, string.Join(' ', scopes)));
         if (brand is not null) claims.Add(new Claim(DeskClaims.Brand, brand));
+        if (rateLimitPerMinute is > 0) claims.Add(new Claim(DeskClaims.RateLimit, rateLimitPerMinute.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)));
         claims.Add(new Claim(DeskClaims.AuthMethods, mfa ? "mfa" : "pwd"));
         var expires = now.Add(lifetime);
         var token = new JwtSecurityToken(SigningKeyProvider.Issuer, SigningKeyProvider.Audience, claims, now.AddSeconds(-5), expires, keys.Credentials);

@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SupportDesk.Application.Identity;
@@ -203,6 +204,31 @@ public sealed class SessionAndTokenTests(DeskApiFactory factory)
 
         // The other user behind the same address still has their own budget.
         Assert.Equal(HttpStatusCode.OK, (await Client(agentToken).GetAsync("/api/v1/tickets?limit=1")).StatusCode);
+    }
+
+    [Fact]
+    public async Task An_api_key_is_held_to_its_own_rate_limit()
+    {
+        var t = await factory.CreateTenantAsync();
+        var admin = await t.AdminClientAsync();
+        var created = await admin.PostAsJsonAsync("/api/v1/admin/api-keys",
+            new SupportDesk.Contracts.Administration.CreateApiKeyRequest("Slow integration", ["tickets:read"], null, null), J);
+        Assert.True(created.IsSuccessStatusCode, await created.Content.ReadAsStringAsync());
+        var key = (await created.Content.ReadFromJsonAsync<SupportDesk.Contracts.Administration.ApiKeySecretDto>(J))!;
+        // The key's own limit (8/min → burst of 2) applies although the API-wide limit of this host is effectively unlimited.
+        await factory.InTenantAsync(t.Id, async sp =>
+        {
+            var db = sp.GetRequiredService<SupportDesk.Persistence.DeskDbContext>();
+            var entity = await db.ApiKeys.FirstAsync(k => k.Id == key.Key.Id);
+            entity.RateLimitPerMinute = 8;
+            await db.SaveChangesAsync();
+        });
+        var client = factory.CreateClient(new WebApplicationFactoryClientOptions { HandleCookies = false });
+        client.DefaultRequestHeaders.Add("X-Api-Key", key.Secret);
+        var statuses = new List<HttpStatusCode>();
+        for (var i = 0; i < 6; i++) statuses.Add((await client.GetAsync("/api/v1/tickets?limit=1")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, statuses[0]);
+        Assert.Contains(HttpStatusCode.TooManyRequests, statuses);
     }
 
     [Fact]

@@ -58,6 +58,8 @@ export const routes: Routes = [
       { path: 'tickets', canActivate: [portalAuthGuard], loadChildren: () => import('./features/tickets/tickets.routes').then((m) => m.ROUTES) },
       { path: 'submit', canActivate: [submitGuard], loadChildren: () => import('./features/submit/submit.routes').then((m) => m.ROUTES) },
       { path: 'account', canActivate: [portalAuthGuard], loadChildren: () => import('./features/account/account.routes').then((m) => m.ROUTES) },
+      // Satisfaction survey from the e-mailed link (anonymous; the token is the credential).
+      { path: 'csat/:token', title: 'Your feedback', loadComponent: () => import('./features/csat/csat.page').then((m) => m.CsatPage) },
       { path: '**', title: 'Not found', loadComponent: () => import('./pages/not-found.page').then((m) => m.PortalNotFoundPage) },
     ],
   },

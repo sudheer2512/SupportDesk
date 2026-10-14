@@ -6,6 +6,7 @@ using SupportDesk.Application.Tickets;
 using SupportDesk.Contracts.Common;
 using SupportDesk.Domain;
 using SupportDesk.Persistence;
+using SupportDesk.Persistence.Context;
 
 namespace SupportDesk.Api.Infrastructure;
 
@@ -103,7 +104,12 @@ public sealed class DeskExceptionHandler(ILogger<DeskExceptionHandler> logger, I
                 problem.Extensions["code"] = "internal_error";
                 break;
         }
-        problem.Extensions["correlationId"] = http.Response.Headers["X-Correlation-Id"].ToString();
+        // The exception handler middleware cleared the response headers: re-derive the correlation id and send it again.
+        var correlation = http.RequestServices.GetService<RequestContext>()?.CorrelationId is { Length: > 0 } known
+            ? known
+            : System.Diagnostics.Activity.Current?.TraceId.ToString() ?? http.TraceIdentifier;
+        http.Response.Headers["X-Correlation-Id"] = correlation;
+        problem.Extensions["correlationId"] = correlation;
         http.Response.StatusCode = problem.Status ?? 500;
         await http.Response.WriteAsJsonAsync(problem, (System.Text.Json.JsonSerializerOptions?)null, "application/problem+json", ct);
         return true;

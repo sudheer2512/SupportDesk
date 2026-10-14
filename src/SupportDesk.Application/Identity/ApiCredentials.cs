@@ -19,19 +19,11 @@ public static class ApiScopes
         "contracts:write", "kb:read", "kb:write", "analytics:read", "admin:read", "admin:write", "integrations:write", "ai:write"
     ];
 
-    /// <summary>Permissions granted to a client by its scopes (module:write ⇒ all module permissions).</summary>
+    /// <summary>Permissions granted to a client by its scopes (see <see cref="ApiScopeRules"/>).</summary>
     public static HashSet<string> PermissionsFor(IEnumerable<string> scopes)
     {
         var set = scopes.ToHashSet(StringComparer.OrdinalIgnoreCase);
-        if (set.Contains(All)) return Permissions.AllCodes.ToHashSet();
-        var result = new HashSet<string>();
-        foreach (var p in Permissions.Catalog)
-        {
-            var module = p.Code.Split('.')[0];
-            var isRead = p.Code.EndsWith(".view", StringComparison.Ordinal) || p.Code.EndsWith(".view_internal", StringComparison.Ordinal);
-            if (set.Contains($"{module}:write") || (isRead && set.Contains($"{module}:read"))) result.Add(p.Code);
-        }
-        return result;
+        return Permissions.Catalog.Select(p => p.Code).Where(code => ApiScopeRules.Allows(set, code)).ToHashSet();
     }
 }
 
@@ -123,7 +115,8 @@ public sealed class OAuthClientService(DeskDbContext db, RequestContext ctx, Pas
         var tenant = await db.Tenants.AsNoTracking().FirstAsync(t => t.Id == client.TenantId, ct);
         await db.AllTenants<ApiClient>().Where(c => c.Id == client.Id).ExecuteUpdateAsync(s => s.SetProperty(c => c.LastUsedAt, db.Clock.UtcNow), ct);
         var lifetime = TimeSpan.FromHours(1);
-        var token = tokens.Issue(DeskClaims.TypeClient, client.Id, client.TenantId, tenant.Slug, client.Name, lifetime, scopes: scopes);
+        var token = tokens.Issue(DeskClaims.TypeClient, client.Id, client.TenantId, tenant.Slug, client.Name, lifetime, scopes: scopes,
+            rateLimitPerMinute: client.RateLimitPerMinute);
         return new OAuthTokenResponse(token.Token, "Bearer", (int)lifetime.TotalSeconds, string.Join(' ', scopes));
     }
 

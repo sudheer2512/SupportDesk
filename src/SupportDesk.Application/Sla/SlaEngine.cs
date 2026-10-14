@@ -75,7 +75,7 @@ public static class SlaClock
 /// PausesSla (or listed on the policy) pause resolution/next-response clocks. Changes of priority, policy inputs or
 /// contract re-target running milestones while keeping the elapsed time. Every change writes an SlaEvent.
 /// </summary>
-public sealed class SlaEngine(DeskDbContext db) : ISlaEngine
+public sealed class SlaEngine(DeskDbContext db, Platform.IEventPublisher events) : ISlaEngine
 {
     public async Task ApplyAsync(Ticket ticket, CancellationToken ct)
     {
@@ -197,7 +197,7 @@ public sealed class SlaEngine(DeskDbContext db) : ISlaEngine
             foreach (var m in instance.Milestones.Where(m => m.Status is MilestoneStatus.Active or MilestoneStatus.Paused || IsRunningBreached(m)))
             {
                 if (m.Kind == SlaMilestoneKind.NextResponse && !IsRunningBreached(m)) { Stop(m, now, calendar, MilestoneStatus.Cancelled); continue; }
-                Complete(instance, m, now, calendar);
+                Complete(ticket, instance, m, now, calendar);
             }
             instance.Status = SlaInstanceStatus.Completed;
             instance.CompletedAt = now;
@@ -239,7 +239,7 @@ public sealed class SlaEngine(DeskDbContext db) : ISlaEngine
         var calendar = SlaSnapshot.Calendar(instance.CalendarSnapshotJson);
         foreach (var m in instance.Milestones.Where(m => m.Kind is SlaMilestoneKind.FirstResponse or SlaMilestoneKind.NextResponse &&
                                                          (m.Status is MilestoneStatus.Active or MilestoneStatus.Paused || IsRunningBreached(m))))
-            Complete(instance, m, at, calendar);
+            Complete(ticket, instance, m, at, calendar);
         instance.UpdatedAt = db.Clock.UtcNow;
         Denormalise(ticket, instance, calendar);
     }
@@ -288,7 +288,7 @@ public sealed class SlaEngine(DeskDbContext db) : ISlaEngine
     /// <summary>A breached milestone keeps running (for escalation) until it is completed.</summary>
     private static bool IsRunningBreached(SlaMilestone m) => m.Status == MilestoneStatus.Breached && m.CompletedAt is null;
 
-    private void Complete(SlaInstance instance, SlaMilestone m, DateTime at, WorkingCalendar calendar)
+    private void Complete(Ticket ticket, SlaInstance instance, SlaMilestone m, DateTime at, WorkingCalendar calendar)
     {
         var cal = m.BusinessHours ? calendar : WorkingCalendar.AlwaysOpen;
         if (m.SegmentStartedAt is { } seg && at > seg) m.ElapsedMinutesBeforeSegment += cal.WorkingMinutesBetween(seg, at);
@@ -300,6 +300,9 @@ public sealed class SlaEngine(DeskDbContext db) : ISlaEngine
         m.UpdatedAt = db.Clock.UtcNow;
         AddEvent(instance, m.Id, breached ? SlaEventTypes.Completed : SlaEventTypes.Met, m.Kind,
             new { elapsedMinutes = Math.Round(m.ElapsedMinutesBeforeSegment, 1), m.TargetMinutes, late = breached });
+        // Met on time: webhooks, automation and analytics can react (breaches are published by the SLA monitor).
+        if (!breached)
+            events.Publish(EventTypes.SlaMet, "Ticket", ticket.Id, new SlaEventPayload(ticket.Id, ticket.Number, instance.Id, m.Id, m.Kind, m.DueAt));
     }
 
     private static void Stop(SlaMilestone m, DateTime at, WorkingCalendar calendar, MilestoneStatus status)

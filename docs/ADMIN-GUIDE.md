@@ -635,8 +635,9 @@ To customise one, open it, edit the **Subject** and **Body (HTML)**, insert plac
 **Use this custom template**. The preview fills in sample values and, for customer templates, adds the brand's e-mail
 footer. Unknown placeholders are refused. **Reset to default** deletes your version. There is no test send.
 
-**Partial:** the survey e-mail links to a portal page that does not exist yet (`/portal/{brand}/csat/{token}`).
-Customers can still rate from the ticket page in the portal.
+The survey buttons in the e-mail open the portal's feedback page (`/portal/{brand}/csat/{token}`) with the chosen star
+pre-selected; customers confirm it and may add a comment. No sign-in is needed (the link is the credential and expires).
+Signed-in customers can also rate from the ticket page.
 
 ---
 
@@ -728,8 +729,9 @@ You need organisation-wide data scope to issue credentials. API keys can only be
 OAuth clients have **Rotate secret** and **Revoke**; revoked clients' tokens stop working at once. The scope list, the
 scope-to-permission mapping and request examples are in [API.md](API.md#2-authentication).
 
-**Partial:** the scopes `admin:read` and `integrations:write` grant no permissions in this release, and analytics beyond
-personal data needs the `*` scope.
+Scope notes: `analytics:read` gives team-wide reporting, `integrations:write` covers integration administration and
+engineering links, and `admin:read` is limited to the audit log (settings have no read-only permission). Each key and
+OAuth client is also held to its own requests-per-minute limit.
 
 ---
 

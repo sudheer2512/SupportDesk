@@ -51,11 +51,14 @@ public static class HostingSetup
                 _ => new FixedWindowRateLimiterOptions { PermitLimit = publicPerMinute, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
             o.AddPolicy(ApiLimiter, http =>
             {
+                // Per signed-in user / API client (authentication runs before the limiter). API keys and OAuth clients carry
+                // their own limit, capped by the API-wide one; it is part of the key so a changed limit takes effect.
                 var sub = http.User.FindFirstValue(DeskClaims.Subject);
-                var key = sub is null ? "ip:" + http.Connection.RemoteIpAddress : "sub:" + sub;
+                var perMinute = int.TryParse(http.User.FindFirstValue(DeskClaims.RateLimit), out var own) && own > 0 ? Math.Min(own, apiPerMinute) : apiPerMinute;
+                var key = sub is null ? "ip:" + http.Connection.RemoteIpAddress : $"sub:{sub}:{perMinute}";
                 return RateLimitPartition.GetTokenBucketLimiter(key, _ => new TokenBucketRateLimiterOptions
                 {
-                    TokenLimit = apiPerMinute / 4, TokensPerPeriod = apiPerMinute / 60 + 1, ReplenishmentPeriod = TimeSpan.FromSeconds(1),
+                    TokenLimit = Math.Max(1, perMinute / 4), TokensPerPeriod = perMinute / 60 + 1, ReplenishmentPeriod = TimeSpan.FromSeconds(1),
                     QueueLimit = 0, AutoReplenishment = true
                 });
             });
@@ -132,9 +135,13 @@ public static class HostingSetup
     }
 
     /// <summary>Security headers for API and SPA responses (CSP tuned for the Angular apps and SignalR).</summary>
+    /// <summary>
+    /// Security headers, applied when the response starts: they survive the exception handler clearing the response, and a
+    /// header an endpoint set itself (e.g. the sandbox CSP of file downloads) wins.
+    /// </summary>
     public static IApplicationBuilder UseDeskSecurityHeaders(this IApplicationBuilder app, IHostEnvironment env) => app.Use(async (http, next) =>
     {
-        var h = http.Response.Headers;
+        var h = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         h["X-Content-Type-Options"] = "nosniff";
         h["Referrer-Policy"] = "strict-origin-when-cross-origin";
         h["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
@@ -161,6 +168,12 @@ public static class HostingSetup
                 "base-uri 'self'; form-action 'self'; object-src 'none'";
         }
         if (!env.IsDevelopment()) h["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains";
+        http.Response.OnStarting(() =>
+        {
+            foreach (var (name, value) in h)
+                if (!http.Response.Headers.ContainsKey(name)) http.Response.Headers[name] = value;
+            return Task.CompletedTask;
+        });
         await next();
     });
 

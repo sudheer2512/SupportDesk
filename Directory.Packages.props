@@ -1,6 +1,12 @@
 <Project>
   <!-- Central package versions (NuGet central package management). -->
+  <PropertyGroup>
+    <!-- Versions below also apply to transitive dependencies (security patches of indirect packages). -->
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
   <ItemGroup>
+    <!-- CVE-2026-84008 / CVE-2026-70162 (DoS): pulled in by MimeKit, PDFsharp and SqlClient. -->
+    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.12" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.12" />

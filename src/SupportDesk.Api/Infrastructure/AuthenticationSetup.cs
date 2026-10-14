@@ -91,6 +91,7 @@ public sealed class ApiKeyHandler(IOptionsMonitor<AuthenticationSchemeOptions> o
             new(DeskClaims.Tenant, client.TenantId.ToString()),
             new(DeskClaims.Name, client.Name),
             new(DeskClaims.Scope, string.Join(' ', client.Scopes)),
+            new(DeskClaims.RateLimit, client.RateLimitPerMinute.ToString(System.Globalization.CultureInfo.InvariantCulture)),
             new("api_key", "true")
         };
         if (client.ActAsUserId is { } u) claims.Add(new Claim("act_as", u.ToString()));

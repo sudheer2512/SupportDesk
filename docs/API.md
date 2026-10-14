@@ -160,18 +160,19 @@ A scope `module:write` grants every permission of that module. `module:read` gra
 | `products:read` / `products:write` | `products.view` / + `products.manage` |
 | `contracts:read` / `contracts:write` | `contracts.view` / + `contracts.manage` |
 | `kb:read` / `kb:write` | `kb.view_internal` / + `kb.author`, `kb.review`, `kb.publish` |
-| `analytics:read` | `analytics.view` (personal analytics only — see the note below) |
+| `analytics:read` | `analytics.view`, `analytics.team` (team-wide reporting; an API client has no tickets of its own) |
 | `admin:write` | every `admin.*` permission |
 | `ai:write` | `ai.use`, `ai.approve_actions` |
 | `*` | every permission, including future ones |
-| `admin:read`, `integrations:write` | **nothing** in this release (no permission matches them) |
+| `admin:read` | `admin.audit` (read the audit log; other settings have no read-only permission) |
+| `integrations:write` | `admin.integrations`, `engineering.view`, `engineering.link` |
 
 Notes:
 
 * `contacts.merge`, `community.moderate`, `approvals.decide`, `supervisor.monitor`, `agents.manage`,
-  `engineering.*`, `analytics.team`, `analytics.export` and `analytics.schedule` are only reachable with `*`.
-* `analytics.view` alone means *personal* analytics: the caller's own assigned tickets. A key without an act-as user
-  owns no tickets, so analytics queries return zeros. Use `*`, or an act-as user who holds `analytics.team`.
+  `engineering.manage`, `analytics.export` and `analytics.schedule` are only reachable with `*`.
+* The same rule (`ApiScopeRules`) computes a credential's permissions and checks every request, so the table above is
+  exactly what a key can do.
 * SLA breach lists need `admin.sla`, `supervisor.monitor` or `admin.organisation` — `admin:write` or `*` for a key,
   or a supervisor's bearer token (recipe 12.7).
 
@@ -259,13 +260,12 @@ Errors use RFC 7807 problem details (`application/problem+json`) with a stable `
 { "title": "Some fields need attention.", "status": 400,
   "detail": "One or more fields are invalid: subject: A subject is required.",
   "instance": "/api/v1/tickets", "code": "validation_failed",
-  "errors": { "subject": "A subject is required." }, "correlationId": "" }
+  "errors": { "subject": "A subject is required." }, "correlationId": "4bf92f3577b34da6a3ce929d0e0e4736" }
 ```
 
 * `errors` maps each field to **one message string**.
 * Branch on `code`, not on `title` (titles are for people and may change).
-* `correlationId` is meant to echo the `X-Correlation-Id` header. **In this release it is empty**; see the known issues
-  at the end of this section.
+* `correlationId` equals the `X-Correlation-Id` response header (also on errors). Quote it when you report a problem.
 
 | HTTP | `code` | Meaning |
 |---|---|---|
@@ -288,11 +288,6 @@ Other shapes you may meet:
   `ValidationProblemDetails` (`errors` maps each field to an **array**, plus `traceId`) **without** a `code`.
 * 401 and 403 from authentication itself have an empty body.
 * `/oauth/token` uses OAuth's `{"error": "…"}` format.
-
-**Known issues in this release**
-
-* `correlationId` in problem bodies is always empty, and error responses do not carry the `X-Correlation-Id` header.
-  The exception handler reads the header after the response was reset (`src/SupportDesk.Api/Infrastructure/ErrorHandling.cs`).
 
 ---
 
@@ -354,9 +349,8 @@ ticket). If newer **public** entries by someone else exist, the API answers **40
 
 Show `newEntries` to the user, then resend with `basedOnSeq: currentSeq`, or with `"force": true`.
 
-**Known issue:** for API keys and OAuth clients **without** an act-as user, customer messages never trigger a collision,
-because the "written by someone else" check compares a null user id (`src/SupportDesk.Application/Tickets/ConversationService.cs`,
-line 75). Agent tokens and act-as keys behave as described.
+For API keys and OAuth clients without an act-as user, every newer public entry counts (including the key's own earlier
+replies), so pass the `currentSeq` you last saw.
 
 ### Idempotency (`clientRequestId`)
 
@@ -381,16 +375,14 @@ Use a key derived from your own record (for example `crm-case-88412`) so that re
 |---|---|---|---|
 | `auth` | sign-in, refresh, `/oauth/token`, portal auth, portal submissions and assistant, sign-up | 30 per minute (`RateLimits:AuthPerMinute`) | client IP |
 | `public` | portal content, chat widget API, CSAT, engineering hooks, automation webhooks | 240 per minute (`RateLimits:PublicPerMinute`) | client IP |
-| `api` | all agent endpoints and signed-in portal endpoints | token bucket: burst 300, about 21 per second (`RateLimits:ApiPerMinute` = 1200) | intended per principal, **currently per IP** (see below) |
+| `api` | all agent endpoints and signed-in portal endpoints | token bucket: burst 300, about 21 per second (`RateLimits:ApiPerMinute` = 1200) | per signed-in user or API client; anonymous calls per IP |
 
 Exceeding a limit returns **429** with `Retry-After` (seconds) and `{"title": …, "status": 429, "code": "rate_limited"}`.
 Back off and retry after that many seconds. Channel provider webhooks and the SignalR hubs have no limiter.
 Anonymous portal submissions are also capped at 5 per IP per hour per brand.
 
-**Known issue:** the `api` policy is meant to partition by the signed-in principal, but the rate limiter runs before
-authentication (`src/SupportDesk.Api/Program.cs`, `UseRateLimiter` before `UseAuthentication`). In practice every caller
-behind one IP address shares one bucket. In a test, 420 rapid API-key calls got 112 × 429, and an agent token from the
-same IP was refused right after. The per-credential `rateLimitPerMinute` shown on keys and clients is not enforced.
+API keys and OAuth clients are held to their own `rateLimitPerMinute` (shown on the key or client; default 600 for keys,
+300 for OAuth clients), capped by the API-wide limit. Users behind one office address each get their own budget.
 
 ---
 
@@ -423,7 +415,7 @@ true; link-local and cloud metadata addresses are always blocked.
 | Area | Events |
 |---|---|
 | Tickets | `ticket.created`, `ticket.updated`, `ticket.status_changed`, `ticket.assigned`, `ticket.reply_added`, `ticket.customer_replied`, `ticket.note_added`, `ticket.merged`, `ticket.escalated`, `ticket.deleted` |
-| SLA | `sla.warning`, `sla.breached`, `sla.met` (subscribable, but not emitted in this release) |
+| SLA | `sla.warning`, `sla.breached`, `sla.met` (a milestone completed within its target) |
 | Customers | `contact.created`, `contact.updated`, `contact.merged`, `customer.created`, `customer.updated` |
 | Other | `article.published`, `message.received`, `message.status_changed`, `approval.requested`, `approval.decided`, `satisfaction.received`, `engineering.item_updated` |
 
@@ -1055,9 +1047,8 @@ Related endpoints: `breakdown` (several `metrics` side by side), `pareto`, `coho
 behind a number: `key` or `bucket`, `cursor`, `pageSize`), `reports` and `reports/{key}`.
 
 **Scope matters.** Results are limited to the caller's analytics scope. A supervisor or analyst token (with
-`analytics.team`) sees the data scope; an API key with only `analytics:read` sees its own (empty) assignment set and
-gets zeros — use `*` or an act-as user with `analytics.team` (section 2.3). The curl above uses an agent token for
-that reason.
+`analytics.team`) sees the data scope; an API key with `analytics:read` (which includes `analytics.team`) sees all of
+the tenant's tickets.
 
 ### 12.7 List SLA breaches
 

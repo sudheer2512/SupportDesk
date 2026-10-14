@@ -155,11 +155,5 @@ public sealed class RequestContext
     }
 
     /// <summary>Scopes are coarse ("tickets:read", "tickets:write", "customers:read", "*"); a permission is allowed when its module scope is granted.</summary>
-    private bool ScopeAllows(string permission)
-    {
-        if (Scopes.Contains("*")) return true;
-        var module = permission.Split('.')[0];
-        var isRead = permission.EndsWith(".view", StringComparison.Ordinal) || permission.EndsWith(".view_internal", StringComparison.Ordinal);
-        return Scopes.Contains($"{module}:write") || (isRead && Scopes.Contains($"{module}:read"));
-    }
+    private bool ScopeAllows(string permission) => Domain.Rules.ApiScopeRules.Allows(Scopes, permission);
 }
