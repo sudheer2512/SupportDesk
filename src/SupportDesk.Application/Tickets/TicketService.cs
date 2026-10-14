@@ -128,11 +128,16 @@ public sealed class TicketService(
 
         // Contact and customer
         Guid? contactId = r.ContactId;
+        Domain.Customers.Contact? contact = null;
         if (ctx.IsContact) contactId = ctx.ContactId;
         else if (contactId is null && r.NewContact is { } nc && (nc.Email is not null || nc.Phone is not null))
-            contactId = (await contacts.FindOrCreateAsync(nc.Email, nc.Phone, nc.FullName, nc.CustomerId ?? r.CustomerId, channel, ct)).Id;
-        var contact = contactId is null ? null : await db.Contacts.AsNoTracking().FirstOrDefaultAsync(c => c.Id == contactId, ct)
-                                                 ?? throw new ValidationException(new Dictionary<string, string> { ["contactId"] = "Unknown contact." });
+        {
+            contact = await contacts.FindOrCreateAsync(nc.Email, nc.Phone, nc.FullName, nc.CustomerId ?? r.CustomerId, channel, ct);
+            contactId = contact.Id;
+        }
+        if (contact is null && contactId is not null)
+            contact = await db.Contacts.AsNoTracking().FirstOrDefaultAsync(c => c.Id == contactId, ct)
+                      ?? throw new ValidationException(new Dictionary<string, string> { ["contactId"] = "Unknown contact." });
         var customerId = r.CustomerId ?? contact?.CustomerId;
         var locationId = r.LocationId ?? contact?.LocationId;
 

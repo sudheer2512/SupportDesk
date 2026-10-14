@@ -232,6 +232,8 @@ public class DeskDbContext(DbContextOptions<DeskDbContext> options, RequestConte
     {
         base.OnModelCreating(modelBuilder);
         ModelConfiguration.Configure(modelBuilder);
+        // Module-owned configurations (Persistence/Configurations/*.cs) — new entities are discovered here.
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(DeskDbContext).Assembly);
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes().ToList())
         {
