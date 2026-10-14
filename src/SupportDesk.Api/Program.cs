@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.SignalR;
+using SupportDesk.Api.Controllers.Communication;
 using SupportDesk.Api.Infrastructure;
 using SupportDesk.Api.Realtime;
 using SupportDesk.Application;
@@ -33,6 +34,7 @@ var signalR = builder.Services.AddSignalR(o =>
 }).AddJsonProtocol(o => HostingSetup.ConfigureJson(o.PayloadSerializerOptions));
 if (config["Redis:Configuration"] is { Length: > 0 } redis) signalR.AddStackExchangeRedis(redis, o => o.Configuration.ChannelPrefix = StackExchange.Redis.RedisChannel.Literal("supportdesk"));
 
+builder.Services.AddCommunicationApi();
 builder.Services.AddDeskAuthentication();
 builder.Services.AddDeskRateLimiting(config);
 builder.Services.AddDeskOpenApi();
@@ -94,6 +96,7 @@ app.MapDeskHealthChecks();
 app.MapControllers();
 app.MapHub<DeskHub>("/hubs/desk");
 app.MapHub<PortalHub>("/hubs/portal");
+app.MapCommunicationApi();
 app.MapSpas();
 
 app.Run();
