@@ -7,7 +7,7 @@ import { ContextPanelComponent } from '../context/context-panel.component';
 import { allowedStatuses } from '../shared/ticket-ui';
 import { QueuePanelComponent } from './queue-panel.component';
 import { TicketListComponent } from './ticket-list.component';
-import { STANDARD_QUEUES, TicketWorkbenchStore } from './workbench.store';
+import { STANDARD_QUEUES, TicketCommand, TicketWorkbenchStore } from './workbench.store';
 
 /**
  * /tickets — the agent workspace: queues & saved views (left), the ticket list and open tickets as tabs
@@ -231,7 +231,19 @@ export class TicketsWorkspacePage {
         this.store.activeTicket.set(null);
       }
     });
-    inject(DestroyRef).onDestroy(() => nav.unsubscribe());
+    // Floating side panels must not cover the ticket when the window shrinks to tablet / phone width.
+    const tablet = typeof matchMedia !== 'undefined' ? matchMedia('(max-width: 1100px)') : null;
+    const phone = typeof matchMedia !== 'undefined' ? matchMedia('(max-width: 767px)') : null;
+    const onTablet = (e: MediaQueryListEvent) => e.matches && this.rightCollapsed.set(true);
+    const onPhone = (e: MediaQueryListEvent) => e.matches && this.leftCollapsed.set(true);
+    tablet?.addEventListener('change', onTablet);
+    phone?.addEventListener('change', onPhone);
+    if (tablet?.matches) this.rightCollapsed.set(true);
+    inject(DestroyRef).onDestroy(() => {
+      nav.unsubscribe();
+      tablet?.removeEventListener('change', onTablet);
+      phone?.removeEventListener('change', onPhone);
+    });
 
     const active = () => !!this.store.activeTicketId();
     injectShortcuts([
@@ -276,7 +288,7 @@ export class TicketsWorkspacePage {
     effect((onCleanup) => {
       const t = this.store.activeTicket();
       if (!t) return;
-      const send = (c: Parameters<typeof this.store.commands.next>[0]) => () => this.store.commands.next(c);
+      const send = (c: TicketCommand) => () => this.store.commands.next(c);
       const statuses = allowedStatuses(this.meta.ticketForm(), t.statusId).filter((s) => s.id !== t.statusId);
       const commands: SdCommand[] = [
         { id: 'ticket.current.reply', title: `Reply to ${t.displayNumber}`, group: 'Current ticket', icon: 'reply', shortcut: 'r', when: () => t.can.reply, run: send({ type: 'reply' }) },

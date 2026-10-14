@@ -212,12 +212,27 @@ const NARROW_PX = 1000;
       color: var(--sd-danger);
     }
     @media (max-width: 767px) {
+      /* Phones: one scrolling column (header → conversation), composer pinned to the bottom. */
+      :host {
+        display: block;
+        overflow-y: auto;
+      }
       .loading,
       .state {
         padding: 16px;
       }
+      .body,
+      .conversation {
+        display: block;
+      }
       .scroll {
+        overflow: visible;
         padding: 0 10px 12px;
+      }
+      desk-composer {
+        position: sticky;
+        bottom: 0;
+        z-index: 2;
       }
     }
   `,
@@ -297,9 +312,12 @@ export class TicketViewComponent {
     // Keep the newest message in view: on first load, and when new entries arrive while near the bottom.
     effect(() => {
       const length = this.ctx.timeline().length;
-      const el = this.scroller()?.nativeElement;
+      const scroller = this.scroller()?.nativeElement;
+      const phone = this.phone();
       untracked(() => {
-        if (!el || length === 0) return;
+        // On phones the whole view scrolls; elsewhere only the conversation does.
+        const el = phone ? this.host.nativeElement : scroller;
+        if (!el || !scroller || length === 0) return;
         const wasEmpty = this.lastTimelineLength === 0;
         this.lastTimelineLength = length;
         const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 160;
