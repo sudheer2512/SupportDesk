@@ -10,6 +10,7 @@
     <Project Path="src/SupportDesk.Workers/SupportDesk.Workers.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/SupportDesk.E2ETests/SupportDesk.E2ETests.csproj" />
     <Project Path="tests/SupportDesk.IntegrationTests/SupportDesk.IntegrationTests.csproj" />
     <Project Path="tests/SupportDesk.LoadTests/SupportDesk.LoadTests.csproj" />
     <Project Path="tests/SupportDesk.UnitTests/SupportDesk.UnitTests.csproj" />

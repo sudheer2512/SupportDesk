@@ -289,6 +289,9 @@ export class TicketViewComponent {
 
   /** /tickets/<number> → /tickets/<id> without a history entry; a missing number shows the normal error state. */
   private openByNumber(number: string): void {
+    // The workspace only shows the ticket pane while a ticket is active: without this a number that does not resolve
+    // (deleted, or outside the agent's scope) left the queue list on screen with the "not found" state hidden.
+    this.store.activeTicketId.set(this.id());
     this.ctx.ticket.set(null);
     this.ctx.error.set(null);
     this.ctx.loading.set(true);

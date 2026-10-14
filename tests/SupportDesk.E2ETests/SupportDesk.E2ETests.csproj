@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <Description>Browser end-to-end tests: the real API (separate process, throwaway LocalDB database, demo seed) driven through the desk and portal SPAs with Playwright on the installed Chrome.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Microsoft.Playwright" />
+    <!-- Only for Microsoft.Data.SqlClient (dropping the throwaway database). -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Builds the API alongside the tests (the fixture runs its output as a separate process); not referenced in-process. -->
+    <ProjectReference Include="..\..\src\SupportDesk.Api\SupportDesk.Api.csproj" ReferenceOutputAssembly="false" Private="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Xunit" />
+    <Using Include="Microsoft.Playwright" />
+  </ItemGroup>
+</Project>
