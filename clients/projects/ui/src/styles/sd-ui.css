@@ -341,6 +341,14 @@ input[type='time'].sd-input {
   overflow: hidden;
   animation: sd-dialog-in var(--sd-dur-slow) var(--sd-ease);
 }
+/* The opened component (a feature's host element wrapping <sd-dialog>) passes the height cap down, so the
+   dialog body scrolls and the footer stays visible however tall the content is. */
+.sd-dialog-panel .cdk-dialog-container > * {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: inherit;
+}
 @keyframes sd-dialog-in {
   from {
     opacity: 0;

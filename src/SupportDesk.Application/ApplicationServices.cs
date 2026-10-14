@@ -102,6 +102,7 @@ public static class ApplicationServices
         s.AddAdministrationModule(configuration);
         s.AddSubscriptionsModule(configuration);
         s.AddIntegrationModule(configuration);
+        s.AddMobileModule(configuration);
         return s;
     }
 }

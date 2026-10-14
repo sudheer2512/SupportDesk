@@ -12,7 +12,8 @@ using SupportDesk.Persistence;
 namespace SupportDesk.Application.Sla;
 
 public sealed record SlaTargetSnapshot(TicketPriority Priority, int? FirstResponseMinutes, int? NextResponseMinutes, int? ResolutionMinutes, bool BusinessHours, int WarningPercent);
-public sealed record SlaEscalationSnapshot(SlaMilestoneKind Milestone, int Level, int MinutesAfterBreach, EscalationAction Action, string NotifyJson, Guid? ReassignToUserId, Guid? ReassignToTeamId);
+public sealed record SlaEscalationSnapshot(SlaMilestoneKind Milestone, int Level, int MinutesAfterBreach, EscalationAction Action, string NotifyJson, Guid? ReassignToUserId, Guid? ReassignToTeamId,
+    int? AtPercent = null);
 public sealed record SlaPolicySnapshot(Guid PolicyId, string Name, int Version, IReadOnlyList<SlaTargetSnapshot> Targets, IReadOnlyList<SlaEscalationSnapshot> Escalations,
     IReadOnlyList<Guid> PauseStatusIds, Guid? CalendarId, string CalendarSource);
 public sealed record CalendarSnapshot(string TimeZone, bool Is24x7, string WeeklyJson, IReadOnlyList<DateOnly> Holidays, IReadOnlyList<string> RecurringHolidays);
@@ -412,7 +413,7 @@ public sealed class SlaEngine(DeskDbContext db) : ISlaEngine
         p.Id, p.Name, p.Version,
         p.Targets.Select(t => new SlaTargetSnapshot(t.Priority, t.FirstResponseMinutes, t.NextResponseMinutes, t.ResolutionMinutes, t.BusinessHours, t.WarningPercent)).ToList(),
         p.Escalations.OrderBy(e => e.Milestone).ThenBy(e => e.Level)
-            .Select(e => new SlaEscalationSnapshot(e.Milestone, e.Level, e.MinutesAfterBreach, e.Action, e.NotifyJson, e.ReassignToUserId, e.ReassignToTeamId)).ToList(),
+            .Select(e => new SlaEscalationSnapshot(e.Milestone, e.Level, e.MinutesAfterBreach, e.Action, e.NotifyJson, e.ReassignToUserId, e.ReassignToTeamId, e.AtPercent)).ToList(),
         Json.GuidList(p.PauseStatusIdsJson), calendarId, source);
 
     private async Task<bool> IsPausedStatusAsync(Guid statusId, SlaPolicySnapshot snapshot, CancellationToken ct) =>

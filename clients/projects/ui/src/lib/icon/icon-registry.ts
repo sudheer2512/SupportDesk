@@ -14,6 +14,11 @@ import {
   Users, Video, Wallet, Wand, Webhook, Workflow, X, Zap
 } from 'lucide';
 
+// Icons used by feature screens (desk, portal, mobile) — registered centrally so every page has them on first load.
+import {
+  AlarmClock, ArchiveRestore, ArrowBigUp, ArrowUpRight, BadgeCheck, CalendarClock, ChartLine, Compass, FileDown, FileSpreadsheet, FileUp, FolderTree, Forward, GitBranch, GitCompare, Hash, ListTree, MailCheck, MailX, Megaphone, MessageSquarePlus, PhoneIncoming, PhoneMissed, PhoneOutgoing, Pin, PinOff, Repeat, Reply, Route, Save, SearchX, ShieldOff, Signpost, Smile, StarOff, StickyNote, TicketCheck, UserMinus, UserRoundCheck, Voicemail, Volume2, VolumeX, Wrench,
+} from 'lucide';
+
 /** Lucide icon data: a list of [svg child tag, attributes]. */
 export type IconNode = [string, Record<string, string | number>][];
 
@@ -46,7 +51,9 @@ const registry = new Map<string, IconNode>(Object.entries({
   split: Split, star: Star, strikethrough: Strikethrough, sun: Sun, 'sun-moon': SunMoon, table: Table, tag: Tag, 'thumbs-down': ThumbsDown,
   'thumbs-up': ThumbsUp, ticket: Ticket, timer: Timer, trash: Trash, 'trending-down': TrendingDown, 'trending-up': TrendingUp,
   'triangle-alert': TriangleAlert, underline: Underline, undo: Undo2, upload: Upload, user: User, 'user-check': UserCheck,
-  'user-plus': UserPlus, users: Users, video: Video, wallet: Wallet, wand: Wand, webhook: Webhook, workflow: Workflow, x: X, zap: Zap
+  'user-plus': UserPlus, users: Users, video: Video, wallet: Wallet, wand: Wand, webhook: Webhook, workflow: Workflow, x: X, zap: Zap,
+  // feature icons
+  'alarm-clock': AlarmClock, 'archive-restore': ArchiveRestore, 'arrow-big-up': ArrowBigUp, 'arrow-up-right': ArrowUpRight, 'badge-check': BadgeCheck, 'calendar-clock': CalendarClock, 'chart-line': ChartLine, compass: Compass, 'file-down': FileDown, 'file-spreadsheet': FileSpreadsheet, 'file-up': FileUp, 'folder-tree': FolderTree, forward: Forward, 'git-branch': GitBranch, 'git-compare': GitCompare, hash: Hash, 'list-tree': ListTree, 'mail-check': MailCheck, 'mail-x': MailX, megaphone: Megaphone, 'message-plus': MessageSquarePlus, 'phone-incoming': PhoneIncoming, 'phone-missed': PhoneMissed, 'phone-outgoing': PhoneOutgoing, pin: Pin, 'pin-off': PinOff, repeat: Repeat, reply: Reply, route: Route, save: Save, 'search-x': SearchX, 'shield-off': ShieldOff, signpost: Signpost, smile: Smile, 'star-off': StarOff, 'sticky-note': StickyNote, 'ticket-check': TicketCheck, 'user-minus': UserMinus, 'user-round-check': UserRoundCheck, voicemail: Voicemail, 'volume-off': VolumeX, 'volume-on': Volume2, wrench: Wrench
 } as Record<string, IconNode>));
 
 /** Names known at build time (others can be registered at runtime). */

@@ -98,6 +98,7 @@ public sealed class FcmPushSender(HttpClient http, IConfiguration config) : IPus
             return SendResult.Ok(doc.RootElement.TryGetProperty("name", out var n) ? n.GetString() : null);
         }
         var unregistered = text.Contains("UNREGISTERED", StringComparison.Ordinal) || res.StatusCode == HttpStatusCode.NotFound;
+        if (unregistered) return SendResult.Dead($"FCM returned {(int)res.StatusCode} (device token is no longer registered).");
         return SendResult.Fail($"FCM returned {(int)res.StatusCode}{(unregistered ? " (device token is no longer registered)" : "")}.",
             unregistered || res.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.Forbidden);
     }

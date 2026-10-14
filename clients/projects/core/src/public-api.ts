@@ -95,6 +95,20 @@ export * from './lib/api/products.api';
 export * from './lib/api/erp.api';
 export * from './lib/utils/validation-errors';
 
+// Mobile app: push-device registration
+export * from './lib/models/mobile';
+export * from './lib/api/devices.api';
+// Analytics: metric catalogue, queries, reports, dashboards, exports and scheduled reports
+export * from './lib/models/analytics';
+export * from './lib/api/analytics.api';
+// Engineering escalation (Azure DevOps / GitHub / built-in tracker) and Teams / Slack collaboration
+export * from './lib/models/engineering';
+export * from './lib/api/engineering.api';
+// Organisation (departments, teams, agents, workforce, supervisor monitor) and SLA administration
+export * from './lib/models/organisation';
+export * from './lib/models/sla-admin';
+export * from './lib/api/organisation.api';
+export * from './lib/api/sla-admin.api';
 // Administration console (roles, ticket configuration, brands, notifications, security, API credentials)
 export * from './lib/models/administration';
 export * from './lib/api/administration.api';

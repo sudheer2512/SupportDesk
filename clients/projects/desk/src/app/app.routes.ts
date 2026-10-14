@@ -27,6 +27,13 @@ export const routes: Routes = [
     loadComponent: () => import('./auth/login.page').then((m) => m.LoginPage),
   },
   {
+    // Invited agents set their password with the e-mailed code (Teams & Agents module).
+    path: 'accept-invite',
+    canActivate: [guestGuard],
+    title: 'Accept invitation',
+    loadComponent: () => import('./features/teams/accept-invite.page').then((m) => m.AcceptInvitePage),
+  },
+  {
     // Developer reference of @sd/ui components; only routable in dev builds.
     path: 'design-system',
     canMatch: [() => isDevMode()],
@@ -50,6 +57,11 @@ export const routes: Routes = [
       { path: 'kb', canActivate: [perms('kb')], loadChildren: () => import('./features/kb/kb.routes').then((m) => m.ROUTES) },
       { path: 'analytics', canActivate: [perms('analytics')], loadChildren: () => import('./features/analytics/analytics.routes').then((m) => m.ROUTES) },
       { path: 'ai', canActivate: [perms('ai')], loadChildren: () => import('./features/ai/ai.routes').then((m) => m.ROUTES) },
+      {
+        path: 'engineering',
+        canActivate: [perms('engineering')],
+        loadChildren: () => import('./features/engineering/engineering.routes').then((m) => m.ROUTES),
+      },
       { path: 'admin', canActivate: [perms('admin')], loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ROUTES) },
       {
         path: 'subscription',

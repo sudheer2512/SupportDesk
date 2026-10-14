@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SupportDesk.Application.Mobile;
 using SupportDesk.Application.Platform;
 using SupportDesk.Domain;
 using SupportDesk.Domain.Communication;
@@ -23,13 +24,13 @@ public sealed class NotificationDeliveryTask(TenantScopeRunner tenants) : IRecur
 
 /// <summary>
 /// Sends due <see cref="NotificationDelivery"/> rows: e-mail through the system mailer, push to every active device of
-/// the user (FCM, or log-only when not configured), Teams via the user's or tenant's incoming webhook, and digests
+/// the user (FCM/APNs per platform, or log-only when not configured), Teams via the user's or tenant's incoming webhook, and digests
 /// aggregated per user (one e-mail listing every pending item). Failures retry with backoff and dead-letter after 5 attempts.
 /// </summary>
 public sealed class NotificationDeliveryProcessor(
     DeskDbContext db,
     ISystemMailer mailer,
-    IPushSender push,
+    PushFanout pushFanout,
     ITeamsNotifier teams,
     ISecretProtector protector,
     TenantSettingsService settings,
@@ -115,25 +116,17 @@ public sealed class NotificationDeliveryProcessor(
                 }
                 case NotificationChannel.Push:
                 {
-                    var devices = await db.PushDevices.AsNoTracking().Where(p => p.UserId == uid && p.IsActive).Select(p => p.Token).ToListAsync(ct);
+                    // Every active device of the user (phone + tablet…); dead tokens are deactivated by the fan-out.
+                    var devices = await pushFanout.UserDevicesAsync(uid, ct);
                     if (devices.Count == 0)
                     {
                         Complete([d], DeliveryStatus.Succeeded, "no registered devices");
                         break;
                     }
-                    await SendAsync([d], async () =>
+                    await SendAsync([d], () => pushFanout.SendAsync(devices, n.Title, n.Body ?? "", new Dictionary<string, string>
                     {
-                        SendResult? last = null;
-                        foreach (var token in devices)
-                        {
-                            last = await push.SendAsync(token, n.Title, n.Body ?? "", new Dictionary<string, string>
-                            {
-                                ["type"] = n.Type, ["link"] = n.Link ?? "", ["notificationId"] = n.Id.ToString(), ["entityId"] = n.EntityId?.ToString() ?? ""
-                            }, ct);
-                            if (last.Success) return last;
-                        }
-                        return last ?? SendResult.Fail("no device accepted the push");
-                    }, ct);
+                        ["type"] = n.Type, ["link"] = n.Link ?? "", ["notificationId"] = n.Id.ToString(), ["entityId"] = n.EntityId?.ToString() ?? ""
+                    }, ct), ct);
                     break;
                 }
                 case NotificationChannel.Teams:

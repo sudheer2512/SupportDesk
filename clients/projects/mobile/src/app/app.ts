@@ -1,14 +1,57 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
+  add,
+  addCircleOutline,
+  alarmOutline,
+  alertCircleOutline,
+  arrowUpOutline,
+  atOutline,
+  attachOutline,
+  callOutline,
+  cameraOutline,
+  chatbubbleEllipsesOutline,
+  checkmarkCircleOutline,
+  checkmarkDoneOutline,
+  chevronDown,
+  closeCircleOutline,
+  cloudOfflineOutline,
+  cloudUploadOutline,
+  documentOutline,
+  documentTextOutline,
+  ellipse,
+  ellipsisVertical,
+  eyeOutline,
+  fileTrayFullOutline,
+  fileTrayOutline,
+  gitCompareOutline,
+  helpBuoyOutline,
   helpCircleOutline,
+  homeOutline,
+  hourglassOutline,
+  imageOutline,
   listOutline,
   logOutOutline,
+  mailOutline,
   notificationsOutline,
+  personAddOutline,
   personCircleOutline,
+  personOutline,
+  refreshCircleOutline,
+  refreshOutline,
+  send,
+  star,
+  starOutline,
+  thumbsDownOutline,
+  thumbsUpOutline,
   ticketOutline,
+  timeOutline,
+  trendingUpOutline,
+  warningOutline,
 } from 'ionicons/icons';
+import { SessionCoordinator } from './core/session-coordinator';
+import { MobileThemeService, MobileToasts } from './core/ui-services';
 
 @Component({
   selector: 'm-root',
@@ -18,6 +61,58 @@ import {
 })
 export class App {
   constructor() {
-    addIcons({ listOutline, notificationsOutline, personCircleOutline, ticketOutline, helpCircleOutline, logOutOutline });
+    addIcons({
+      add,
+      addCircleOutline,
+      alarmOutline,
+      alertCircleOutline,
+      arrowUpOutline,
+      atOutline,
+      attachOutline,
+      callOutline,
+      cameraOutline,
+      chatbubbleEllipsesOutline,
+      checkmarkCircleOutline,
+      checkmarkDoneOutline,
+      chevronDown,
+      closeCircleOutline,
+      cloudOfflineOutline,
+      cloudUploadOutline,
+      documentOutline,
+      documentTextOutline,
+      ellipse,
+      ellipsisVertical,
+      eyeOutline,
+      fileTrayFullOutline,
+      fileTrayOutline,
+      gitCompareOutline,
+      helpBuoyOutline,
+      helpCircleOutline,
+      homeOutline,
+      hourglassOutline,
+      imageOutline,
+      listOutline,
+      logOutOutline,
+      mailOutline,
+      notificationsOutline,
+      personAddOutline,
+      personCircleOutline,
+      personOutline,
+      refreshCircleOutline,
+      refreshOutline,
+      send,
+      star,
+      starOutline,
+      thumbsDownOutline,
+      thumbsUpOutline,
+      ticketOutline,
+      timeOutline,
+      trendingUpOutline,
+      warningOutline,
+    });
+    // App-wide services: light/dark (system + toggle), toasts, session/offline/resume coordination.
+    inject(MobileThemeService);
+    inject(MobileToasts);
+    inject(SessionCoordinator).start();
   }
 }

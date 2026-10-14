@@ -13,6 +13,17 @@ export const ROUTES: Routes = [
   },
   // AI administration (owned by the AI module): provider, budget, features, prompts, agents, usage, execution log.
   { path: 'ai', canActivate: [permissionGuard('admin.ai')], loadChildren: () => import('./ai/admin-ai.routes').then((m) => m.ROUTES) },
+  // Engineering escalation (trackers, mappings, sync-back rules) and Teams / Slack channels (owned by the integrations module).
+  {
+    path: 'engineering',
+    canActivate: [permissionGuard('admin.integrations')],
+    loadChildren: () => import('./engineering/engineering-admin.routes').then((m) => m.ROUTES),
+  },
+  {
+    path: 'collaboration',
+    canActivate: [permissionGuard('admin.integrations')],
+    loadChildren: () => import('./collaboration/collaboration.routes').then((m) => m.ROUTES),
+  },
   // Administration console (H1): roles, ticket configuration, brands, notifications, security, API credentials.
   { path: 'roles', canActivate: [permissionGuard('admin.roles')], loadChildren: () => import('./roles/roles.routes').then((m) => m.ROUTES) },
   {
