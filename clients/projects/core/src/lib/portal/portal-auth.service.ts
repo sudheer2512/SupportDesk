@@ -5,7 +5,7 @@ import { AuthStatus } from '../auth/auth.service';
 import { SD_REFRESH_TOKEN_STORE } from '../config';
 import { ApiError } from '../http/api-error';
 import { AuthSession } from '../http/auth-session';
-import { PortalLoginResponse, PortalMeDto } from '../models/portal';
+import { PortalLoginResponse, PortalMeDto, PortalRegisterRequest } from '../models/portal';
 import { STORAGE_KEYS, safeStorage } from '../utils/storage';
 import { PortalApi } from './portal.api';
 
@@ -72,6 +72,19 @@ export class PortalAuthService implements AuthSession {
   async verifyOtp(brand: string, email: string, code: string): Promise<PortalLoginResponse> {
     this.selectBrand(brand);
     return this.handle(await firstValueFrom(this.api.verifyOtp(brand, email.trim(), code.trim())));
+  }
+
+  /** Creates a portal account (brands with self-registration) and signs in on success (status "ok"). */
+  async register(brand: string, request: PortalRegisterRequest): Promise<PortalLoginResponse> {
+    this.selectBrand(brand);
+    this.remember(brand, request.email);
+    return this.handle(await firstValueFrom(this.api.register(brand, { ...request, email: request.email.trim() })));
+  }
+
+  /** Replaces the cached contact after a profile change. */
+  updateContact(patch: Partial<PortalMeDto>): void {
+    const current = this._contact();
+    if (current) this._contact.set({ ...current, ...patch });
   }
 
   refreshAccessToken(): Promise<boolean> {

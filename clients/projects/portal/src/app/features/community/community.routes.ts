@@ -1,16 +1,14 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Routes } from '@angular/router';
-import { PortalPlaceholderComponent } from '../../shared/portal-placeholder.component';
+import { portalAuthGuard } from '@sd/core';
 
-/** Community landing — placeholder until forums are built. */
-@Component({
-  selector: 'portal-community-home',
-  imports: [PortalPlaceholderComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<portal-placeholder title="Community" icon="messages" subtitle="Ask other customers and our experts." [planned]="planned" />`,
-})
-export class CommunityHomePage {
-  protected readonly planned = ['Topics by product and category', 'Questions, ideas and announcements', 'Accepted answers from moderators'];
-}
-
-export const ROUTES: Routes = [{ path: '', title: 'Community', component: CommunityHomePage }];
+/** Community forum: topic list, new topic (signed-in) and topic pages. */
+export const ROUTES: Routes = [
+  { path: '', title: 'Community', loadComponent: () => import('./community-list.page').then((m) => m.CommunityListPage) },
+  {
+    path: 'new',
+    title: 'New topic',
+    canActivate: [portalAuthGuard],
+    loadComponent: () => import('./new-topic.page').then((m) => m.NewTopicPage),
+  },
+  { path: ':id', title: 'Community', loadComponent: () => import('./topic.page').then((m) => m.TopicPage) },
+];

@@ -17,6 +17,8 @@ export * from './lib/models/files';
 export * from './lib/models/notifications';
 export * from './lib/models/realtime';
 export * from './lib/models/portal';
+export * from './lib/models/knowledge';
+export * from './lib/models/portal-content';
 
 // HTTP
 export * from './lib/http/api-client';
@@ -40,6 +42,9 @@ export * from './lib/api/tickets.api';
 export * from './lib/api/views.api';
 export * from './lib/api/files.api';
 export * from './lib/api/notifications.api';
+export * from './lib/api/knowledge.api';
+export * from './lib/api/community.api';
+export * from './lib/api/search.api';
 
 // Realtime
 export * from './lib/realtime/realtime.service';
@@ -48,6 +53,9 @@ export * from './lib/realtime/realtime.service';
 export * from './lib/portal/portal.api';
 export * from './lib/portal/portal-auth.service';
 export * from './lib/portal/portal-guards';
+export * from './lib/portal/portal-content.api';
+export * from './lib/portal/portal-tickets.api';
+export * from './lib/portal/portal-realtime.service';
 
 // App services
 export * from './lib/services/clock.service';

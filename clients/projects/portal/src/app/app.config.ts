@@ -10,6 +10,7 @@ import { TitleStrategy, provideRouter, withComponentInputBinding, withInMemorySc
 import { PortalAuthService, SD_AUTH_SESSION, ThemeService, authInterceptor, errorToastInterceptor, provideSdCore } from '@sd/core';
 import { ToastService } from '@sd/ui';
 import { routes } from './app.routes';
+import { registerPortalIcons } from './portal-icons';
 import { PortalTitleStrategy } from './portal-title.strategy';
 
 export const appConfig: ApplicationConfig = {
@@ -23,6 +24,7 @@ export const appConfig: ApplicationConfig = {
     { provide: SD_AUTH_SESSION, useExisting: PortalAuthService },
     { provide: TitleStrategy, useClass: PortalTitleStrategy },
     provideAppInitializer(() => {
+      registerPortalIcons();
       inject(ThemeService);
       inject(ToastService);
     }),

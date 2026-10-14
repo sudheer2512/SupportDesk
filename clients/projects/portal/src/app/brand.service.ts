@@ -21,6 +21,10 @@ export class BrandService {
   readonly state = signal<BrandLoadState>('idle');
   readonly slug = signal<string | null>(null);
   readonly name = computed(() => this._config()?.portalTitle || this._config()?.name || 'Support');
+  /** Router path of the brand home, e.g. "/acme" (prefix for every portal link). */
+  readonly base = computed(() => `/${this.slug() ?? ''}`);
+  /** Locales the brand publishes content in (first = default). */
+  readonly locales = computed(() => this._config()?.locales ?? []);
   readonly features = computed<PortalFeatures>(
     () =>
       this._config()?.features ?? {
