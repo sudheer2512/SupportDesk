@@ -45,6 +45,13 @@ public sealed class RequestContext
     /// <summary>Set by trusted platform code paths only (tenant provisioning, platform console). Allows cross-tenant writes.</summary>
     public bool AllowCrossTenant { get; private set; }
 
+    /// <summary>
+    /// Pins this scope's database connections to one database (background workers that claim outbox events or jobs, or scan
+    /// across tenants): <see cref="Guid.Empty"/> = the shared database, a tenant id = that tenant's dedicated database.
+    /// Null (default) routes by <see cref="TenantId"/>.
+    /// </summary>
+    public Guid? DatabasePin { get; set; }
+
     public bool HasTenant => TenantId != Guid.Empty;
     public bool IsAgent => UserId.HasValue && ActorType == ActorType.User;
     public bool IsContact => ContactId.HasValue && ActorType == ActorType.Contact;

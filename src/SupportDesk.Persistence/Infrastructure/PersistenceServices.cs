@@ -40,7 +40,8 @@ public static class PersistenceServices
                 sql.CommandTimeout(60);
                 sql.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
             });
-            o.AddInterceptors(new TenantConnectionInterceptor(sp.GetRequiredService<RequestContext>(), sp.GetRequiredService<TenantDatabaseDirectory>()));
+            o.AddInterceptors(new TenantConnectionInterceptor(sp.GetRequiredService<RequestContext>(), sp.GetRequiredService<TenantDatabaseDirectory>(),
+                sp.GetRequiredService<SharedConnection>()));
             o.ConfigureWarnings(w => w.Ignore(RelationalEventId.MultipleCollectionIncludeWarning));
         });
         return services;
@@ -131,7 +132,7 @@ public sealed class TenantDatabaseDirectory(SharedConnection shared, IConfigurat
 }
 
 /// <summary>Routes a DbContext's connection to the tenant's dedicated database (if any) just before it opens.</summary>
-internal sealed class TenantConnectionInterceptor(RequestContext request, TenantDatabaseDirectory directory) : DbConnectionInterceptor
+internal sealed class TenantConnectionInterceptor(RequestContext request, TenantDatabaseDirectory directory, SharedConnection shared) : DbConnectionInterceptor
 {
     public override InterceptionResult ConnectionOpening(DbConnection connection, ConnectionEventData eventData, InterceptionResult result)
     {
@@ -146,11 +147,28 @@ internal sealed class TenantConnectionInterceptor(RequestContext request, Tenant
         return ValueTask.FromResult(result);
     }
 
+    private bool _routedToDedicated;
+
+    /// <summary>
+    /// Points the connection at the database of the scope's pin (workers) or tenant: the tenant's dedicated database when it has
+    /// one. A connection this interceptor moved to a dedicated database goes back to the shared one when the scope's target no
+    /// longer has one; other connections (e.g. the master connection EnsureCreated opens) are left alone.
+    /// </summary>
     private void Route(DbConnection connection)
     {
-        if (!request.HasTenant || connection.State != ConnectionState.Closed) return;
-        var dedicated = directory.DedicatedConnectionFor(request.TenantId);
-        if (dedicated is not null && connection.ConnectionString != dedicated) connection.ConnectionString = dedicated;
+        if (connection.State != ConnectionState.Closed) return;
+        Guid? tenant = request.DatabasePin ?? (request.HasTenant ? request.TenantId : null);
+        var dedicated = tenant is { } t && t != Guid.Empty ? directory.DedicatedConnectionFor(t) : null;
+        if (dedicated is not null)
+        {
+            if (connection.ConnectionString != dedicated) connection.ConnectionString = dedicated;
+            _routedToDedicated = true;
+        }
+        else if (_routedToDedicated)
+        {
+            connection.ConnectionString = shared.ConnectionString;
+            _routedToDedicated = false;
+        }
     }
 }
 

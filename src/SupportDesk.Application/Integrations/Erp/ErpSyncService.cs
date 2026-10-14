@@ -469,9 +469,15 @@ public sealed class ErpSyncTask(DeskDbContext db, TenantScopeRunner runner, ILog
     public async Task RunAsync(CancellationToken ct)
     {
         var now = db.Clock.UtcNow;
-        var candidates = await db.AllTenants<Integration>().AsNoTracking()
-            .Where(i => i.IsActive && (i.Type == ErpSystems.WingsErp || i.Type == ErpSystems.WingsBooks))
-            .Select(i => new { i.TenantId, i.Type, i.LastSyncAt, i.SettingsJson }).ToListAsync(ct);
+        // Discover connected tenants in every database (dedicated tenants' settings are not in the shared one).
+        var candidates = new List<(Guid TenantId, string Type, DateTime? LastSyncAt, string SettingsJson)>();
+        await runner.ForEachDatabaseAsync("ERP sync", async (sp, partition, token) =>
+        {
+            var found = await sp.GetRequiredService<DeskDbContext>().AllTenants<Integration>().AsNoTracking()
+                .Where(i => i.IsActive && (i.Type == ErpSystems.WingsErp || i.Type == ErpSystems.WingsBooks))
+                .Select(i => new { i.TenantId, i.Type, i.LastSyncAt, i.SettingsJson }).ToListAsync(token);
+            candidates.AddRange(found.Where(i => partition.Owns(i.TenantId)).Select(i => (i.TenantId, i.Type, i.LastSyncAt, i.SettingsJson)));
+        }, ct);
         foreach (var c in candidates)
         {
             var interval = Json.DeserializeOr(c.SettingsJson, new ErpSettings()).SyncIntervalMinutes;

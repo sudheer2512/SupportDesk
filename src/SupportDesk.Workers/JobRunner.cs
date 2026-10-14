@@ -12,73 +12,108 @@ using SupportDesk.Persistence.Context;
 
 namespace SupportDesk.Workers;
 
+/// <summary>A claimed job and the database its row lives in (<see cref="Guid.Empty"/> = the shared database).</summary>
+public readonly record struct ClaimedJob(Guid Database, Guid Id);
+
 /// <summary>
 /// Durable job execution. Jobs are claimed with a 5-minute lease; a job whose lease expired (worker crash or restart)
 /// is picked up again, so handlers must be idempotent. Failures retry with exponential backoff, then dead-letter.
+/// Jobs are claimed from every database (shared and dedicated); bookkeeping stays pinned to the job's database while the
+/// handler runs in a scope routed by the job's tenant.
 /// </summary>
-public sealed class JobProcessor(IServiceScopeFactory scopes, WorkerOptions options, IClock clock, ILogger<JobProcessor> logger)
+public sealed class JobProcessor(IServiceScopeFactory scopes, TenantScopeRunner runner, WorkerOptions options, IClock clock, ILogger<JobProcessor> logger)
 {
     public static readonly ActivitySource Activity = new("SupportDesk.Jobs");
     public static readonly TimeSpan Lease = TimeSpan.FromMinutes(5);
 
-    public async Task<IReadOnlyList<Guid>> ClaimAsync(int take, CancellationToken ct)
+    public async Task<IReadOnlyList<ClaimedJob>> ClaimAsync(int take, CancellationToken ct)
     {
-        using var scope = scopes.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<DeskDbContext>();
-        var now = clock.UtcNow;
-        return await db.Database.SqlQueryRaw<Guid>("""
-            WITH due AS (
-                SELECT TOP (@take) * FROM dbo.BackgroundJobs WITH (ROWLOCK, UPDLOCK, READPAST)
-                WHERE ((Status IN ('Queued','Failed') AND RunAt <= @now) OR (Status = 'Running' AND LockedUntil < @now))
-                ORDER BY Priority DESC, RunAt, Id)
-            UPDATE due SET Status = 'Running', LockedUntil = @lease, LockedBy = @owner, StartedAt = @now, Attempts = Attempts + 1
-            OUTPUT inserted.Id AS Value;
-            """,
-            new SqlParameter("@take", take), new SqlParameter("@now", now), new SqlParameter("@lease", now.Add(Lease)),
-            new SqlParameter("@owner", options.InstanceName)).ToListAsync(ct);
-    }
-
-    public async Task ExecuteAsync(Guid jobId, CancellationToken ct)
-    {
-        using var scope = scopes.CreateScope();
-        var sp = scope.ServiceProvider;
-        var db = sp.GetRequiredService<DeskDbContext>();
-        var job = await db.BackgroundJobs.AsNoTracking().FirstAsync(j => j.Id == jobId, ct);
-        using var activity = Activity.StartActivity($"job {job.Type}");
-        activity?.SetTag("job.id", job.Id);
-        var ctx = sp.GetRequiredService<RequestContext>();
-        if (job.TenantId is { } tenant) ctx.SetSystem(tenant, "Background job");
-        ctx.CorrelationId = job.CorrelationId ?? job.Id.ToString("N");
-        var handler = sp.GetServices<IJobHandler>().FirstOrDefault(h => h.Type == job.Type);
-        string? error = null;
-        if (handler is null) error = $"No handler registered for job type '{job.Type}'.";
-        else
+        var claimed = new List<ClaimedJob>();
+        foreach (var partition in runner.Partitions())
         {
+            if (claimed.Count >= take) break;
+            var database = partition.DedicatedTenantId ?? Guid.Empty;
             try
             {
-                await handler.ExecuteAsync(job, ct);
+                using var scope = PinnedScope(database);
+                var db = scope.ServiceProvider.GetRequiredService<DeskDbContext>();
+                var now = clock.UtcNow;
+                var ids = await db.Database.SqlQueryRaw<Guid>("""
+                    WITH due AS (
+                        SELECT TOP (@take) * FROM dbo.BackgroundJobs WITH (ROWLOCK, UPDLOCK, READPAST)
+                        WHERE ((Status IN ('Queued','Failed') AND RunAt <= @now) OR (Status = 'Running' AND LockedUntil < @now))
+                        ORDER BY Priority DESC, RunAt, Id)
+                    UPDATE due SET Status = 'Running', LockedUntil = @lease, LockedBy = @owner, StartedAt = @now, Attempts = Attempts + 1
+                    OUTPUT inserted.Id AS Value;
+                    """,
+                    new SqlParameter("@take", take - claimed.Count), new SqlParameter("@now", now), new SqlParameter("@lease", now.Add(Lease)),
+                    new SqlParameter("@owner", options.InstanceName)).ToListAsync(ct);
+                claimed.AddRange(ids.Select(id => new ClaimedJob(database, id)));
             }
-            catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested)
+            catch (Exception ex) when (ex is not OperationCanceledException && partition.DedicatedTenantId is not null)
             {
-                error = $"{ex.GetType().Name}: {ex.Message}";
-                logger.LogWarning(ex, "Job {Job} ({Type}) attempt {Attempt} failed", job.Id, job.Type, job.Attempts);
+                // One unreachable dedicated database must not stop job processing for everyone else.
+                logger.LogError(ex, "Job claim failed for the dedicated database of tenant {Tenant}", partition.DedicatedTenantId);
             }
         }
-        db.ChangeTracker.Clear();
+        return claimed;
+    }
+
+    public async Task ExecuteAsync(ClaimedJob claimed, CancellationToken ct)
+    {
+        BackgroundJob job;
+        using (var scope = PinnedScope(claimed.Database))
+            job = await scope.ServiceProvider.GetRequiredService<DeskDbContext>().BackgroundJobs.AsNoTracking().FirstAsync(j => j.Id == claimed.Id, ct);
+        using var activity = Activity.StartActivity($"job {job.Type}");
+        activity?.SetTag("job.id", job.Id);
+        string? error = null;
+        bool hasHandler;
+        using (var scope = scopes.CreateScope())
+        {
+            var sp = scope.ServiceProvider;
+            var ctx = sp.GetRequiredService<RequestContext>();
+            if (job.TenantId is { } tenant) ctx.SetSystem(tenant, "Background job");
+            ctx.CorrelationId = job.CorrelationId ?? job.Id.ToString("N");
+            var handler = sp.GetServices<IJobHandler>().FirstOrDefault(h => h.Type == job.Type);
+            hasHandler = handler is not null;
+            if (handler is null) error = $"No handler registered for job type '{job.Type}'.";
+            else
+            {
+                try
+                {
+                    await handler.ExecuteAsync(job, ct);
+                }
+                catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested)
+                {
+                    error = $"{ex.GetType().Name}: {ex.Message}";
+                    logger.LogWarning(ex, "Job {Job} ({Type}) attempt {Attempt} failed", job.Id, job.Type, job.Attempts);
+                }
+            }
+        }
+        using var bookkeeping = PinnedScope(claimed.Database);
+        var db = bookkeeping.ServiceProvider.GetRequiredService<DeskDbContext>();
         var now = clock.UtcNow;
         if (error is null)
         {
-            await db.BackgroundJobs.Where(j => j.Id == jobId).ExecuteUpdateAsync(u => u
+            await db.BackgroundJobs.Where(j => j.Id == job.Id).ExecuteUpdateAsync(u => u
                 .SetProperty(j => j.Status, JobStatus.Succeeded).SetProperty(j => j.CompletedAt, now)
                 .SetProperty(j => j.LockedUntil, (DateTime?)null).SetProperty(j => j.Error, (string?)null), ct);
             return;
         }
-        var dead = job.Attempts >= job.MaxAttempts || handler is null;
+        var dead = job.Attempts >= job.MaxAttempts || !hasHandler;
         var delay = TimeSpan.FromSeconds(Math.Min(900, 5 * Math.Pow(4, Math.Max(0, job.Attempts - 1))));
-        await db.BackgroundJobs.Where(j => j.Id == jobId).ExecuteUpdateAsync(u => u
+        await db.BackgroundJobs.Where(j => j.Id == job.Id).ExecuteUpdateAsync(u => u
             .SetProperty(j => j.Status, dead ? JobStatus.DeadLetter : JobStatus.Failed).SetProperty(j => j.RunAt, now.Add(delay))
             .SetProperty(j => j.LockedUntil, (DateTime?)null).SetProperty(j => j.Error, error.Length > 4000 ? error[..4000] : error), ct);
         if (dead) logger.LogError("Job {Job} ({Type}) dead-lettered: {Error}", job.Id, job.Type, error);
+    }
+
+    /// <summary>A scope whose connections stay on one database (where the job row lives), whatever tenant it touches.</summary>
+    private IServiceScope PinnedScope(Guid database)
+    {
+        var scope = scopes.CreateScope();
+        scope.ServiceProvider.GetRequiredService<RequestContext>().DatabasePin = database;
+        return scope;
     }
 
     /// <summary>Claims and runs due jobs until none are left (used by tests and the runner loop).</summary>

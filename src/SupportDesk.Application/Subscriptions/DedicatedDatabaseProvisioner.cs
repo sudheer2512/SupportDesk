@@ -108,6 +108,9 @@ public sealed class DedicatedDatabaseProvisioner(
                     string filter;
                     if (entity.ClrType == typeof(Tenant)) filter = "s.[Id] = @t";
                     else if (entity.FindProperty("TenantId") is not null) filter = "s.[TenantId] = @t";
+                    // Handler progress of the tenant's events (so half-processed events don't repeat completed handlers).
+                    else if (entity.ClrType == typeof(OutboxDelivery))
+                        filter = "s.[EventId] IN (SELECT e.[Id] FROM dbo.[OutboxEvents] e WHERE e.[TenantId] = @t)";
                     else if (GlobalReferenceTypes.Contains(entity.ClrType))
                         filter = $"NOT EXISTS (SELECT 1 FROM {Quote(database)}.{Table(entity)} x WHERE x.[{entity.FindPrimaryKey()!.Properties[0].GetColumnName()}] = s.[{entity.FindPrimaryKey()!.Properties[0].GetColumnName()}])";
                     else continue;
@@ -131,6 +134,20 @@ public sealed class DedicatedDatabaseProvisioner(
             }
         }
         steps.Add($"Copied {rows:N0} rows from {tables} tables (tenant-owned data, the tenant record, plans and permissions).");
+
+        // The tenant's pending events and jobs now also exist in the dedicated database, where the workers process them;
+        // retire the shared originals so each runs exactly once.
+        var now = db.Clock.UtcNow;
+        const string moved = "Moved to the tenant's dedicated database.";
+        var retiredEvents = await db.OutboxEvents
+            .Where(e => e.TenantId == tenantId && (e.Status == OutboxStatus.Pending || e.Status == OutboxStatus.Failed || e.Status == OutboxStatus.Processing))
+            .ExecuteUpdateAsync(u => u.SetProperty(e => e.Status, OutboxStatus.Processed).SetProperty(e => e.ProcessedAt, now)
+                .SetProperty(e => e.LockedUntil, (DateTime?)null).SetProperty(e => e.Error, moved), ct);
+        var retiredJobs = await db.BackgroundJobs
+            .Where(j => j.TenantId == tenantId && (j.Status == JobStatus.Queued || j.Status == JobStatus.Failed || j.Status == JobStatus.Running))
+            .ExecuteUpdateAsync(u => u.SetProperty(j => j.Status, JobStatus.Cancelled).SetProperty(j => j.LockedUntil, (DateTime?)null)
+                .SetProperty(j => j.Error, moved), ct);
+        steps.Add($"Retired {retiredEvents} pending events and {retiredJobs} queued jobs in the shared database (they run in the dedicated database).");
         steps.Add("Sessions are not copied: users sign in again after the move.");
 
         // 5. Switch the tenant.

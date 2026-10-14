@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using SupportDesk.Application.Common;
 using SupportDesk.Domain;
 using SupportDesk.Domain.Platform;
@@ -71,13 +72,16 @@ public static class AuditChain
 
 public sealed record AuditVerificationResult(bool Valid, long Checked, long? BrokenAtSequence, string? Message);
 
-/// <summary>Seals pending audit rows into per-tenant hash chains.</summary>
-public sealed class AuditSealerTask(DeskDbContext db) : IRecurringTask
+/// <summary>Seals pending audit rows into per-tenant hash chains, in every database (shared and dedicated).</summary>
+public sealed class AuditSealerTask(TenantScopeRunner runner) : IRecurringTask
 {
     public string Name => "audit-sealer";
     public TimeSpan Interval => TimeSpan.FromSeconds(5);
 
-    public async Task RunAsync(CancellationToken ct)
+    public Task RunAsync(CancellationToken ct) =>
+        runner.ForEachDatabaseAsync("Audit sealer", (sp, _, token) => SealAsync(sp.GetRequiredService<DeskDbContext>(), token), ct);
+
+    private static async Task SealAsync(DeskDbContext db, CancellationToken ct)
     {
         while (!ct.IsCancellationRequested)
         {

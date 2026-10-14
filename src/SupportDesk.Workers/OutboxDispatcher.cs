@@ -16,19 +16,39 @@ namespace SupportDesk.Workers;
 /// Claims due outbox events with a lease (UPDLOCK/READPAST, safe across instances), runs every interested handler in its
 /// own scope and tenant context, and records per-handler success so retries never repeat completed handlers.
 /// Failed events back off exponentially and dead-letter after <see cref="MaxAttempts"/>. Events whose lease expired
-/// (crashed instance) are reclaimed automatically.
+/// (crashed instance) are reclaimed automatically. Every database is processed: the shared one and each tenant's dedicated
+/// database — event bookkeeping stays pinned to the database the event lives in, handlers route by the event's tenant.
 /// </summary>
-public sealed class OutboxProcessor(IServiceScopeFactory scopes, WorkerOptions options, IClock clock, ILogger<OutboxProcessor> logger)
+public sealed class OutboxProcessor(IServiceScopeFactory scopes, TenantScopeRunner runner, WorkerOptions options, IClock clock, ILogger<OutboxProcessor> logger)
 {
     public const int MaxAttempts = 8;
     public static readonly ActivitySource Activity = new("SupportDesk.Outbox");
     private List<(string Name, int Order)>? _handlerCatalog;
 
-    /// <summary>Processes one batch. Returns the number of events handled.</summary>
+    /// <summary>Processes one batch per database. Returns the number of events handled.</summary>
     public async Task<int> ProcessBatchAsync(int batchSize, CancellationToken ct)
     {
+        var total = 0;
+        foreach (var partition in runner.Partitions())
+        {
+            var database = partition.DedicatedTenantId ?? Guid.Empty;
+            try
+            {
+                total += await ProcessBatchAsync(database, batchSize, ct);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException && partition.DedicatedTenantId is not null)
+            {
+                // One unreachable dedicated database must not stop event processing for everyone else.
+                logger.LogError(ex, "Outbox processing failed for the dedicated database of tenant {Tenant}", partition.DedicatedTenantId);
+            }
+        }
+        return total;
+    }
+
+    private async Task<int> ProcessBatchAsync(Guid database, int batchSize, CancellationToken ct)
+    {
         List<Guid> ids;
-        using (var scope = scopes.CreateScope())
+        using (var scope = PinnedScope(database))
         {
             var db = scope.ServiceProvider.GetRequiredService<DeskDbContext>();
             var now = clock.UtcNow;
@@ -43,15 +63,23 @@ public sealed class OutboxProcessor(IServiceScopeFactory scopes, WorkerOptions o
                 new SqlParameter("@take", batchSize), new SqlParameter("@now", now), new SqlParameter("@lease", now.AddMinutes(2)),
                 new SqlParameter("@owner", options.InstanceName)).ToListAsync(ct);
         }
-        foreach (var id in ids) await ProcessEventAsync(id, ct);
+        foreach (var id in ids) await ProcessEventAsync(database, id, ct);
         return ids.Count;
     }
 
-    private async Task ProcessEventAsync(Guid id, CancellationToken ct)
+    /// <summary>A scope whose connections stay on one database (where the outbox rows live), whatever tenant it touches.</summary>
+    private IServiceScope PinnedScope(Guid database)
+    {
+        var scope = scopes.CreateScope();
+        scope.ServiceProvider.GetRequiredService<RequestContext>().DatabasePin = database;
+        return scope;
+    }
+
+    private async Task ProcessEventAsync(Guid database, Guid id, CancellationToken ct)
     {
         OutboxEvent ev;
         HashSet<string> done;
-        using (var scope = scopes.CreateScope())
+        using (var scope = PinnedScope(database))
         {
             var db = scope.ServiceProvider.GetRequiredService<DeskDbContext>();
             ev = await db.OutboxEvents.AsNoTracking().FirstAsync(e => e.Id == id, ct);
@@ -85,14 +113,14 @@ public sealed class OutboxProcessor(IServiceScopeFactory scopes, WorkerOptions o
                 failures.Add($"{name}: {error}");
                 logger.LogWarning(ex, "Outbox handler {Handler} failed for event {Event} ({Type})", name, ev.Id, ev.Type);
             }
-            await RecordDeliveryAsync(ev.Id, name, error, ct);
+            await RecordDeliveryAsync(database, ev.Id, name, error, ct);
         }
-        await CompleteAsync(ev, failures, ct);
+        await CompleteAsync(database, ev, failures, ct);
     }
 
-    private async Task RecordDeliveryAsync(Guid eventId, string handler, string? error, CancellationToken ct)
+    private async Task RecordDeliveryAsync(Guid database, Guid eventId, string handler, string? error, CancellationToken ct)
     {
-        using var scope = scopes.CreateScope();
+        using var scope = PinnedScope(database);
         var db = scope.ServiceProvider.GetRequiredService<DeskDbContext>();
         var d = await db.OutboxDeliveries.FirstOrDefaultAsync(x => x.EventId == eventId && x.Handler == handler, ct);
         if (d is null)
@@ -107,9 +135,9 @@ public sealed class OutboxProcessor(IServiceScopeFactory scopes, WorkerOptions o
         await db.SaveChangesAsync(ct);
     }
 
-    private async Task CompleteAsync(OutboxEvent ev, List<string> failures, CancellationToken ct)
+    private async Task CompleteAsync(Guid database, OutboxEvent ev, List<string> failures, CancellationToken ct)
     {
-        using var scope = scopes.CreateScope();
+        using var scope = PinnedScope(database);
         var db = scope.ServiceProvider.GetRequiredService<DeskDbContext>();
         var now = clock.UtcNow;
         if (failures.Count == 0)

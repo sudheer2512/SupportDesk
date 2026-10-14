@@ -70,11 +70,18 @@ public sealed class ContractLifecycleTask(DeskDbContext db, TenantScopeRunner ru
     {
         var today = DateOnly.FromDateTime(db.Clock.UtcNow);
         var horizon = today.AddDays(30);
-        var tenants = await db.AllTenants<Contract>()
-            .Where(c => c.Status == ContractStatus.Active && c.EndDate <= horizon)
-            .Select(c => c.TenantId).Distinct()
-            .Union(db.AllTenants<Licence>().Where(l => l.Status == LicenceStatus.Active && l.ExpiresOn != null && l.ExpiresOn < today).Select(l => l.TenantId).Distinct())
-            .ToListAsync(ct);
+        // Discover tenants in every database (dedicated tenants' live data is not in the shared one).
+        var tenants = new List<Guid>();
+        await runner.ForEachDatabaseAsync("Contract lifecycle", async (sp, partition, token) =>
+        {
+            var pdb = sp.GetRequiredService<DeskDbContext>();
+            var found = await pdb.AllTenants<Contract>()
+                .Where(c => c.Status == ContractStatus.Active && c.EndDate <= horizon)
+                .Select(c => c.TenantId).Distinct()
+                .Union(pdb.AllTenants<Licence>().Where(l => l.Status == LicenceStatus.Active && l.ExpiresOn != null && l.ExpiresOn < today).Select(l => l.TenantId).Distinct())
+                .ToListAsync(token);
+            tenants.AddRange(found.Where(partition.Owns));
+        }, ct);
         foreach (var tenantId in tenants)
         {
             try

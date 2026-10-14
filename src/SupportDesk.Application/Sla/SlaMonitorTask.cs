@@ -27,10 +27,16 @@ public sealed class SlaMonitorTask(DeskDbContext db, TenantScopeRunner runner, I
     {
         var now = db.Clock.UtcNow;
         var horizon = now.AddDays(1);
-        var tenants = await db.AllTenants<SlaMilestone>()
-            .Where(m => (m.Status == MilestoneStatus.Active && ((!m.WarningRaised && m.WarningAt <= now) || m.DueAt <= horizon)) ||
-                        (m.Status == MilestoneStatus.Breached && m.CompletedAt == null))
-            .Select(m => m.TenantId).Distinct().ToListAsync(ct);
+        // Find tenants with due milestones in every database (dedicated tenants' live data is not in the shared one).
+        var tenants = new List<Guid>();
+        await runner.ForEachDatabaseAsync("SLA monitor", async (sp, partition, token) =>
+        {
+            var found = await sp.GetRequiredService<DeskDbContext>().AllTenants<SlaMilestone>()
+                .Where(m => (m.Status == MilestoneStatus.Active && ((!m.WarningRaised && m.WarningAt <= now) || m.DueAt <= horizon)) ||
+                            (m.Status == MilestoneStatus.Breached && m.CompletedAt == null))
+                .Select(m => m.TenantId).Distinct().ToListAsync(token);
+            tenants.AddRange(found.Where(partition.Owns));
+        }, ct);
         foreach (var tenantId in tenants)
         {
             try

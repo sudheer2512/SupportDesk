@@ -122,8 +122,10 @@ plan feature `dedicated_database`). The provisioner:
 Runbook: suspend the tenant first (no writes during the copy), move it, verify sign-in and data, reactivate. Users sign in again
 (sessions are not copied). The shared-database rows stay as a frozen copy for rollback; purge them after verification. For another
 server: back up/restore a copy of the tenant's rows there, create the connection name, then switch the tenant (step 5).
-Known limitation: the outbox dispatcher, job runner and audit sealer scan the shared database only, so events, jobs and audit
-sealing of dedicated tenants need workers pointed at those databases (not yet automated).
+Background work follows the tenant: the outbox dispatcher, job runner, audit sealer and cross-tenant scans (SLA monitor,
+contract lifecycle, ERP sync) process the shared database and every dedicated database (the shared frozen copy of a moved
+tenant is skipped). Events and jobs still pending in the shared database at the move are copied and retired there, so each
+runs once. An unreachable dedicated database is logged and skipped without stopping the other tenants.
 
 On LocalDB (development) set `ConnectionStrings__DedicatedTemplate=Server=(localdb)\MSSQLLocalDB;Database=SupportDesk_{name};Trusted_Connection=True;TrustServerCertificate=True`.
 
