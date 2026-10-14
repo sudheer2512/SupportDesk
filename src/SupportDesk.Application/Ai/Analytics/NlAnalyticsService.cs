@@ -35,7 +35,8 @@ public sealed class SafeAnalyticsQuery(DeskDbContext db, RequestContext ctx, Tic
         var intent = AnalyticsCatalog.Validate(raw);
         var metric = AnalyticsCatalog.Metrics[intent.Metric];
         var (from, to) = AnalyticsCatalog.ResolvePeriod(intent.Period, db.Clock.UtcNow, tz);
-        var q = db.Tickets.AsNoTracking().VisibleTo(ctx, db).Where(t => !t.IsSpam && t.MergedIntoTicketId == null);
+        // Same scope as reports and dashboards (ticket data scope; personal when the caller lacks analytics.team).
+        var q = global::SupportDesk.Application.Analytics.AnalyticsScope.Tickets(db, ctx).AsNoTracking().Where(t => !t.IsSpam && t.MergedIntoTicketId == null);
         q = metric.ByResolvedDate ? q.Where(t => t.ResolvedAt >= from && t.ResolvedAt < to) : q.Where(t => t.CreatedAt >= from && t.CreatedAt < to);
         q = intent.Metric switch
         {
