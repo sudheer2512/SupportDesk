@@ -150,11 +150,7 @@ public sealed record ExecutionFeedbackRequest(bool Accepted, string? Note = null
 public sealed record AnomalyAlertDto(Guid Id, string Dimension, Guid? DimensionId, string DimensionLabel, DateOnly Day, int Count, double Baseline,
     double StdDev, double Score, string Status, DateTime CreatedAt);
 
-// ───────────── Portal assistant ─────────────
-
-public sealed record PortalAssistantRequest(string Message, string? Locale = null, Guid? ConversationId = null);
-
-public sealed record PortalAssistantResponse(string Text, IReadOnlyList<CitationDto> Citations, bool SuggestHandoff, double Confidence);
+// The portal assistant endpoint lives in the portal module (POST /portal/{brand}/assistant, PortalAssistantReplyDto).
 
 // ───────────── Administration ─────────────
 

@@ -362,15 +362,15 @@ public sealed class AiTests(DeskApiFactory factory)
             await CreateArticleAsync(sp, "Internal: password reset override procedure",
                 "<p>Agents can force a password reset from the admin console using the override procedure.</p>", KbVisibility.Internal)));
         var anonymous = factory.CreateClient();
-        var response = await anonymous.PostAsJsonAsync($"/api/v1/portal/{t.Slug}/assistant", new PortalAssistantRequest("How do I reset my password?"), J);
-        var answer = await ReadAsync<PortalAssistantResponse>(response);
+        var response = await anonymous.PostAsJsonAsync($"/api/v1/portal/{t.Slug}/assistant", new SupportDesk.Contracts.Portal.PortalAssistantRequest("How do I reset my password?"), J);
+        var answer = await ReadAsync<SupportDesk.Contracts.Portal.PortalAssistantReplyDto>(response);
         Assert.Contains(answer.Citations, c => c.SourceId == publicArticle);
         Assert.DoesNotContain(answer.Citations, c => c.SourceId == internalArticle);
         Assert.DoesNotContain("override procedure", answer.Text);
 
-        var human = await ReadAsync<PortalAssistantResponse>(await anonymous.PostAsJsonAsync($"/api/v1/portal/{t.Slug}/assistant",
-            new PortalAssistantRequest("I want to talk to a human agent please"), J));
-        Assert.True(human.SuggestHandoff);
+        var human = await ReadAsync<SupportDesk.Contracts.Portal.PortalAssistantReplyDto>(await anonymous.PostAsJsonAsync($"/api/v1/portal/{t.Slug}/assistant",
+            new SupportDesk.Contracts.Portal.PortalAssistantRequest("I want to talk to a human agent please"), J));
+        Assert.True(human.SuggestTicket);
     }
 
     [Fact]

@@ -22,6 +22,8 @@ export * from './lib/models/automation';
 export * from './lib/models/workbench';
 export * from './lib/models/approvals';
 export * from './lib/models/ai';
+export * from './lib/models/knowledge';
+export * from './lib/models/portal-content';
 
 // HTTP
 export * from './lib/http/api-client';
@@ -54,6 +56,9 @@ export * from './lib/api/webhooks.api';
 export * from './lib/api/workbench.api';
 export * from './lib/api/approvals.api';
 export * from './lib/api/ai.api';
+export * from './lib/api/knowledge.api';
+export * from './lib/api/community.api';
+export * from './lib/api/search.api';
 
 // Realtime
 export * from './lib/realtime/realtime.service';
@@ -62,6 +67,9 @@ export * from './lib/realtime/realtime.service';
 export * from './lib/portal/portal.api';
 export * from './lib/portal/portal-auth.service';
 export * from './lib/portal/portal-guards';
+export * from './lib/portal/portal-content.api';
+export * from './lib/portal/portal-tickets.api';
+export * from './lib/portal/portal-realtime.service';
 
 // App services
 export * from './lib/services/clock.service';

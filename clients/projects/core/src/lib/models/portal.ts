@@ -12,7 +12,7 @@ export interface PortalFeatures {
 }
 
 /** How contacts sign in to this brand's portal. */
-export type PortalAuthMode = 'password' | 'otp' | 'both' | 'sso' | string;
+export type PortalAuthMode = 'Local' | 'Sso' | 'LocalAndSso' | string;
 
 export interface PortalConfigDto {
   brandSlug: string;

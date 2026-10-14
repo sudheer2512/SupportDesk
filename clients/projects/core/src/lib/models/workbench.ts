@@ -87,8 +87,8 @@ export interface InstallationLookupDto {
   locationId: Guid | null;
 }
 
-/** GET /search?q= */
-export interface GlobalSearchResultDto {
+/** GET /search/quick?q= (ticket number/subject, customers, contacts — the palette and header box). */
+export interface QuickSearchResultDto {
   tickets: TicketListItemDto[];
   customers: CustomerLookupDto[];
   contacts: ContactLookupDto[];

@@ -7,7 +7,7 @@ import {
   ConditionFieldCatalogDto,
   ContactLookupDto,
   CustomerLookupDto,
-  GlobalSearchResultDto,
+  QuickSearchResultDto,
   InstallationLookupDto,
   QueueCountsDto,
   RenderedTemplateDto,
@@ -79,8 +79,8 @@ export class WorkbenchApi {
 
   // ───── Look-ups ─────
 
-  search(q: string, limit = 6): Observable<GlobalSearchResultDto> {
-    return this.api.get<GlobalSearchResultDto>('search', { params: { q, limit }, silent: true });
+  search(q: string, limit = 6): Observable<QuickSearchResultDto> {
+    return this.api.get<QuickSearchResultDto>('search/quick', { params: { q, limit }, silent: true });
   }
 
   customers(q: string, limit = 20): Observable<CustomerLookupDto[]> {

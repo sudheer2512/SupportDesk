@@ -412,21 +412,6 @@ export interface AnomalyAlertDto {
   createdAt: IsoDateTime;
 }
 
-// ───── Portal assistant ─────
-
-export interface PortalAssistantRequest {
-  message: string;
-  locale?: string | null;
-  conversationId?: Guid | null;
-}
-
-export interface PortalAssistantResponse {
-  text: string;
-  citations: CitationDto[];
-  suggestHandoff: boolean;
-  confidence: number;
-}
-
 // ───── Administration ─────
 
 export interface AiFeatureSettingDto {

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, shareReplay, throwError } from 'rxjs';
 import { ApiClient } from '../http/api-client';
-import { PortalConfigDto, PortalLoginResponse } from '../models/portal';
+import { PortalConfigDto, PortalLoginResponse, PortalRegisterRequest } from '../models/portal';
 import { CSRF_HEADER } from '../api/auth.api';
 
 const enc = encodeURIComponent;
@@ -41,6 +41,11 @@ export class PortalApi {
 
   verifyOtp(brand: string, email: string, code: string): Observable<PortalLoginResponse> {
     return this.authPost(brand, 'otp/verify', { email, code });
+  }
+
+  /** Self-registration (only when the brand allows it). */
+  register(brand: string, body: PortalRegisterRequest): Observable<PortalLoginResponse> {
+    return this.authPost(brand, 'register', body);
   }
 
   refresh(brand: string, refreshToken: string | null): Observable<PortalLoginResponse> {

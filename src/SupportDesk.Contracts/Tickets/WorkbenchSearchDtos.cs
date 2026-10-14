@@ -12,5 +12,5 @@ public sealed record InstallationLookupDto(Guid Id, string Name, Guid ProductId,
     string Environment, string Status, Guid? LocationId);
 
 /// <summary>Workbench global search (GET /api/v1/search?q=): tickets, customers and contacts the caller may see.</summary>
-public sealed record GlobalSearchResultDto(IReadOnlyList<TicketListItemDto> Tickets, IReadOnlyList<CustomerLookupDto> Customers,
+public sealed record QuickSearchResultDto(IReadOnlyList<TicketListItemDto> Tickets, IReadOnlyList<CustomerLookupDto> Customers,
     IReadOnlyList<ContactLookupDto> Contacts);

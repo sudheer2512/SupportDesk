@@ -19,10 +19,10 @@ public sealed class WorkbenchSearchService(DeskDbContext db, RequestContext ctx,
 {
     private const int MaxLimit = 50;
 
-    public async Task<GlobalSearchResultDto> SearchAsync(string? q, int limit, CancellationToken ct = default)
+    public async Task<QuickSearchResultDto> SearchAsync(string? q, int limit, CancellationToken ct = default)
     {
         var term = (q ?? "").Trim();
-        if (term.Length < 2 && !long.TryParse(term.TrimStart('#'), out _)) return new GlobalSearchResultDto([], [], []);
+        if (term.Length < 2 && !long.TryParse(term.TrimStart('#'), out _)) return new QuickSearchResultDto([], [], []);
         limit = Math.Clamp(limit, 1, 20);
         var tickets = ctx.Has(Permissions.TicketsView)
             ? (await queries.ListAsync(new TicketQuery { Q = term, Limit = limit, Sort = "lastActivity", Dir = "desc" }, ct)).Items
@@ -30,7 +30,7 @@ public sealed class WorkbenchSearchService(DeskDbContext db, RequestContext ctx,
         var canSeeCustomers = CanLookUpCustomers();
         var customers = canSeeCustomers ? await CustomersAsync(term, limit, ct) : [];
         var contacts = canSeeCustomers ? await ContactsAsync(term, null, limit, ct) : [];
-        return new GlobalSearchResultDto(tickets, customers, contacts);
+        return new QuickSearchResultDto(tickets, customers, contacts);
     }
 
     public async Task<List<CustomerLookupDto>> CustomersAsync(string? q, int limit, CancellationToken ct = default)

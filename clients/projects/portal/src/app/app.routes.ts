@@ -27,6 +27,10 @@ const submitGuard: CanActivateFn = (route, state) => {
   return portalAuthGuard(route, state);
 };
 
+/**
+ * Portal routes. Everything lives under /:brand (the brand's help center); each feature is a lazy
+ * route with its own routes file. Route `title`s feed PortalTitleStrategy ("<page> · <portal title>").
+ */
 export const routes: Routes = [
   { path: '', title: 'Support portal', component: LandingPage },
   {
@@ -42,7 +46,10 @@ export const routes: Routes = [
         title: 'Create account',
         loadChildren: () => import('./features/account/account.routes').then((m) => m.REGISTER_ROUTES),
       },
+      { path: 'search', loadChildren: () => import('./features/search/search.routes').then((m) => m.ROUTES) },
       { path: 'kb', canActivate: [featureGuard('kb')], loadChildren: () => import('./features/kb/kb.routes').then((m) => m.ROUTES) },
+      { path: 'help', loadChildren: () => import('./features/help/help.routes').then((m) => m.ROUTES) },
+      { path: 'troubleshoot', loadChildren: () => import('./features/help/help.routes').then((m) => m.TROUBLESHOOT_ROUTES) },
       {
         path: 'community',
         canActivate: [featureGuard('community')],

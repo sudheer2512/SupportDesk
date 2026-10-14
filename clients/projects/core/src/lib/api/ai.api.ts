@@ -21,8 +21,6 @@ import {
   DuplicateCheckDto,
   KnowledgeDraftDto,
   MergeDuplicateRequest,
-  PortalAssistantRequest,
-  PortalAssistantResponse,
   PromptTemplateDto,
   ReindexResultDto,
   ResolutionPredictionDto,
@@ -164,13 +162,6 @@ export class AiApi {
 
   dismissAnomaly(id: Guid): Observable<AnomalyAlertDto> {
     return this.api.post<AnomalyAlertDto>(`ai/anomalies/${enc(id)}/dismiss`);
-  }
-
-  // ───── Customer portal ─────
-
-  /** Help-center assistant (anonymous: public knowledge only; signed-in contacts: their accessible knowledge). */
-  portalAssistant(brand: string, request: PortalAssistantRequest): Observable<PortalAssistantResponse> {
-    return this.api.post<PortalAssistantResponse>(`portal/${enc(brand)}/assistant`, request, { silent: true });
   }
 }
 
