@@ -549,7 +549,6 @@ export class TicketsListPage {
       .subscribe(() => this.stale.set(true));
   }
 
-
   protected scopeLabel(s: PortalTicketScope): string {
     const c = this.auth.contact();
     if (s === 'own') return 'Mine';

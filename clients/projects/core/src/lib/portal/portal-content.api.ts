@@ -27,6 +27,7 @@ import {
   PortalSearchResultDto,
   PortalSubmissionResultDto,
   PortalSupportInfoDto,
+  PortalTicketFormDto,
 } from '../models/portal-content';
 
 const enc = encodeURIComponent;
@@ -136,6 +137,11 @@ export class PortalContentApi {
 
   support(brand: string): Observable<PortalSupportInfoDto> {
     return this.api.get<PortalSupportInfoDto>(`${base(brand)}/support`);
+  }
+
+  /** Department / category / product pickers and portal fields for the anonymous form (brands that allow it). */
+  submitForm(brand: string): Observable<PortalTicketFormDto> {
+    return this.api.get<PortalTicketFormDto>(`${base(brand)}/submit/form`, { skipAuth: true, silent: true });
   }
 
   /** Anonymous ticket (only when the brand allows it). */

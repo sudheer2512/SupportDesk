@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { ApiError, PortalContentApi, PortalSubmissionResultDto } from '@sd/core';
+import { ApiError, PortalContentApi, PortalSubmissionResultDto, PortalTicketFormDto } from '@sd/core';
 import { SdButton, SdFormField, SdIcon, SdInput, ToastService } from '@sd/ui';
 import { firstValueFrom } from 'rxjs';
 import { BrandService } from '../../brand.service';
@@ -41,6 +41,40 @@ import { SubmitPrefillService } from '../../shared/submit-prefill.service';
           <input sdInput type="tel" name="phone" autocomplete="tel" maxlength="40" [value]="phone()" (input)="phone.set($any($event.target).value)" />
         </sd-form-field>
       </div>
+      @if (options(); as o) {
+        <div class="grid">
+          @if (o.departments.length > 1) {
+            <sd-form-field label="Department" optional>
+              <select sdInput name="departmentId" [value]="departmentId()" (change)="setDepartment($any($event.target).value)">
+                <option value="">Not sure</option>
+                @for (d of o.departments; track d.id) {
+                  <option [value]="d.id">{{ d.name }}</option>
+                }
+              </select>
+            </sd-form-field>
+          }
+          @if (categories().length > 0) {
+            <sd-form-field label="Category" optional>
+              <select sdInput name="categoryId" [value]="categoryId()" (change)="categoryId.set($any($event.target).value)">
+                <option value="">Not sure</option>
+                @for (c of categories(); track c.id) {
+                  <option [value]="c.id">{{ c.name }}</option>
+                }
+              </select>
+            </sd-form-field>
+          }
+          @if (o.products.length > 0) {
+            <sd-form-field label="Product" optional>
+              <select sdInput name="productId" [value]="productId()" (change)="productId.set($any($event.target).value)">
+                <option value="">Not sure</option>
+                @for (p of o.products; track p.id) {
+                  <option [value]="p.id">{{ p.name }}</option>
+                }
+              </select>
+            </sd-form-field>
+          }
+        </div>
+      }
       <sd-form-field label="Subject" required [error]="errors()['subject']">
         <input sdInput name="subject" maxlength="250" autocomplete="off" [value]="subject()" (input)="subject.set($any($event.target).value)" />
       </sd-form-field>
@@ -112,17 +146,33 @@ export class AnonymousFormComponent {
   protected readonly subject = signal('');
   protected readonly description = signal('');
   protected readonly website = signal('');
+  protected readonly options = signal<PortalTicketFormDto | null>(null);
+  protected readonly departmentId = signal('');
+  protected readonly categoryId = signal('');
+  protected readonly productId = signal('');
+  /** Top-level categories of the chosen department (or brand-wide ones). */
+  protected readonly categories = computed(() => {
+    const dept = this.departmentId();
+    return (this.options()?.categories ?? []).filter((c) => !c.parentId && (!dept || !c.departmentId || c.departmentId === dept));
+  });
   protected readonly busy = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly errors = signal<Record<string, string | null>>({});
   private readonly formStartedAt = Date.now();
 
   constructor() {
+    const slug = this.brand.slug();
+    if (slug) this.api.submitForm(slug).subscribe({ next: (o) => this.options.set(o), error: () => this.options.set(null) });
     const prefill = inject(SubmitPrefillService).take();
     if (prefill) {
       this.subject.set(prefill.subject ?? '');
       this.description.set(htmlToText(prefill.descriptionHtml));
     }
+  }
+
+  protected setDepartment(id: string): void {
+    this.departmentId.set(id);
+    if (this.categoryId() && !this.categories().some((c) => c.id === this.categoryId())) this.categoryId.set('');
   }
 
   protected solvedByArticle(): void {
@@ -154,6 +204,9 @@ export class AnonymousFormComponent {
           phone: this.phone().trim() || null,
           subject: this.subject().trim(),
           descriptionHtml: textToHtml(this.description()),
+          departmentId: this.departmentId() || null,
+          categoryId: this.categoryId() || null,
+          productId: this.productId() || null,
           website: this.website() || null,
           formStartedAt: this.formStartedAt,
         }),

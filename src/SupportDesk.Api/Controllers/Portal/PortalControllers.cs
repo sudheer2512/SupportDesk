@@ -170,6 +170,14 @@ public sealed class PortalContentController(
         return await assistant.AskAsync(r, ct);
     }
 
+    /// <summary>Department / category / product pickers and portal fields for the anonymous form.</summary>
+    [HttpGet("submit/form")]
+    public async Task<PortalTicketFormDto> SubmitForm(string brand, CancellationToken ct)
+    {
+        await portal.ResolveAsync(brand, ct: ct);
+        return await tickets.AnonymousFormAsync(ct);
+    }
+
     /// <summary>Anonymous ticket from the portal (brands that allow it).</summary>
     [HttpPost("submit")]
     [EnableRateLimiting(HostingSetup.AuthLimiter)]

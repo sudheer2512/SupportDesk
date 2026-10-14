@@ -848,7 +848,7 @@ export class TicketDetailPage {
     try {
       const message = await firstValueFrom(
         this.api.reply(slug, t.id, {
-          bodyHtml: isHtmlEmpty(body) ? '<p>(attachment)</p>' : body,
+          bodyHtml: isHtmlEmpty(body) ? '' : body,
           attachmentFileIds: files.length ? files : null,
           clientRequestId: this.replyRequestId,
         }),

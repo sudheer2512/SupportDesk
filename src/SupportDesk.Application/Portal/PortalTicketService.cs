@@ -275,9 +275,17 @@ public sealed class PortalTicketService(
 
     // ───────────────────────────── Create ─────────────────────────────
 
-    public async Task<PortalTicketFormDto> FormAsync(CancellationToken ct = default)
+    public Task<PortalTicketFormDto> FormAsync(CancellationToken ct = default) => FormCoreAsync(portal.Me.CustomerId, ct);
+
+    /// <summary>Pickers for the anonymous ticket form (no installations — those belong to a known customer).</summary>
+    public Task<PortalTicketFormDto> AnonymousFormAsync(CancellationToken ct = default)
     {
-        var me = portal.Me;
+        if (!portal.Brand.AllowAnonymousTickets) throw new NotFoundException("Ticket form");
+        return FormCoreAsync(null, ct);
+    }
+
+    private async Task<PortalTicketFormDto> FormCoreAsync(Guid? customerId, CancellationToken ct)
+    {
         var departments = await db.Departments.AsNoTracking().Where(d => d.IsActive && d.VisibleInPortal).OrderBy(d => d.SortOrder).ThenBy(d => d.Name)
             .Select(d => new PortalOptionDto(d.Id, d.Name, d.Description)).ToListAsync(ct);
         var deptIds = departments.Select(d => d.Id).ToList();
@@ -285,7 +293,7 @@ public sealed class PortalTicketService(
             .Where(c => c.IsActive && c.VisibleInPortal && (c.DepartmentId == null || deptIds.Contains(c.DepartmentId.Value)))
             .OrderBy(c => c.SortOrder).Select(c => new PortalCategoryOptionDto(c.Id, c.ParentId, c.Name, c.DepartmentId)).ToListAsync(ct);
         var products = await db.Products.AsNoTracking().Where(p => p.IsActive).OrderBy(p => p.Name).Select(p => new PortalOptionDto(p.Id, p.Name, p.Description)).ToListAsync(ct);
-        var installations = me.CustomerId is { } cust
+        var installations = customerId is { } cust
             ? await db.Installations.AsNoTracking().Where(i => i.CustomerId == cust && i.Status == Domain.Products.InstallationStatus.Active).OrderBy(i => i.Name)
                 .Select(i => new PortalInstallationOptionDto(i.Id, i.Name, i.ProductId, db.Products.Where(p => p.Id == i.ProductId).Select(p => p.Name).First(),
                     db.ProductVersions.Where(v => v.Id == i.VersionId).Select(v => v.Version).FirstOrDefault(),

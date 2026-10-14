@@ -152,12 +152,14 @@ public sealed class KbFeedbackService(DeskDbContext db, RequestContext ctx)
         var leastHelpful = (await articles.Where(a => a.HelpfulCount + a.NotHelpfulCount >= 3)
                 .OrderBy(a => (double)a.HelpfulCount / (a.HelpfulCount + a.NotHelpfulCount)).ThenByDescending(a => a.NotHelpfulCount).Take(10).ToListAsync(ct))
             .Select(Stat).ToList();
-        var topSearches = await logs.GroupBy(l => l.NormalizedQuery)
-            .Select(g => new KbSearchTermDto(g.Key, g.Count(), g.Average(l => (double)l.ResultCount), g.Max(l => l.CreatedAt)))
-            .OrderByDescending(x => x.Count).Take(15).ToListAsync(ct);
-        var gaps = await logs.Where(l => l.ResultCount == 0).GroupBy(l => l.NormalizedQuery)
-            .Select(g => new KbSearchTermDto(g.Key, g.Count(), 0, g.Max(l => l.CreatedAt)))
-            .OrderByDescending(x => x.Count).Take(15).ToListAsync(ct);
+        var topSearches = (await logs.GroupBy(l => l.NormalizedQuery)
+                .Select(g => new { Query = g.Key, Count = g.Count(), Avg = g.Average(l => (double)l.ResultCount), Last = g.Max(l => l.CreatedAt) })
+                .OrderByDescending(x => x.Count).ThenByDescending(x => x.Last).Take(15).ToListAsync(ct))
+            .Select(x => new KbSearchTermDto(x.Query, x.Count, Math.Round(x.Avg, 1), x.Last)).ToList();
+        var gaps = (await logs.Where(l => l.ResultCount == 0).GroupBy(l => l.NormalizedQuery)
+                .Select(g => new { Query = g.Key, Count = g.Count(), Last = g.Max(l => l.CreatedAt) })
+                .OrderByDescending(x => x.Count).ThenByDescending(x => x.Last).Take(15).ToListAsync(ct))
+            .Select(x => new KbSearchTermDto(x.Query, x.Count, 0, x.Last)).ToList();
 
         var searchDays = await logs.GroupBy(l => l.CreatedAt.Date).Select(g => new { Day = g.Key, Count = g.Count(), None = g.Count(l => l.ResultCount == 0) }).ToListAsync(ct);
         var feedbackDays = await db.ArticleFeedback.AsNoTracking().Where(f => f.CreatedAt >= from).GroupBy(f => f.CreatedAt.Date)
