@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, linkedSignal, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
@@ -26,7 +26,7 @@ import { SECTION_STYLES, TABLE_STYLES } from './shared/styles';
     <sd-card title="Check support eligibility" subtitle="What a new ticket for this customer would get right now." class="elig">
       <div class="elig-row">
         <select sdInput size="sm" aria-label="Installation" [ngModel]="installationId()" (ngModelChange)="installationId.set($event)">
-          <option [ngValue]="null">Any product / installation</option>
+          <option [ngValue]="null">No specific product (ticket without product)</option>
           @for (i of installations(); track i.id) {
             <option [ngValue]="i.id">{{ i.name }} — {{ i.productName }} {{ i.version }}</option>
           }
@@ -213,7 +213,7 @@ export class C360ContractsComponent {
 
   protected readonly statusTone = statusTone;
   protected readonly urgencyTone = urgencyTone;
-  protected readonly installationId = signal<Guid | null>(null);
+  protected readonly installationId = linkedSignal<Guid | null>(() => this.installations().find((i) => i.environment === 'Production')?.id ?? null);
   protected readonly eligibility = signal<EligibilityPreviewDto | null>(null);
   protected readonly checking = signal(false);
   protected readonly min = Math.min;

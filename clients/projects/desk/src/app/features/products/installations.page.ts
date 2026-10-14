@@ -111,7 +111,7 @@ import { InstallationFormData, InstallationFormDialog } from './installation-for
             (rowClick)="open($event.id)"
           >
             <ng-template sdCell="name" [sdCellRows]="list.items()" let-row>
-              <span class="sd-truncate"><strong>{{ row.name }}</strong> <span class="sd-xs sd-muted">{{ row.installationCode }}</span></span>
+              <span class="sd-truncate"><strong>{{ row.name }}</strong>&ngsp;&ngsp;<span class="sd-xs sd-muted">{{ row.installationCode }}</span></span>
             </ng-template>
             <ng-template sdCell="version" [sdCellRows]="list.items()" let-row>
               <span>{{ row.productName }} {{ row.release ?? row.version ?? '' }}</span>

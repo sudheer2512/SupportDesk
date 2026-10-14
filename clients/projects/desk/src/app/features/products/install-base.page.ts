@@ -117,12 +117,12 @@ export class InstallBasePage {
     const versions = [...(p?.versions ?? [])].reverse();
     return {
       tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-      legend: { top: 0, right: 0 },
-      grid: { left: 40, right: 40, top: 36, bottom: 28 },
+      legend: { top: 0, left: 0 },
+      grid: { left: 40, right: 40, top: 40, bottom: 28 },
       xAxis: { type: 'category', data: versions.map((v) => (v.isEndOfSupport ? `${v.version} (EOS)` : v.version)) },
       yAxis: [
-        { type: 'value', name: 'Installations', minInterval: 1 },
-        { type: 'value', name: 'Open tickets', minInterval: 1, splitLine: { show: false } },
+        { type: 'value', minInterval: 1 },
+        { type: 'value', minInterval: 1, splitLine: { show: false } },
       ],
       series: [
         { name: 'Production', type: 'bar', stack: 'inst', data: versions.map((v) => v.production), barMaxWidth: 36 },

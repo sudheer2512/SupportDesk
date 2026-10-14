@@ -384,7 +384,7 @@ export class EntitlementFormDialog {
                     @for (t of r.entries.slice(0, 100); track t.id) {
                       <tr>
                         <td class="nowrap sd-small">{{ t.startedAt | sdDateTime: 'datetime' : 'short' }}</td>
-                        <td><a [routerLink]="['/tickets', t.ticketId]">{{ t.ticketNumber }}</a> <span class="sd-xs sd-muted">{{ t.ticketSubject }}</span></td>
+                        <td><a [routerLink]="['/tickets', t.ticketId]">{{ t.ticketNumber }}</a>&ngsp;<span class="sd-xs sd-muted">{{ t.ticketSubject }}</span></td>
                         <td>{{ t.userName }}</td>
                         <td>{{ t.activityType ?? '—' }}</td>
                         <td class="num">{{ t.minutes }}</td>

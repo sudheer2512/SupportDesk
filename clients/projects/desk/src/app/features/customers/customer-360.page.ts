@@ -523,12 +523,12 @@ export class Customer360Page {
     const t = this.data()?.csatTrend ?? [];
     return {
       tooltip: { trigger: 'axis' },
-      legend: { top: 0, right: 0 },
-      grid: { left: 36, right: 36, top: 30, bottom: 24 },
+      legend: { top: 0, left: 0 },
+      grid: { left: 36, right: 36, top: 40, bottom: 24 },
       xAxis: { type: 'category', data: t.map((p) => monthLabel(p.month)) },
       yAxis: [
-        { type: 'value', min: 1, max: 5, name: 'CSAT' },
-        { type: 'value', name: 'Responses', splitLine: { show: false }, minInterval: 1 },
+        { type: 'value', min: 1, max: 5 },
+        { type: 'value', splitLine: { show: false }, minInterval: 1 },
       ],
       series: [
         { name: 'Responses', type: 'bar', yAxisIndex: 1, data: t.map((p) => p.responses), barMaxWidth: 18, itemStyle: { opacity: 0.45 } },
@@ -547,7 +547,7 @@ export class Customer360Page {
       yAxis: { type: 'value', minInterval: 1 },
       series: [
         { name: 'Created', type: 'bar', data: t.map((p) => p.created), barMaxWidth: 16 },
-        { name: 'Resolved', type: 'line', smooth: true, data: t.map((p) => p.resolved) },
+        { name: 'Resolved', type: 'line', data: t.map((p) => p.resolved) },
       ],
     };
   });

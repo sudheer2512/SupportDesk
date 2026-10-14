@@ -59,7 +59,7 @@ public sealed class Customer360Service(
             BreachedOpen = g.Count(t => t.StatusCategory < StatusCategory.Resolved && t.SlaState == SlaState.Breached),
             Last = g.Max(t => (DateTime?)t.CreatedAt)
         }).FirstOrDefaultAsync(ct);
-        var resolvedDurations = await all.Where(t => t.ResolvedAt != null && t.ResolvedAt >= since90).Select(t => new { t.CreatedAt, t.ResolvedAt }).Take(2000).ToListAsync(ct);
+        var resolvedDurations = await all.Where(t => t.ResolvedAt != null && t.ResolvedAt >= since90).OrderByDescending(t => t.ResolvedAt).Select(t => new { t.CreatedAt, t.ResolvedAt }).Take(2000).ToListAsync(ct);
         double? avgResolution = resolvedDurations.Count == 0 ? null : Math.Round(resolvedDurations.Average(t => (t.ResolvedAt!.Value - t.CreatedAt).TotalHours), 1);
 
         var csatRows = await db.SatisfactionResponses.AsNoTracking()

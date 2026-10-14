@@ -51,7 +51,7 @@ public sealed class ContactMergeService(
         var candidates = db.Contacts.AsNoTracking().VisibleTo(ctx, db).Where(c => c.Id != k.Id && c.Status == ContactStatus.Active);
         var exact = await candidates.Where(c => viaIdentity.Contains(c.Id) || (c.EmailNormalized != null && emails.Contains(c.EmailNormalized)) ||
                                                 (c.PhoneNormalized != null && phones.Contains(c.PhoneNormalized)))
-            .Take(200).ToListAsync(ct);
+            .OrderBy(c => c.Id).Take(200).ToListAsync(ct);
         var sameCustomer = k.CustomerId is { } cid
             ? await candidates.Where(c => c.CustomerId == cid).OrderBy(c => c.FullName).Take(1000).ToListAsync(ct)
             : [];
@@ -75,15 +75,15 @@ public sealed class ContactMergeService(
         var active = db.Contacts.AsNoTracking().VisibleTo(ctx, db).Where(c => c.Status == ContactStatus.Active);
         if (customerId is { } cid) active = active.Where(c => c.CustomerId == cid);
 
-        var dupEmails = await active.Where(c => c.EmailNormalized != null).GroupBy(c => c.EmailNormalized!).Where(g => g.Count() > 1).Select(g => g.Key).Take(500).ToListAsync(ct);
-        var dupPhones = await active.Where(c => c.PhoneNormalized != null).GroupBy(c => c.PhoneNormalized!).Where(g => g.Count() > 1).Select(g => g.Key).Take(500).ToListAsync(ct);
+        var dupEmails = await active.Where(c => c.EmailNormalized != null).GroupBy(c => c.EmailNormalized!).Where(g => g.Count() > 1).Select(g => g.Key).OrderBy(k => k).Take(500).ToListAsync(ct);
+        var dupPhones = await active.Where(c => c.PhoneNormalized != null).GroupBy(c => c.PhoneNormalized!).Where(g => g.Count() > 1).Select(g => g.Key).OrderBy(k => k).Take(500).ToListAsync(ct);
         var exactRows = await active.Where(c => (c.EmailNormalized != null && dupEmails.Contains(c.EmailNormalized)) || (c.PhoneNormalized != null && dupPhones.Contains(c.PhoneNormalized)))
-            .Take(2000).ToListAsync(ct);
+            .OrderBy(c => c.Id).Take(2000).ToListAsync(ct);
 
         // Fuzzy names within customers (bounded: the customers of the exact matches plus the requested one / the first 200 customers with ≥2 contacts).
         var busyCustomers = await active.Where(c => c.CustomerId != null).GroupBy(c => c.CustomerId!.Value).Where(g => g.Count() > 1)
             .OrderByDescending(g => g.Count()).Select(g => g.Key).Take(200).ToListAsync(ct);
-        var customerRows = await active.Where(c => c.CustomerId != null && busyCustomers.Contains(c.CustomerId.Value)).Take(5000).ToListAsync(ct);
+        var customerRows = await active.Where(c => c.CustomerId != null && busyCustomers.Contains(c.CustomerId.Value)).OrderBy(c => c.CustomerId).ThenBy(c => c.Id).Take(5000).ToListAsync(ct);
 
         var pool = exactRows.Concat(customerRows).DistinctBy(c => c.Id).ToList();
         var probes = await ProbesAsync(pool, ct);

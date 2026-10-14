@@ -128,7 +128,7 @@ import { ProductFormData, ProductFormDialog, ReleaseFormData, ReleaseFormDialog,
                                 @for (r of v.releases; track r.id) {
                                   <li>
                                     <button type="button" class="rel" (click)="editRelease(p, v, r)" [title]="r.releaseNotes ?? ''">
-                                      {{ r.name }}@if (r.buildNumber) { <span class="sd-xs sd-muted"> b{{ r.buildNumber }}</span> }
+                                      {{ r.name }}@if (r.buildNumber) {&ngsp;<span class="sd-xs sd-muted">build {{ r.buildNumber }}</span>}
                                     </button>
                                     <span class="sd-xs sd-muted">{{ r.type }} · {{ r.installationCount }} inst.</span>
                                   </li>
@@ -225,6 +225,9 @@ import { ProductFormData, ProductFormDialog, ReleaseFormData, ReleaseFormDialog,
       }
       .chips li.off {
         opacity: 0.6;
+      }
+      .rels li {
+        display: grid;
       }
       .rels {
         display: grid;

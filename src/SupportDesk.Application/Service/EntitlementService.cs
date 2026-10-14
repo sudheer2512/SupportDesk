@@ -75,6 +75,10 @@ public sealed class EntitlementService(DeskDbContext db, TicketHistory history) 
         }
         if (entitlements.Any(e => !HasAllowance(e)))
             return new EligibilityDecision(EntitlementStatus.NotEntitled, null, null, "The covering entitlement has used up its incidents or hours.", null, active);
+        if (active.Count > 0)
+            // Active contracts exist but none of their entitlements covers this product/installation/asset.
+            return new EligibilityDecision(EntitlementStatus.NotEntitled, null, null,
+                $"Active contracts ({string.Join(", ", active.Select(c => c.Number))}) do not cover this product, installation or asset.", null, active);
         if (contracts.Where(c => c.EndDate < today).OrderByDescending(c => c.EndDate).FirstOrDefault() is { } expired)
             return new EligibilityDecision(EntitlementStatus.Expired, expired, null, $"{expired.Type} {expired.Number} expired on {expired.EndDate:yyyy-MM-dd}.", null, active);
         return new EligibilityDecision(EntitlementStatus.NotEntitled, null, null, "No active contract or warranty covers this request.", null, active);

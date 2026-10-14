@@ -253,6 +253,10 @@ import { SECTION_STYLES, TABLE_STYLES } from './shared/styles';
         list-style: none;
         padding: 0;
       }
+      .links li {
+        display: grid;
+        gap: 2px;
+      }
       .links a {
         color: var(--sd-primary);
       }

@@ -65,7 +65,7 @@ export const SECTION_STYLES = `
   .kpis {
     display: grid;
     gap: var(--sd-space-3);
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr));
     margin-bottom: var(--sd-space-4);
   }
   .section-head {

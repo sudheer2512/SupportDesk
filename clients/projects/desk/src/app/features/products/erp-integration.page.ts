@@ -312,11 +312,11 @@ import { SECTION_STYLES, TABLE_STYLES } from '../customers/shared/styles';
         display: grid;
         gap: var(--sd-space-3);
         grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
-        align-items: end;
+        align-items: start;
         margin-bottom: var(--sd-space-3);
       }
       .toggle {
-        padding-bottom: 8px;
+        margin-top: 30px;
       }
       .toggles {
         display: flex;

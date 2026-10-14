@@ -91,7 +91,7 @@ import { ContractFormData, ContractFormDialog } from './contract-form.dialog';
             (rowClick)="open($event)"
           >
             <ng-template sdCell="number" [sdCellRows]="list.items()" let-row>
-              <span class="sd-truncate"><strong>{{ row.number }}</strong> <span class="sd-xs sd-muted">{{ row.name }}</span></span>
+              <span class="sd-truncate"><strong>{{ row.number }}</strong>&ngsp;&ngsp;<span class="sd-xs sd-muted">{{ row.name }}</span></span>
             </ng-template>
             <ng-template sdCell="type" [sdCellRows]="list.items()" let-row>{{ row.type | deskHumanize }}</ng-template>
             <ng-template sdCell="status" [sdCellRows]="list.items()" let-row>
@@ -187,7 +187,10 @@ export class ContractsPage {
     status: this.statuses().join(',') || null,
     expiringWithinDays: this.expiring(),
   }));
-  protected readonly list = cursorList<ContractListItemDto>((cursor) => this.api.list({ ...this.query(), cursor, limit: 50, includeTotal: !cursor }));
+  // Latest-ending first, so current contracts lead and history trails.
+  protected readonly list = cursorList<ContractListItemDto>((cursor) =>
+    this.api.list({ ...this.query(), sort: 'endDate', dir: 'desc', cursor, limit: 50, includeTotal: !cursor }),
+  );
 
   constructor() {
     effect(() => {
