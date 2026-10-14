@@ -93,7 +93,7 @@ import { MILESTONE_LABELS, SLA_TABS } from './sla-ui';
                     </td>
                     <td class="nowrap small">{{ b.dueAt | sdRelativeTime }}</td>
                     <td>
-                      <span class="load" [attr.aria-label]="minutes(b.elapsedMinutes) + ' of ' + minutes(b.targetMinutes)">
+                      <span class="elapsed" [attr.aria-label]="minutes(b.elapsedMinutes) + ' of ' + minutes(b.targetMinutes)">
                         <span class="bar" [class.is-warn]="pct(b) >= 75" [class.is-danger]="pct(b) >= 100"><span [style.width.%]="pct(b)"></span></span>
                         <span class="xs muted">{{ minutes(b.elapsedMinutes) }} / {{ minutes(b.targetMinutes) }}</span>
                       </span>
@@ -119,6 +119,8 @@ import { MILESTONE_LABELS, SLA_TABS } from './sla-ui';
     PAGE_STYLES,
     `
       .subject { max-width: 360px; }
+      .elapsed { display: grid; gap: 4px; min-width: 120px; }
+      .elapsed .bar { width: 100%; }
       .more { display: flex; justify-content: center; margin-top: var(--sd-space-3); }
       a { color: var(--sd-primary); }
     `,

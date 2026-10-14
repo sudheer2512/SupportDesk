@@ -272,6 +272,7 @@ import { PAGE_STYLES, TEAMS_TABS, availabilityTone, formatMinutes, loadPercent }
       .risk li { display: grid; gap: 2px; padding: 10px var(--sd-space-4); border-bottom: 1px solid var(--sd-divider); position: relative; }
       .risk li:last-child { border-bottom: 0; }
       .risk-main { display: flex; align-items: center; gap: var(--sd-space-2); min-width: 0; }
+      .risk-main > sd-badge, .risk-main > a { flex: none; }
       .risk li button, .risk li > a { justify-self: start; }
       a { color: var(--sd-primary); }
     `,

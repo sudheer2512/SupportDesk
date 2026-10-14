@@ -93,9 +93,9 @@ import { FORM_STYLES, PAGE_STYLES, TEAMS_TABS, errorText } from './shared/org-ui
                   <dd>{{ d.headUserName ?? '—' }}</dd>
                 </dl>
                 <div class="stats">
-                  <a [routerLink]="['/teams/teams']" [queryParams]="{ departmentId: d.id }"><strong>{{ d.teamCount }}</strong> teams</a>
-                  <a [routerLink]="['/teams/agents']" [queryParams]="{ departmentId: d.id }"><strong>{{ d.agentCount }}</strong> agents</a>
-                  <span><strong>{{ d.openTickets }}</strong> open tickets</span>
+                  <a [routerLink]="['/teams/teams']" [queryParams]="{ departmentId: d.id }"><strong>{{ d.teamCount }}</strong> {{ d.teamCount === 1 ? 'team' : 'teams' }}</a>
+                  <a [routerLink]="['/teams/agents']" [queryParams]="{ departmentId: d.id }"><strong>{{ d.agentCount }}</strong> {{ d.agentCount === 1 ? 'agent' : 'agents' }}</a>
+                  <span><strong>{{ d.openTickets }}</strong> open {{ d.openTickets === 1 ? 'ticket' : 'tickets' }}</span>
                 </div>
               </sd-card>
             }

@@ -95,7 +95,7 @@ import { WeeklyHoursEditorComponent } from './shared/weekly-hours-editor.compone
                       <span class="swatch" [style.background]="s.color ?? 'var(--sd-primary)'" aria-hidden="true"></span>
                       <span class="small">{{ summary(s.weeklyHours) }}</span>
                     </p>
-                    <p class="small muted">{{ s.timeZone }} · {{ s.weeklyHoursTotal }} h/week · {{ s.assignedAgents }} agents today</p>
+                    <p class="small muted">{{ s.timeZone }} · {{ s.weeklyHoursTotal }} h/week · {{ s.assignedAgents }} {{ s.assignedAgents === 1 ? 'agent' : 'agents' }} today</p>
                     @if (!s.isActive) {
                       <sd-badge size="sm">Inactive</sd-badge>
                     }
@@ -271,8 +271,9 @@ export class ShiftsPage {
     this.schedule().map((e) => ({
       id: `${e.kind}-${e.id}-${e.startsAt}`,
       title: e.title,
-      start: e.startsAt,
-      end: e.endsAt,
+      // Holidays are calendar dates (sent as UTC midnight): show them on that local day, not across a time-zone boundary.
+      start: e.kind === 'holiday' ? localDate(e.startsAt, 0) : e.startsAt,
+      end: e.kind === 'holiday' ? localDate(e.startsAt, 1) : e.endsAt,
       allDay: e.allDay || e.kind === 'leave',
       color:
         e.kind === 'holiday' ? 'var(--sd-danger)' : e.kind === 'delegation' ? 'var(--sd-accent)' : e.status === 'Requested' ? 'var(--sd-sla-paused)' : 'var(--sd-warning)',
@@ -690,6 +691,12 @@ export class DecisionNoteDialog {
   protected readonly data = inject<DecisionNoteData>(DIALOG_DATA);
   protected readonly ref = inject<DialogRef<string>>(DialogRef);
   protected note = '';
+}
+
+/** The calendar date of an ISO string ("YYYY-MM-DD…") as a local midnight, plus n days. */
+function localDate(iso: string, plusDays: number): Date {
+  const [y, m, d] = iso.slice(0, 10).split('-').map(Number);
+  return new Date(y, m - 1, d + plusDays);
 }
 
 /** Local 09:00 of today + n days as a UTC ISO string. */

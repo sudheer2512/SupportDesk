@@ -383,7 +383,7 @@ const PRIORITY_ORDER = ['Critical', 'High', 'Medium', 'Low'];
       .duration select { width: 64px; }
       .esc-list { display: grid; gap: var(--sd-space-3); }
       .esc { border: 1px solid var(--sd-divider); border-radius: var(--sd-radius-md); padding: var(--sd-space-3); display: grid; gap: var(--sd-space-2); }
-      .esc-grid { display: grid; gap: var(--sd-space-2); grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); align-items: end; }
+      .esc-grid { display: grid; gap: var(--sd-space-2); grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); align-items: start; }
       .notify { display: flex; flex-wrap: wrap; gap: var(--sd-space-3); align-items: center; }
       .notify sd-combobox { min-width: 220px; flex: 1; }
       .remove { justify-self: end; }

@@ -135,6 +135,8 @@ export const PAGE_STYLES = `
   .error-box { border: 1px solid var(--sd-danger-border); color: var(--sd-danger); background: var(--sd-danger-bg); padding: var(--sd-space-3);
     border-radius: var(--sd-radius-md); display: flex; gap: var(--sd-space-3); align-items: center; flex-wrap: wrap; }
   .load { display: grid; grid-template-columns: minmax(60px, 1fr) auto; gap: 6px; align-items: center; min-width: 110px; }
+  .row-actions { white-space: nowrap; }
+  .row-actions > * { flex: none; }
 `;
 
 /** Percent (0–100) of load for bar widths. */

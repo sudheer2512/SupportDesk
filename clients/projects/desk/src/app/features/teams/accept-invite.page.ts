@@ -66,7 +66,7 @@ import { SdButton, SdFormField, SdIcon, SdInput, SdLogo } from '@sd/ui';
     .callout { display: flex; gap: var(--sd-space-2); align-items: center; padding: var(--sd-space-3); border-radius: var(--sd-radius-md);
       background: var(--sd-danger-bg); border: 1px solid var(--sd-danger-border); color: var(--sd-danger); font-size: var(--sd-text-sm); }
     .help { font-size: var(--sd-text-sm); color: var(--sd-text-3); margin: 0; }
-    a { color: var(--sd-primary); }
+    .help a { color: var(--sd-primary); }
   `,
 })
 export class AcceptInvitePage {

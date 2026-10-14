@@ -604,6 +604,8 @@ export class AgentAccessDialog {
   }
 }
 
+const NO_OPTIONS: SdOption[] = [];
+
 interface SkillRow {
   skillId: string | null;
   level: number;
@@ -674,8 +676,8 @@ interface AttributeRow {
                 </select>
                 @switch (row.kind) {
                   @case ('Customer') {
-                    <sd-combobox size="sm" [search]="searchCustomers" [value]="row.refId" (valueChange)="updateAttribute(i, { refId: $any($event) })"
-                      [placeholder]="refLabel(row.refId) ?? 'Search customers…'" [ariaLabel]="'Attribute ' + (i + 1) + ' customer'" />
+                    <sd-combobox size="sm" [search]="searchCustomers" [options]="knownOption(row.refId)" [value]="row.refId"
+                      (valueChange)="updateAttribute(i, { refId: $any($event) })" placeholder="Search customers…" [ariaLabel]="'Attribute ' + (i + 1) + ' customer'" />
                   }
                   @case ('Product') {
                     <select class="sd-input sd-input-sm" [attr.aria-label]="'Attribute ' + (i + 1) + ' product'" [ngModel]="row.refId" [ngModelOptions]="{ standalone: true }"
@@ -765,9 +767,19 @@ export class AgentRoutingDialog {
     });
   }
 
-  protected refLabel(id: string | null): string | null {
-    return id ? this.labels.get(id) ?? null : null;
+  /** The current reference as a known option so the async combobox shows its name instead of the id. */
+  protected knownOption(id: string | null): SdOption[] {
+    if (!id) return NO_OPTIONS;
+    let cached = this.optionCache.get(id);
+    if (!cached) {
+      const label = this.labels.get(id);
+      cached = label ? [{ value: id, label }] : NO_OPTIONS;
+      this.optionCache.set(id, cached);
+    }
+    return cached;
   }
+
+  private readonly optionCache = new Map<string, SdOption[]>();
 
   protected addSkill(): void {
     this.skills.update((s) => [...s, { skillId: null, level: 3 }]);

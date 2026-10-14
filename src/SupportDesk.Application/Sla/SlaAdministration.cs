@@ -221,7 +221,8 @@ public sealed class SlaPolicyAdminService(DeskDbContext db, RequestContext ctx, 
         else if (selected is not null) reason += $" — but it has no target for {ticket.Priority} priority";
 
         var currentName = current is null ? null : SlaSnapshot.Policy(current.PolicySnapshotJson).Name;
-        var wouldChange = selected?.Id != current?.PolicyId || (r.Draft is not null && selected is not null && selected.Id == r.PolicyId);
+        // "Would change" = a different policy would apply than the one the ticket runs under now.
+        var wouldChange = (selected is null ? null : (Guid?)selected.Id) != (current is { Status: SlaInstanceStatus.Active or SlaInstanceStatus.Paused } ? current.PolicyId : null);
         return new SlaSimulationDto(ticket.Id, ticket.Number, ticket.Subject, ticket.Priority.ToString(), ticket.StatusCategory.ToString(),
             selected is null || selected.Id == unsavedId ? null : selected.Id, selected?.Name, reason, source, calendarName, evaluated, milestones,
             current?.PolicyId, currentName, wouldChange);
