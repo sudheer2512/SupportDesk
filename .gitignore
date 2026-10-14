@@ -431,7 +431,7 @@ test-results/
 .LSOverride
 
 # Icon must end with two \r
-Icon
+# macOS "Icon" rule removed: on Windows it matched the Angular icon component folder.
 
 
 # Thumbnails
