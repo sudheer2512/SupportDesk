@@ -2,7 +2,8 @@ import { Injectable, computed, effect, inject, signal, untracked } from '@angula
 import type { HubConnection } from '@microsoft/signalr';
 import { Observable, Subject, filter } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
-import { SD_CONFIG } from '../config';
+import { SD_CONFIG, appUrl } from '../config';
+import { hostedPayload } from '../http/app-root.interceptor';
 import { ApiClient } from '../http/api-client';
 import { Guid } from '../models/common';
 import { ChatMessageDto, ChatStatusEvent, ChatTypingEvent, ChatWidgetConfigDto } from '../models/communication';
@@ -20,7 +21,7 @@ export class ChatApi {
 
   /** Absolute URL of the embeddable script and of the demo page served by the API host. */
   widgetScriptUrl(): string {
-    return new URL('/widget/widget.js', globalThis.location?.origin ?? 'http://localhost').toString();
+    return new URL(appUrl('widget/widget.js'), globalThis.location?.origin ?? 'http://localhost').toString();
   }
 
   embedSnippet(widgetKey: string): string {
@@ -134,7 +135,7 @@ export class ChatHubService {
       .build();
     // Arguments: the visitor-facing message, then the conversation id.
     connection.on('chat.message', (m: ChatMessageDto, conversationId?: Guid) => {
-      if (conversationId) this.route(conversationId, m);
+      if (conversationId) this.route(conversationId, hostedPayload(m));
     });
     connection.on('chat.status', (s: ChatStatusEvent) => this.statusSubject.next(s));
     connection.on('chat.typing', (t: ChatTypingEvent) => this.typingSubject.next(t));

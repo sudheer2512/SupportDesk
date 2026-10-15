@@ -99,13 +99,13 @@ public sealed class AuthController(AuthService auth, SsoService sso, RequestCont
     [HttpGet("sso/{tenant}/start"), AllowAnonymous, EnableRateLimiting(HostingSetup.AuthLimiter)]
     public async Task<IActionResult> SsoStart(string tenant, [FromQuery] string? returnUrl, CancellationToken ct)
     {
-        var callback = $"{Request.Scheme}://{Request.Host}/api/v1/auth/sso/callback";
-        return Redirect(await sso.StartAsync(tenant, callback, returnUrl ?? "/login", ct));
+        var callback = $"{Request.Scheme}://{Request.Host}{AppPath("/api/v1/auth/sso/callback")}";
+        return Redirect(AppUrl(await sso.StartAsync(tenant, callback, returnUrl ?? "/login", ct)));
     }
 
     [HttpGet("sso/callback"), AllowAnonymous]
     public async Task<IActionResult> SsoCallback([FromQuery] string code, [FromQuery] string state, CancellationToken ct) =>
-        Redirect(await sso.CallbackAsync(code, state, Client, ct));
+        Redirect(AppUrl(await sso.CallbackAsync(code, state, Client, ct)));
 
     public sealed record SsoCompleteRequest(string Code);
 
@@ -161,7 +161,7 @@ public sealed class OAuthController(OAuthClientService clients, SigningKeyProvid
     [HttpGet("/.well-known/openid-configuration"), AllowAnonymous]
     public IActionResult Discovery()
     {
-        var issuerBase = $"{Request.Scheme}://{Request.Host}";
+        var issuerBase = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
         return Ok(new
         {
             issuer = SigningKeyProvider.Issuer,

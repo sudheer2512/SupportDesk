@@ -4,6 +4,7 @@ import type { HubConnection, IRetryPolicy, RetryContext } from '@microsoft/signa
 import { Observable, Subject, filter } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { SD_CONFIG } from '../config';
+import { hostedPayload } from '../http/app-root.interceptor';
 import { Guid } from '../models/common';
 import { Availability } from '../models/enums';
 import { severityRank } from '../models/notifications';
@@ -177,7 +178,7 @@ export class RealtimeService {
       .build();
 
     connection.on('ticket.changed', (e: TicketChangedEvent) => this.ticketChangedSubject.next(e));
-    connection.on('ticket.thread', (e: TicketThreadEvent) => this.ticketThreadSubject.next(e));
+    connection.on('ticket.thread', (e: TicketThreadEvent) => this.ticketThreadSubject.next(hostedPayload(e)));
     connection.on('ticket.presence', (e: TicketPresenceEvent) => {
       this._presence.update((map) => new Map(map).set(e.ticketId, e.viewers ?? []));
       this.ticketPresenceSubject.next(e);
@@ -187,8 +188,8 @@ export class RealtimeService {
       this._availability.update((map) => new Map(map).set(e.userId, e.availability));
       this.availabilitySubject.next(e);
     });
-    connection.on('chat.message', (e: ChatMessageEvent) => this.chatMessageSubject.next(e));
-    connection.on('conversation.updated', (e: ConversationUpdatedEvent) => this.conversationUpdatedSubject.next(e));
+    connection.on('chat.message', (e: ChatMessageEvent) => this.chatMessageSubject.next(hostedPayload(e)));
+    connection.on('conversation.updated', (e: ConversationUpdatedEvent) => this.conversationUpdatedSubject.next(hostedPayload(e)));
     connection.on('sla.alert', (e: SlaAlertEvent) => this.slaAlertSubject.next(e));
     connection.on('config.changed', (e: ConfigChangedEvent) => {
       this.configChangedSubject.next(e);

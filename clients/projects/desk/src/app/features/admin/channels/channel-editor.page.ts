@@ -14,6 +14,7 @@ import {
   JsonValue,
   MetaApi,
   PollResultDto,
+  appUrl,
 } from '@sd/core';
 import {
   SdBadge,
@@ -501,7 +502,7 @@ export class ChannelEditorPage {
     return c ? this.api.webhookUrl(c) : null;
   });
   protected readonly embedSnippet = computed(() => this.chatApi.embedSnippet(this.channel()?.address ?? ''));
-  protected readonly previewUrl = computed(() => `/widget/demo.html?widgetKey=${encodeURIComponent(this.channel()?.address ?? '')}`);
+  protected readonly previewUrl = computed(() => appUrl(`widget/demo.html?widgetKey=${encodeURIComponent(this.channel()?.address ?? '')}`));
 
   constructor() {
     this.meta.ticketForm$().subscribe({ error: () => undefined });

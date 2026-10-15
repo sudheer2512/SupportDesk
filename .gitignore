@@ -490,3 +490,7 @@ clients/dist/
 clients/.angular/
 .claude/worktrees/
 *.local.json
+
+# Generated keys (development fallbacks) and IIS stdout logs — never commit
+**/keys/*.key
+src/SupportDesk.Api/logs/

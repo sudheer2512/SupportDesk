@@ -31,6 +31,7 @@ export * from './lib/http/api-error';
 export * from './lib/http/auth-session';
 export * from './lib/http/http-context';
 export * from './lib/http/interceptors';
+export * from './lib/http/app-root.interceptor';
 export * from './lib/http/query-params';
 
 // Auth

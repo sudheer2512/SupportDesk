@@ -182,16 +182,11 @@ public static class HostingSetup
     {
         var root = app.Environment.WebRootPath;
         if (root is null) return;
+        var index = new SpaIndexHtml();
         // ":nonfile" — the portal's own bundles (/portal/main-*.js, *.css) must reach the static file middleware, which
         // skips requests that already matched an endpoint; a missing file then 404s instead of returning index.html.
-        app.MapFallback("/portal/{**path:nonfile}", async http =>
-        {
-            var file = Path.Combine(root, "portal", "index.html");
-            if (!File.Exists(file)) { http.Response.StatusCode = 404; return; }
-            http.Response.ContentType = "text/html; charset=utf-8";
-            http.Response.Headers.CacheControl = "no-cache";
-            await http.Response.SendFileAsync(file);
-        }).AllowAnonymous();
+        app.MapFallback("/portal/{**path:nonfile}", http => index.ServeAsync(http, Path.Combine(root, "portal", "index.html"), "/portal/"))
+            .AllowAnonymous();
         app.MapFallback(async http =>
         {
             var path = http.Request.Path.Value ?? "";
@@ -207,9 +202,49 @@ public static class HostingSetup
                 await http.Response.WriteAsync("SupportDesk API is running. Build the web clients (cd clients && npm run build) to serve the UI.");
                 return;
             }
-            http.Response.ContentType = "text/html; charset=utf-8";
-            http.Response.Headers.CacheControl = "no-cache";
-            await http.Response.SendFileAsync(file);
+            await index.ServeAsync(http, file, "/");
         }).AllowAnonymous();
     }
+}
+
+/// <summary>
+/// Serves an SPA's index.html for the request's path base, so the apps work at a site root and under an IIS virtual
+/// directory or reverse-proxy sub-path alike: <c>&lt;base href&gt;</c> becomes "{pathBase}/" (desk) or "{pathBase}/portal/"
+/// (portal) and <c>&lt;meta name="sd-app-root"&gt;</c> tells the apps where the API, hubs and widget live.
+/// </summary>
+internal sealed partial class SpaIndexHtml
+{
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<(string File, string PathBase), (DateTime Stamp, string Html)> _cache = new();
+
+    public async Task ServeAsync(HttpContext http, string file, string appSuffix)
+    {
+        if (!File.Exists(file))
+        {
+            http.Response.StatusCode = 404;
+            return;
+        }
+        var pathBase = http.Request.PathBase.Value?.TrimEnd('/') ?? "";
+        var stamp = File.GetLastWriteTimeUtc(file);
+        if (!_cache.TryGetValue((file, pathBase), out var cached) || cached.Stamp != stamp)
+        {
+            cached = (stamp, Rewrite(await File.ReadAllTextAsync(file, http.RequestAborted), pathBase, appSuffix));
+            _cache[(file, pathBase)] = cached;
+        }
+        http.Response.ContentType = "text/html; charset=utf-8";
+        http.Response.Headers.CacheControl = "no-cache";
+        await http.Response.WriteAsync(cached.Html, http.RequestAborted);
+    }
+
+    internal static string Rewrite(string html, string pathBase, string appSuffix)
+    {
+        var encoded = System.Net.WebUtility.HtmlEncode(pathBase);
+        var withBase = BaseHref().Replace(html, _ => $"<base href=\"{encoded}{appSuffix}\" />", 1);
+        return HeadOpen().Replace(withBase, m => $"{m.Value}{Environment.NewLine}    <meta name=\"sd-app-root\" content=\"{encoded}/\" />", 1);
+    }
+
+    [System.Text.RegularExpressions.GeneratedRegex(@"<base\s+href=""[^""]*""\s*/?>", System.Text.RegularExpressions.RegexOptions.IgnoreCase)]
+    private static partial System.Text.RegularExpressions.Regex BaseHref();
+
+    [System.Text.RegularExpressions.GeneratedRegex(@"<head(\s[^>]*)?>", System.Text.RegularExpressions.RegexOptions.IgnoreCase)]
+    private static partial System.Text.RegularExpressions.Regex HeadOpen();
 }

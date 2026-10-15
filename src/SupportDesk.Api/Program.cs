@@ -78,10 +78,21 @@ using (var scope = app.Services.CreateScope())
         await scope.ServiceProvider.GetRequiredService<DemoSeeder>().SeedAsync();
 }
 
+// Under IIS the virtual directory becomes the path base automatically; Hosting:PathBase does the same behind a reverse
+// proxy that forwards a sub-path (e.g. "/supportdesk"). The SPAs pick it up from their index.html (see MapSpas).
+if (config["Hosting:PathBase"] is { Length: > 1 } pathBase)
+{
+    app.UsePathBase(pathBase.TrimEnd('/'));
+    app.UseRouting(); // explicit, after UsePathBase: the implicit routing middleware would run before it
+}
+if (!app.Environment.IsDevelopment() && string.IsNullOrWhiteSpace(config["Storage:DataPath"]))
+    app.Logger.LogWarning("Storage:DataPath is not set: files, signing keys and mail drops are kept under {Path}, inside the application folder, " +
+        "where a redeployment can delete them. Point it at a folder outside the site (see docs/DEPLOYMENT.md).", Path.Combine(app.Environment.ContentRootPath, "data"));
+
 app.UseForwardedHeaders();
 app.UseExceptionHandler();
 app.UseDeskSecurityHeaders(app.Environment);
-app.UseDefaultFiles();
+// No UseDefaultFiles: "/" and "/portal/" are served by MapSpas, which applies the path base to index.html.
 app.UseStaticFiles(new StaticFileOptions
 {
     OnPrepareResponse = ctx =>
@@ -103,7 +114,7 @@ app.MapOpenApi("/openapi/{documentName}.json").AllowAnonymous();
 app.UseSwaggerUI(o =>
 {
     o.RoutePrefix = "docs";
-    o.SwaggerEndpoint("/openapi/v1.json", "SupportDesk API v1");
+    o.SwaggerEndpoint("../openapi/v1.json", "SupportDesk API v1"); // relative to /docs/, so it works under a path base
     o.DocumentTitle = "SupportDesk API";
 });
 app.MapDeskHealthChecks();

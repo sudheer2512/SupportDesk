@@ -1,5 +1,6 @@
 import { Directive, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { appUrl } from '@sd/core';
 
 /**
  * Keeps in-portal links inside server-rendered HTML (articles, posts, flow steps) in the SPA: a plain
@@ -23,8 +24,10 @@ export class ProseLinksDirective {
     } catch {
       return;
     }
-    if (url.origin !== location.origin || !url.pathname.startsWith('/portal/')) return;
+    // Portal links ("/portal/…", or "{virtual directory}/portal/…" under IIS) navigate inside the SPA.
+    const portalBase = appUrl('portal/');
+    if (url.origin !== location.origin || !url.pathname.startsWith(portalBase)) return;
     event.preventDefault();
-    void this.router.navigateByUrl(url.pathname.slice('/portal'.length) + url.search + url.hash);
+    void this.router.navigateByUrl(url.pathname.slice(portalBase.length - 1) + url.search + url.hash);
   }
 }

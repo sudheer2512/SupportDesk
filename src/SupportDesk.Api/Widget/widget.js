@@ -24,7 +24,9 @@
     } catch (e) { /* ignore */ }
   }
   if (!widgetKey) { console.warn('SupportDesk chat: data-widget-key is missing.'); return; }
-  var base = new URL(script.src, location.href).origin;
+  // Origin plus the app's path base (e.g. https://help.example.com/supportdesk when hosted in an IIS virtual directory).
+  var scriptUrl = new URL(script.src, location.href);
+  var base = scriptUrl.origin + scriptUrl.pathname.replace(/\/widget\/widget\.js$/i, '');
   var api = base + '/api/v1/chat/' + encodeURIComponent(widgetKey);
   var storeKey = 'sdchat:' + widgetKey;
   var RS = '\u001e';

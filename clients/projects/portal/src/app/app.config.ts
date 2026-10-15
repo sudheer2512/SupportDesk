@@ -7,7 +7,7 @@ import {
   provideZonelessChangeDetection,
 } from '@angular/core';
 import { TitleStrategy, provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
-import { PortalAuthService, SD_AUTH_SESSION, ThemeService, authInterceptor, errorToastInterceptor, provideSdCore } from '@sd/core';
+import { PortalAuthService, SD_AUTH_SESSION, ThemeService, appRootInterceptor, authInterceptor, errorToastInterceptor, provideSdCore } from '@sd/core';
 import { ToastService } from '@sd/ui';
 import { routes } from './app.routes';
 import { registerPortalIcons } from './portal-icons';
@@ -18,8 +18,9 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(routes, withComponentInputBinding(), withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
-    provideHttpClient(withInterceptors([errorToastInterceptor, authInterceptor])),
-    provideSdCore({ apiBaseUrl: '/api/v1', client: 'web' }),
+    provideHttpClient(withInterceptors([errorToastInterceptor, authInterceptor, appRootInterceptor])),
+    // API and hub URLs default to the app root ("/" or the IIS virtual directory written into index.html).
+    provideSdCore({ client: 'web' }),
     // The portal has its own token store, separate from the agent session.
     { provide: SD_AUTH_SESSION, useExisting: PortalAuthService },
     { provide: TitleStrategy, useClass: PortalTitleStrategy },

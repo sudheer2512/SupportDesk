@@ -10,6 +10,7 @@ import {
   OutboundMessageDto,
   SimulatedAttachment,
   SimulateStatusRequest,
+  appUrl,
 } from '@sd/core';
 import {
   SdBadge,
@@ -147,7 +148,7 @@ interface LogEntry {
                     @case ('Chat') {
                       <p class="sd-secondary">
                         Live chat is simulated with the real widget: open the
-                        <a [href]="'/widget/demo.html?widgetKey=' + c.address" target="_blank" rel="noopener">demo page</a>
+                        <a [href]="demoUrl(c.address)" target="_blank" rel="noopener">demo page</a>
                         and chat as a visitor, then answer from <a routerLink="/inbox/chat">Live chat</a>.
                       </p>
                     }
@@ -361,6 +362,11 @@ export class ChannelSimulatorPage {
     { label: 'Simulator' },
   ];
   protected readonly receipts: SimulateStatusRequest['status'][] = ['Delivered', 'Read', 'Failed'];
+
+  /** Chat widget demo page served by the API (under the app root when hosted in an IIS virtual directory). */
+  protected demoUrl(widgetKey: string): string {
+    return appUrl(`widget/demo.html?widgetKey=${encodeURIComponent(widgetKey)}`);
+  }
   protected readonly channels = signal<ChannelAccountDto[]>([]);
   protected readonly loaded = signal(false);
   protected readonly selectedId = signal<string | null>(null);

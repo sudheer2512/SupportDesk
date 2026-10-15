@@ -446,7 +446,10 @@ public sealed class ContactService(
     public string PortalUrl(string brandSlug, string? customDomain, string path)
     {
         if (!string.IsNullOrWhiteSpace(customDomain)) return $"https://{customDomain}/{path}";
-        var baseUrl = (configuration["Portal:PublicBaseUrl"] ?? "").TrimEnd('/');
+        // Portal:PublicBaseUrl, else the app's public URL (which includes an IIS virtual directory, e.g. https://host/supportdesk).
+        var baseUrl = (configuration["Portal:PublicBaseUrl"] is { Length: > 0 } p ? p
+            : configuration["App:PublicUrl"] is { Length: > 0 } a ? a
+            : configuration["Communication:PublicBaseUrl"] ?? "").TrimEnd('/');
         return $"{baseUrl}/portal/{brandSlug}/{path}";
     }
 }

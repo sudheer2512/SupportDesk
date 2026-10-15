@@ -1,7 +1,8 @@
 import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 import type { HubConnection } from '@microsoft/signalr';
 import { Observable, Subject, filter } from 'rxjs';
-import { SD_CONFIG } from '../config';
+import { SD_CONFIG, appUrl } from '../config';
+import { hostedPayload } from '../http/app-root.interceptor';
 import { Guid } from '../models/common';
 import { PortalTicketChangedEvent, PortalTicketThreadEvent } from '../models/portal-content';
 import { PortalAuthService } from './portal-auth.service';
@@ -72,11 +73,11 @@ export class PortalRealtimeService {
     this._state.set('connecting');
     const signalR = await import('@microsoft/signalr');
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl(this.config.portalHubUrl || '/hubs/portal', { accessTokenFactory: () => this.auth.accessToken() ?? '' })
+      .withUrl(this.config.portalHubUrl || appUrl('hubs/portal'), { accessTokenFactory: () => this.auth.accessToken() ?? '' })
       .withAutomaticReconnect([0, 2_000, 5_000, 10_000, 30_000, 60_000])
       .configureLogging(signalR.LogLevel.Warning)
       .build();
-    connection.on('ticket.thread', (e: PortalTicketThreadEvent) => this.threadSubject.next(e));
+    connection.on('ticket.thread', (e: PortalTicketThreadEvent) => this.threadSubject.next(hostedPayload(e)));
     connection.on('ticket.changed', (e: PortalTicketChangedEvent) => this.changedSubject.next(e));
     connection.onreconnecting(() => this._state.set('reconnecting'));
     connection.onreconnected(() => {

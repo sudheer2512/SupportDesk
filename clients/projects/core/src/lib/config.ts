@@ -16,10 +16,25 @@ export interface SdCoreConfig {
   forbiddenPath: string;
 }
 
+/**
+ * Root path of the web app: "/" at a site root, or the IIS virtual directory / proxy sub-path (e.g. "/supportdesk/"). The
+ * server writes it into index.html as <meta name="sd-app-root">. Always ends with "/".
+ */
+export function appRoot(): string {
+  const meta = globalThis.document?.querySelector?.('meta[name="sd-app-root"]')?.getAttribute('content');
+  if (!meta) return '/';
+  return meta.endsWith('/') ? meta : `${meta}/`;
+}
+
+/** An app-relative path ("api/v1", "/widget/widget.js") under the app root ("/supportdesk/widget/widget.js"). */
+export function appUrl(path: string): string {
+  return appRoot() + path.replace(/^\/+/, '');
+}
+
 export const DEFAULT_SD_CONFIG: SdCoreConfig = {
-  apiBaseUrl: '/api/v1',
-  hubUrl: '/hubs/desk',
-  portalHubUrl: '/hubs/portal',
+  apiBaseUrl: appUrl('api/v1'),
+  hubUrl: appUrl('hubs/desk'),
+  portalHubUrl: appUrl('hubs/portal'),
   client: 'web',
   loginPath: '/login',
   forbiddenPath: '/forbidden',
