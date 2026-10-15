@@ -119,16 +119,21 @@ Then:
   for an own site, redirect or remove the HTTP binding.
 * **Custom portal domains**: add host bindings (or a wildcard certificate) for each brand's `CustomDomain`.
 
-**What `web.config` sets** (`src/SupportDesk.Api/web.config`, completed by `dotnet publish`): in-process hosting, WebDAV
-removed (it would answer PUT/DELETE with 405), request limits of 110 MB / 8 KB URL and query string, `httpErrors
-existingResponse="PassThrough"` (keeps the API's problem+json bodies), no `X-Powered-By`. It does not set the `<webSocket>`
-section — it is locked at server level, and WebSockets are on by default once the feature is installed.
+**What `web.config` sets** (`src/SupportDesk.Api/web.config`, completed by `dotnet publish`): in-process hosting, the
+WebDAV handler removed (it would answer PUT/DELETE with 405), request limits of 110 MB / 8 KB URL and query string,
+`httpErrors existingResponse="Auto"` (the API's problem+json bodies pass through; errors raised by IIS itself still show
+IIS's error page), no `X-Powered-By`. It deliberately uses only sections IIS leaves unlocked for sites: `modules`,
+`webSocket`, `httpLogging` and `serverRuntime` are locked by default, and using one in `web.config` fails **every**
+request with 500.19. The install script therefore sets the server-level parts in `applicationHost.config` (hub logging,
+removing the WebDAV *module* when WebDAV is installed); WebSockets are on by default once the feature is installed.
 
 **Troubleshooting**
 
 | Symptom | Cause / fix |
 |---|---|
-| HTTP 500.19 | Hosting Bundle missing (unknown `aspNetCore` section) or a locked section added to `web.config` |
+| HTTP 500.19 (on every URL) | Hosting Bundle missing (unknown `aspNetCore` section) or a locked section added to `web.config`. Browse the site **on the server itself** (`http://localhost:…`): IIS then shows the detailed error with the offending line; remote browsers only get a generic 500 |
+| HTTP 500 on every URL, nothing in the event log | The request never reached the app: an IIS-level error (as above). Check the IIS log (`%SystemDrive%\inetpub\logs\LogFiles\W3SVC<site id>`, column `sc-substatus`) or browse locally on the server |
+| HTTP 500.30 right after editing settings | Invalid `appsettings.Production.json` — every `\` in JSON must be written `\\` (e.g. `Server=.\\SQLEXPRESS`) |
 | HTTP 500.30 / 500.37 | The app failed to start / timed out — see the Application event log (source *IIS AspNetCore Module V2*) or set `stdoutLogEnabled="true"` in `web.config` (logs in `logs\stdout_*.log`) |
 | HTTP 500.31 | ASP.NET Core 10 runtime missing — reinstall the Hosting Bundle |
 | Health check 503 / log shows `Login failed for user 'IIS APPPOOL\…'` | Database login missing (see above) |

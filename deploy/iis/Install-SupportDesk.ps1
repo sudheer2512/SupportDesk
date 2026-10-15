@@ -17,7 +17,8 @@
       4. creates/updates a "No Managed Code" app pool that is always running (the app hosts background workers) and
          recycles at 03:00;
       5. creates/updates the site or application with preload enabled and grants folder permissions;
-      6. stops IIS from logging /hubs requests (SignalR passes the short-lived access token in the query string);
+      6. stops IIS from logging /hubs requests (SignalR passes the short-lived access token in the query string) and
+         removes the WebDAV module for the app when WebDAV is installed (both sections are locked for web.config);
       7. optionally installs the worker host as a Windows service and turns the in-app jobs/recurring tasks off;
       8. starts the app and calls /health/ready.
 
@@ -192,9 +193,18 @@ Grant-Access (Join-Path $InstallPath 'logs') $poolIdentity '(OI)(CI)M'   # stdou
 Grant-Access $DataPath $poolIdentity '(OI)(CI)M'                         # files, signing key, mail drops
 Protect-File $settingsFile @($poolIdentity)
 
-# ---------------------------------------------------------------- 6. Logging
+# ---------------------------------------------------------------- 6. Server-level settings
+# These sections are locked for web.config by default (using them there fails every request with 500.19), so they are
+# set for the app in applicationHost.config.
 # SignalR WebSocket/long-polling URLs carry the access token in the query string: keep them out of the IIS logs.
 Set-WebConfigurationProperty -PSPath 'MACHINE/WEBROOT/APPHOST' -Location "$appLocation/hubs" -Filter 'system.webServer/httpLogging' -Name dontLog -Value $true
+# WebDAV (when installed) answers PUT/DELETE with 405: web.config removes its handler, the module is removed here.
+if (Get-WebGlobalModule -Name WebDAVModule -ErrorAction SilentlyContinue) {
+    $webDav = Get-WebConfigurationProperty -PSPath 'MACHINE/WEBROOT/APPHOST' -Location $appLocation -Filter "system.webServer/modules/add[@name='WebDAVModule']" -Name name
+    if ($webDav) {
+        Remove-WebConfigurationProperty -PSPath 'MACHINE/WEBROOT/APPHOST' -Location $appLocation -Filter 'system.webServer/modules' -Name '.' -AtElement @{ name = 'WebDAVModule' }
+    }
+}
 
 # ---------------------------------------------------------------- 7. Worker service (optional)
 if ($WorkerPublishPath) {

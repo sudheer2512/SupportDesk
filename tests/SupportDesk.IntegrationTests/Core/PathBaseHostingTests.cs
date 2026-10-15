@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc.Testing;
 using SupportDesk.Api.Infrastructure;
 using SupportDesk.Contracts.Auth;
@@ -27,6 +28,22 @@ public sealed class PathBaseHostingTests(DeskApiFactory factory)
         Assert.Contains(expectedBase, rewritten);
         Assert.Contains($"<meta name=\"sd-app-root\" {expectedRoot} />", rewritten);
         Assert.Single(System.Text.RegularExpressions.Regex.Matches(rewritten, "<base "));
+    }
+
+    [Fact]
+    public void Web_config_uses_only_sections_iis_leaves_unlocked_for_sites()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "SupportDesk.slnx"))) dir = dir.Parent;
+        Assert.NotNull(dir);
+        var webServer = XDocument.Load(Path.Combine(dir.FullName, "src", "SupportDesk.Api", "web.config"))
+            .Descendants("system.webServer").Single();
+
+        // Sections such as modules, webSocket, httpLogging and serverRuntime are locked (overrideModeDefault="Deny"): using
+        // one in web.config fails every request with 500.19. handlers is unlocked by IIS's default <location path="">.
+        string[] allowed = ["handlers", "aspNetCore", "security", "httpErrors", "httpProtocol", "staticContent", "defaultDocument", "httpRedirect", "urlCompression", "rewrite"];
+        Assert.All(webServer.Elements(), e => Assert.Contains(e.Name.LocalName, allowed));
+        Assert.All(webServer.Elements("security").Elements(), e => Assert.Contains(e.Name.LocalName, new[] { "requestFiltering", "authorization" }));
     }
 
     [Fact]
