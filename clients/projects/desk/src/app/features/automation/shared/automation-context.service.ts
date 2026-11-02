@@ -4,6 +4,7 @@ import {
   AutomationCatalogDto,
   AutomationLookupsDto,
   BlueprintSummaryDto,
+  CHANNELS,
   BlueprintsApi,
   ENTITLEMENT_STATUSES,
   FILTER_OP_LABELS,
@@ -44,8 +45,8 @@ const PRIORITY_OPS: FilterOp[] = ['eq', 'neq', 'in', 'not_in', 'gt', 'gte', 'lt'
 /** Trace values the engine writes as ISO-8601 timestamps (datetime fields, schedule times). */
 const ISO_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:?\d{2})?$/;
 
-/** Enum values such as "InProgress" (two or more capitalised words); single words and free text are left alone. */
-const PASCAL_CASE = /^[A-Z][a-z]+(?:[A-Z][a-z]+)+$/;
+/** Ticket enum values shown in traces ("InProgress", "NotEntitled"); free text such as "McDonald" is left alone. */
+const ENUM_VALUES: ReadonlySet<string> = new Set([...STATUS_CATEGORIES, ...SLA_STATES, ...ENTITLEMENT_STATUSES, ...SENTIMENTS, ...CHANNELS]);
 
 /** Trace values that are JSON string arrays ('["Resolved","Closed"]'), or null for anything else. */
 function stringList(raw: string): string[] | null {
@@ -189,7 +190,7 @@ export class AutomationContext {
     if (raw === null || raw === '') return '—';
     const list = stringList(raw);
     if (list) return list.length ? list.map((v) => this.describeValue(v)).join(', ') : '—';
-    if (PASCAL_CASE.test(raw)) return enumLabel(raw);
+    if (ENUM_VALUES.has(raw)) return enumLabel(raw);
     if (/^(true|false)$/i.test(raw)) return raw.toLowerCase() === 'true' ? 'Yes' : 'No';
     if (ISO_TIMESTAMP.test(raw.trim())) {
       const user = this.me.user();

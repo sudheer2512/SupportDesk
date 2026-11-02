@@ -140,7 +140,7 @@ export function registerDeskCommands(): void {
     minQueryLength: 2,
     search: (query) => {
       if (!me.can('customers.view') || /^#?\d{1,10}$/.test(query.trim())) return of([]);
-      return customers.list({ q: query, limit: 5 }).pipe(
+      return customers.list({ q: query, limit: 5 }, { silent: true }).pipe(
         map((page) =>
           page.items.map<SdCommand>((c) => ({
             id: `customer.${c.id}`,

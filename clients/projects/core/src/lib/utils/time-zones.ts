@@ -29,8 +29,8 @@ export function canonicalTimeZone(zone: string): string {
 }
 
 /**
- * IANA time zones for pickers under their current names, with UTC included and the current value kept (canonicalised)
- * even when the engine does not list it.
+ * IANA time zones for pickers under their current names, with UTC included. The current value is kept as stored when it
+ * is not in the list (a legacy name saved earlier, such as Asia/Calcutta), so the picker still shows it selected.
  */
 export function timeZoneOptions(current?: string | null): string[] {
   let zones: string[];
@@ -41,6 +41,5 @@ export function timeZoneOptions(current?: string | null): string[] {
   }
   const list = [...new Set(zones.map(canonicalTimeZone))].sort();
   const withUtc = list.includes('UTC') ? list : ['UTC', ...list];
-  const selected = current ? canonicalTimeZone(current) : null;
-  return selected && !withUtc.includes(selected) ? [selected, ...withUtc] : withUtc;
+  return current && !withUtc.includes(current) ? [current, ...withUtc] : withUtc;
 }

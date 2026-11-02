@@ -47,8 +47,8 @@ const enc = encodeURIComponent;
 export class CustomersApi {
   private readonly api = inject(ApiClient);
 
-  list(query: CustomerQuery = {}): Observable<PagedResult<CustomerListItemDto>> {
-    return this.api.get<PagedResult<CustomerListItemDto>>('customers', { params: query });
+  list(query: CustomerQuery = {}, options: { silent?: boolean } = {}): Observable<PagedResult<CustomerListItemDto>> {
+    return this.api.get<PagedResult<CustomerListItemDto>>('customers', { params: query, silent: options.silent });
   }
 
   facets(): Observable<CustomerFacetsDto> {

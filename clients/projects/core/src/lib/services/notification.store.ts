@@ -20,6 +20,7 @@ export class NotificationStore {
 
   private readonly _items = signal<NotificationDto[]>([]);
   private readonly _unreadTotal = signal<number | null>(null);
+  private syncSeq = 0;
   readonly items = this._items.asReadonly();
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
@@ -106,7 +107,8 @@ export class NotificationStore {
     const now = new Date().toISOString();
     const before = this._items();
     this._items.update((items) => items.map((n) => (n.readAt || n.requiresAck ? n : { ...n, readAt: now })));
-    this._unreadTotal.set(this._items().filter((n) => !n.readAt).length);
+    // Only the loaded items are known; the sync below brings in the rest (the badge only moves down).
+    this.adjustTotal(-before.filter((n) => !n.readAt && !n.requiresAck).length);
     this.api.markAllRead().subscribe({
       next: () => this.syncUnreadTotal(),
       error: () => {
@@ -116,8 +118,15 @@ export class NotificationStore {
     });
   }
 
+  /** Latest request wins: an older response arriving late must not overwrite a newer total. */
   private syncUnreadTotal(): void {
-    this.api.unreadCount().subscribe({ next: (r) => this._unreadTotal.set(r.count), error: () => undefined });
+    const seq = ++this.syncSeq;
+    this.api.unreadCount().subscribe({
+      next: (r) => {
+        if (seq === this.syncSeq) this._unreadTotal.set(r.count);
+      },
+      error: () => undefined,
+    });
   }
 
   private adjustTotal(delta: number): void {
