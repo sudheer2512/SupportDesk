@@ -88,6 +88,9 @@ const POSITIONS: ConnectedPosition[] = [
             }
           }
         </div>
+        <footer class="foot">
+          <button sdButton variant="link" size="sm" type="button" (click)="viewAll()">View all notifications</button>
+        </footer>
       </section>
     </ng-template>
   `,
@@ -158,6 +161,12 @@ const POSITIONS: ConnectedPosition[] = [
     .list {
       overflow: auto;
       padding: 0 6px 8px;
+    }
+    .foot {
+      display: flex;
+      justify-content: center;
+      padding: 6px 12px 8px;
+      border-top: 1px solid var(--sd-divider);
     }
     .item {
       display: flex;
@@ -253,6 +262,11 @@ export class NotificationsBellComponent {
     const next = !this.open();
     this.open.set(next);
     if (next) this.store.refresh();
+  }
+
+  protected viewAll(): void {
+    this.open.set(false);
+    void this.router.navigateByUrl('/notifications');
   }
 
   protected openItem(n: NotificationDto): void {

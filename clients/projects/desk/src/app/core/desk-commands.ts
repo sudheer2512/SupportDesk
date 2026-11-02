@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import {
   AVAILABILITIES,
   AuthService,
+  CustomersApi,
   MeApi,
   MeStore,
   ShortcutRegistry,
@@ -26,6 +27,7 @@ export function registerDeskCommands(): void {
   const auth = inject(AuthService);
   const meApi = inject(MeApi);
   const tickets = inject(TicketsApi);
+  const customers = inject(CustomersApi);
 
   const go = (url: string) => () => void router.navigateByUrl(url);
 
@@ -41,6 +43,24 @@ export function registerDeskCommands(): void {
       when: () => me.canAny(m.permissions),
       run: go(`/${m.path}`),
     })),
+    {
+      id: 'nav.notifications',
+      title: 'Go to Notifications',
+      subtitle: 'Every notification, with unread and needs-acknowledgement filters.',
+      group: 'Navigation',
+      icon: 'bell',
+      keywords: ['alerts', 'unread', 'acknowledge'],
+      run: go('/notifications'),
+    },
+    {
+      id: 'nav.approvals',
+      title: 'Go to Approvals',
+      subtitle: 'Requests waiting for a decision and the ones you asked for.',
+      group: 'Navigation',
+      icon: 'shield-check',
+      keywords: ['approve', 'reject', 'requests'],
+      run: go('/approvals'),
+    },
     {
       id: 'ticket.new',
       title: 'New ticket',
@@ -113,6 +133,28 @@ export function registerDeskCommands(): void {
     },
   });
 
+  // Customer search: name or code (GET /customers?q=).
+  const unregisterCustomerProvider = palette.registerProvider({
+    id: 'customers',
+    group: 'Customers',
+    minQueryLength: 2,
+    search: (query) => {
+      if (!me.can('customers.view') || /^#?\d{1,10}$/.test(query.trim())) return of([]);
+      return customers.list({ q: query, limit: 5 }).pipe(
+        map((page) =>
+          page.items.map<SdCommand>((c) => ({
+            id: `customer.${c.id}`,
+            title: c.name,
+            subtitle: [c.code, c.tier].filter(Boolean).join(' · ') || null,
+            icon: 'building',
+            run: go(`/customers/${c.id}`),
+          })),
+        ),
+        catchError(() => of([])),
+      );
+    },
+  });
+
   const unregisterShortcuts = shortcuts.register([
     ...DESK_MODULES.filter((m) => m.shortcut).map((m) => ({
       id: `nav.${m.path}`,
@@ -138,6 +180,7 @@ export function registerDeskCommands(): void {
   inject(DestroyRef).onDestroy(() => {
     unregisterCommands();
     unregisterProvider();
+    unregisterCustomerProvider();
     unregisterShortcuts();
   });
 }
