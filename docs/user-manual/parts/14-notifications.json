@@ -17,14 +17,14 @@
             {
               "image": "shots/14-bell.png",
               "caption": "The bell in the top bar with the number of unread notifications.",
-              "alt": "Top bar with the bell highlighted and a red badge showing 20"
+              "alt": "Top bar with the bell highlighted and a red badge showing 99+"
             },
             {
               "table": {
                 "columns": ["Where", "What you see"],
                 "widths": [30, 70],
                 "rows": [
-                  ["The bell", "A red badge with the number of unread notifications. The bell shows a ringing icon when an item needs acknowledgement."],
+                  ["The bell", "A red badge with the number of unread notifications, or 99+ when there are more. The bell shows a ringing icon when an item needs acknowledgement."],
                   ["Pop-up messages", "Warnings and critical items also appear briefly on the screen."],
                   ["Desktop alerts", "After you allow them, warnings and critical items also appear on your computer's desktop."],
                   ["The **Notifications** page", "Your latest 200 notifications, with filters."],
@@ -102,7 +102,7 @@
           "id": "nt-page",
           "title": "The Notifications page",
           "type": "concept",
-          "intro": "The **Notifications** page shows your latest 200 notifications. To open it, go to the **Command Center**. On the **Customer replies & mentions** card, select **All notifications**.",
+          "intro": "The **Notifications** page shows your latest 200 notifications. To open it, select **View all notifications** at the bottom of the bell panel. You can also run **Go to Notifications** from the command palette.",
           "blocks": [
             {
               "image": "shots/14-notifications-page.png",

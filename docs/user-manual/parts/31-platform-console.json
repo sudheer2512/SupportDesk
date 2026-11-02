@@ -199,7 +199,7 @@
                 "rows": [
                   ["**Trialing**", "The free trial is running."],
                   ["**Active**", "The subscription is paid up."],
-                  ["**PastDue**", "The trial ended or an invoice is overdue. The workspace keeps working until the grace period ends."],
+                  ["**Past due**", "The trial ended or an invoice is overdue. The workspace keeps working until the grace period ends."],
                   ["**Suspended**", "The grace period ended without payment, or an operator suspended the tenant."],
                   ["**Cancelled**", "The subscription has ended."]
                 ]
@@ -222,7 +222,7 @@
                 "**Subscription**: plan, seats, billing cycle, status, key dates, amount due and billing contact.",
                 "**Usage vs limits**: what the workspace uses against the limits of its plan.",
                 "**Invoices**: recent invoices. Open invoices have a **Mark paid** button. The download button saves the PDF.",
-                "**Support access**: your requests to view this tenant's diagnostics. **Diagnostics** shows while access is active.",
+                "**Support access**: your requests to view this tenant's diagnostics. **Diagnostics** shows on your own requests while access is active.",
                 "**Recent platform and billing activity**: the latest operator, billing and system events for this tenant."
               ]
             },
@@ -253,7 +253,7 @@
                 "columns": ["Action", "What it does", "When you can use it"],
                 "widths": [27, 40, 33],
                 "rows": [
-                  ["**Reactivate**", "Restores full access after a suspension or a missed payment.", "The tenant is suspended, or its subscription is **PastDue**. Not when it is pending deletion."],
+                  ["**Reactivate**", "Restores full access after a suspension or a missed payment.", "The tenant is suspended, or its subscription is **Past due**. Not when it is pending deletion."],
                   ["**Suspend…**", "Blocks all changes in the workspace at once. Users can still sign in, read and pay.", "The tenant is not already suspended, cancelled or pending deletion."],
                   ["**Extend trial…**", "Adds 1 to 90 days to the free trial.", "The subscription has a trial end date."],
                   ["**Change plan…**", "Moves the tenant to another plan at once.", "The tenant is not cancelled or pending deletion."],
@@ -296,7 +296,7 @@
           "title": "Reactivate a tenant",
           "type": "task",
           "intro": "Reactivate a tenant to give back full access after a suspension or a missed payment.",
-          "prerequisites": ["The tenant is suspended, or its subscription is **PastDue**.", "The tenant is not pending deletion."],
+          "prerequisites": ["The tenant is suspended, or its subscription is **Past due**.", "The tenant is not pending deletion."],
           "steps": [
             "Open the tenant's page.",
             "Select **Actions**.",
@@ -860,7 +860,6 @@
     { "problem": "A support access request fails with **You already have a pending or active support-access request for this tenant.**", "cause": "You can have only one open request for each tenant.", "fix": "Wait for the tenant's decision, or for your current access to end." },
     { "problem": "A support access request fails with **Explain why access is needed (10–1000 characters).**", "cause": "The reason is too short or too long.", "fix": "Name the ticket or case and describe the problem in a sentence or two." },
     { "problem": "**Diagnostics** says **Support access is not active (pending, rejected, revoked or expired).**", "cause": "The tenant has not approved the request, or the access has ended.", "fix": "Check the status on **Support access**. If you still need access, send a new request." },
-    { "problem": "**Diagnostics** says **This support-access grant belongs to another operator.**", "cause": "Another operator made the request. Only the operator who asked can open the diagnostics.", "fix": "Send your own request from the tenant's page." },
     { "problem": "Deleting a plan fails with **Tenants are subscribed to this plan.**", "cause": "At least one tenant uses the plan.", "fix": "Edit the plan and turn off **Offered at sign-up and in plan comparison** to hide it instead." },
     { "problem": "Deleting the trial plan fails with **The trial plan is required for self-service sign-up.**", "cause": "Sign-up always uses the trial plan.", "fix": "Keep the trial plan. Edit its limits or trial days instead." },
     { "problem": "Saving a plan fails with **A plan with code … already exists.**", "cause": "Each plan code must be unique.", "fix": "Choose another code." },

@@ -176,7 +176,7 @@
           "wait": 800
         },
         {
-          "click": "text=SI/26-27/36054"
+          "click": "desk-c360-erp tr.clickable"
         },
         {
           "waitFor": ".drawer"

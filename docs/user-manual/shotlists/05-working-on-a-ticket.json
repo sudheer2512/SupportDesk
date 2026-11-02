@@ -240,13 +240,7 @@
           "wait": 600
         },
         {
-          "click": "desk-ticket-header sd-dropdown-menu button"
-        },
-        {
-          "waitFor": ".sd-menu"
-        },
-        {
-          "click": "text=Escalate further…"
+          "press": "e"
         },
         {
           "waitForText": "Escalate ticket"

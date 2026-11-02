@@ -180,10 +180,6 @@
         },
         {
           "wait": 600
-        },
-        {
-          "select": "label=Time zone",
-          "option": "Asia/Calcutta"
         }
       ],
       "highlight": [

@@ -68,8 +68,11 @@
     {
       "id": "29-ticket-detail",
       "file": "29-ticket-detail.png",
-      "url": "/portal/wings/tickets/362b392b-7efb-4d82-92d9-08df29f98fc3",
+      "url": "/portal/wings/tickets?scope=organisation&status=all",
       "steps": [
+        {
+          "click": "text=Invoice print shows the old company address"
+        },
         {
           "waitForText": "Add a reply"
         },
@@ -104,8 +107,11 @@
     {
       "id": "29-closed-ticket",
       "file": "29-closed-ticket.png",
-      "url": "/portal/wings/tickets/cdd51772-76a0-4c5d-94a1-08df29f98fc3",
+      "url": "/portal/wings/tickets?scope=organisation&status=all",
       "steps": [
+        {
+          "click": "text=Unable to export GSTR-1 JSON for September"
+        },
         {
           "waitForText": "How did we do?"
         }

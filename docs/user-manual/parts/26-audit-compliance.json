@@ -207,7 +207,7 @@
           ],
           "result": "The app shows **Policy created**. The policy appears in the list.",
           "blocks": [
-            { "note": "Automatic policies run several times a day, in batches. The page says daily." }
+            { "note": "Active policies run every six hours, in batches." }
           ]
         },
         {

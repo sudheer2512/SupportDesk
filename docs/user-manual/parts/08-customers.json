@@ -115,7 +115,7 @@
                   ["**Name**", "The organisation's name. Required."],
                   ["**Customer code**", "A unique code, for example the customer code in Wings ERP."],
                   ["**Tier**", "**Platinum**, **Gold**, **Silver**, **Bronze** or **Standard**. The tier decides which SLA policy applies to the customer's tickets."],
-                  ["**Status**", "**Active**, **Inactive**, **Prospect** or **OnHold**."],
+                  ["**Status**", "**Active**, **Inactive**, **Prospect** or **On hold**."],
                   ["**Group**", "The customer group, such as **Key Accounts**. A customer belongs to one group at most."],
                   ["**Industry**, **Category**, **Service region**", "Used to filter lists and reports."],
                   ["**Parent organisation**", "The head company, if this customer is a subsidiary. Leave it empty for a top-level customer."],

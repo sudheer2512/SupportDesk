@@ -127,35 +127,6 @@
       "clipPadding": 0
     },
     {
-      "id": "31-reactivate",
-      "file": "31-reactivate.png",
-      "steps": [
-        {
-          "click": ".drawer button[aria-label='Close panel']"
-        },
-        {
-          "wait": 400
-        },
-        {
-          "click": "button[aria-label='Actions']"
-        },
-        {
-          "click": "text=Reactivate"
-        },
-        {
-          "waitForText": "Reactivate tenant"
-        },
-        {
-          "eval": "document.querySelectorAll('.drawer').forEach(d => { d.style.height = 'auto'; d.style.alignSelf = 'flex-start'; for (let p = d.parentElement; p && !p.classList.contains('cdk-overlay-container'); p = p.parentElement) { if (p.classList.contains('cdk-global-overlay-wrapper')) break; p.style.height = 'auto'; } })"
-        },
-        {
-          "hover": ".drawer h2"
-        }
-      ],
-      "clip": ".drawer",
-      "clipPadding": 0
-    },
-    {
       "id": "31-change-plan",
       "file": "31-change-plan.png",
       "steps": [
@@ -348,9 +319,38 @@
       ]
     },
     {
+      "id": "31-reactivate",
+      "file": "31-reactivate.png",
+      "steps": [
+        {
+          "click": "button[aria-label='Actions']"
+        },
+        {
+          "click": "text=Reactivate"
+        },
+        {
+          "waitForText": "Reactivate tenant"
+        },
+        {
+          "eval": "document.querySelectorAll('.drawer').forEach(d => { d.style.height = 'auto'; d.style.alignSelf = 'flex-start'; for (let p = d.parentElement; p && !p.classList.contains('cdk-overlay-container'); p = p.parentElement) { if (p.classList.contains('cdk-global-overlay-wrapper')) break; p.style.height = 'auto'; } })"
+        },
+        {
+          "hover": ".drawer h2"
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
       "id": "31-plans",
       "file": "31-plans.png",
       "steps": [
+        {
+          "click": ".drawer button[aria-label='Close panel']"
+        },
+        {
+          "wait": 400
+        },
         {
           "click": "nav[aria-label='Platform console'] a[href$='/platform/plans']"
         },

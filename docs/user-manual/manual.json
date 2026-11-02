@@ -616,7 +616,7 @@
           "id": "gs-find-ticket",
           "title": "Find a ticket from the command palette",
           "type": "task",
-          "intro": "Open a ticket by its number, or search tickets by text.",
+          "intro": "Open a ticket by its number, or search tickets and customers by text.",
           "prerequisites": [
             "You can view tickets."
           ],
@@ -635,7 +635,7 @@
           "result": "The ticket opens.",
           "blocks": [
             {
-              "note": "Text search shows up to six tickets, newest activity first. The palette does not search customers yet. Use the **Customers** module instead."
+              "note": "Text search shows up to six tickets, newest activity first. A **Customers** group lists up to five customers whose name or code matches. Select one to open its Customer 360 page."
             }
           ]
         },
@@ -851,7 +851,7 @@
             {
               "callouts": [
                 "The tabs: **Profile**, **Password** and **Two-factor**.",
-                "Your name, e-mail and workspace, your user type and your departments. A **Light agent** badge shows if you are one.",
+                "Your name, e-mail and workspace, your roles and your departments. A **Light agent** badge shows if you are one.",
                 "**Display name**: the name colleagues and customers see.",
                 "**Time zone**: used for dates and SLA times.",
                 "**Language & format**: how dates and numbers look.",
@@ -4553,7 +4553,7 @@
                   ],
                   [
                     "**Status**",
-                    "**Active**, **Inactive**, **Prospect** or **OnHold**."
+                    "**Active**, **Inactive**, **Prospect** or **On hold**."
                   ],
                   [
                     "**Group**",
@@ -9151,7 +9151,7 @@
             {
               "image": "shots/14-bell.png",
               "caption": "The bell in the top bar with the number of unread notifications.",
-              "alt": "Top bar with the bell highlighted and a red badge showing 20"
+              "alt": "Top bar with the bell highlighted and a red badge showing 99+"
             },
             {
               "table": {
@@ -9166,7 +9166,7 @@
                 "rows": [
                   [
                     "The bell",
-                    "A red badge with the number of unread notifications. The bell shows a ringing icon when an item needs acknowledgement."
+                    "A red badge with the number of unread notifications, or 99+ when there are more. The bell shows a ringing icon when an item needs acknowledgement."
                   ],
                   [
                     "Pop-up messages",
@@ -9270,7 +9270,7 @@
           "id": "nt-page",
           "title": "The Notifications page",
           "type": "concept",
-          "intro": "The **Notifications** page shows your latest 200 notifications. To open it, go to the **Command Center**. On the **Customer replies & mentions** card, select **All notifications**.",
+          "intro": "The **Notifications** page shows your latest 200 notifications. To open it, select **View all notifications** at the bottom of the bell panel. You can also run **Go to Notifications** from the command palette.",
           "blocks": [
             {
               "image": "shots/14-notifications-page.png",
@@ -13305,7 +13305,7 @@
                 "rows": [
                   [
                     "**E-mail**",
-                    "**Imap**",
+                    "**IMAP**",
                     "SupportDesk checks the mailbox",
                     "The incoming and outgoing mail server details, and a password or access token."
                   ],
@@ -13317,7 +13317,7 @@
                   ],
                   [
                     "**E-mail**",
-                    "**Microsoft365**",
+                    "**Microsoft 365**",
                     "SupportDesk checks the mailbox",
                     "Your Microsoft Entra ID tenant, an application (client) id and its client secret."
                   ],
@@ -13408,7 +13408,7 @@
             {
               "text": "Fill in the **Connection settings** and the **Credentials** cards for your provider.",
               "image": "shots/19-new-channel.png",
-              "caption": "A new mailbox with the **Imap** provider. The connection settings and credentials follow the **Channel** card.",
+              "caption": "A new mailbox with the **IMAP** provider. The connection settings and credentials follow the **Channel** card.",
               "alt": "New channel form with connection settings, credentials, mailbox signature and the Create channel button",
               "width": 420
             },
@@ -13500,8 +13500,8 @@
           "title": "Mailbox connection settings",
           "type": "reference",
           "intro": [
-            "An **Imap** mailbox needs the details of your incoming and outgoing mail servers. Your e-mail provider or IT team can give you these values.",
-            "The **Microsoft365** and **Gmail** providers need fewer fields. They ask for the ids your Microsoft or Google administrator created."
+            "An **IMAP** mailbox needs the details of your incoming and outgoing mail servers. Your e-mail provider or IT team can give you these values.",
+            "The **Microsoft 365** and **Gmail** providers need fewer fields. They ask for the ids your Microsoft or Google administrator created."
           ],
           "blocks": [
             {
@@ -18242,7 +18242,7 @@
           "result": "The app shows **Policy created**. The policy appears in the list.",
           "blocks": [
             {
-              "note": "Automatic policies run several times a day, in batches. The page says daily."
+              "note": "Active policies run every six hours, in batches."
             }
           ]
         },
@@ -20098,7 +20098,7 @@
               "alt": "Contracts tab listing a POS hardware warranty, a Premium AMC and an expired annual maintenance contract with periods, renewal and entitlements"
             },
             {
-              "p": "A contract with prepaid hours also shows how many hours are used. **Covered channels** lists the ways you may contact support under the contract."
+              "p": "**Time left** shows the days until the end date. For a contract that has ended, it shows **Ended** and how many days ago. A contract with prepaid hours also shows how many hours are used. **Covered channels** lists the ways you may contact support under the contract."
             }
           ]
         }
@@ -21048,7 +21048,7 @@
                     "The subscription is paid up."
                   ],
                   [
-                    "**PastDue**",
+                    "**Past due**",
                     "The trial ended or an invoice is overdue. The workspace keeps working until the grace period ends."
                   ],
                   [
@@ -21083,7 +21083,7 @@
                 "**Subscription**: plan, seats, billing cycle, status, key dates, amount due and billing contact.",
                 "**Usage vs limits**: what the workspace uses against the limits of its plan.",
                 "**Invoices**: recent invoices. Open invoices have a **Mark paid** button. The download button saves the PDF.",
-                "**Support access**: your requests to view this tenant's diagnostics. **Diagnostics** shows while access is active.",
+                "**Support access**: your requests to view this tenant's diagnostics. **Diagnostics** shows on your own requests while access is active.",
                 "**Recent platform and billing activity**: the latest operator, billing and system events for this tenant."
               ]
             },
@@ -21138,7 +21138,7 @@
                   [
                     "**Reactivate**",
                     "Restores full access after a suspension or a missed payment.",
-                    "The tenant is suspended, or its subscription is **PastDue**. Not when it is pending deletion."
+                    "The tenant is suspended, or its subscription is **Past due**. Not when it is pending deletion."
                   ],
                   [
                     "**Suspend…**",
@@ -21213,7 +21213,7 @@
           "type": "task",
           "intro": "Reactivate a tenant to give back full access after a suspension or a missed payment.",
           "prerequisites": [
-            "The tenant is suspended, or its subscription is **PastDue**.",
+            "The tenant is suspended, or its subscription is **Past due**.",
             "The tenant is not pending deletion."
           ],
           "steps": [
@@ -22016,11 +22016,6 @@
       "problem": "**Turn on** says **That code did not match. Try the current code.**",
       "cause": "The code from the app was old or mistyped.",
       "fix": "Wait for the app to show a new code, and enter it at once. Check that your phone's clock is correct."
-    },
-    {
-      "problem": "The **Time zone** field on **My profile** is empty.",
-      "cause": "Your browser lists your time zone under another name, for example **Asia/Calcutta** for India.",
-      "fix": "Choose your time zone from the list, then select **Save profile**."
     },
     {
       "problem": "A **Could not change availability** message appears.",
@@ -23166,11 +23161,6 @@
       "problem": "**Diagnostics** says **Support access is not active (pending, rejected, revoked or expired).**",
       "cause": "The tenant has not approved the request, or the access has ended.",
       "fix": "Check the status on **Support access**. If you still need access, send a new request."
-    },
-    {
-      "problem": "**Diagnostics** says **This support-access grant belongs to another operator.**",
-      "cause": "Another operator made the request. Only the operator who asked can open the diagnostics.",
-      "fix": "Send your own request from the tenant's page."
     },
     {
       "problem": "Deleting a plan fails with **Tenants are subscribed to this plan.**",

@@ -281,7 +281,7 @@
           "id": "gs-find-ticket",
           "title": "Find a ticket from the command palette",
           "type": "task",
-          "intro": "Open a ticket by its number, or search tickets by text.",
+          "intro": "Open a ticket by its number, or search tickets and customers by text.",
           "prerequisites": ["You can view tickets."],
           "steps": [
             "Press [[Ctrl+K]] to open the command palette.",
@@ -297,7 +297,7 @@
           ],
           "result": "The ticket opens.",
           "blocks": [
-            { "note": "Text search shows up to six tickets, newest activity first. The palette does not search customers yet. Use the **Customers** module instead." }
+            { "note": "Text search shows up to six tickets, newest activity first. A **Customers** group lists up to five customers whose name or code matches. Select one to open its Customer 360 page." }
           ]
         },
         {
@@ -429,7 +429,7 @@
             {
               "callouts": [
                 "The tabs: **Profile**, **Password** and **Two-factor**.",
-                "Your name, e-mail and workspace, your user type and your departments. A **Light agent** badge shows if you are one.",
+                "Your name, e-mail and workspace, your roles and your departments. A **Light agent** badge shows if you are one.",
                 "**Display name**: the name colleagues and customers see.",
                 "**Time zone**: used for dates and SLA times.",
                 "**Language & format**: how dates and numbers look.",
@@ -568,7 +568,6 @@
     { "problem": "The sign-in page shows **Your session ended.**", "cause": "Your session timed out, or an administrator signed you out.", "fix": "Sign in again." },
     { "problem": "**Change password** says **Use at least 12 characters.** or **The passwords do not match.**", "cause": "The new password is too short, or the two new passwords differ.", "fix": "Enter a new password of 12 characters or more in both fields." },
     { "problem": "**Turn on** says **That code did not match. Try the current code.**", "cause": "The code from the app was old or mistyped.", "fix": "Wait for the app to show a new code, and enter it at once. Check that your phone's clock is correct." },
-    { "problem": "The **Time zone** field on **My profile** is empty.", "cause": "Your browser lists your time zone under another name, for example **Asia/Calcutta** for India.", "fix": "Choose your time zone from the list, then select **Save profile**." },
     { "problem": "A **Could not change availability** message appears.", "cause": "The change did not reach SupportDesk.", "fix": "Check your connection, then choose your availability again." },
     { "problem": "A bar says **Live updates paused — reconnecting…**", "cause": "The live connection to SupportDesk dropped.", "fix": "Wait. The bar disappears when the connection returns. Reload the page if it stays for long." }
   ],

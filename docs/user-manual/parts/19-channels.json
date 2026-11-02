@@ -64,9 +64,9 @@
                 "columns": ["Type", "Provider", "How messages arrive", "What you need"],
                 "widths": [14, 22, 22, 42],
                 "rows": [
-                  ["**E-mail**", "**Imap**", "SupportDesk checks the mailbox", "The incoming and outgoing mail server details, and a password or access token."],
+                  ["**E-mail**", "**IMAP**", "SupportDesk checks the mailbox", "The incoming and outgoing mail server details, and a password or access token."],
                   ["**E-mail**", "**Smtp**", "Sending only", "The outgoing mail server details. Use it for a mailbox that only sends."],
-                  ["**E-mail**", "**Microsoft365**", "SupportDesk checks the mailbox", "Your Microsoft Entra ID tenant, an application (client) id and its client secret."],
+                  ["**E-mail**", "**Microsoft 365**", "SupportDesk checks the mailbox", "Your Microsoft Entra ID tenant, an application (client) id and its client secret."],
                   ["**E-mail**", "**Gmail**", "SupportDesk checks the mailbox", "A Google client id, the client secret and a refresh token."],
                   ["**E-mail**", "**FileDrop**", "SupportDesk checks a folder", "Nothing. It is for demos and testing only."],
                   ["**WhatsApp**", "**MetaCloud**", "Meta sends each message to SupportDesk", "The WhatsApp Business account details from Meta, an access token and the app secret."],
@@ -101,7 +101,7 @@
             {
               "text": "Fill in the **Connection settings** and the **Credentials** cards for your provider.",
               "image": "shots/19-new-channel.png",
-              "caption": "A new mailbox with the **Imap** provider. The connection settings and credentials follow the **Channel** card.",
+              "caption": "A new mailbox with the **IMAP** provider. The connection settings and credentials follow the **Channel** card.",
               "alt": "New channel form with connection settings, credentials, mailbox signature and the Create channel button",
               "width": 420
             },
@@ -145,8 +145,8 @@
           "title": "Mailbox connection settings",
           "type": "reference",
           "intro": [
-            "An **Imap** mailbox needs the details of your incoming and outgoing mail servers. Your e-mail provider or IT team can give you these values.",
-            "The **Microsoft365** and **Gmail** providers need fewer fields. They ask for the ids your Microsoft or Google administrator created."
+            "An **IMAP** mailbox needs the details of your incoming and outgoing mail servers. Your e-mail provider or IT team can give you these values.",
+            "The **Microsoft 365** and **Gmail** providers need fewer fields. They ask for the ids your Microsoft or Google administrator created."
           ],
           "blocks": [
             {

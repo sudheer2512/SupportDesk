@@ -697,7 +697,7 @@
           "result": "You see what your company has and what its support covers.",
           "blocks": [
             { "image": "shots/29-account-contracts.png", "caption": "The **Contracts** tab with two active contracts and an expired one.", "alt": "Contracts tab listing a POS hardware warranty, a Premium AMC and an expired annual maintenance contract with periods, renewal and entitlements" },
-            { "p": "A contract with prepaid hours also shows how many hours are used. **Covered channels** lists the ways you may contact support under the contract." }
+            { "p": "**Time left** shows the days until the end date. For a contract that has ended, it shows **Ended** and how many days ago. A contract with prepaid hours also shows how many hours are used. **Covered channels** lists the ways you may contact support under the contract." }
           ]
         }
       ]
