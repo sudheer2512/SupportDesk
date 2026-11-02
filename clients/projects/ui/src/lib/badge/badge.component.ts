@@ -178,12 +178,16 @@ export class SdPriorityBadge {
 @Component({
   selector: 'sd-status-pill',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<span class="dot" aria-hidden="true" [style.background]="color() || 'var(--sd-text-3)'"></span>{{ label() }}`,
+  template: `<span class="dot" aria-hidden="true" [style.background]="color() || 'var(--sd-text-3)'"></span><span class="text">{{ label() }}</span>`,
+  // Long names ("Waiting on Third Party") truncate inside narrow cells instead of spilling into the next column.
+  host: { '[attr.title]': 'label()' },
   styles: `
     :host {
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      max-width: 100%;
+      min-width: 0;
       height: 22px;
       padding: 0 8px;
       border: 1px solid var(--sd-border);
@@ -199,6 +203,11 @@ export class SdPriorityBadge {
       height: 8px;
       border-radius: 50%;
       flex: none;
+    }
+    .text {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   `,
 })

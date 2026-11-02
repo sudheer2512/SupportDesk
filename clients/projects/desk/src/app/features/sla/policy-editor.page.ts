@@ -383,7 +383,16 @@ const PRIORITY_ORDER = ['Critical', 'High', 'Medium', 'Low'];
       .duration select { width: 64px; }
       .esc-list { display: grid; gap: var(--sd-space-3); }
       .esc { border: 1px solid var(--sd-divider); border-radius: var(--sd-radius-md); padding: var(--sd-space-3); display: grid; gap: var(--sd-space-2); }
-      .esc-grid { display: grid; gap: var(--sd-space-2); grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); align-items: start; }
+      /* Milestone · level · when · percent/minutes · action: the selects get room for their longest option. */
+      .esc-grid {
+        display: grid;
+        gap: var(--sd-space-2);
+        grid-template-columns: minmax(160px, 1.2fr) minmax(80px, 0.6fr) minmax(200px, 1.3fr) minmax(120px, 0.9fr) minmax(190px, 1.3fr);
+        align-items: start;
+      }
+      @media (max-width: 1180px) {
+        .esc-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); }
+      }
       .notify { display: flex; flex-wrap: wrap; gap: var(--sd-space-3); align-items: center; }
       .notify sd-combobox { min-width: 220px; flex: 1; }
       .remove { justify-self: end; }

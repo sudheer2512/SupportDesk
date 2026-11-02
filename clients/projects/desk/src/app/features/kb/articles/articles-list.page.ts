@@ -332,6 +332,10 @@ function flag(value: string | undefined): boolean {
         gap: 6px;
         min-width: 0;
       }
+      /* The title truncates; status badges ("Live") keep their full width. */
+      .title-cell sd-badge {
+        flex: none;
+      }
       .title {
         color: var(--sd-text);
         font-weight: var(--sd-weight-medium);

@@ -123,6 +123,9 @@ import { TopBarComponent } from './top-bar.component';
       min-width: 0;
     }
     main {
+      /* Containing block for absolutely positioned content (visually hidden captions): without it they are laid out
+         against the document and make the whole page scroll as well as main. */
+      position: relative;
       flex: 1;
       min-height: 0;
       overflow: auto;

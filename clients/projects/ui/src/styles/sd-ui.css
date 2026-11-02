@@ -323,6 +323,15 @@ input[type='time'].sd-input {
 .sd-backdrop-transparent {
   background: transparent;
 }
+/* Drawer action row (content projected into <sd-drawer> with sdDrawerFooter): inset like the header and body. */
+[sdDrawerFooter] {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--sd-space-2);
+  padding: var(--sd-space-3) var(--sd-space-4);
+  border-top: 1px solid var(--sd-divider);
+}
 
 .sd-dialog-panel {
   max-width: calc(100vw - 32px);

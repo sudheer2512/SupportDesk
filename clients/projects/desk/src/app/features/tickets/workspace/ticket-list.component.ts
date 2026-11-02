@@ -339,7 +339,7 @@ export class TicketListComponent {
   protected readonly columns: SdColumn<TicketListItemDto>[] = [
     { key: 'number', header: '#', width: 84, sortable: true, sortKey: 'number' },
     { key: 'subject', header: 'Subject', minWidth: 240, flex: 3, locked: true },
-    { key: 'status', header: 'Status', minWidth: 130, flex: 1 },
+    { key: 'status', header: 'Status', minWidth: 200, flex: 1 },
     { key: 'priority', header: 'Priority', width: 110, sortable: true, sortKey: 'priority' },
     { key: 'dueAt', header: 'Due', width: 150, sortable: true, sortKey: 'due' },
     { key: 'assignee', header: 'Assignee', minWidth: 150, flex: 1 },

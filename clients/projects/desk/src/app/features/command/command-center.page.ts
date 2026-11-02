@@ -224,6 +224,8 @@ const REPLY_TYPES = new Set(['ticket.customer_replied', 'ticket.mentioned']);
     .next,
     .feed {
       display: grid;
+      /* One column no wider than the card: long subjects truncate instead of pushing rows out of the card. */
+      grid-template-columns: minmax(0, 1fr);
       gap: 2px;
       margin: 8px 0 0;
       padding: 0;

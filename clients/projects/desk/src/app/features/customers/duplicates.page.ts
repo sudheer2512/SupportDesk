@@ -84,7 +84,10 @@ import { TABLE_STYLES } from './shared/styles';
         width: 220px;
       }
       .row-actions {
+        /* Room for the whole "Review & merge" label; the reason text wraps instead. */
+        width: 10.5rem;
         text-align: right;
+        white-space: nowrap;
       }
     `,
   ],

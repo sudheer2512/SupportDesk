@@ -118,7 +118,8 @@ import { MILESTONE_LABELS, SLA_TABS } from './sla-ui';
     SECTION_STYLES,
     PAGE_STYLES,
     `
-      .subject { max-width: 360px; }
+      /* Narrow enough that every column (Policy last) fits at 1280 px; the subject truncates. */
+      .subject { max-width: 260px; }
       .elapsed { display: grid; gap: 4px; min-width: 120px; }
       .elapsed .bar { width: 100%; }
       .more { display: flex; justify-content: center; margin-top: var(--sd-space-3); }

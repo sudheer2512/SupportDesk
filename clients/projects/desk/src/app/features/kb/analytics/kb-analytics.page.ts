@@ -351,7 +351,10 @@ interface Tile {
         font-size: var(--sd-text-xs);
       }
       .action {
+        /* Room for the whole "Create article" label (the button's label truncates when the column is squeezed). */
+        width: 9.5rem;
         text-align: right;
+        white-space: nowrap;
       }
       .ok {
         display: flex;
