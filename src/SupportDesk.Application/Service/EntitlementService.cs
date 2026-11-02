@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using SupportDesk.Application.Tickets;
 using SupportDesk.Domain;
@@ -65,13 +66,13 @@ public sealed class EntitlementService(DeskDbContext db, TicketHistory history) 
             var allowance = match.HoursAllowed is { } h ? $"{h - match.HoursUsed:0.#} h left" :
                 match.IncidentsAllowed is { } i ? $"{i - match.IncidentsUsed} incidents left" : "unlimited";
             return new EligibilityDecision(EntitlementStatus.Entitled, contract, match,
-                $"{contract.Type} {contract.Number} — {match.Name} ({allowance}, until {contract.EndDate:yyyy-MM-dd})", allowance, active);
+                $"{ContractTypeLabel(contract.Type)} {contract.Number} — {match.Name} ({allowance}, until {Day(contract.EndDate)})", allowance, active);
         }
         if (active.FirstOrDefault(c => !entitlements.Any(e => e.ContractId == c.Id)) is { } blanket)
         {
             // A contract without explicit entitlements covers the customer generally.
             return new EligibilityDecision(EntitlementStatus.Entitled, blanket, null,
-                $"{blanket.Type} {blanket.Number} (customer-wide, until {blanket.EndDate:yyyy-MM-dd})", "customer-wide", active);
+                $"{ContractTypeLabel(blanket.Type)} {blanket.Number} (customer-wide, until {Day(blanket.EndDate)})", "customer-wide", active);
         }
         if (entitlements.Any(e => !HasAllowance(e)))
             return new EligibilityDecision(EntitlementStatus.NotEntitled, null, null, "The covering entitlement has used up its incidents or hours.", null, active);
@@ -80,9 +81,23 @@ public sealed class EntitlementService(DeskDbContext db, TicketHistory history) 
             return new EligibilityDecision(EntitlementStatus.NotEntitled, null, null,
                 $"Active contracts ({string.Join(", ", active.Select(c => c.Number))}) do not cover this product, installation or asset.", null, active);
         if (contracts.Where(c => c.EndDate < today).OrderByDescending(c => c.EndDate).FirstOrDefault() is { } expired)
-            return new EligibilityDecision(EntitlementStatus.Expired, expired, null, $"{expired.Type} {expired.Number} expired on {expired.EndDate:yyyy-MM-dd}.", null, active);
+            return new EligibilityDecision(EntitlementStatus.Expired, expired, null,
+                $"{ContractTypeLabel(expired.Type)} {expired.Number} expired on {Day(expired.EndDate)}.", null, active);
         return new EligibilityDecision(EntitlementStatus.NotEntitled, null, null, "No active contract or warranty covers this request.", null, active);
     }
+
+    /// <summary>How eligibility notes name a contract type: "AMC", "Annual support", "Time &amp; material".</summary>
+    public static string ContractTypeLabel(ContractType type) => type switch
+    {
+        ContractType.Amc => "AMC",
+        ContractType.AnnualSupport => "Annual support",
+        ContractType.PrepaidHours => "Prepaid hours",
+        ContractType.TimeAndMaterial => "Time & material",
+        _ => type.ToString()
+    };
+
+    /// <summary>Dates in notes read "14 Aug 2026" (notes are stored text, shown to agents as written).</summary>
+    public static string Day(DateOnly date) => date.ToString("d MMM yyyy", CultureInfo.InvariantCulture);
 
     private static void Set(Ticket t, EntitlementStatus status, Guid? contractId, Guid? entitlementId, string note)
     {

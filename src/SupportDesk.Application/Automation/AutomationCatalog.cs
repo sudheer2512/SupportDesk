@@ -29,7 +29,7 @@ public static class AutomationCatalog
     [
         new(RuleTriggers.TicketCreated, "Ticket created", "event", "A ticket is created from any channel."),
         new(RuleTriggers.TicketUpdated, "Ticket updated", "event", "Ticket fields change (optionally only when specific fields change)."),
-        new(RuleTriggers.StatusChanged, "Status changed", "event", "The ticket status changes (use 'changed_to'/'changed_from' on status)."),
+        new(RuleTriggers.StatusChanged, "Status changed", "event", "The ticket status changes (add a Status condition with “changed to” or “changed from”)."),
         new(RuleTriggers.TicketAssigned, "Ticket assigned", "event", "The assignee or team changes."),
         new(RuleTriggers.ReplyAdded, "Agent replied", "event", "An agent sends a public reply."),
         new(RuleTriggers.CustomerReplied, "Customer replied", "event", "The customer replies through any channel."),
@@ -37,7 +37,7 @@ public static class AutomationCatalog
         new(RuleTriggers.SlaWarning, "SLA warning", "event", "An SLA milestone reaches its warning threshold."),
         new(RuleTriggers.SlaBreached, "SLA breached", "event", "An SLA milestone is breached."),
         new(RuleTriggers.CustomerActivity, "Customer activity", "event", "Activity on a customer account (rules run on the related or open tickets)."),
-        new(RuleTriggers.Scheduled, "Scheduled", "scheduled", "Evaluated on a schedule over open tickets (time-based conditions such as 'older_than_minutes')."),
+        new(RuleTriggers.Scheduled, "Scheduled", "scheduled", "Evaluated on a schedule over open tickets (time-based conditions such as “older than (minutes)”)."),
         new(RuleTriggers.Webhook, "Inbound webhook", "webhook", "An external system posts to the rule's webhook URL with a ticket id or number.")
     ];
 

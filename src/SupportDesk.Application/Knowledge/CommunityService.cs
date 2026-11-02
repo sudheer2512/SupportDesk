@@ -1,3 +1,6 @@
+using System.Globalization;
+using System.Net;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using SupportDesk.Application.Common;
 using SupportDesk.Application.Platform;
@@ -275,10 +278,11 @@ public sealed class CommunityService(
             var number = await db.Tickets.Where(t => t.Id == existing).Select(t => t.Number).FirstOrDefaultAsync(ct);
             return new ConvertTopicResultDto(existing, number, "#" + number);
         }
+        var replies = await db.CommunityPosts.AsNoTracking().Where(p => p.TopicId == topic.Id && !p.IsHidden).OrderBy(p => p.CreatedAt).ToListAsync(ct);
         var ticket = await tickets.CreateAsync(new CreateTicketRequest
         {
             Subject = topic.Title,
-            DescriptionHtml = topic.BodyHtml + "<p><em>Converted from a community topic.</em></p>",
+            DescriptionHtml = TopicTranscript(topic, replies),
             Channel = nameof(Channel.Portal),
             ContactId = topic.AuthorContactId,
             BrandId = topic.BrandId,
@@ -296,6 +300,25 @@ public sealed class CommunityService(
         events.Publish(KnowledgeEvents.TopicChanged, "Topic", topic.Id, new EntityEventPayload(topic.Id, topic.Title));
         await db.SaveChangesAsync(ct);
         return new ConvertTopicResultDto(ticket.Id, ticket.Number, $"#{ticket.Number}");
+    }
+
+    /// <summary>The topic text followed by its visible replies, so the ticket carries the whole discussion (sanitised on create).</summary>
+    private static string TopicTranscript(CommunityTopic topic, List<CommunityPost> replies)
+    {
+        var html = new StringBuilder(topic.BodyHtml);
+        if (replies.Count > 0)
+        {
+            html.Append("<hr><p><strong>Replies in the community topic</strong></p>");
+            foreach (var p in replies)
+            {
+                html.Append("<blockquote><p><strong>").Append(WebUtility.HtmlEncode(p.AuthorName)).Append("</strong>")
+                    .Append(p.IsAgentResponse ? " (support)" : "")
+                    .Append(" · ").Append(p.CreatedAt.ToString("d MMM yyyy HH:mm", CultureInfo.InvariantCulture)).Append(" UTC")
+                    .Append(p.IsAcceptedAnswer ? " · accepted answer" : "").Append("</p>")
+                    .Append(p.BodyHtml).Append("</blockquote>");
+            }
+        }
+        return html.Append("<p><em>Converted from a community topic.</em></p>").ToString();
     }
 
     // ───────────────────────────── Mapping ─────────────────────────────

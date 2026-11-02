@@ -31,7 +31,7 @@ public static class ChannelProviders
 
     public static readonly IReadOnlyList<Info> Catalog =
     [
-        new(FileDrop, [ChannelType.Email], "Development/demo mailbox: reads .eml files from {DataPath}/maildrop/{address}/inbox and writes sent mail to …/sent.",
+        new(FileDrop, [ChannelType.Email], "Demo and test mailbox: reads .eml files from the server's data folder (maildrop › mailbox address › inbox) and saves sent mail in its sent folder.",
             ["pollIntervalSeconds"], [], true, false),
         new(Imap, [ChannelType.Email], "IMAP (UID cursor) for inbound and SMTP for outbound; SSL/STARTTLS; password or OAuth2 (XOAUTH2).",
             ["imapHost", "imapPort", "imapSecurity", "smtpHost", "smtpPort", "smtpSecurity", "username", "authMode", "folder", "markSeen", "pollIntervalSeconds"],

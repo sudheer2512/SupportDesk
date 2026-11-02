@@ -45,6 +45,7 @@ public sealed record NotificationPolicySettings
         [NotificationTypes.AiProposal] = ("AI proposal", "AI proposes an action that needs a decision."),
         [NotificationTypes.AnomalyDetected] = ("Anomaly detected", "Unusual ticket volume or sentiment is detected."),
         [NotificationTypes.ChatWaiting] = ("Chat waiting", "A visitor is waiting in live chat."),
+        [NotificationTypes.ChatTransferred] = ("Chat transferred to me", "Another agent transfers a live chat to the agent."),
         [NotificationTypes.System] = ("System messages", "Administrative and system notices.")
     };
 

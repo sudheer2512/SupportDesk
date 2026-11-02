@@ -27,6 +27,33 @@ public sealed class KnowledgeTests(DeskApiFactory factory)
     }
 
     [Fact]
+    public async Task Converting_a_community_topic_copies_its_visible_replies_into_the_ticket()
+    {
+        var t = await factory.CreateTenantAsync();
+        var admin = await t.AdminClientAsync();
+        await factory.InTenantAsync(t.Id, async sp =>
+        {
+            var db = sp.GetRequiredService<DeskDbContext>();
+            foreach (var brand in db.Brands) brand.CommunityEnabled = true;
+            await db.SaveChangesAsync();
+        });
+        var acme = await factory.CustomerAsync(t, "Acme");
+        var (_, contact) = await factory.ContactAsync(t, acme.Id, acme.HeadOffice, PortalAccessScope.Organisation, "Asker");
+        var topic = await Ok<TopicDetailDto>(await contact.PostAsJsonAsync($"/api/v1/portal/{t.Slug}/community/topics",
+            new CreateTopicRequest("Export to Excel fails", "<p>The export button does nothing.</p>"), J));
+        await Ok<TopicDetailDto>(await contact.PostAsJsonAsync($"/api/v1/portal/{t.Slug}/community/topics/{topic.Id}/posts",
+            new CreatePostRequest("<p>Same here since the last update.</p>"), J));
+        await Ok<TopicDetailDto>(await admin.PostAsJsonAsync($"/api/v1/community/topics/{topic.Id}/posts", new CreatePostRequest("<p>Please clear the cache.</p>"), J));
+
+        var converted = await Ok<ConvertTopicResultDto>(await admin.PostAsync($"/api/v1/community/topics/{topic.Id}/convert", null));
+        var ticket = await Ok<TicketDetailDto>(await admin.GetAsync($"/api/v1/tickets/{converted.TicketId}"));
+        Assert.Contains("The export button does nothing.", ticket.DescriptionHtml);
+        Assert.Contains("Same here since the last update.", ticket.DescriptionHtml);
+        Assert.Contains("Please clear the cache.", ticket.DescriptionHtml);
+        Assert.Contains("Asker", ticket.DescriptionHtml);
+    }
+
+    [Fact]
     public async Task Workflow_transitions_are_permission_checked_and_versions_are_immutable()
     {
         var t = await factory.CreateTenantAsync();

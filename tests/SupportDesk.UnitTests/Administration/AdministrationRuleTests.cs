@@ -138,4 +138,11 @@ public sealed class AdministrationRuleTests
         Assert.Equal(new TimeOnly(22, 0), defaults.QuietHoursStart);
         Assert.Equal(new TimeOnly(7, 0), defaults.QuietHoursEnd);
     }
+
+    [Fact]
+    public void Every_notification_type_has_a_label_for_the_delivery_defaults()
+    {
+        var missing = SupportDesk.Application.Notifications.NotificationTypes.All.Where(t => !NotificationPolicySettings.EventLabels.ContainsKey(t));
+        Assert.Empty(missing);
+    }
 }
