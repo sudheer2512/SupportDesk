@@ -45,7 +45,7 @@ import { SAAS_CSS, UsageMetersComponent, humanize, requestTone } from '../subscr
                     </td>
                     <td class="hide-sm">{{ g.requestedAt | sdDateTime }}</td>
                     <td class="actions">
-                      @if (g.active) {
+                      @if (g.active && g.isMine) {
                         <button sdButton size="sm" icon="eye" (click)="open(g)">Diagnostics</button>
                       }
                     </td>

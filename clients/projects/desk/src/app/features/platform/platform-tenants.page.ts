@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiError, PlatformApi, PlatformTenantDto } from '@sd/core';
 import { SdBadge, SdButton, SdDateTimePipe, SdEmptyState, SdFormField, SdInput, SdPageHeader, SdRelativeTimePipe, SdSkeleton } from '@sd/ui';
-import { SAAS_CSS, bytes, tenantTone } from '../subscription/saas-ui';
+import { SAAS_CSS, bytes, endsOrEnded, statusLabel, tenantTone } from '../subscription/saas-ui';
 
 /** Tenants: search by name or workspace, filter by status, keyset paging; opens the tenant detail. */
 @Component({
@@ -60,12 +60,12 @@ import { SAAS_CSS, bytes, tenantTone } from '../subscription/saas-ui';
                       <div class="muted small">{{ t.slug }}{{ t.databaseMode === 'Dedicated' ? ' · dedicated DB' : '' }}</div>
                     </td>
                     <td>
-                      <sd-badge size="sm" [tone]="tone(t.status)" [dot]="true">{{ t.status }}</sd-badge>
+                      <sd-badge size="sm" [tone]="tone(t.status)" [dot]="true">{{ statusLabel(t.status) }}</sd-badge>
                       @if (t.trialEndsAt && t.status === 'Trial') {
-                        <div class="muted small">ends {{ t.trialEndsAt | sdRelativeTime }}</div>
+                        <div class="muted small">{{ endsOrEnded(t.trialEndsAt) }} {{ t.trialEndsAt | sdRelativeTime }}</div>
                       }
                     </td>
-                    <td>{{ t.planName }}<div class="muted small">{{ t.subscriptionStatus }}</div></td>
+                    <td>{{ t.planName }}<div class="muted small">{{ statusLabel(t.subscriptionStatus) }}</div></td>
                     <td class="num hide-sm">{{ t.agents }}</td>
                     <td class="num hide-sm">{{ bytes(t.storageBytes) }}</td>
                     <td class="hide-sm">{{ t.createdAt | sdDateTime: 'date' }}</td>
@@ -98,6 +98,8 @@ export class PlatformTenantsPage implements OnInit {
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly tone = tenantTone;
+  protected readonly statusLabel = statusLabel;
+  protected readonly endsOrEnded = endsOrEnded;
   protected readonly bytes = bytes;
 
   ngOnInit(): void {

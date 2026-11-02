@@ -88,6 +88,17 @@ export function humanize(value: string | null | undefined): string {
   return value.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[_.]/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
 }
 
+/** "ends in 3d" / "ended 2d ago": trial ends and access expiries that may already be in the past. */
+export function endsOrEnded(at: string | null | undefined): string {
+  return at && new Date(at).getTime() < Date.now() ? 'ended' : 'ends';
+}
+
+/** Tenant / subscription status for badges: "PastDue" → "Past due", "PendingDeletion" → "Pending deletion". */
+export function statusLabel(status: string | null | undefined): string {
+  const words = humanize(status);
+  return words ? words.charAt(0) + words.slice(1).toLowerCase() : '';
+}
+
 /** Responsive data table + callouts + section headings used across the SaaS screens. */
 export const SAAS_CSS = `
   .table-wrap { overflow-x: auto; border: 1px solid var(--sd-border); border-radius: var(--sd-radius-lg); background: var(--sd-surface); }
@@ -225,6 +236,7 @@ export class PlanLimitsComponent {
     aiTokensMonthly: number | null;
     apiCallsMonthly: number | null;
     maxAttachmentMb: number | null;
+    maxBrands: number | null;
   }>();
   protected readonly rows = computed(() => {
     const p = this.plan();
@@ -235,6 +247,7 @@ export class PlanLimitsComponent {
       { label: 'Portal users', value: n(p.maxPortalUsers) },
       { label: 'Storage', value: p.storageMb === null ? 'Unlimited' : bytes(p.storageMb * 1024 * 1024) },
       { label: 'Channels', value: n(p.maxChannels) },
+      { label: 'Brands', value: n(p.maxBrands) },
       { label: 'AI tokens / month', value: n(p.aiTokensMonthly) },
       { label: 'API calls / month', value: n(p.apiCallsMonthly) },
       { label: 'Attachment size', value: p.maxAttachmentMb === null ? 'Unlimited' : `${p.maxAttachmentMb} MB` },

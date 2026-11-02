@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { Router, RouterLink } from '@angular/router';
 import { ApiError, PlatformApi, PlatformAuditEntryDto, PlatformOverviewDto, PlatformTenantDto } from '@sd/core';
 import { SdBadge, SdButton, SdCard, SdDateTimePipe, SdEmptyState, SdKpiTile, SdPageHeader, SdRelativeTimePipe, SdSkeleton } from '@sd/ui';
-import { SAAS_CSS, money, tenantTone } from '../subscription/saas-ui';
+import { SAAS_CSS, endsOrEnded, money, statusLabel, tenantTone } from '../subscription/saas-ui';
 
 /** Platform overview: tenant counts, revenue and receivables, trials ending soon and recent platform activity. */
 @Component({
@@ -43,9 +43,9 @@ import { SAAS_CSS, money, tenantTone } from '../subscription/saas-ui';
                       <span class="muted small">{{ t.slug }}</span>
                       <span class="sd-spacer"></span>
                       @if (t.trialEndsAt) {
-                        <span class="small">ends {{ t.trialEndsAt | sdRelativeTime }}</span>
+                        <span class="small">{{ endsOrEnded(t.trialEndsAt) }} {{ t.trialEndsAt | sdRelativeTime }}</span>
                       }
-                      <sd-badge size="sm" [tone]="tone(t.subscriptionStatus)">{{ t.subscriptionStatus }}</sd-badge>
+                      <sd-badge size="sm" [tone]="tone(t.subscriptionStatus)">{{ statusLabel(t.subscriptionStatus) }}</sd-badge>
                     </li>
                   }
                 </ul>
@@ -96,6 +96,8 @@ export class PlatformOverviewPage implements OnInit {
   protected readonly error = signal<string | null>(null);
   protected readonly money = money;
   protected readonly tone = tenantTone;
+  protected readonly statusLabel = statusLabel;
+  protected readonly endsOrEnded = endsOrEnded;
 
   ngOnInit(): void {
     this.load();

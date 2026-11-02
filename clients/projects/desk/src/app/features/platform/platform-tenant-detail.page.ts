@@ -29,7 +29,7 @@ import {
   SdSkeleton,
   ToastService,
 } from '@sd/ui';
-import { SAAS_CSS, UsageMetersComponent, humanize, invoiceLabel, invoiceTone, money, requestTone, tenantTone } from '../subscription/saas-ui';
+import { SAAS_CSS, UsageMetersComponent, humanize, invoiceLabel, invoiceTone, money, requestTone, statusLabel, tenantTone } from '../subscription/saas-ui';
 
 type Panel = 'suspend' | 'reactivate' | 'cancel' | 'extend' | 'plan' | 'dedicated' | 'support' | 'paid' | 'diagnostics';
 
@@ -90,7 +90,7 @@ type Panel = 'suspend' | 'reactivate' | 'cancel' | 'extend' | 'plan' | 'dedicate
             <sd-card title="Workspace">
               <dl class="facts">
                 <dt>Status</dt>
-                <dd><sd-badge size="sm" [tone]="tone(t.status)" [dot]="true">{{ t.status }}</sd-badge></dd>
+                <dd><sd-badge size="sm" [tone]="tone(t.status)" [dot]="true">{{ statusLabel(t.status) }}</sd-badge></dd>
                 <dt>Workspace</dt>
                 <dd>{{ t.slug }}</dd>
                 <dt>Created</dt>
@@ -109,7 +109,7 @@ type Panel = 'suspend' | 'reactivate' | 'cancel' | 'extend' | 'plan' | 'dedicate
                   <dt>Plan</dt>
                   <dd>{{ s.plan.name }} · {{ s.seats }} seats · {{ s.billingCycle }}</dd>
                   <dt>Status</dt>
-                  <dd><sd-badge size="sm" [tone]="tone(s.status)">{{ s.status }}</sd-badge></dd>
+                  <dd><sd-badge size="sm" [tone]="tone(s.status)">{{ statusLabel(s.status) }}</sd-badge></dd>
                   @if (s.trialEndsAt) {
                     <dt>Trial ends</dt>
                     <dd>{{ s.trialEndsAt | sdDateTime: 'date' }} ({{ s.trialDaysLeft }} days left)</dd>
@@ -191,7 +191,7 @@ type Panel = 'suspend' | 'reactivate' | 'cancel' | 'extend' | 'plan' | 'dedicate
                         }
                       </td>
                       <td class="actions">
-                        @if (g.active) {
+                        @if (g.active && g.isMine) {
                           <button sdButton size="sm" icon="eye" (click)="diagnostics(g)">Diagnostics</button>
                         }
                       </td>
@@ -374,6 +374,7 @@ export class PlatformTenantDetailPage implements OnInit {
 
   protected readonly money = money;
   protected readonly tone = tenantTone;
+  protected readonly statusLabel = statusLabel;
   protected readonly rtone = requestTone;
   protected readonly invoiceTone = invoiceTone;
   protected readonly invoiceLabel = invoiceLabel;

@@ -240,8 +240,17 @@ public sealed class SubscriptionTests(DeskApiFactory factory)
         var approved = await (await admin.PostAsJsonAsync($"/api/v1/admin/support-access/{grant.Id}/decision", new DecideSupportAccessRequest(true, "OK for 30 minutes"), J))
             .ReadAsync<SupportAccessDto>();
         Assert.True(approved.Active);
+        Assert.False(approved.IsMine);
         var diagnostics = await (await platform.GetAsync($"/api/v1/platform/support-access/{grant.Id}/diagnostics")).ReadAsync<SupportDiagnosticsDto>();
         Assert.Equal(t.Id, diagnostics.TenantId);
+
+        // Only the requesting operator's grant is "mine" (the console offers diagnostics only there).
+        var other = await factory.PlatformClientAsync();
+        var mine = await (await platform.GetAsync($"/api/v1/platform/tenants/{t.Id}")).ReadAsync<PlatformTenantDetailDto>();
+        var theirs = await (await other.GetAsync($"/api/v1/platform/tenants/{t.Id}")).ReadAsync<PlatformTenantDetailDto>();
+        Assert.True(mine.SupportAccess.Single(g => g.Id == grant.Id).IsMine);
+        Assert.False(theirs.SupportAccess.Single(g => g.Id == grant.Id).IsMine);
+        Assert.Equal(HttpStatusCode.Forbidden, (await other.GetAsync($"/api/v1/platform/support-access/{grant.Id}/diagnostics")).StatusCode);
 
         await (await admin.PostAsync($"/api/v1/admin/support-access/{grant.Id}/revoke", null)).ReadAsync<SupportAccessDto>();
         Assert.Equal(HttpStatusCode.Forbidden, (await platform.GetAsync($"/api/v1/platform/support-access/{grant.Id}/diagnostics")).StatusCode);

@@ -64,6 +64,8 @@ export interface SupportAccessDto {
   decisionNote: string | null;
   expiresAt: IsoDateTime | null;
   active: boolean;
+  /** The signed-in operator's own grant (only its operator can open diagnostics). */
+  isMine: boolean;
 }
 
 export interface PlatformTenantDetailDto {

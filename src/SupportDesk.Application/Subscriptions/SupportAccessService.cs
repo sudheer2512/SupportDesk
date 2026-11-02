@@ -26,9 +26,12 @@ public sealed class SupportAccessService(DeskDbContext db, RequestContext ctx, C
     public const string ActionRevoked = "support_access.revoked";
     public const string ActionUsed = "support_access.used";
 
-    public static SupportAccessDto ToDto(SupportAccessGrant g, string tenantName, DateTime now) => new(
+    public static SupportAccessDto ToDto(SupportAccessGrant g, string tenantName, DateTime now, Guid? viewerOperatorId = null) => new(
         g.Id, g.TenantId, tenantName, g.OperatorName, g.Reason, g.DurationMinutes, Effective(g, now).ToString(), g.CreatedAt, g.DecidedByName, g.DecidedAt,
-        g.DecisionNote, g.ExpiresAt, Effective(g, now) == SupportAccessStatus.Approved);
+        g.DecisionNote, g.ExpiresAt, Effective(g, now) == SupportAccessStatus.Approved, viewerOperatorId is { } op && g.OperatorId == op);
+
+    /// <summary>The signed-in platform operator (null in a tenant context).</summary>
+    private Guid? ViewerOperatorId => ctx.IsPlatformOperator ? ctx.UserId : null;
 
     private static SupportAccessStatus Effective(SupportAccessGrant g, DateTime now) =>
         g.Status == SupportAccessStatus.Approved && g.ExpiresAt <= now ? SupportAccessStatus.Expired : g.Status;
@@ -38,7 +41,7 @@ public sealed class SupportAccessService(DeskDbContext db, RequestContext ctx, C
         var name = await source.Tenants.Where(t => t.Id == tenantId).Select(t => t.Name).FirstOrDefaultAsync(ct) ?? "";
         var now = source.Clock.UtcNow;
         return (await source.AllTenants<SupportAccessGrant>().AsNoTracking().Where(g => g.TenantId == tenantId).OrderByDescending(g => g.CreatedAt).Take(50).ToListAsync(ct))
-            .Select(g => ToDto(g, name, now)).ToList();
+            .Select(g => ToDto(g, name, now, ViewerOperatorId)).ToList();
     }
 
     // ───── Platform operator side ─────
@@ -67,7 +70,7 @@ public sealed class SupportAccessService(DeskDbContext db, RequestContext ctx, C
             $"{grant.OperatorName} requested support access for {r.DurationMinutes} minutes: {reason}", new { reason, r.DurationMinutes }, now, ctx.IpAddress);
         audit.Write(ActionRequested, "SupportAccessGrant", grant.Id, $"Requested support access to {tenant.Slug}", new { tenantId, reason, r.DurationMinutes });
         await db.SaveChangesAsync(ct);
-        return ToDto(grant, tenant.Name, now);
+        return ToDto(grant, tenant.Name, now, ViewerOperatorId);
     }
 
     public async Task<List<SupportAccessDto>> OperatorListAsync(Guid? tenantId, CancellationToken ct = default)
@@ -77,7 +80,7 @@ public sealed class SupportAccessService(DeskDbContext db, RequestContext ctx, C
         if (tenantId is { } t) q = q.Where(g => g.TenantId == t);
         var names = await db.Tenants.AsNoTracking().ToDictionaryAsync(x => x.Id, x => x.Name, ct);
         var now = db.Clock.UtcNow;
-        return (await q.OrderByDescending(g => g.CreatedAt).Take(200).ToListAsync(ct)).Select(g => ToDto(g, names.GetValueOrDefault(g.TenantId) ?? "?", now)).ToList();
+        return (await q.OrderByDescending(g => g.CreatedAt).Take(200).ToListAsync(ct)).Select(g => ToDto(g, names.GetValueOrDefault(g.TenantId) ?? "?", now, ViewerOperatorId)).ToList();
     }
 
     /// <summary>Read-only diagnostics for an approved, unexpired grant held by the calling operator.</summary>

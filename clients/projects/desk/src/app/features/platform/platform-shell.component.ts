@@ -52,7 +52,7 @@ import { SdButton, SdIcon, SdLogo } from '@sd/ui';
     .who { display: grid; text-align: right; line-height: 1.2; }
     .name { font-size: var(--sd-text-sm); font-weight: var(--sd-weight-medium); }
     .exp { font-size: var(--sd-text-xs); color: var(--sd-text-3); }
-    .main { flex: 1; overflow: auto; outline: none; }
+    .main { position: relative; flex: 1; overflow: auto; outline: none; }
     @media (max-width: 720px) {
       .bar { padding: 8px 16px; }
       nav { order: 3; flex-basis: 100%; }

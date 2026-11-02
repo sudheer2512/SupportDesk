@@ -20,7 +20,11 @@ import { SAAS_CSS, humanize } from '../subscription/saas-ui';
           <div class="callout" [class]="v.valid ? 'callout callout--success' : 'callout callout--danger'" role="status">
             <sd-icon [name]="v.valid ? 'circle-check' : 'octagon-alert'" [size]="16" />
             <div class="grow">
-              <strong>{{ v.valid ? 'Chain intact' : 'Chain broken' }}</strong> — {{ v.message }} ({{ v.checked }} sealed entries checked{{ v.brokenAtSequence ? ', first broken link #' + v.brokenAtSequence : '' }}).
+              @if (v.valid) {
+                <strong>Chain intact</strong> — {{ v.checked ? v.checked + (v.checked === 1 ? ' sealed entry' : ' sealed entries') + ' checked.' : v.message }}
+              } @else {
+                <strong>Chain broken</strong> — {{ v.message }} ({{ v.checked }} sealed entries checked{{ v.brokenAtSequence ? ', first broken link #' + v.brokenAtSequence : '' }}).
+              }
             </div>
           </div>
         }

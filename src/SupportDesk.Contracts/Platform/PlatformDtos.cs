@@ -112,7 +112,9 @@ public sealed record SupportAccessDto(
     DateTime? DecidedAt,
     string? DecisionNote,
     DateTime? ExpiresAt,
-    bool Active);
+    bool Active,
+    /// <summary>True for the signed-in platform operator's own grants (only they can open diagnostics); false for tenants.</summary>
+    bool IsMine);
 
 public sealed record RequestSupportAccessRequest(string Reason, int DurationMinutes = 60);
 
