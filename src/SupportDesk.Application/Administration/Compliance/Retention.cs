@@ -51,7 +51,7 @@ public sealed record AuditChainAnchor
 
 /// <summary>
 /// Retention policies (admin.compliance): CRUD, dry-run counts and execution. Execution honours legal holds and runs in
-/// batches; every run is audited. The recurring <see cref="RetentionTask"/> runs all active policies daily per tenant.
+/// batches; every run is audited. The recurring <see cref="RetentionTask"/> runs all active policies every six hours per tenant.
 /// </summary>
 public sealed class RetentionService(
     DeskDbContext db,
@@ -122,11 +122,13 @@ public sealed class RetentionService(
         var held = await holds.HeldTicketIdsAsync(ct);
         var (eligible, heldBack) = type switch
         {
-            RetentionDataTypes.ClosedTickets => await CountAsync(TicketCandidates(cutoff, action).Select(t => t.Id), held, ct),
-            RetentionDataTypes.Messages => await CountNullableAsync(MessageCandidates(cutoff, action).Select(m => new Pair(m.Id, m.TicketId)), held, ct),
-            RetentionDataTypes.Attachments => await CountNullableAsync(db.TicketAttachments.Where(a => a.CreatedAt < cutoff).Select(a => new Pair(a.Id, a.TicketId)), held, ct),
+            RetentionDataTypes.ClosedTickets => await CountAsync(TicketCandidates(cutoff, action), held, (q, ids) => q.Where(t => ids.Contains(t.Id)), ct),
+            RetentionDataTypes.Messages => await CountAsync(MessageCandidates(cutoff, action), held,
+                (q, ids) => q.Where(m => m.TicketId != null && ids.Contains(m.TicketId.Value)), ct),
+            RetentionDataTypes.Attachments => await CountAsync(db.TicketAttachments.Where(a => a.CreatedAt < cutoff), held, (q, ids) => q.Where(a => ids.Contains(a.TicketId)), ct),
             RetentionDataTypes.AuditLogs => (await AuditCandidates(cutoff).LongCountAsync(ct), 0L),
-            RetentionDataTypes.AiLogs => await CountNullableAsync(AiCandidates(cutoff, action).Select(a => new Pair(a.Id, a.EntityType == "Ticket" ? a.EntityId : null)), held, ct),
+            RetentionDataTypes.AiLogs => await CountAsync(AiCandidates(cutoff, action), held,
+                (q, ids) => q.Where(a => a.EntityType == "Ticket" && a.EntityId != null && ids.Contains(a.EntityId.Value)), ct),
             _ => (0L, 0L)
         };
         return new RetentionDryRunDto(policyId, type, action.ToString(), r.AfterDays, cutoff, eligible, heldBack, now);
@@ -255,21 +257,16 @@ public sealed class RetentionService(
         return db.AuditLogs.Where(a => a.TenantId == tenant && a.Hash != "" && a.OccurredAt < cutoff);
     }
 
-    private static async Task<(long, long)> CountAsync(IQueryable<Guid> ids, HashSet<Guid> held, CancellationToken ct)
-    {
-        var total = await ids.LongCountAsync(ct);
-        if (held.Count == 0) return (total, 0);
-        var heldList = held.ToList();
-        var heldCount = await ids.Where(id => heldList.Contains(id)).LongCountAsync(ct);
-        return (total - heldCount, heldCount);
-    }
-
-    private static async Task<(long, long)> CountNullableAsync(IQueryable<Pair> rows, HashSet<Guid> held, CancellationToken ct)
+    /// <summary>
+    /// Counts candidates and the part legal holds keep back. The held filter goes on the entity query itself: a filter on a
+    /// projected record (or a conditional ticket id) cannot be translated to SQL.
+    /// </summary>
+    private static async Task<(long, long)> CountAsync<T>(IQueryable<T> rows, HashSet<Guid> held, Func<IQueryable<T>, List<Guid>, IQueryable<T>> heldRows,
+        CancellationToken ct)
     {
         var total = await rows.LongCountAsync(ct);
         if (held.Count == 0) return (total, 0);
-        var heldList = held.ToList();
-        var heldCount = await rows.Where(r => r.TicketId != null && heldList.Contains(r.TicketId.Value)).LongCountAsync(ct);
+        var heldCount = await heldRows(rows, held.ToList()).LongCountAsync(ct);
         return (total - heldCount, heldCount);
     }
 
@@ -371,7 +368,7 @@ public sealed class RetentionService(
 }
 
 /// <summary>
-/// Daily retention run: every active policy of every active tenant (one batch per policy and run), then housekeeping of
+/// Retention run every six hours: every active policy of every active tenant (one batch per policy and run), then housekeeping of
 /// data-subject export files that were downloaded or have expired.
 /// </summary>
 public sealed class RetentionTask(TenantScopeRunner runner, ILogger<RetentionTask> logger) : IRecurringTask

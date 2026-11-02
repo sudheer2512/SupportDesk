@@ -13,7 +13,7 @@ import { SAAS_CSS } from '../../subscription/saas-ui';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="toolbar">
-      <p class="muted small grow">Policies run daily. Records covered by an active legal hold are never archived, anonymised or deleted.</p>
+      <p class="muted small grow">Active policies run every six hours. Records covered by an active legal hold are never archived, anonymised or deleted.</p>
       <button sdButton variant="primary" icon="plus" (click)="edit(null)">New policy</button>
     </div>
     @if (error(); as e) {

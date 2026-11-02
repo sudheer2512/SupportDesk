@@ -132,7 +132,8 @@ public sealed class AuthService(
     {
         user.LastLoginAt = db.Clock.UtcNow;
         var session = await CreateSessionAsync(PrincipalKind.User, user.Id, tenant.Id, client, mfa, ct);
-        audit.Write(AuditActions.LoginSucceeded, "User", user.Id, $"{user.DisplayName} signed in", new { client.IpAddress, client.ClientKind, mfa });
+        audit.Write(AuditActions.LoginSucceeded, "User", user.Id, $"{user.DisplayName} signed in", new { client.IpAddress, client.ClientKind, mfa })
+            .AttributeTo(ActorType.User, user.Id, user.DisplayName);
         await db.SaveChangesAsync(ct);
         var access = await IssueAccessAsync(user, tenant, session.Session.Id, mfa, ct);
         var me = await principals.BuildMeAsync(user.Id, ct);

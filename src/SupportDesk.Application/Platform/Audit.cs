@@ -48,6 +48,21 @@ public sealed class AuditWriter(DeskDbContext db, RequestContext ctx) : IAuditWr
     private static string TextTrim(string s, int max) => s.Length <= max ? s : s[..max];
 }
 
+public static class AuditLogExtensions
+{
+    /// <summary>
+    /// Attributes an unsealed row to a principal the request context does not carry yet (a sign-in is written before the
+    /// session exists, so the context still says System).
+    /// </summary>
+    public static AuditLog AttributeTo(this AuditLog log, ActorType actorType, Guid actorId, string actorName)
+    {
+        log.ActorType = actorType;
+        log.ActorId = actorId;
+        log.ActorName = actorName;
+        return log;
+    }
+}
+
 public static class AuditChain
 {
     public static string ComputeHash(string prevHash, AuditLog log)

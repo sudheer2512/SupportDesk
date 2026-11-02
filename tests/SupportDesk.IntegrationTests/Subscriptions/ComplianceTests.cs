@@ -6,8 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SupportDesk.Contracts.Common;
 using SupportDesk.Contracts.Compliance;
+using SupportDesk.Contracts.Platform;
 using SupportDesk.Contracts.Subscriptions;
 using SupportDesk.Domain;
+using SupportDesk.Domain.Ai;
 using SupportDesk.Domain.Customers;
 using SupportDesk.Domain.Tickets;
 using SupportDesk.IntegrationTests.Infrastructure;
@@ -62,6 +64,48 @@ public sealed class ComplianceTests(DeskApiFactory factory)
         var again = await (await admin.PostAsync($"/api/v1/admin/compliance/retention/{policy.Id}/dry-run", null)).ReadAsync<RetentionDryRunDto>();
         Assert.Equal(1, again.Eligible);
         Assert.Equal(0, again.HeldBack);
+    }
+
+    [Fact]
+    public async Task Ai_log_and_message_retention_counts_and_runs_while_a_legal_hold_exists()
+    {
+        var t = await factory.CreateTenantAsync();
+        var admin = await t.AdminClientAsync();
+        var (_, _, held) = await factory.ContactWithTicketAsync(t, admin, "Held Hugo");
+        var (_, _, free) = await factory.ContactWithTicketAsync(t, admin, "Free Fiona");
+        await (await admin.PostAsJsonAsync("/api/v1/admin/compliance/legal-holds",
+            new SaveLegalHoldRequest("Matter 9", "Litigation hold for matter 9", TicketNumbers: [held.Number]), J)).ReadAsync<LegalHoldDto>();
+        await factory.InTenantAsync(t.Id, async sp =>
+        {
+            var db = sp.GetRequiredService<DeskDbContext>();
+            AiExecution Log(string? entityType, Guid? entityId) => new()
+            {
+                Feature = "summary", Provider = "Test", Model = "test", EntityType = entityType, EntityId = entityId,
+                Status = AiExecutionStatus.Succeeded, OutputJson = "{}", CreatedAt = DateTime.UtcNow.AddDays(-200)
+            };
+            db.AiExecutions.AddRange(Log("Ticket", held.Id), Log("Ticket", free.Id), Log(null, null));
+            await db.SaveChangesAsync();
+        });
+
+        var aiPolicy = await (await admin.PostAsJsonAsync("/api/v1/admin/compliance/retention",
+            new SaveRetentionPolicyRequest("Purge AI execution logs after 180 days", "AiLogs", "Delete", 180), J)).ReadAsync<RetentionPolicyDto>();
+        var dry = await (await admin.PostAsync($"/api/v1/admin/compliance/retention/{aiPolicy.Id}/dry-run", null)).ReadAsync<RetentionDryRunDto>();
+        Assert.Equal(2, dry.Eligible);
+        Assert.Equal(1, dry.HeldBack);
+        var run = await (await admin.PostAsync($"/api/v1/admin/compliance/retention/{aiPolicy.Id}/run", null)).ReadAsync<RetentionRunResultDto>();
+        Assert.Equal(2, run.Affected);
+        Assert.Equal(1, run.HeldBack);
+        var left = await factory.InTenantAsync(t.Id, sp => sp.GetRequiredService<DeskDbContext>().AiExecutions.Select(a => a.EntityId).ToListAsync());
+        Assert.Equal([held.Id], left);
+
+        // Message and attachment dry runs filter on the ticket id too.
+        foreach (var type in new[] { "Messages", "Attachments" })
+        {
+            var policy = await (await admin.PostAsJsonAsync("/api/v1/admin/compliance/retention",
+                new SaveRetentionPolicyRequest($"{type} after a month", type, "Delete", 30), J)).ReadAsync<RetentionPolicyDto>();
+            var response = await admin.PostAsync($"/api/v1/admin/compliance/retention/{policy.Id}/dry-run", null);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
     }
 
     [Fact]
@@ -135,6 +179,28 @@ public sealed class ComplianceTests(DeskApiFactory factory)
         var after = await (await admin.GetAsync($"/api/v1/admin/compliance/requests/{request.Id}")).ReadAsync<DataRequestDto>();
         Assert.False(after.CanDownload);
         Assert.NotNull(after.DownloadedAt);
+    }
+
+    [Fact]
+    public async Task Sign_ins_are_attributed_to_the_person_and_stay_out_of_platform_activity()
+    {
+        var t = await factory.CreateTenantAsync();
+        await t.AdminClientAsync();
+        var platform = await factory.PlatformClientAsync();
+        var logins = await factory.InCatalogAsync(db => db.AuditLogs.IgnoreQueryFilters().AsNoTracking()
+            .Where(a => a.Action == "auth.login" && (a.TenantId == t.Id || a.EntityType == "PlatformOperator")).ToListAsync());
+
+        var desk = Assert.Single(logins, a => a.TenantId == t.Id);
+        Assert.Equal(ActorType.User, desk.ActorType);
+        Assert.Equal(desk.EntityId, desk.ActorId);
+        Assert.False(string.IsNullOrEmpty(desk.ActorName));
+        Assert.All(logins.Where(a => a.EntityType == "PlatformOperator"), a =>
+        {
+            Assert.Equal(ActorType.Platform, a.ActorType);
+            Assert.Equal(a.EntityId, a.ActorId);
+        });
+        var detail = await (await platform.GetAsync($"/api/v1/platform/tenants/{t.Id}")).ReadAsync<PlatformTenantDetailDto>();
+        Assert.DoesNotContain(detail.RecentActivity, a => a.Action.StartsWith("auth.", StringComparison.Ordinal));
     }
 
     [Fact]

@@ -208,7 +208,8 @@ public sealed class PlatformAuthService(DeskDbContext db, PasswordService passwo
                 return new PlatformLoginResponse("invalid", null, null, null, "That code is not correct.");
         }
         op.LastLoginAt = db.Clock.UtcNow;
-        audit.Write(AuditActions.LoginSucceeded, "PlatformOperator", op.Id, $"Platform operator {op.DisplayName} signed in");
+        audit.Write(AuditActions.LoginSucceeded, "PlatformOperator", op.Id, $"Platform operator {op.DisplayName} signed in")
+            .AttributeTo(ActorType.Platform, op.Id, op.DisplayName);
         await db.SaveChangesAsync(ct);
         var token = tokens.Issue(DeskClaims.TypePlatform, op.Id, null, null, op.DisplayName, TimeSpan.FromMinutes(30), email: op.Email, mfa: op.MfaSecretProtected is not null);
         return new PlatformLoginResponse("ok", token.Token, token.ExpiresAt, op.DisplayName);

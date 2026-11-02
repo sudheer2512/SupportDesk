@@ -115,7 +115,8 @@ public sealed class SsoService(
         user.ExternalSubject ??= subject;
         user.LastLoginAt = db.Clock.UtcNow;
         var (session, refresh) = await auth.CreateSessionAsync(PrincipalKind.User, user.Id, pending.TenantId, client, mfa: true, ct);
-        audit.Write(AuditActions.LoginSucceeded, "User", user.Id, $"{user.DisplayName} signed in with SSO", new { client.IpAddress });
+        audit.Write(AuditActions.LoginSucceeded, "User", user.Id, $"{user.DisplayName} signed in with SSO", new { client.IpAddress })
+            .AttributeTo(ActorType.User, user.Id, user.DisplayName);
         await db.SaveChangesAsync(ct);
 
         var handoff = TextNormalization.RandomToken(24);

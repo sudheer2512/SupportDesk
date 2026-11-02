@@ -117,7 +117,9 @@ public sealed class PlatformTenantService(
         }
         var invoices = await db.AllTenants<BillingInvoice>().AsNoTracking().Where(i => i.TenantId == tenantId)
             .OrderByDescending(i => i.IssuedAt).Take(10).ToListAsync(ct);
-        var activity = await db.AuditLogs.AsNoTracking().Where(a => a.TenantId == tenantId && (a.ActorType == ActorType.Platform || a.ActorType == ActorType.System))
+        // Sign-ins are user activity, not platform or billing activity (rows written before sign-ins were attributed say System).
+        var activity = await db.AuditLogs.AsNoTracking()
+            .Where(a => a.TenantId == tenantId && (a.ActorType == ActorType.Platform || a.ActorType == ActorType.System) && !a.Action.StartsWith("auth."))
             .OrderByDescending(a => a.OccurredAt).Take(15).ToListAsync(ct);
         return new PlatformTenantDetailDto(dto, subscription, invoices.Select(i => InvoicePresenter.Summary(i, tenant.Name, now)).ToList(),
             await supportAccess.ForTenantAsync(db, tenantId, ct), activity.Select(a => PlatformAuditService.ToDto(a, tenant.Name)).ToList(),

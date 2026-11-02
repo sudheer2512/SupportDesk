@@ -835,7 +835,7 @@ summary and custom fields, and replaces message bodies and addresses. Deleting p
 unreferenced files. **Deleted records cannot be recovered.** Audit purges remove only the oldest sealed entries (up to
 10,000 a run) and keep the chain verifiable.
 
-Automatic policies run every 6 hours in batches (the page says "daily"). Every run is audited.
+Automatic policies run every 6 hours in batches. Every run is audited.
 
 ### Legal holds
 
