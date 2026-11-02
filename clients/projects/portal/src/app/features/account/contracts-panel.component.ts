@@ -35,7 +35,7 @@ import { humanize, recordTone } from './account-utils';
                   } @else if (c.daysRemaining === 0) {
                     Ends today
                   } @else {
-                    Ended {{ -c.daysRemaining }} days ago
+                    Ended {{ -c.daysRemaining }} {{ c.daysRemaining === -1 ? 'day' : 'days' }} ago
                   }
                 </dd>
               </div>

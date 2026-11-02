@@ -181,7 +181,7 @@ public sealed class PortalAccountService(
                 ? ch.EnumerateArray().Select(x => x.ToString()).ToList() : [];
             var onsite = coverage.TryGetValue("onsite", out var os) && os.ValueKind == System.Text.Json.JsonValueKind.True;
             return new PortalContractDto(c.Id, c.Number, c.Name, c.Type.ToString(), c.Status.ToString(), c.StartDate, c.EndDate,
-                Math.Max(0, c.EndDate.DayNumber - today.DayNumber), c.PrepaidHours, c.ConsumedHours,
+                c.EndDate.DayNumber - today.DayNumber, c.PrepaidHours, c.ConsumedHours,
                 c.PrepaidHours is > 0 ? Math.Round((double)(c.ConsumedHours / c.PrepaidHours.Value) * 100, 1) : null, c.AutoRenew, c.RenewalDate, channels, onsite,
                 entitlements[c.Id].Select(e => new PortalEntitlementDto(e.Id, e.Name, e.Type.ToString(), e.ProductId is { } p ? products.GetValueOrDefault(p) : null,
                     e.InstallationId is { } i ? installationNames.GetValueOrDefault(i) : null, e.IncidentsAllowed, e.IncidentsUsed, e.HoursAllowed, e.HoursUsed,

@@ -10,6 +10,7 @@ using SupportDesk.Contracts.Portal;
 using SupportDesk.Contracts.Tickets;
 using SupportDesk.Domain;
 using SupportDesk.Domain.Customers;
+using SupportDesk.Domain.Service;
 using SupportDesk.Domain.Tickets;
 using SupportDesk.IntegrationTests.Infrastructure;
 using SupportDesk.Persistence;
@@ -216,6 +217,32 @@ public sealed class PortalTicketTests(DeskApiFactory factory)
         var form = await anon.GetFromJsonAsync<PortalTicketFormDto>($"/api/v1/portal/{t.Slug}/submit/form", J);
         Assert.NotEmpty(form!.Departments);
         Assert.Empty(form.Installations);
+    }
+
+    [Fact]
+    public async Task Contract_days_remaining_go_negative_once_a_contract_has_ended()
+    {
+        var t = await factory.CreateTenantAsync();
+        var acme = await factory.CustomerAsync(t, "Acme");
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        await factory.InTenantAsync(t.Id, async sp =>
+        {
+            var db = sp.GetRequiredService<DeskDbContext>();
+            Contract Make(string number, DateOnly end, ContractStatus status) => new()
+            {
+                CustomerId = acme.Id, Number = number, Name = number, StartDate = end.AddYears(-1), EndDate = end, Status = status
+            };
+            db.Contracts.AddRange(Make("C-ENDED", today.AddDays(-75), ContractStatus.Expired), Make("C-TODAY", today, ContractStatus.Active),
+                Make("C-LATER", today.AddDays(40), ContractStatus.Active));
+            await db.SaveChangesAsync();
+        });
+        var (_, contact) = await factory.ContactAsync(t, acme.Id, acme.HeadOffice, PortalAccessScope.Organisation, "Customer");
+
+        var overview = await contact.GetFromJsonAsync<PortalAccountOverviewDto>($"/api/v1/portal/{t.Slug}/account/overview", J);
+        var days = overview!.Contracts.ToDictionary(c => c.Number, c => c.DaysRemaining);
+        Assert.Equal(-75, days["C-ENDED"]);
+        Assert.Equal(0, days["C-TODAY"]);
+        Assert.Equal(40, days["C-LATER"]);
     }
 
     [Fact]

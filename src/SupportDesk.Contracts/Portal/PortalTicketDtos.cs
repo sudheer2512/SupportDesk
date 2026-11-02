@@ -207,6 +207,7 @@ public sealed record PortalContractDto(
     string Status,
     DateOnly StartDate,
     DateOnly EndDate,
+    /// <summary>Days until the end date: 0 on the last day, negative once the contract has ended.</summary>
     int DaysRemaining,
     decimal? PrepaidHours,
     decimal ConsumedHours,
