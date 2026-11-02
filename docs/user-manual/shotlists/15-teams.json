@@ -1,0 +1,754 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "admin@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Two-step verification"
+    },
+    {
+      "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "15-monitor",
+      "file": "15-monitor.png",
+      "steps": [
+        {
+          "click": "a[href='/teams']"
+        },
+        {
+          "waitFor": "a[href='/teams/monitor']"
+        },
+        {
+          "click": "a[href='/teams/monitor']"
+        },
+        {
+          "waitFor": "text=Agents online"
+        },
+        {
+          "select": "#mon-dept",
+          "option": "Customer Success"
+        },
+        {
+          "wait": 1200
+        }
+      ],
+      "fullPage": true,
+      "highlight": [
+        "div.live",
+        "desk-module-tabs",
+        "#mon-dept",
+        ".kpis",
+        "sd-card[title='Agents']",
+        "sd-card[title='Queues']",
+        "sd-card[title='SLA risk']",
+        "sd-card[title='Chats waiting']"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "15-reassign",
+      "file": "15-reassign-dialog.png",
+      "steps": [
+        {
+          "click": "button[aria-label^='Reassign ticket']"
+        },
+        {
+          "waitFor": "text=New owner"
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "15-departments",
+      "file": "15-departments.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "a[href='/teams']"
+        },
+        {
+          "waitFor": "a[href='/teams/departments']"
+        },
+        {
+          "click": "a[href='/teams/departments']"
+        },
+        {
+          "waitFor": ".grid sd-card .stats"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "eval": "(() => { window.scrollTo(0,0); document.querySelectorAll('*').forEach(e => { if (e.scrollTop) e.scrollTop = 0; }); })()"
+        },
+        {
+          "wait": 300
+        }
+      ],
+      "highlight": [
+        "text=New department",
+        ".toolbar sd-checkbox",
+        ".grid sd-card:first-child .pills",
+        ".grid sd-card:first-child dl.meta",
+        ".grid sd-card:first-child button[aria-label^='Edit']",
+        ".grid sd-card:first-child button[aria-label^='Archive']",
+        ".grid sd-card:first-child .stats"
+      ],
+      "numbered": true,
+      "fullPage": true
+    },
+    {
+      "id": "15-department-dialog",
+      "file": "15-department-dialog.png",
+      "steps": [
+        {
+          "click": ".grid sd-card:first-child button[aria-label^='Edit']"
+        },
+        {
+          "waitFor": "text=Department head"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "15-archive-dialog",
+      "file": "15-archive-dialog.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": ".grid sd-card:first-child button[aria-label^='Archive']"
+        },
+        {
+          "waitFor": "text=Move open tickets to"
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "15-teams",
+      "file": "15-teams.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "a[href='/teams']"
+        },
+        {
+          "waitFor": "a[href='/teams/teams']"
+        },
+        {
+          "click": "a[href='/teams/teams']"
+        },
+        {
+          "waitFor": "text=New team"
+        },
+        {
+          "select": "#team-dept",
+          "option": "Technical Support"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "eval": "(() => { window.scrollTo(0,0); document.querySelectorAll('*').forEach(e => { if (e.scrollTop) e.scrollTop = 0; }); })()"
+        },
+        {
+          "wait": 300
+        }
+      ],
+      "highlight": [
+        "#team-dept",
+        "text=Test routing",
+        "text=New team",
+        ".grid sd-card:nth-child(2) .pills",
+        ".grid sd-card:nth-child(2) button[aria-label^='Routing of']",
+        ".grid sd-card:nth-child(2) button[aria-label^='Edit']",
+        ".grid sd-card:nth-child(2) button[aria-label^='Delete']",
+        ".grid sd-card:nth-child(1) .members"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "15-team-routing",
+      "file": "15-team-routing-dialog.png",
+      "steps": [
+        {
+          "click": ".grid sd-card:nth-child(2) button[aria-label^='Routing of']"
+        },
+        {
+          "waitFor": "text=Assignment mode"
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "15-team-dialog",
+      "file": "15-team-dialog.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": ".grid sd-card:nth-child(2) button[aria-label^='Edit']"
+        },
+        {
+          "waitFor": "text=Team lead"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "15-test-routing",
+      "file": "15-test-routing.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "text=Test routing"
+        },
+        {
+          "waitFor": "select[name=pd]"
+        },
+        {
+          "select": "select[name=pd]",
+          "option": "Technical Support"
+        },
+        {
+          "select": "select[name=ppr]",
+          "option": "High"
+        },
+        {
+          "click": "desk-routing-preview-panel button[type=submit]"
+        },
+        {
+          "waitFor": "desk-routing-preview-panel .result"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": "desk-routing-preview-panel"
+    },
+    {
+      "id": "15-agents",
+      "file": "15-agents.png",
+      "steps": [
+        {
+          "click": "a[href='/teams']"
+        },
+        {
+          "waitFor": "a[href='/teams/agents']"
+        },
+        {
+          "click": "a[href='/teams/agents']"
+        },
+        {
+          "waitFor": "text=Invite agent"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "eval": "(() => { window.scrollTo(0,0); document.querySelectorAll('*').forEach(e => { if (e.scrollTop) e.scrollTop = 0; }); })()"
+        },
+        {
+          "wait": 300
+        }
+      ],
+      "highlight": [
+        "text=Invite agent",
+        ".seats",
+        "#agent-q",
+        "#agent-status",
+        "#agent-dept",
+        "#agent-kind",
+        "table.dt thead"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "15-invite",
+      "file": "15-invite-dialog.png",
+      "steps": [
+        {
+          "click": "text=Invite agent"
+        },
+        {
+          "waitFor": "text=Send invitation"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "fill": "label=Work e-mail",
+          "value": "kavya.menon@wings.demo"
+        },
+        {
+          "fill": "label=Full name",
+          "value": "Kavya Menon"
+        },
+        {
+          "fill": "label=Title (optional)",
+          "value": "Support Engineer"
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "15-agent-detail",
+      "file": "15-agent-detail.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "tr[aria-label='Open Priya Raman']"
+        },
+        {
+          "waitFor": "text=Routing profile"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "eval": "(() => { window.scrollTo(0,0); document.querySelectorAll('*').forEach(e => { if (e.scrollTop) e.scrollTop = 0; }); })()"
+        },
+        {
+          "wait": 300
+        }
+      ],
+      "fullPage": true,
+      "highlight": [
+        ".actions",
+        ".hero .avatar",
+        ".hero .pills",
+        ".avail",
+        "sd-card[title='Profile']",
+        "sd-card[title='Access']",
+        "sd-card[title='Routing profile']",
+        "sd-card[title='Shifts']",
+        "sd-card[title='Account-managed customers']"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "15-agent-profile",
+      "file": "15-agent-profile-dialog.png",
+      "steps": [
+        {
+          "click": "sd-card[title='Profile'] button"
+        },
+        {
+          "waitFor": "text=E-mail signature"
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "15-agent-access",
+      "file": "15-agent-access-dialog.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "sd-card[title='Access'] button"
+        },
+        {
+          "waitFor": "text=Reports to"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "15-routing-profile",
+      "file": "15-routing-profile-dialog.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "sd-card[title='Routing profile'] button"
+        },
+        {
+          "waitFor": "text=Max concurrent chats"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "15-deactivate",
+      "file": "15-deactivate-dialog.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": ".actions button"
+        },
+        {
+          "waitFor": "text=Their open tickets"
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "15-skills",
+      "file": "15-skills.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "a[href='/teams']"
+        },
+        {
+          "waitFor": "a[href='/teams/skills']"
+        },
+        {
+          "click": "a[href='/teams/skills']"
+        },
+        {
+          "waitFor": "text=New skill"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "eval": "(() => { window.scrollTo(0,0); document.querySelectorAll('*').forEach(e => { if (e.scrollTop) e.scrollTop = 0; }); })()"
+        },
+        {
+          "wait": 300
+        }
+      ],
+      "highlight": [
+        "text=New skill",
+        "#skill-q",
+        "table.dt thead",
+        "table.dt tbody tr:first-child .row-actions"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "15-skill-dialog",
+      "file": "15-skill-dialog.png",
+      "steps": [
+        {
+          "click": "text=New skill"
+        },
+        {
+          "waitFor": "sd-dialog"
+        },
+        {
+          "fill": "label=Name",
+          "value": "GST e-invoicing"
+        },
+        {
+          "fill": "label=Category (optional)",
+          "value": "Product"
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "15-shifts",
+      "file": "15-shifts.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "a[href='/teams']"
+        },
+        {
+          "waitFor": "a[href='/teams/shifts']"
+        },
+        {
+          "click": "a[href='/teams/shifts']"
+        },
+        {
+          "waitFor": "text=New shift"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "eval": "(() => { window.scrollTo(0,0); document.querySelectorAll('*').forEach(e => { if (e.scrollTop) e.scrollTop = 0; }); })()"
+        },
+        {
+          "wait": 300
+        }
+      ],
+      "highlight": [
+        "sd-page-header .actions",
+        "[role=tablist]",
+        ".grid sd-card:first-child",
+        ".grid sd-card:first-child [sdcardactions]"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "15-shift-dialog",
+      "file": "15-shift-dialog.png",
+      "steps": [
+        {
+          "click": ".grid sd-card:first-child button[aria-label^='Edit']"
+        },
+        {
+          "waitFor": "text=Weekly hours"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "15-assignments",
+      "file": "15-shift-assignments.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "[id$='-tab-assignments']"
+        },
+        {
+          "waitFor": "text=Assign shift"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": ".desk-page__body",
+      "highlight": [
+        "text=Assign shift"
+      ]
+    },
+    {
+      "id": "15-assign-dialog",
+      "file": "15-assign-shift-dialog.png",
+      "steps": [
+        {
+          "click": "text=Assign shift"
+        },
+        {
+          "waitFor": "sd-dialog"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "15-leave",
+      "file": "15-leave.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "[id$='-tab-leave']"
+        },
+        {
+          "waitFor": "#leave-status"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": ".desk-page__body",
+      "highlight": [
+        "#leave-status",
+        "[role=tabpanel] .toolbar button",
+        "td.row-actions"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "15-leave-dialog",
+      "file": "15-leave-dialog.png",
+      "steps": [
+        {
+          "click": "[role=tabpanel] .toolbar button"
+        },
+        {
+          "waitFor": "sd-dialog"
+        },
+        {
+          "fill": "label=Reason (optional)",
+          "value": "Family function"
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "15-leave-decision",
+      "file": "15-leave-decision-dialog.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "td.row-actions button"
+        },
+        {
+          "waitFor": "text=Shared with the agent."
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "15-calendar",
+      "file": "15-team-calendar.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "[id$='-tab-calendar']"
+        },
+        {
+          "waitFor": "sd-calendar"
+        },
+        {
+          "wait": 1200
+        }
+      ],
+      "clip": ".desk-page__body"
+    },
+    {
+      "id": "15-delegation-dialog",
+      "file": "15-delegation-dialog.png",
+      "steps": [
+        {
+          "click": "a[href='/teams']"
+        },
+        {
+          "waitFor": "a[href='/teams/delegations']"
+        },
+        {
+          "click": "a[href='/teams/delegations']"
+        },
+        {
+          "waitFor": "text=New delegation"
+        },
+        {
+          "click": "text=New delegation"
+        },
+        {
+          "waitFor": "select[name=delegate]"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "select": "select[name=delegate]",
+          "option": "Arjun Nair"
+        },
+        {
+          "fill": "label=Reason (optional)",
+          "value": "Annual leave"
+        }
+      ],
+      "clip": "sd-dialog"
+    }
+  ]
+}

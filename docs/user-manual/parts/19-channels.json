@@ -1,0 +1,521 @@
+{
+  "chapters": [
+    {
+      "id": "channels",
+      "title": "Channels",
+      "intro": [
+        "This chapter is for administrators. It explains how to connect the ways customers reach you: mailboxes, WhatsApp, SMS, live chat, phone lines and social pages.",
+        "It also covers the chat widget for your website. Last, it shows the channel simulator, which tests a channel without real customers."
+      ],
+      "sections": [
+        {
+          "id": "ch-how-channels-work",
+          "title": "How channels work",
+          "type": "concept",
+          "intro": [
+            "A channel is one address where customers contact you. Examples are a support mailbox, a WhatsApp number or the chat widget on your website.",
+            "Each channel belongs to a brand. It sends its new tickets to a department, where routing picks a team and an agent.",
+            "Your plan sets how many channels you can have. To manage channels, you need the **Manage email accounts and messaging channels** permission."
+          ],
+          "blocks": [
+            "To open the list, select **Administration** in the rail, then select **Channels**. Channels are grouped by type.",
+            {
+              "image": "shots/19-channels-list.png",
+              "caption": "The **Channels** page with the e-mail channels at the top.",
+              "alt": "Channels page with numbered highlights on the Simulator and New channel buttons, the E-mail group, a status badge and the card buttons",
+              "width": 560
+            },
+            {
+              "callouts": [
+                "**Simulator** opens the channel simulator for testing.",
+                "**New channel** adds a mailbox, number, widget or phone line.",
+                "Each group shows one channel type and how many channels it has.",
+                "The status of the channel, such as **Connected** or **Error**.",
+                "The card buttons. **Configure** opens the channel, **Test** checks the connection and **Poll** fetches new mail now. **Simulate** opens the simulator for this channel."
+              ]
+            },
+            { "heading": "Channel statuses" },
+            {
+              "table": {
+                "columns": ["Status", "What it means"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**Connected**", "The last test or check worked. Messages flow normally."],
+                  ["**Error**", "The last check failed. The card shows the error message in red."],
+                  ["**Disabled**", "The channel is switched off. It does not receive or send messages."],
+                  ["**PendingVerification**", "The channel is set up but has not been checked yet. Run a test."]
+                ]
+              }
+            },
+            { "note": "Cards of inactive channels look faded. A channel with message history is never deleted, so you can always see its old conversations." }
+          ]
+        },
+        {
+          "id": "ch-types-and-providers",
+          "title": "Channel types and providers",
+          "type": "reference",
+          "intro": [
+            "When you add a channel, you choose its type and its provider. The provider is the service that carries the messages.",
+            "You cannot change the type or the provider later. To switch providers, add a new channel and deactivate the old one."
+          ],
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Type", "Provider", "How messages arrive", "What you need"],
+                "widths": [14, 22, 22, 42],
+                "rows": [
+                  ["**E-mail**", "**Imap**", "SupportDesk checks the mailbox", "The incoming and outgoing mail server details, and a password or access token."],
+                  ["**E-mail**", "**Smtp**", "Sending only", "The outgoing mail server details. Use it for a mailbox that only sends."],
+                  ["**E-mail**", "**Microsoft365**", "SupportDesk checks the mailbox", "Your Microsoft Entra ID tenant, an application (client) id and its client secret."],
+                  ["**E-mail**", "**Gmail**", "SupportDesk checks the mailbox", "A Google client id, the client secret and a refresh token."],
+                  ["**E-mail**", "**FileDrop**", "SupportDesk checks a folder", "Nothing. It is for demos and testing only."],
+                  ["**WhatsApp**", "**MetaCloud**", "Meta sends each message to SupportDesk", "The WhatsApp Business account details from Meta, an access token and the app secret."],
+                  ["**Messenger**, **Instagram**", "**MetaGraph**", "Meta sends each message to SupportDesk", "The page or Instagram account id, a page access token and the app secret."],
+                  ["**SMS**", "**Twilio**", "Twilio sends each message to SupportDesk", "The Twilio account SID and auth token."],
+                  ["**SMS**", "**GenericSms**", "Your SMS gateway sends each message to SupportDesk", "The gateway's send address, its message format, a key and a shared secret."],
+                  ["**Voice**", "**GenericVoice**", "Your phone system sends each call event to SupportDesk", "A shared secret. Voice channels receive calls only."],
+                  ["**Live chat**", "**Widget**", "Visitors chat in the widget on your website", "Nothing. You paste a short code into your website."],
+                  ["**WhatsApp**, **SMS**, **Messenger**, **Instagram**, **Voice**", "**Simulator (demo/testing)**", "Through the channel simulator only", "Nothing. Nothing is really sent."]
+                ]
+              }
+            },
+            { "tip": "To try SupportDesk before you connect real accounts, add a **Simulator (demo/testing)** channel. It needs no credentials." }
+          ]
+        },
+        {
+          "id": "ch-add-channel",
+          "title": "Add a channel",
+          "type": "task",
+          "intro": "Add a channel to receive tickets from a new mailbox, number, website or phone line.",
+          "prerequisites": [
+            "You have the **Manage email accounts and messaging channels** permission.",
+            "You have the account details from the provider, such as the mail server names and the password."
+          ],
+          "steps": [
+            "Select **Administration** > **Channels**.",
+            "Select **New channel**.",
+            { "text": "In the **Channel** card, choose the **Type** and the **Provider**.", "note": "The hint under **Provider** describes the provider you chose." },
+            "Enter a **Name**, such as `Sales mailbox`. Only your team sees this name.",
+            { "text": "Enter the address, such as the **Mailbox address** or the **WhatsApp number**.", "note": "For a **Live chat** channel, leave **Widget key** empty. SupportDesk creates a key for you." },
+            "Choose the **Brand** and the **Department** that receives the new tickets.",
+            {
+              "text": "Fill in the **Connection settings** and the **Credentials** cards for your provider.",
+              "image": "shots/19-new-channel.png",
+              "caption": "A new mailbox with the **Imap** provider. The connection settings and credentials follow the **Channel** card.",
+              "alt": "New channel form with connection settings, credentials, mailbox signature and the Create channel button",
+              "width": 420
+            },
+            "For a mailbox, add a **Mailbox signature** if you want one.",
+            "Select **Create channel**."
+          ],
+          "result": "The app shows **Channel created** and opens the new channel. Select **Test connection** to check it. See [Test a channel and fetch mail now](#ch-test-and-poll)."
+        },
+        {
+          "id": "ch-channel-fields",
+          "title": "Channel fields",
+          "type": "reference",
+          "intro": "These fields are on the **Channel** card of every channel. The label of the address field changes with the type.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Field", "What to enter"],
+                "widths": [32, 68],
+                "rows": [
+                  ["**Type**", "**E-mail**, **WhatsApp**, **SMS**, **Live chat**, **Voice**, **Messenger** or **Instagram**. You cannot change it later."],
+                  ["**Provider**", "The service that carries the messages. You cannot change it later."],
+                  ["**Name**", "A name your team recognises, such as `Billing mailbox`. Required."],
+                  ["**Mailbox address**", "E-mail only. The address customers write to, such as `support@example.com`."],
+                  ["**WhatsApp number**, **Sender number**, **Phone line**", "The number in international format, starting with + and the country code."],
+                  ["**Widget key**", "Live chat only. Leave it empty to create a new key."],
+                  ["**Page id**, **Account id**", "Messenger and Instagram only. The id of your Facebook page or Instagram professional account."],
+                  ["**Display name**", "The sender name customers see. If you leave it empty, the brand name is used."],
+                  ["**Brand**", "The brand the channel belongs to. **Default brand** uses your main brand."],
+                  ["**Department**", "Where new tickets from this channel go. **Brand default** uses the brand's setting."],
+                  ["**Active**", "Turn it off to stop the channel without deleting it."],
+                  ["**Send automatic acknowledgements**", "E-mail only. Sends a confirmation e-mail when a new ticket arrives."],
+                  ["**Accept messages from unknown senders**", "All types except live chat. Turn it off to accept messages only from known contacts."],
+                  ["**Mailbox signature**", "E-mail only. Added below the agent's own signature on every reply from this mailbox."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "ch-mailbox-settings",
+          "title": "Mailbox connection settings",
+          "type": "reference",
+          "intro": [
+            "An **Imap** mailbox needs the details of your incoming and outgoing mail servers. Your e-mail provider or IT team can give you these values.",
+            "The **Microsoft365** and **Gmail** providers need fewer fields. They ask for the ids your Microsoft or Google administrator created."
+          ],
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Field", "What to enter"],
+                "widths": [32, 68],
+                "rows": [
+                  ["**IMAP host**, **IMAP port**", "The incoming mail server, such as `imap.example.com`, and its port. The usual port is `993`."],
+                  ["**IMAP security**, **SMTP security**", "**Automatic**, **SSL/TLS on connect**, **STARTTLS** or **None (not recommended)**."],
+                  ["**SMTP host**, **SMTP port**", "The outgoing mail server, such as `smtp.example.com`, and its port. The usual port is `587`."],
+                  ["**User name**", "The mailbox user name. If you leave it empty, the mailbox address is used."],
+                  ["**Authentication**", "**Password**, or **OAuth 2.0 (XOAUTH2 access token)** if your provider uses sign-in tokens."],
+                  ["**Folder**", "The folder to read. The default is `INBOX`."],
+                  ["**Mark fetched mail as read**", "Turn it on to mark each e-mail as read after SupportDesk takes it."],
+                  ["**Check every (seconds)**", "How often SupportDesk checks for new mail, from 0 to 3600 seconds. The default is 30."],
+                  ["**Default outbound mailbox**", "Used for replies on tickets that did not arrive by e-mail, such as portal tickets. Turn it on for one mailbox only."],
+                  ["**Entra ID tenant id**, **Client (application) id**, **Mailbox (UPN)**", "Microsoft 365 only. Your Microsoft administrator gives you these values."],
+                  ["**Client id**, **Gmail user id**", "Gmail only. Leave **Gmail user id** as `me` unless told otherwise."]
+                ]
+              }
+            },
+            { "heading": "Credentials" },
+            "The **Credentials** card holds passwords, tokens and secrets. SupportDesk stores them encrypted and never shows them again.",
+            {
+              "list": [
+                "A saved value shows as dots with the word **(saved)**.",
+                "To replace a value, type the new one.",
+                "To delete a value, select **Remove** next to it. To undo that before you save, select **Keep**."
+              ]
+            },
+            { "warning": "If your SupportDesk server administrator changes the server's encryption key, saved credentials stop working. Enter them again on each channel." }
+          ]
+        },
+        {
+          "id": "ch-messaging-settings",
+          "title": "WhatsApp, SMS, social and voice settings",
+          "type": "reference",
+          "intro": "These providers send messages to SupportDesk as they happen. Their settings link SupportDesk to your account at the provider.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Provider", "Connection settings", "Credentials"],
+                "widths": [18, 52, 30],
+                "rows": [
+                  ["**MetaCloud** (WhatsApp)", "**Phone number id** and **WhatsApp Business account id** from WhatsApp Manager. A **Webhook verify token**, which is any secret phrase you also enter at Meta. A **Template outside the 24-hour window** and its **Template language**.", "**Access token**, **App secret**"],
+                  ["**MetaGraph** (Messenger, Instagram)", "**Page / Instagram account id** and a **Webhook verify token**.", "**Page access token**, **App secret**"],
+                  ["**Twilio** (SMS)", "**Account SID**. Optionally a **Messaging service SID**, and a **Public webhook URL** if a proxy changes the address.", "**Auth token**"],
+                  ["**GenericSms** (SMS)", "The gateway's **Send URL**, the sending method and the **Body format**. A **Body template** with placeholders such as `{{to}}` and `{{text}}`. The **Auth header name**, **Auth header value** and **Message id path in the response**.", "**API key**, **Webhook secret**"],
+                  ["**GenericVoice** (Voice)", "**Create tickets for answered calls**. Missed calls and voicemails always create tickets.", "**Webhook secret**"],
+                  ["**Widget** (Live chat)", "See [Set up the chat widget](#ch-chat-widget).", "None"]
+                ]
+              }
+            },
+            { "note": "WhatsApp lets you reply freely only within 24 hours of the customer's last message. After that, SupportDesk sends the approved template that you name here." }
+          ]
+        },
+        {
+          "id": "ch-change-channel",
+          "title": "Change a channel",
+          "type": "task",
+          "intro": "Open a channel to change its settings, check its status or replace its credentials.",
+          "prerequisites": ["You have the **Manage email accounts and messaging channels** permission."],
+          "steps": [
+            "Select **Administration** > **Channels**.",
+            "On the channel's card, select **Configure**. You can also select the channel's name.",
+            { "text": "Change the fields you need.", "note": "You cannot change the **Type** and **Provider** of a saved channel." },
+            "Select **Save changes**."
+          ],
+          "result": "The app shows **Channel saved**. To leave without saving, select **Cancel**.",
+          "blocks": [
+            {
+              "image": "shots/19-channel-editor.png",
+              "caption": "A saved mailbox. The settings are on the left and the status panel is on the right.",
+              "alt": "Channel page for the Support mailbox with numbered highlights on the Channel, Connection settings and Mailbox signature cards, the Save changes bar, the Status card and the Danger zone card",
+              "width": 560
+            },
+            {
+              "callouts": [
+                "The **Channel** card: name, address, brand, department and the switches.",
+                "The **Connection settings** card for the provider.",
+                "The **Mailbox signature** card. It appears for e-mail channels only.",
+                "**Cancel** and **Save changes**.",
+                "The **Status** card with **Test connection** and, for mailboxes, **Poll now**.",
+                "The **Danger zone** card with **Delete channel**."
+              ]
+            },
+            { "tip": "Select **Simulate** at the top right to open the simulator with this channel already chosen." }
+          ]
+        },
+        {
+          "id": "ch-test-and-poll",
+          "title": "Test a channel and fetch mail now",
+          "type": "task",
+          "intro": "Test a channel after you create it or change its credentials. For a mailbox, you can also fetch new mail without waiting.",
+          "steps": [
+            "Open the channel. See [Change a channel](#ch-change-channel).",
+            { "text": "In the **Status** card, select **Test connection**.", "note": "You can also select **Test** on the channel's card in the list." },
+            { "text": "Read the result under the buttons.", "note": "**Connected** means the test worked. **Failed** shows the reason." },
+            "For a mailbox, select **Poll now** to fetch new mail at once."
+          ],
+          "result": "After **Poll now**, the panel shows how many e-mails were fetched, processed, skipped as duplicates and failed."
+        },
+        {
+          "id": "ch-connect-webhook",
+          "title": "Connect a channel to its provider",
+          "type": "task",
+          "intro": [
+            "WhatsApp, Messenger, Instagram, SMS and voice providers send messages to SupportDesk as they happen. They send them to a callback address that SupportDesk creates for each channel.",
+            "You enter this address at the provider once."
+          ],
+          "steps": [
+            "Create and save the channel first.",
+            {
+              "text": "In the **Webhook** card, select **Copy URL**.",
+              "image": "shots/19-voice-webhook.png",
+              "caption": "The status panel of a phone line with its callback address in the **Webhook** card.",
+              "alt": "Side panel with the Status card, the Webhook card with Copy URL and Rotate key, and the Danger zone",
+              "width": 300
+            },
+            "Paste the address in the webhook setup at your provider.",
+            "For Meta, also enter the same **Webhook verify token** that you saved on the channel.",
+            "Send a test message from your phone to check that a ticket appears."
+          ],
+          "result": "New messages arrive in SupportDesk within seconds.",
+          "blocks": [
+            { "heading": "Get a new callback address" },
+            "If the address leaks, select **Rotate key**. SupportDesk creates a new address.",
+            { "warning": "The old address stops working at once. Enter the new address at the provider right after you rotate the key." },
+            { "note": "SupportDesk builds the address from the web address in your browser. If you work on an internal address, replace it with your public address before you give it to the provider." }
+          ]
+        },
+        {
+          "id": "ch-delete-channel",
+          "title": "Delete or deactivate a channel",
+          "type": "task",
+          "intro": "Remove a channel you no longer use. SupportDesk keeps the history of channels that have conversations.",
+          "steps": [
+            "Open the channel.",
+            "In the **Danger zone** card, select **Delete channel**.",
+            "In the confirmation, select **Delete**."
+          ],
+          "result": "A channel without messages is deleted, and the app shows **Channel deleted**. A channel with messages is switched off instead, and the app shows **Channel deactivated**.",
+          "blocks": [
+            { "tip": "To pause a channel for a while, turn off **Active** and select **Save changes**." }
+          ]
+        },
+        {
+          "id": "ch-chat-widget",
+          "title": "Set up the chat widget",
+          "type": "task",
+          "intro": "The chat widget adds a chat button to your website. Visitors chat with the AI assistant or an agent without leaving your page.",
+          "prerequisites": [
+            "You have a **Live chat** channel. To add one, follow [Add a channel](#ch-add-channel) and choose the **Live chat** type.",
+            "Someone can edit the pages of your website."
+          ],
+          "steps": [
+            "Open the **Live chat** channel.",
+            {
+              "text": "In the **Widget** card, set the greeting, the switches and the offline message.",
+              "image": "shots/19-chat-widget-settings.png",
+              "caption": "The **Widget** card of the website chat channel.",
+              "alt": "Widget card with Greeting, Bot answers first, Ask for e-mail before chatting, Offer e-mail verification, Offline message and Widget title",
+              "width": 420
+            },
+            "Select **Save changes**.",
+            {
+              "text": "In the **Embed the widget** card, select **Copy embed code**.",
+              "image": "shots/19-chat-widget-embed.png",
+              "caption": "The **Embed the widget** card with the code, **Live preview** and a preview of the chat window.",
+              "alt": "Embed the widget card showing the script code, Copy embed code, Live preview and a small preview of the chat window",
+              "width": 300
+            },
+            "Give the code to your web team. They paste it before the end of the page body on each page.",
+            "To try the widget, select **Live preview**. A demo page opens in a new tab."
+          ],
+          "result": "The chat button appears on your website. New chats arrive in **Inbox** > **Live chat**."
+        },
+        {
+          "id": "ch-widget-options",
+          "title": "Chat widget options",
+          "type": "reference",
+          "intro": "These settings are in the **Widget** card of a **Live chat** channel.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Setting", "What it does"],
+                "widths": [32, 68],
+                "rows": [
+                  ["**Greeting**", "The first message visitors see when they open the chat."],
+                  ["**Bot answers first**", "The AI assistant replies first. It hands the chat to an agent when needed."],
+                  ["**Ask for e-mail before chatting**", "Visitors must enter their e-mail address before they can chat."],
+                  ["**Offer e-mail verification**", "Visitors can confirm their e-mail with a one-time code. The chat then links to their contact."],
+                  ["**Offline message**", "Shown when no agent is available."],
+                  ["**Widget title**", "The title at the top of the chat window, such as `Chat with us`."]
+                ]
+              }
+            },
+            "Your web team can add options to the embed code. They can fill in the visitor's name and e-mail. They can also open the chat at once or show the button on the left.",
+            { "note": "Agents take chats only if their **Max concurrent chats** is above zero. You set it on the agent's page in **Teams & Agents**." }
+          ]
+        },
+        {
+          "id": "ch-acknowledgements",
+          "title": "Acknowledgements and unknown senders",
+          "type": "concept",
+          "intro": "Two switches on a channel decide how SupportDesk treats new senders.",
+          "blocks": [
+            { "heading": "Automatic acknowledgements" },
+            "An acknowledgement is a short e-mail that confirms a new ticket. SupportDesk sends it only when both of these are on:",
+            {
+              "list": [
+                "**Send automatic acknowledgements** on the mailbox.",
+                "The setting **Acknowledge new e-mail tickets automatically (where the mailbox allows it)** in ticket configuration."
+              ]
+            },
+            "Each sender gets at most three acknowledgements an hour. This stops e-mail loops with other automatic replies.",
+            "You can change the wording in the **New ticket acknowledgement** e-mail template. See the chapter on notification settings and e-mail templates.",
+            { "heading": "Unknown senders" },
+            "When **Accept messages from unknown senders** is off, SupportDesk accepts messages only from known contacts. New e-mail threads and messages from other senders are refused."
+          ]
+        },
+        {
+          "id": "ch-simulator",
+          "title": "The channel simulator",
+          "type": "concept",
+          "intro": [
+            "The channel simulator lets you test channels without real customers. It feeds messages, e-mails and call events into SupportDesk the same way real providers do.",
+            "The simulated messages create real tickets in your workspace. Use a test workspace, or close the test tickets afterwards."
+          ],
+          "blocks": [
+            "To open it, select **Simulator** on the **Channels** page. You can also select **Simulate** on a channel.",
+            {
+              "image": "shots/19-simulator.png",
+              "caption": "The simulator with a mailbox chosen and a sample e-mail filled in.",
+              "alt": "Channel simulator form with numbered highlights on the Channel list, the form heading, the Deliver e-mail button and the Results card",
+              "width": 420
+            },
+            {
+              "callouts": [
+                "**Channel** lists every active channel. The form below changes with the channel type.",
+                "The heading shows the address that receives the simulated traffic.",
+                "**Deliver e-mail** sends the e-mail into SupportDesk.",
+                "**Results** lists what happened to each simulated item, with links to the ticket and the inbox."
+              ]
+            },
+            { "heading": "Results" },
+            {
+              "table": {
+                "columns": ["Result", "What it means"],
+                "widths": [24, 76],
+                "rows": [
+                  ["**created**", "A new ticket was created."],
+                  ["**threaded**", "The message was added to an existing ticket."],
+                  ["**duplicate**", "The message was already received, so it was skipped."],
+                  ["**ignored**, **rejected**", "The message was not accepted, for example from an unknown sender."],
+                  ["**status**", "A delivery receipt updated a sent message."],
+                  ["**call**", "A call event was recorded."],
+                  ["**error**", "The simulation failed. The reason is shown in red."]
+                ]
+              }
+            },
+            { "note": "Live chat is not simulated here. Open the demo page from the simulator and chat as a visitor. Then answer from **Live chat** in the inbox." }
+          ]
+        },
+        {
+          "id": "ch-simulate-email",
+          "title": "Simulate an inbound e-mail",
+          "type": "task",
+          "intro": "Send a test e-mail into a mailbox channel to see how SupportDesk creates or threads the ticket.",
+          "steps": [
+            "Open the simulator and choose a mailbox in **Channel**.",
+            "Enter the **From address** and, if you like, the **From name**.",
+            "Enter the **Subject** and the **Body (plain text)**.",
+            { "text": "To add the e-mail to an existing conversation, enter its Message-ID in **In-Reply-To**.", "note": "To test duplicate handling, reuse a **Message-ID**. Otherwise leave it empty." },
+            "Optionally choose an **Attachment** under 5 MB.",
+            "Select **Deliver e-mail**."
+          ],
+          "result": "A new line appears in **Results**. Select **Ticket** or **Open in inbox** to see the result."
+        },
+        {
+          "id": "ch-simulate-message",
+          "title": "Simulate a WhatsApp, SMS or social message",
+          "type": "task",
+          "intro": "Send a test message into a WhatsApp, SMS, Messenger or Instagram channel.",
+          "steps": [
+            {
+              "text": "Open the simulator and choose the channel in **Channel**.",
+              "image": "shots/19-simulator-message.png",
+              "caption": "The message form for a WhatsApp channel.",
+              "alt": "Simulator form for WhatsApp with Sender number, Sender name, Text, Provider message id, Media and Deliver message",
+              "width": 420
+            },
+            "Enter the **Sender number**. For Messenger and Instagram, enter the **Sender id (PSID)**.",
+            "Enter the **Sender name** and the **Text**.",
+            "Optionally choose a **Media** file under 5 MB.",
+            "Select **Deliver message**."
+          ],
+          "result": "The message creates a ticket or joins the sender's open conversation. The outcome appears in **Results**.",
+          "blocks": [
+            { "tip": "To test duplicate handling, reuse a **Provider message id**." }
+          ]
+        },
+        {
+          "id": "ch-simulate-call",
+          "title": "Simulate a phone call",
+          "type": "task",
+          "intro": "Send call events into a voice channel. A call is a series of events with the same **Call id**.",
+          "steps": [
+            {
+              "text": "Open the simulator and choose the voice channel in **Channel**.",
+              "image": "shots/19-simulator-voice.png",
+              "caption": "The call event form for a phone line.",
+              "alt": "Simulator form for a voice channel with Event, Call id, Caller number, Direction, Agent e-mail, Duration, Recording URL, Notes and Send call event",
+              "width": 420
+            },
+            "In **Event**, choose **Started (ringing)**.",
+            "Enter the **Caller number** and choose the **Direction**.",
+            "Select **Send call event**.",
+            "Keep the same **Call id**. Choose the next event, such as **Answered** or **Missed**, and send it.",
+            "For **Answered** and **Ended**, enter the **Agent e-mail** and the **Duration (seconds)**.",
+            "For **Voicemail**, enter the **Recording URL**.",
+            "To start another call, select **New call**."
+          ],
+          "result": "Missed calls and voicemails create tickets. Answered calls create tickets when the channel allows it."
+        },
+        {
+          "id": "ch-outbound-messages",
+          "title": "Check outbound messages and delivery receipts",
+          "type": "task",
+          "intro": "The **Outbound messages** card lists what SupportDesk sent through the chosen channel, newest first.",
+          "steps": [
+            "Open the simulator and choose a channel.",
+            {
+              "text": "Look at the **Outbound messages** card on the right. Select **Refresh** to update it.",
+              "image": "shots/19-simulator-outbound.png",
+              "caption": "Sent WhatsApp replies, with buttons to simulate a delivery receipt.",
+              "alt": "Outbound messages card with two messages, their status, attempts and Simulate receipt buttons Delivered, Read and Failed",
+              "width": 420
+            },
+            "To test what agents see, select **Delivered**, **Read** or **Failed** next to **Simulate receipt**."
+          ],
+          "result": "The message status changes. Agents see the same status on the reply in the ticket."
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "The app says a channel for this address already exists.", "cause": "Another channel of the same type already uses that address or number.", "fix": "Open the existing channel and change it, or use a different address." },
+    { "problem": "The app asks for the number in international format.", "cause": "The number does not start with + and the country code.", "fix": "Enter the number like `+91 80 4000 1234`." },
+    { "problem": "**Test connection** shows **Failed**.", "cause": "A server name, port, security option or credential is wrong, or the provider is not reachable.", "fix": "Read the reason under the buttons. Check the values with your provider, save, and test again." },
+    { "problem": "A mailbox stopped receiving mail after a server change.", "cause": "The server's encryption key changed, so saved credentials cannot be read.", "fix": "Open each channel, type the credentials again and select **Save changes**." },
+    { "problem": "The provider stopped delivering messages after **Rotate key**.", "cause": "Rotating the key ends the old callback address at once.", "fix": "Select **Copy URL** and enter the new address at the provider." },
+    { "problem": "You cannot add another channel.", "cause": "Your plan allows a set number of channels.", "fix": "Deactivate a channel you do not use, or ask for a bigger plan." },
+    { "problem": "The app says the channel was changed by someone else.", "cause": "Another administrator saved the channel after you opened it.", "fix": "Reload the page, make your change again and save." },
+    { "problem": "Customers do not get an acknowledgement e-mail.", "cause": "The mailbox switch or the workspace setting is off, or the sender reached three acknowledgements in an hour.", "fix": "Turn on **Send automatic acknowledgements** on the mailbox. Also turn on the acknowledgement setting in ticket configuration." }
+  ],
+  "faq": [
+    { "q": "Can I change the type or provider of a channel?", "a": "No. Add a new channel with the right type and provider. Then turn off **Active** on the old one." },
+    { "q": "Why did **Delete channel** only deactivate my channel?", "a": "The channel has conversations. SupportDesk keeps it so that the ticket history stays complete." },
+    { "q": "Does the channel simulator send real messages?", "a": "No. It records outbound messages without sending them. Inbound simulations do create real tickets in your workspace." }
+  ],
+  "glossary": [
+    { "term": "Channel", "definition": "One address where customers contact you, such as a mailbox, a WhatsApp number, the chat widget or a phone line." },
+    { "term": "Provider", "definition": "The service that carries a channel's messages, such as Twilio for SMS or Gmail for e-mail." },
+    { "term": "Polling", "definition": "SupportDesk checking a mailbox for new mail at a set interval." },
+    { "term": "Callback address", "definition": "The web address a provider uses to send new messages to SupportDesk. It is shown in a channel's **Webhook** card." },
+    { "term": "Widget key", "definition": "The code that links the chat widget on your website to a live chat channel." },
+    { "term": "Default outbound mailbox", "definition": "The mailbox SupportDesk uses for replies on tickets that did not arrive by e-mail." },
+    { "term": "Channel simulator", "definition": "An administration page that feeds test e-mails, messages and calls into SupportDesk without real providers." },
+    { "term": "Acknowledgement", "definition": "An automatic e-mail that confirms a new ticket to the customer." }
+  ]
+}

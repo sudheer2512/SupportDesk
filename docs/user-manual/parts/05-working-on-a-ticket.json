@@ -1,0 +1,807 @@
+{
+  "chapters": [
+    {
+      "id": "working-on-a-ticket",
+      "title": "Working on a ticket",
+      "intro": [
+        "This chapter is for agents and supervisors who handle tickets day to day.",
+        "It explains the ticket screen, statuses and service targets. It shows how to assign, resolve, escalate, merge and link tickets. It also covers tasks, time, watchers, follow-ups and what automation does on your tickets."
+      ],
+      "sections": [
+        {
+          "id": "wt-open-ticket",
+          "title": "Open a ticket",
+          "type": "task",
+          "intro": "Open a ticket from a list, or go straight to it by its number.",
+          "steps": [
+            "In the ticket list, select the ticket's row.",
+            "To open a ticket by number, press [[Ctrl+K]] and enter the number, such as `1042`.",
+            "Select the ticket in the results."
+          ],
+          "result": "The ticket opens in its own tab in the ticket workspace.",
+          "blocks": [
+            { "note": "If the ticket is deleted, merged or outside what you can see, **Ticket not found** appears. Select **Close tab** to close it. See also [Find a ticket from the command palette](#gs-find-ticket)." }
+          ]
+        },
+        {
+          "id": "wt-ticket-screen",
+          "title": "The ticket screen",
+          "type": "concept",
+          "intro": [
+            "The ticket screen has a header, the conversation and the composer. The customer's context pane is on the right.",
+            "On most laptop screens, the side tabs open in a **Ticket details** panel. On wide screens, they appear next to the conversation."
+          ],
+          "blocks": [
+            {
+              "image": "shots/05-ticket-tour.png",
+              "caption": "Ticket #1002 with the header, the conversation, the composer bar and the context pane.",
+              "alt": "Ticket screen with numbered highlights on the ticket number, facts, quick edit fields, Ticket details button, More actions button, conversation header, composer bar and the customer section"
+            },
+            {
+              "callouts": [
+                "The ticket number. Select it to copy a link to the ticket. The subject and the **Edit subject** button are next to it.",
+                "Facts: channel, customer, contact, badges and the service target countdowns.",
+                "Quick edit fields: **Status**, **Priority**, **Assignee**, **Department** and **Team**.",
+                "**Ticket details**: opens the side tabs, such as **Details**, **Tasks**, **Time** and **People**.",
+                "**More actions**: assign, transfer, escalate, resolve, merge and the other ticket actions.",
+                "The conversation, with the **Activity** switch and the **Expand all** and **Collapse all** buttons.",
+                "The composer bar: **Reply**, **Internal note** and **Handover**.",
+                "The context pane, starting with the customer."
+              ]
+            },
+            { "tip": "To give the ticket more room, select the panel buttons at either end of the tab strip. They hide the queue panel and the context pane." }
+          ]
+        },
+        {
+          "id": "wt-header-badges",
+          "title": "Badges in the ticket header",
+          "type": "reference",
+          "intro": "Badges under the subject tell you about the ticket at a glance.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Badge", "Meaning"],
+                "widths": [36, 64],
+                "rows": [
+                  ["**VIP**", "The contact is a VIP."],
+                  ["**Escalated · L2**", "The ticket is escalated. The number is the escalation level."],
+                  ["**Entitled**", "A contract covers the request. Point to the badge to see the contract."],
+                  ["**Not entitled**, **Expired** or **Entitlement unknown**", "No valid contract covers the request."],
+                  ["**Overridden**", "Someone allowed support although the customer is not entitled."],
+                  ["**Awaiting customer confirmation**", "The ticket is resolved, and SupportDesk waits for the customer to confirm the fix."],
+                  ["**Locked by** and a name", "Another person locked the ticket while they work on it."],
+                  ["**Locked by you**", "You locked the ticket."],
+                  ["**Merged — open target**", "This ticket was merged into another. Select the badge to open the other ticket."],
+                  ["**SLA met** or **SLA breached**", "Shown on resolved and closed tickets instead of countdowns."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "wt-conversation",
+          "title": "The conversation",
+          "type": "concept",
+          "intro": [
+            "The conversation shows every message on the ticket, oldest first. The newest entry is at the bottom.",
+            "Customer messages and replies show the channel, such as **wrote via WhatsApp**. Internal notes and handover notes have an amber background. Customers never see them."
+          ],
+          "blocks": [
+            {
+              "list": [
+                "Turn on **Activity** to also see field changes, routing, SLA events and automation.",
+                "Select **Expand all** or **Collapse all** to open or fold every message. Long older messages start folded.",
+                "E-mail messages show **From**, **To** and **Cc** above the text.",
+                "Replies show a delivery status, such as **Delivered**.",
+                "Select an attachment to download it. **Scanning** means the malware scan is still running. **Blocked** means the file failed the scan."
+              ]
+            },
+            { "note": "If the description is not part of the conversation, it appears in a box above the conversation." }
+          ]
+        },
+        {
+          "id": "wt-context-pane",
+          "title": "The context pane",
+          "type": "reference",
+          "intro": "The context pane on the right shows what you need to know about the customer. Select a section heading to fold or unfold it.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Section", "Shows"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**Customer**", "Name, tier, account manager, open tickets, tickets in 90 days, satisfaction score and breaches. **Open customer** opens the customer's page."],
+                  ["**Contact**", "Job title, location, e-mail address, phone, language, preferred channel and open tickets."],
+                  ["**SLA** and the policy name", "Each service target with its status, due time and target. See [Service targets](#wt-sla)."],
+                  ["**Contracts**", "The customer's contracts. **Covers** marks the one that covers this ticket. Prepaid contracts show the hours used."],
+                  ["**Installations**", "The customer's installed products, with versions."],
+                  ["**Previous tickets**", "The customer's earlier tickets. Select one to open it."],
+                  ["**ERP references**", "Related documents in the ERP system, such as invoices."],
+                  ["**Suggested articles**", "Knowledge base articles that match the ticket, with a match score."],
+                  ["**AI recommendations**", "Suggestions from the AI assistant, with a confidence level."],
+                  ["**Engineering**", "Linked engineering work items and their state."]
+                ]
+              }
+            },
+            { "note": "Sections without data are hidden." }
+          ]
+        },
+        {
+          "id": "wt-quick-edit",
+          "title": "Change fields from the header",
+          "type": "task",
+          "intro": "Use the quick edit fields to change the most common fields without opening a dialog.",
+          "prerequisites": ["The fields you may change depend on your permissions. Fields you cannot change are greyed out."],
+          "steps": [
+            "To change the subject, select **Edit subject** (the pencil). Enter the new subject and select **Save**.",
+            "To change the status, choose a status in **Status**.",
+            "To change the priority, choose it in **Priority**.",
+            "To assign the ticket, choose an agent in **Assignee**. Select **Assign to me** next to it to take the ticket yourself.",
+            "To move the ticket, choose another **Department** or **Team**."
+          ],
+          "result": "Each change saves at once. A message confirms it, such as **Priority set to High**.",
+          "blocks": [
+            { "warning": "Quick edit fields save as soon as you choose a value. There is no **Save** button." },
+            { "note": "Some departments need a supervisor's approval for transfers. Then the message **Approval requested** appears, and the ticket stays where it is until someone approves." }
+          ]
+        },
+        {
+          "id": "wt-statuses",
+          "title": "Ticket statuses",
+          "type": "reference",
+          "intro": [
+            "Every status belongs to one fixed category: Open, Assigned, In progress, Waiting, Resolved or Closed. New workspaces start with the statuses below.",
+            "Your administrator can add statuses and limit which status may follow which. The status list only offers the statuses allowed next."
+          ],
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Status", "Category", "Meaning", "What you can do next"],
+                "widths": [20, 13, 37, 30],
+                "rows": [
+                  ["**Open**", "Open", "A new ticket. The customer portal shows **Received**.", "Assign it, reply, or change the status."],
+                  ["**Assigned**", "Assigned", "Set automatically when an open ticket gets an assignee.", "Reply. Your reply moves the ticket to **In Progress**."],
+                  ["**In Progress**", "In progress", "Set automatically when an agent replies to an open or assigned ticket.", "Keep working, wait for someone, or resolve."],
+                  ["**Waiting on Customer**", "Waiting", "You asked the customer for something. The service clock pauses. Sub-statuses: information requested, confirmation requested, scheduling.", "Wait. A customer reply moves the ticket back to **In Progress**, or to **Open** when nobody owns it."],
+                  ["**Waiting on Third Party**", "Waiting", "You wait for engineering, a vendor or a partner. The clock keeps running. Sub-statuses: engineering, vendor, partner.", "Follow up with the third party. A customer reply moves the ticket back as above."],
+                  ["**Escalated to Engineering**", "Waiting", "An example status in the demo workspace. The ticket waits for an engineering fix.", "Follow the work item in the context pane."],
+                  ["**Resolved**", "Resolved", "The fix is delivered. The ticket closes itself after a set number of days. The standard is 7 days.", "Close it, or reopen it. A customer reply reopens it."],
+                  ["**Closed**", "Closed", "The work is finished.", "Reopen it. A customer reply within the reopen window also reopens it."]
+                ]
+              }
+            },
+            { "note": "Some fields can be required for a status. For example, a vendor reference while the ticket waits on a third party. Fill them in on the **Details** tab before you change the status." },
+            { "note": "Tickets that follow a blueprint cannot change status freely. Use the **Blueprint** tab instead. See [Follow a blueprint](#rn-blueprint)." }
+          ]
+        },
+        {
+          "id": "wt-change-status",
+          "title": "Change the status with a comment",
+          "type": "task",
+          "intro": "Use the **Change status** dialog when you want to add a sub-status or a comment.",
+          "steps": [
+            "Press [[S]], or open **More actions** and choose **Change status…**.",
+            {
+              "text": "In **Status**, choose the new status.",
+              "image": "shots/05-status-dialog.png",
+              "caption": "The **Change status** dialog with **Waiting on Customer** chosen. A **Sub-status** list appears.",
+              "alt": "Change status dialog with Status, Sub-status and Comment fields",
+              "width": 420
+            },
+            "If **Sub-status** appears, choose one.",
+            "In **Comment**, enter a short note for the ticket history.",
+            "Select **Change status**."
+          ],
+          "result": "The status changes. The message **Status changed to** and the status name appears."
+        },
+        {
+          "id": "wt-sla",
+          "title": "Service targets",
+          "type": "concept",
+          "intro": [
+            "A service level agreement (SLA) sets time targets for each ticket. The header shows a countdown for each target that is still running.",
+            "**First response** shows until someone replies. After that, **Next response** shows the time for the next reply. **Resolve** shows the time left to resolve the ticket."
+          ],
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Countdown", "Meaning"],
+                "widths": [34, 66],
+                "rows": [
+                  ["Green, such as **Due in 1h 05m**", "On track."],
+                  ["Amber", "At risk. The ticket passed the warning point, normally 75% of the target."],
+                  ["Red, such as **Breached 12m ago**", "The target was missed."],
+                  ["Grey **Paused**", "The ticket is in a status that pauses the clock, such as **Waiting on Customer**."],
+                  ["**Met**", "The target was achieved."]
+                ]
+              }
+            },
+            {
+              "image": "shots/05-sla-context.png",
+              "caption": "The SLA section of the context pane: the first response was met, the other two targets were breached.",
+              "alt": "SLA section listing First response as Met, and Next response and Resolution as Breached, each with a due time and target",
+              "width": 330
+            },
+            { "p": "The SLA section of the context pane shows the true state of each target. It also shows the due time, the target in minutes and the escalation level." },
+            { "note": "The header countdowns use the ticket's overall SLA state. After one target is breached, every countdown in the header turns red. The first response clock never pauses." }
+          ]
+        },
+        {
+          "id": "wt-assign",
+          "title": "Assign a ticket",
+          "type": "task",
+          "intro": "Give the ticket to an agent or a team. To take it yourself, press [[A]].",
+          "prerequisites": ["You need the assign permission."],
+          "steps": [
+            "Open **More actions** and choose **Assign…**.",
+            {
+              "text": "In **Team**, choose a team, or leave it empty.",
+              "image": "shots/05-assign-dialog.png",
+              "caption": "The **Assign ticket** dialog.",
+              "alt": "Assign ticket dialog with Team, Agent, an Assign to me link and Note",
+              "width": 420
+            },
+            "In **Agent**, choose an agent of the ticket's department. Select **Assign to me** to choose yourself.",
+            "In **Note**, enter a note for the ticket history if you like.",
+            "Select **Assign**."
+          ],
+          "result": "The message **Assigned to** and the agent's name appears. An open ticket moves to **Assigned**.",
+          "blocks": [
+            { "note": "Leave **Agent** empty to unassign the ticket. The agent list shows each agent's availability and open tickets." }
+          ]
+        },
+        {
+          "id": "wt-transfer",
+          "title": "Transfer a ticket to another department",
+          "type": "task",
+          "intro": "Move a ticket to another department's queue when another team must handle it.",
+          "prerequisites": ["You need the transfer permission."],
+          "steps": [
+            "Open **More actions** and choose **Transfer…**.",
+            {
+              "text": "In **Department**, choose the new department.",
+              "image": "shots/05-transfer-dialog.png",
+              "caption": "The **Transfer ticket** dialog.",
+              "alt": "Transfer ticket dialog with Department, Team, Agent and Reason fields",
+              "width": 420
+            },
+            "In **Team** and **Agent**, choose who should get it. Leave **Agent** empty to let routing pick an agent.",
+            "In **Reason**, say why you transfer the ticket.",
+            "Select **Transfer**."
+          ],
+          "result": "The message **Transferred to** and the department's name appears.",
+          "blocks": [
+            { "note": "Some departments need a supervisor's approval first. Then **Approval requested** appears. The ticket moves when the request is approved on the **Approvals** page." }
+          ]
+        },
+        {
+          "id": "wt-resolve",
+          "title": "Resolve a ticket",
+          "type": "task",
+          "intro": "Resolve a ticket when you have delivered the fix or the answer.",
+          "prerequisites": ["You need the resolve permission."],
+          "steps": [
+            "Open **More actions** and choose **Resolve…**.",
+            {
+              "text": "In **Resolution code**, choose how the problem was solved.",
+              "image": "shots/05-resolve-dialog.png",
+              "caption": "The **Resolve ticket** dialog.",
+              "alt": "Resolve ticket dialog with Resolution code, Root cause, Resolution notes and two check boxes",
+              "width": 440
+            },
+            "In **Root cause**, choose or enter the cause.",
+            "In **Resolution notes**, describe the fix. The customer sees these notes when you notify them.",
+            "Keep **Notify the customer** ticked to send the resolution notice and the satisfaction survey.",
+            "Tick **Ask the customer to confirm the fix (keeps it open until they reply)** if the customer must confirm.",
+            "Select **Resolve**."
+          ],
+          "result": "The status changes to **Resolved**. With the confirmation option, the header shows **Awaiting customer confirmation**.",
+          "blocks": [
+            { "note": "**Resolution code** is required when your workspace uses codes. The confirmation option needs a contact on the ticket. Your workspace may switch it on for every ticket." },
+            { "p": "Resolved tickets close themselves after the number of days your administrator sets. A customer reply before then reopens the ticket." }
+          ]
+        },
+        {
+          "id": "wt-close-reopen",
+          "title": "Close or reopen a ticket",
+          "type": "task",
+          "intro": "Close a ticket when the work is finished. Reopen it when the problem comes back.",
+          "prerequisites": ["Closing needs the resolve permission. Reopening needs the reopen permission."],
+          "steps": [
+            "To close the ticket, open **More actions** and choose **Close**.",
+            "Select **Close ticket** to confirm.",
+            "To reopen a resolved or closed ticket, open **More actions** and choose **Reopen…**.",
+            {
+              "text": "In **Reason**, say why you reopen it.",
+              "image": "shots/05-reopen-dialog.png",
+              "caption": "The **Reopen ticket** dialog on a closed ticket.",
+              "alt": "Reopen ticket dialog with a Reason box",
+              "width": 420
+            },
+            "Select **Reopen**."
+          ],
+          "result": "A closed ticket shows **Closed**. A reopened ticket gets an open status, the service clocks restart, and the reopen count goes up.",
+          "blocks": [
+            { "note": "A customer reply also reopens a closed ticket within the reopen window. The standard window is 30 days. After it, the reply becomes a new ticket. Merged tickets cannot be reopened." }
+          ]
+        },
+        {
+          "id": "wt-escalate",
+          "title": "Escalate a ticket",
+          "type": "task",
+          "intro": "Escalate a ticket when it needs more senior attention. Each escalation raises the escalation level by one.",
+          "prerequisites": ["You need the escalate permission."],
+          "steps": [
+            "Press [[E]], or open **More actions** and choose **Escalate…**.",
+            {
+              "text": "In **Reason**, say why the ticket needs escalating.",
+              "image": "shots/05-escalate-dialog.png",
+              "caption": "The **Escalate ticket** dialog with a reason.",
+              "alt": "Escalate ticket dialog with Reason, Escalate to and a Raise the priority one level check box",
+              "width": 420
+            },
+            "In **Escalate to**, choose a person, or leave it empty for the department's escalation owner.",
+            "Keep **Raise the priority one level** ticked to raise the priority too.",
+            "Select **Escalate**."
+          ],
+          "result": "The header shows the **Escalated** badge with the new level. The escalation owner is notified.",
+          "blocks": [
+            { "note": "On a ticket that is already escalated, the menu item reads **Escalate further…**. The person you choose in **Escalate to** also becomes a watcher." }
+          ]
+        },
+        {
+          "id": "wt-merge",
+          "title": "Merge duplicate tickets",
+          "type": "task",
+          "intro": "When a customer reports the same problem twice, merge the duplicates into one ticket.",
+          "prerequisites": ["You need the merge permission.", "Open the ticket you want to keep."],
+          "steps": [
+            "Open **More actions** and choose **Merge tickets into this…**.",
+            "In **Find tickets**, enter a number, subject, customer or contact.",
+            {
+              "text": "Choose a duplicate in the results. Repeat for up to 10 tickets.",
+              "image": "shots/05-merge-dialog.png",
+              "caption": "The **Merge tickets** dialog with ticket #1204 picked as a duplicate.",
+              "alt": "Merge tickets dialog with a search box, one picked ticket and a Note field",
+              "width": 440
+            },
+            "In **Note**, say why you merge the tickets if you like.",
+            "Select **Merge** followed by the number of tickets."
+          ],
+          "result": "The conversation, attachments, time, watchers, tags and engineering links move to this ticket. The duplicates close with a link to this ticket.",
+          "blocks": [
+            { "warning": "You cannot undo a merge. Merged tickets cannot be reopened." },
+            { "tip": "Select **×** next to a picked ticket to remove it from the merge." }
+          ]
+        },
+        {
+          "id": "wt-split",
+          "title": "Split messages into a new ticket",
+          "type": "task",
+          "intro": "When one ticket mixes two problems, move some messages to a new ticket for the same customer.",
+          "prerequisites": ["You need the split permission."],
+          "steps": [
+            "Open **More actions** and choose **Split messages…**.",
+            "Check the **New subject**. Change it to describe the second problem.",
+            {
+              "text": "Under **Messages**, tick each message to move.",
+              "image": "shots/05-split-dialog.png",
+              "caption": "The **Split into a new ticket** dialog with the first customer message ticked.",
+              "alt": "Split dialog with a New subject field, a list of messages with check boxes and a child ticket option",
+              "width": 440
+            },
+            "Keep **Link the new ticket as a child of this one** ticked to link the two tickets.",
+            "Select **Split**."
+          ],
+          "result": "The new ticket opens in a new tab. The message **Created** and the new number appears."
+        },
+        {
+          "id": "wt-clone",
+          "title": "Clone a ticket",
+          "type": "task",
+          "intro": "Clone a ticket to start a similar one for the same customer.",
+          "prerequisites": ["You need the create tickets permission."],
+          "steps": [
+            "Open **More actions** and choose **Clone**.",
+            {
+              "text": "Select **Clone** to confirm.",
+              "image": "shots/05-clone-confirm.png",
+              "caption": "The confirmation before cloning ticket #1002.",
+              "alt": "Clone confirmation dialog with Cancel and Clone buttons",
+              "width": 420
+            }
+          ],
+          "result": "The new ticket opens in a new tab. It has the same customer, fields, tags and description. It does not copy the conversation."
+        },
+        {
+          "id": "wt-link",
+          "title": "Link related tickets",
+          "type": "task",
+          "intro": "Link tickets that belong together, such as a ticket that blocks another.",
+          "prerequisites": ["You need the edit tickets permission."],
+          "steps": [
+            "Open **More actions** and choose **Link to ticket…**.",
+            "In **Relationship**, choose **Related to**, **Duplicate of**, **Blocks** or **Caused by**.",
+            {
+              "text": "In **Ticket**, search for the other ticket and choose it.",
+              "image": "shots/05-link-dialog.png",
+              "caption": "The **Link ticket** dialog linking #1002 as a duplicate of #1204.",
+              "alt": "Link ticket dialog with a Relationship list and a Ticket search box",
+              "width": 420
+            },
+            "Select **Link**."
+          ],
+          "result": "The message **Tickets linked** appears. The **Related** tab of both tickets shows the link.",
+          "blocks": [
+            {
+              "image": "shots/05-related-tab.png",
+              "caption": "The **Related** tab of a ticket without related tickets.",
+              "alt": "Related tab with Child tickets, Linked tickets with a Link button, and External references",
+              "width": 330
+            },
+            {
+              "table": {
+                "columns": ["Link type", "Shown on this ticket", "Shown on the other ticket"],
+                "widths": [24, 38, 38],
+                "rows": [
+                  ["Related", "**Related to**", "**Related to**"],
+                  ["Duplicate", "**Duplicate of**", "**Has duplicate**"],
+                  ["Blocks", "**Blocks**", "**Blocked by**"],
+                  ["Caused by", "**Caused by**", "**Causes**"],
+                  ["Split", "**Split from**", "**Split into**"],
+                  ["Clone", "**Cloned from**", "**Cloned into**"]
+                ]
+              }
+            },
+            { "p": "The **Related** tab also lists the parent ticket, child tickets and external references, such as ERP documents. To remove a link, select **×** next to it." }
+          ]
+        },
+        {
+          "id": "wt-details",
+          "title": "Edit tags, classification and custom fields",
+          "type": "task",
+          "intro": "Keep the ticket's classification up to date. Reports, routing and service targets use it.",
+          "prerequisites": ["You need the edit tickets permission."],
+          "steps": [
+            "Select **Ticket details** (the sliders button in the header).",
+            {
+              "text": "Select the **Details** tab.",
+              "image": "shots/05-details-tab.png",
+              "caption": "The **Details** tab in the **Ticket details** panel.",
+              "alt": "Details tab with Tags, Category, Subcategory, Issue type, Severity, Product, Module, Version and Installation",
+              "width": 330
+            },
+            "In **Tags**, type a tag and press [[Enter]]. Select **×** on a tag to remove it.",
+            "Change the classification and product fields you need.",
+            "Fill in the fields under **Additional fields**.",
+            "Select **Save**."
+          ],
+          "result": "The message **Ticket updated** appears. The bar at the bottom shows **All changes saved**.",
+          "blocks": [
+            { "note": "Tags save at once. The other fields wait for **Save**. Select **Undo** to drop changes you have not saved." },
+            { "p": "**Installation** needs a customer on the ticket. **Subcategory** needs a category, and **Module** and **Version** need a product." },
+            { "p": "The **Facts** list shows the dates, the SLA policy and the contract. It also shows the time spent, the reopen count, the satisfaction score and the resolution." }
+          ]
+        },
+        {
+          "id": "wt-tasks",
+          "title": "Add tasks and checklist items",
+          "type": "task",
+          "intro": "Break the work into tasks, each with an owner and a due time.",
+          "prerequisites": ["You need the edit tickets or the add notes permission."],
+          "steps": [
+            "Select **Ticket details**, then the **Tasks** tab.",
+            {
+              "text": "In **New task or checklist item**, enter what needs doing.",
+              "image": "shots/05-tasks-tab.png",
+              "caption": "The **Tasks** tab with a new task typed in.",
+              "alt": "Tasks tab with a task title, Assignee, a due date and time field and a Checklist item check box",
+              "width": 330
+            },
+            "In **Assignee**, choose who does it. Enter a due date and time.",
+            "Tick **Checklist item** for a simple tick-off item.",
+            "Select **Add**."
+          ],
+          "result": "The task appears in the list. A progress bar shows how many tasks are done.",
+          "blocks": [
+            {
+              "list": [
+                "Tick a task to mark it done.",
+                "Select the pencil to edit a task.",
+                "Select the plus button on a task to add a subtask. Tasks have one level of subtasks.",
+                "Select the bin to delete a task. Deleting needs the edit tickets permission."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wt-time",
+          "title": "Log time on a ticket",
+          "type": "task",
+          "intro": "Log the time you spend, so contracts and costs stay accurate.",
+          "prerequisites": ["You need the log time permission."],
+          "steps": [
+            "Select **Ticket details**, then the **Time** tab.",
+            {
+              "text": "Enter the **Hours** and **Minutes** you spent.",
+              "image": "shots/05-time-tab.png",
+              "caption": "The **Time** tab with 30 minutes of billable remote work.",
+              "alt": "Time tab with totals, Hours, Minutes, Started, Activity, Notes, a Billable check box and Log time",
+              "width": 330
+            },
+            "In **Started**, enter when the work started. Leave it empty for the current time.",
+            "In **Activity**, enter or choose the kind of work, such as `Remote session`.",
+            "In **Notes**, describe the work.",
+            "Keep **Billable** ticked if the customer pays for this time.",
+            "Select **Log time**."
+          ],
+          "result": "The entry appears under the form. The totals at the top, and the **Time** tab badge, go up.",
+          "blocks": [
+            { "note": "Billable time uses up prepaid hours on the customer's contract. Only people allowed to see costs see **Cost** and **Billable value**. You can delete your own entries with the bin button." }
+          ]
+        },
+        {
+          "id": "wt-people",
+          "title": "Add watchers, collaborators and specialists",
+          "type": "task",
+          "intro": "Add people who should follow the ticket or help with it.",
+          "prerequisites": ["You can add or remove yourself. To add or remove others, you need the edit tickets permission."],
+          "steps": [
+            "Select **Ticket details**, then the **People** tab.",
+            "In **Add a person**, choose an agent or a specialist.",
+            {
+              "text": "In **Role**, choose **Watcher**, **Collaborator** or **Temporary specialist**.",
+              "image": "shots/05-people-tab.png",
+              "caption": "The **People** tab with **Temporary specialist** chosen. **Access until** is required.",
+              "alt": "People tab with Add a person, Role and Access until fields and an Add button",
+              "width": 330
+            },
+            "For a temporary specialist, enter the date and time in **Access until**.",
+            "Select **Add**."
+          ],
+          "result": "The person appears in the list with their role. The **People** tab badge shows how many people follow the ticket.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Role", "Meaning"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**Watcher**", "Gets a notification about every update."],
+                  ["**Collaborator**", "Helps with the ticket. Mentioning someone in an internal note makes them a collaborator."],
+                  ["**Temporary specialist**", "Gets access to the ticket until the end date, then loses it."]
+                ]
+              }
+            },
+            { "tip": "To watch a ticket yourself, open **More actions** and choose **Watch**. Choose **Stop watching** to stop." }
+          ]
+        },
+        {
+          "id": "wt-follow-up",
+          "title": "Schedule a follow-up reminder",
+          "type": "task",
+          "intro": "Get a reminder to check back on a ticket at a set time.",
+          "steps": [
+            "Select **Ticket details**, then the **Follow-ups** tab.",
+            "In **Remind at**, enter the date and time.",
+            "In **Remind**, choose who to remind. Leave it empty to remind yourself.",
+            {
+              "text": "In **Note**, say what to check.",
+              "image": "shots/05-followups-tab.png",
+              "caption": "The **Follow-ups** tab with a note. **Schedule** works once **Remind at** has a value.",
+              "alt": "Follow-ups tab with Remind at, Remind and Note fields and a Schedule button",
+              "width": 330
+            },
+            "Select **Schedule**."
+          ],
+          "result": "The reminder appears in the list as **Pending**. At the set time, a **Follow up on** notification arrives.",
+          "blocks": [
+            { "tip": "Select **Cancel** next to a pending reminder to remove it." }
+          ]
+        },
+        {
+          "id": "wt-lock",
+          "title": "Lock a ticket while you work on it",
+          "type": "task",
+          "intro": "Lock a ticket so that nobody changes it while you work on a fix.",
+          "prerequisites": ["You need the edit tickets permission."],
+          "steps": [
+            "Open **More actions** and choose **Lock while I work on it**.",
+            "When you finish, open **More actions** and choose **Unlock**."
+          ],
+          "result": "The header shows **Locked by you**. Others see **Locked by** and your name.",
+          "blocks": [
+            {
+              "list": [
+                "A lock lasts 10 minutes. The message tells you when it ends.",
+                "While a ticket is locked, others cannot edit, assign, transfer, change the status or resolve it.",
+                "A lock does not block replies, notes, tags or links.",
+                "Supervisors can unlock a ticket that someone else locked. The menu item then shows the person's name."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wt-spam-delete",
+          "title": "Mark a ticket as spam or delete it",
+          "type": "task",
+          "intro": "Remove junk tickets from every queue. Both actions move the ticket to the recycle bin.",
+          "prerequisites": ["You need the delete permission. Supervisors and administrators have it by default."],
+          "steps": [
+            "Open **More actions** and choose **Mark as spam…** or **Delete…**.",
+            "For **Delete…**, type the ticket number, such as `#1206`, to confirm.",
+            "Select **Mark as spam** or **Delete**."
+          ],
+          "result": "The ticket tab closes and the ticket leaves every queue.",
+          "blocks": [
+            { "note": "After **Mark as spam**, future messages from the same sender are treated as spam. To bring a ticket back, see [Restore a deleted ticket](#tv-restore)." }
+          ]
+        },
+        {
+          "id": "wt-more-actions",
+          "title": "The More actions menu",
+          "type": "reference",
+          "intro": "Open **More actions** (the **⋯** button in the header) for every ticket action. Greyed-out items need a permission you do not have.",
+          "blocks": [
+            {
+              "image": "shots/05-more-actions.png",
+              "caption": "The **More actions** menu of an escalated, open ticket.",
+              "alt": "More actions menu listing Assign, Transfer, Escalate further, Change status, Resolve, Close, Merge, Split, Clone, Link, Watch, Lock, Override entitlement, Mark as spam and Delete",
+              "width": 240
+            },
+            {
+              "table": {
+                "columns": ["Item", "What it does"],
+                "widths": [34, 66],
+                "rows": [
+                  ["**Assign…**", "Assigns the ticket. See [Assign a ticket](#wt-assign)."],
+                  ["**Transfer…**", "Moves the ticket to another department. See [Transfer a ticket to another department](#wt-transfer)."],
+                  ["**Escalate…** or **Escalate further…**", "Raises the escalation level. See [Escalate a ticket](#wt-escalate)."],
+                  ["**Change status…**", "Changes the status with a comment. See [Change the status with a comment](#wt-change-status)."],
+                  ["**Resolve…** or **Reopen…**", "Resolves an open ticket, or reopens a resolved or closed one."],
+                  ["**Close**", "Closes the ticket after you confirm."],
+                  ["**Merge tickets into this…**", "Merges duplicates into this ticket. See [Merge duplicate tickets](#wt-merge)."],
+                  ["**Split messages…**", "Moves messages to a new ticket. See [Split messages into a new ticket](#wt-split)."],
+                  ["**Clone**", "Creates a copy of the ticket without its conversation."],
+                  ["**Link to ticket…**", "Links another ticket. See [Link related tickets](#wt-link)."],
+                  ["**Watch** or **Stop watching**", "Adds or removes you as a watcher at once."],
+                  ["**Lock while I work on it** or **Unlock**", "Locks or unlocks the ticket at once. See [Lock a ticket while you work on it](#wt-lock)."],
+                  ["**Override entitlement…**", "Lets the team work the ticket although the customer is not entitled. It needs a reason, which is audited."],
+                  ["**Mark as spam…** and **Delete…**", "Remove the ticket from every queue. See [Mark a ticket as spam or delete it](#wt-spam-delete)."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "wt-conflict",
+          "title": "When someone else changed the ticket",
+          "type": "concept",
+          "intro": [
+            "Two people can change a ticket at the same time. If someone saved the ticket after you opened it, your change is not saved straight away.",
+            "Instead, the **Someone else changed this ticket** dialog opens. The ticket already shows the latest saved values."
+          ],
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Column", "Shows"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**Field**", "Each field you tried to change."],
+                  ["**Now saved**", "The value the other person saved."],
+                  ["**Your change**", "The value you tried to save."]
+                ]
+              }
+            },
+            {
+              "steps": [
+                "Compare the two values for each field.",
+                "Select **Keep theirs** to keep the other person's values and drop your change.",
+                "Or select **Re-apply my change** to save your values over theirs."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "wt-presence",
+          "title": "See who else is on the ticket",
+          "type": "concept",
+          "intro": [
+            "Avatars at the right of the ticket header show who else has the ticket open. Point to an avatar to see the person's name and what they are doing.",
+            "A pulsing ring around an avatar means the person is typing. A banner then says, for example, **Priya Raman is writing a reply** or **is writing a note**."
+          ],
+          "blocks": [
+            { "tip": "Before you reply, check the banner. If a colleague is already writing a reply, wait for it or add an internal note instead." }
+          ]
+        },
+        {
+          "id": "wt-automation",
+          "title": "What automation does on your tickets",
+          "type": "concept",
+          "intro": [
+            "Your administrator sets up automation rules and blueprints. As an agent, you see what they do on your tickets.",
+            "Turn on **Activity** in the conversation to see these entries."
+          ],
+          "blocks": [
+            {
+              "image": "shots/05-automation-timeline.png",
+              "caption": "Activity entries on a ticket. A rule raised the priority to **Critical**, added a tag and notified two agents.",
+              "alt": "Conversation with activity entries from an automation rule and an AI sentiment entry",
+              "width": 460
+            },
+            {
+              "list": [
+                "Rule entries name the rule, such as **Rule** and the rule name with **applied** and what it did.",
+                "Rules can assign a ticket, change its priority, add tags, add notes or send replies.",
+                "The service clock adds entries when a target is at risk or breached. It can raise the escalation level, the priority or the assignee.",
+                "The AI assistant can flag the customer's mood, such as **AI flagged the customer as frustrated**.",
+                "Blueprints guide a ticket through set steps. You run the next step on the **Blueprint** tab. See [Follow a blueprint](#rn-blueprint).",
+                "When a step needs approval, the request appears on the **Approvals** page. See [The Approvals page](#cc-approvals-page)."
+              ]
+            },
+            { "note": "SupportDesk has no agent macros. Reply templates insert text only. See [Use a reply template](#rn-templates)." }
+          ]
+        },
+        {
+          "id": "wt-shortcuts",
+          "title": "Keyboard shortcuts on a ticket",
+          "type": "reference",
+          "intro": "These shortcuts work while a ticket is open, but not while you type in a field. See also [Keyboard shortcuts](#gs-shortcuts).",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Keys", "Action"],
+                "widths": [30, 70],
+                "rows": [
+                  ["[[R]]", "Open the composer to reply."],
+                  ["[[N]]", "Open the composer for an internal note."],
+                  ["[[A]]", "Assign the ticket to yourself."],
+                  ["[[E]]", "Escalate the ticket."],
+                  ["[[S]]", "Change the status."],
+                  ["[[U]]", "Go back to the list."],
+                  ["[[J]] and [[K]]", "Open the next or previous ticket in the list."],
+                  ["[[Shift+X]]", "Close the ticket's tab."],
+                  ["[[Ctrl+Enter]]", "Send from the composer."]
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "**Ticket not found** appears when you open a ticket.", "cause": "The ticket was deleted or merged, or it is outside what you are allowed to see.", "fix": "Select **Close tab**. Check the number. If the ticket was merged, open the ticket it was merged into." },
+    { "problem": "The quick edit fields or menu items are greyed out.", "cause": "You lack the permission, or someone else locked the ticket.", "fix": "Check the header for **Locked by**. Wait for the lock to end, or ask a supervisor to unlock it." },
+    { "problem": "The status you want is not in the **Status** list.", "cause": "Your administrator limits which status can follow the current one, or the ticket follows a blueprint.", "fix": "Move through an allowed status first, or use the **Blueprint** tab." },
+    { "problem": "A status change shows **Some values were not accepted**.", "cause": "A field is required for the new status, such as a vendor reference.", "fix": "Fill in the field on the **Details** tab, select **Save**, then change the status again." },
+    { "problem": "**Resolve** shows **Pick a resolution code.**", "cause": "Your workspace requires a resolution code.", "fix": "Choose a code in **Resolution code**, then select **Resolve**." },
+    { "problem": "**Escalate** shows **Say why the ticket needs escalating.**", "cause": "The **Reason** field is empty.", "fix": "Enter a reason, then select **Escalate** again." },
+    { "problem": "**Reopen** shows **Say why the ticket is reopened.**", "cause": "The **Reason** field is empty.", "fix": "Enter a reason, then select **Reopen** again." },
+    { "problem": "A transfer shows **Approval requested** and the ticket does not move.", "cause": "The department needs a supervisor's approval for transfers.", "fix": "Wait for the approval. Check its progress on the **Approvals** page." },
+    { "problem": "The **Someone else changed this ticket** dialog opens.", "cause": "A colleague saved the ticket after you opened it.", "fix": "Compare the values. Select **Keep theirs** or **Re-apply my change**." },
+    { "problem": "**Split** shows **The new ticket needs a subject.**", "cause": "The **New subject** field is empty.", "fix": "Enter a subject for the new ticket, then select **Split**." }
+  ],
+  "faq": [
+    { "q": "Why do all the countdowns in the header turn red after one target is missed?", "a": "The header countdowns use the ticket's overall SLA state. The SLA section of the context pane shows the real state of each target." },
+    { "q": "Does the customer see that I escalated or locked a ticket?", "a": "No. Escalations, locks, tasks, time entries and follow-ups are only visible to agents." },
+    { "q": "What happens to a resolved ticket that nobody touches?", "a": "It closes itself after the number of days your administrator sets. The standard is 7 days." },
+    { "q": "Can I undo a merge?", "a": "No. Check the tickets in the **Merge tickets** dialog before you select **Merge**." }
+  ],
+  "glossary": [
+    { "term": "Status category", "definition": "One of six fixed groups every status belongs to: Open, Assigned, In progress, Waiting, Resolved or Closed." },
+    { "term": "Sub-status", "definition": "A finer reason inside a status, such as information requested inside Waiting on Customer." },
+    { "term": "Service target", "definition": "A time limit from the SLA policy, such as first response, next response or resolution." },
+    { "term": "Escalation level", "definition": "A number that goes up each time a ticket is escalated, by a person or by the service clock." },
+    { "term": "Merge", "definition": "Moving the conversation of duplicate tickets into one ticket and closing the duplicates." },
+    { "term": "Split", "definition": "Moving some messages of a ticket into a new ticket for the same customer." },
+    { "term": "Clone", "definition": "Creating a new ticket with the same customer, fields and description, but without the conversation." },
+    { "term": "Watcher", "definition": "A person who gets a notification about every update on a ticket." },
+    { "term": "Collaborator", "definition": "An agent who helps with a ticket. Mentioning someone in an internal note makes them a collaborator." },
+    { "term": "Temporary specialist", "definition": "A person given access to a ticket until a set end date." },
+    { "term": "Follow-up", "definition": "A reminder to check back on a ticket at a set time." },
+    { "term": "Ticket lock", "definition": "A 10-minute hold that stops others from editing, assigning or resolving a ticket while you work on it." },
+    { "term": "Presence", "definition": "The avatars in the ticket header that show who else has the ticket open and who is typing." },
+    { "term": "Context pane", "definition": "The right-hand pane of the ticket workspace with the customer, contact, service targets, contracts and earlier tickets." },
+    { "term": "Entitlement", "definition": "Whether a customer's contract covers a request. The ticket header shows it as a badge." }
+  ]
+}

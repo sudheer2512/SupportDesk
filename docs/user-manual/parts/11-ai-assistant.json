@@ -1,0 +1,792 @@
+{
+  "chapters": [
+    {
+      "id": "ai-assistant",
+      "title": "AI Assistant",
+      "intro": [
+        "This chapter is for agents and supervisors who use AI help in their daily work.",
+        "It covers the **AI Assistant** page and the **AI** tab on a ticket. It also covers AI reply drafts and AI proposals."
+      ],
+      "sections": [
+        {
+          "id": "about-ai",
+          "title": "What the AI can do for you",
+          "type": "concept",
+          "intro": "The AI reads your tickets and knowledge base. It suggests summaries, replies, classifications and next steps. A person stays in charge: you review every suggestion before it reaches a customer.",
+          "blocks": [
+            {
+              "list": [
+                "The **AI Assistant** page answers questions about your data, searches by meaning, lists AI proposals and shows unusual ticket volume.",
+                "The **AI** tab on a ticket summarises it and drafts replies, classifications and articles.",
+                "**Draft with AI** in the reply editor writes a first reply for you."
+              ]
+            },
+            {
+              "heading": "Permissions"
+            },
+            {
+              "table": {
+                "columns": [
+                  "Permission",
+                  "Lets you"
+                ],
+                "widths": [
+                  45,
+                  55
+                ],
+                "rows": [
+                  [
+                    "**Use AI assistance (summaries, suggestions, classification)**",
+                    "Use the **AI** tab, **Draft with AI**, **Semantic search** and, with analytics access, **Ask analytics**."
+                  ],
+                  [
+                    "**Approve, apply and revert AI-proposed actions**",
+                    "Review proposals on the **Proposals** tab."
+                  ],
+                  [
+                    "**Supervisor monitoring (live queues, agent status)**, team analytics or AI settings",
+                    "See the **Anomalies** tab."
+                  ]
+                ]
+              }
+            },
+            {
+              "warning": "AI text can be wrong. Always read a draft and check its sources before you send it."
+            },
+            {
+              "note": "The demo uses a built-in offline AI. Your administrator may connect another AI service and set a monthly budget."
+            }
+          ]
+        },
+        {
+          "id": "ai-assistant-page",
+          "title": "The AI Assistant page",
+          "type": "concept",
+          "intro": "Select **AI Assistant** in the main menu. The page opens on the first tab you may use.",
+          "blocks": [
+            {
+              "table": {
+                "columns": [
+                  "Tab",
+                  "What it does"
+                ],
+                "widths": [
+                  25,
+                  75
+                ],
+                "rows": [
+                  [
+                    "**Ask analytics**",
+                    "Answers a question about your tickets with a chart and a table."
+                  ],
+                  [
+                    "**Semantic search**",
+                    "Finds tickets and articles that mean the same as your words, even with different wording."
+                  ],
+                  [
+                    "**Proposals**",
+                    "Lists actions that AI agents suggest. You approve, reject or revert them."
+                  ],
+                  [
+                    "**Anomalies**",
+                    "Shows days with unusually many tickets for a product, version, customer or category."
+                  ]
+                ]
+              }
+            },
+            {
+              "note": "Administrators also see **AI settings** at the top right. It opens the AI configuration pages."
+            }
+          ]
+        },
+        {
+          "id": "ask-analytics",
+          "title": "Ask a question about your ticket data",
+          "type": "task",
+          "intro": "Ask in plain words, such as “Open tickets per agent”. The AI turns your question into a report.",
+          "prerequisites": [
+            "You have the **Use AI assistance (summaries, suggestions, classification)** and **View personal dashboards and reports** permissions."
+          ],
+          "steps": [
+            "Select **AI Assistant**, then **Ask analytics**.",
+            "Enter your question in the question box.",
+            "Select **Ask**. You can also select one of the example questions below the box.",
+            "Check the line under the answer title. It shows how the question was understood.",
+            "Read the chart and the **Results** table."
+          ],
+          "result": "The answer shows the metric, the breakdown and the period. If nothing matches, **No matching tickets** appears.",
+          "blocks": [
+            {
+              "image": "shots/11-ai-ask.png",
+              "caption": "Ask analytics with an example question and its answer.",
+              "alt": "Ask analytics tab with numbered highlights on the tabs, the question box, the example questions, the understood question and the results"
+            },
+            {
+              "callouts": [
+                "The tabs of the AI Assistant page.",
+                "The question box and the **Ask** button.",
+                "Example questions. Select one to ask it at once.",
+                "How the question was understood: **Metric**, **Breakdown**, **Period**, **Order** and **Parsed by**.",
+                "The chart and the **Results** table."
+              ]
+            },
+            {
+              "tip": "Select a bar or a row to open the matching tickets in the ticket list."
+            },
+            {
+              "tip": "Select **Show structured intent** to see exactly what the question was turned into."
+            }
+          ]
+        },
+        {
+          "id": "ask-analytics-reference",
+          "title": "What you can ask",
+          "type": "reference",
+          "intro": "Questions work best when they name one measure, one breakdown and a period.",
+          "blocks": [
+            {
+              "table": {
+                "columns": [
+                  "Part",
+                  "Choices"
+                ],
+                "widths": [
+                  22,
+                  78
+                ],
+                "rows": [
+                  [
+                    "Measures",
+                    "Tickets created, open or resolved, SLA violations, resolution time, first-response time, CSAT, and reopened, escalated or frustrated tickets."
+                  ],
+                  [
+                    "Breakdowns",
+                    "Customer, product, category, priority, channel, department, agent, team, status, or over time."
+                  ],
+                  [
+                    "Periods",
+                    "Words such as this month, this quarter, or the last 30 or 90 days."
+                  ]
+                ]
+              }
+            },
+            {
+              "note": "The answers cover only the tickets you may see. The AI never changes any data."
+            }
+          ]
+        },
+        {
+          "id": "semantic-search",
+          "title": "Search tickets and articles by meaning",
+          "type": "task",
+          "intro": "Describe a problem in your own words. The search finds similar tickets and articles, even when they use other words.",
+          "prerequisites": [
+            "You have the **Use AI assistance (summaries, suggestions, classification)** permission."
+          ],
+          "steps": [
+            "Select **AI Assistant**, then **Semantic search**.",
+            "Describe the problem in the search box. Use at least two characters.",
+            "Choose where to search: **Everything**, **Tickets** or **Knowledge articles**.",
+            "Select **Search**.",
+            "Select a title to open the ticket or article."
+          ],
+          "result": "The results are listed with the best match first. Each result shows its type, status, a short extract and a relevance bar.",
+          "blocks": [
+            {
+              "image": "shots/11-ai-search.png",
+              "caption": "Semantic search results for a description of an export problem.",
+              "alt": "Semantic search tab with numbered highlights on the search box, the scope options and the first result"
+            },
+            {
+              "callouts": [
+                "The search box and the **Search** button.",
+                "Where to search.",
+                "A result with its type, title, status, extract and relevance."
+              ]
+            },
+            {
+              "tip": "Under a ticket result, select **AI insights for this ticket** to open the full-page AI assistant for it."
+            }
+          ]
+        },
+        {
+          "id": "ai-proposals",
+          "title": "How AI proposals work",
+          "type": "concept",
+          "intro": "AI agents watch new tickets. They suggest actions such as a category, a priority, tags, a note or a reply. Each suggestion is a proposal. Most proposals wait for a person to approve them.",
+          "blocks": [
+            {
+              "list": [
+                "Each proposal has a risk level: **Low risk**, **Medium risk** or **High risk**.",
+                "Each proposal shows a confidence bar, the AI agent's name and the reason for the suggestion.",
+                "Your administrator may let some low-risk actions apply automatically. Such cards say **applied automatically**.",
+                "A proposal expires after 14 days if nobody decides."
+              ]
+            },
+            {
+              "table": {
+                "columns": [
+                  "Status",
+                  "Meaning"
+                ],
+                "widths": [
+                  22,
+                  78
+                ],
+                "rows": [
+                  [
+                    "**Proposed**",
+                    "Waiting for review. The **Waiting for review** filter shows these."
+                  ],
+                  [
+                    "**Applied**",
+                    "The change was made on the ticket."
+                  ],
+                  [
+                    "**Rejected**",
+                    "A person turned it down."
+                  ],
+                  [
+                    "**Reverted**",
+                    "A person undid an applied change."
+                  ],
+                  [
+                    "**Failed**",
+                    "The change could not be made. The card shows why."
+                  ],
+                  [
+                    "**Expired**",
+                    "Nobody decided within 14 days."
+                  ]
+                ]
+              }
+            },
+            {
+              "table": {
+                "columns": [
+                  "Action",
+                  "What happens when you approve it"
+                ],
+                "widths": [
+                  35,
+                  65
+                ],
+                "rows": [
+                  [
+                    "**Category / product / department**, **Priority**, **Tags**",
+                    "The ticket fields change. You can revert these later."
+                  ],
+                  [
+                    "**Reply to customer**, **Request information**",
+                    "The message is sent to the customer under your name. You cannot undo it."
+                  ],
+                  [
+                    "**Internal note**",
+                    "A note is added to the ticket."
+                  ],
+                  [
+                    "**Human decision required**",
+                    "Records that you approved handling the request. The AI never takes a financial, account or contract action."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "review-ai-proposal",
+          "title": "Review an AI proposal",
+          "type": "task",
+          "intro": "Check what the AI suggests, then approve or reject it.",
+          "prerequisites": [
+            "You have the **Approve, apply and revert AI-proposed actions** permission."
+          ],
+          "steps": [
+            "Select **AI Assistant**, then **Proposals**. The list shows proposals waiting for review.",
+            "To narrow the list, choose a **Status**, **Risk** or **Action**, or enter text in **Search**.",
+            "Read the proposed change and the reason under it.",
+            "To see the ticket, select the ticket number on the card.",
+            "Select **Approve & apply**, or select **Reject**.",
+            "If a confirmation appears, read it and select **Approve & apply** again."
+          ],
+          "result": "The card shows the new status and who decided. A message confirms the action.",
+          "blocks": [
+            {
+              "image": "shots/11-ai-proposals.png",
+              "caption": "The Proposals tab with all statuses shown.",
+              "alt": "Proposals tab with numbered highlights on the counters, the filters, a card's risk and status badges and its confidence bar"
+            },
+            {
+              "callouts": [
+                "Counters for proposals waiting, high-risk proposals waiting and applied proposals.",
+                "The filters and **Refresh**.",
+                "The risk and status of a proposal.",
+                "The AI's confidence in the proposal."
+              ]
+            },
+            {
+              "warning": "An approved reply is sent to the customer under your name at once. Read it carefully first."
+            }
+          ]
+        },
+        {
+          "id": "revert-ai-action",
+          "title": "Undo an applied AI action",
+          "type": "task",
+          "intro": "Undo a category, priority or tag change that the AI made.",
+          "prerequisites": [
+            "You have the **Approve, apply and revert AI-proposed actions** permission.",
+            "The proposal is **Applied** and can be reverted. Sent messages cannot be reverted."
+          ],
+          "steps": [
+            "Select **AI Assistant**, then **Proposals**.",
+            "In **Status**, choose **Applied**.",
+            "On the card, select **Revert**.",
+            "Select **Revert** again to confirm."
+          ],
+          "result": "The fields the AI changed go back to their earlier values. Changes that people made since then are kept. The card shows **Reverted**."
+        },
+        {
+          "id": "anomaly-alerts",
+          "title": "Watch for unusual ticket volume",
+          "type": "task",
+          "intro": "The **Anomalies** tab flags days with far more tickets than usual. Each hour, the app compares each day with the previous 28 days. It checks every product, version, customer and category.",
+          "prerequisites": [
+            "You have supervisor monitoring, team analytics or AI settings permission."
+          ],
+          "steps": [
+            "Select **AI Assistant**, then **Anomalies**.",
+            "In **Period**, choose **Last 7 days**, **Last 30 days** or **Last 90 days**.",
+            "In **Status**, choose **Open**, **Acknowledged** or **Dismissed**, or leave it empty for all.",
+            "Compare the bars in **Volume vs. typical day**. Select a bar to see the tickets of that day.",
+            "In the **Anomaly alerts** table, select **Acknowledge** when you are handling a spike. Select **Dismiss** when it needs no action."
+          ],
+          "result": "The alert shows its new status. If no spike was found, **No unusual volume** appears.",
+          "blocks": [
+            {
+              "table": {
+                "columns": [
+                  "Column",
+                  "Meaning"
+                ],
+                "widths": [
+                  22,
+                  78
+                ],
+                "rows": [
+                  [
+                    "**Day**",
+                    "The day of the spike."
+                  ],
+                  [
+                    "**What**",
+                    "The product, version, customer or category that had the spike."
+                  ],
+                  [
+                    "**Tickets**",
+                    "The number of tickets on that day."
+                  ],
+                  [
+                    "**Typical**",
+                    "The average for a day over the previous 28 days."
+                  ],
+                  [
+                    "**Status**",
+                    "**Open**, **Acknowledged** or **Dismissed**."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "ticket-ai-tab",
+          "title": "The AI tab on a ticket",
+          "type": "concept",
+          "intro": "Open a ticket and select the **AI** tab. On a narrow screen, select **Ticket details** (the sliders button) first. The tab loads the sentiment and the expected resolution time at once. The other parts run when you select their button.",
+          "blocks": [
+            {
+              "image": "shots/11-ai-ticket-tab.png",
+              "caption": "The AI tab of a ticket with sentiment and expected resolution.",
+              "alt": "AI tab with Summary, Sentiment, Expected resolution, Classification, Suggested reply, Similar and duplicates, Likely root cause and Knowledge article",
+              "width": 330
+            },
+            {
+              "table": {
+                "columns": [
+                  "Part",
+                  "Button",
+                  "What you get"
+                ],
+                "widths": [
+                  24,
+                  18,
+                  58
+                ],
+                "rows": [
+                  [
+                    "**Summary**",
+                    "**Summarize** or **Refresh**",
+                    "A short summary, the current status and pending actions. The summary is saved on the ticket."
+                  ],
+                  [
+                    "**Sentiment**",
+                    "Refresh",
+                    "The customer's mood: **Positive**, **Neutral**, **Negative** or **Frustrated**. A dot shows each customer message."
+                  ],
+                  [
+                    "**Expected resolution**",
+                    "None",
+                    "The typical time to resolve similar tickets, with a range and an expected date."
+                  ],
+                  [
+                    "**Classification**",
+                    "**Suggest**",
+                    "Suggested category, product, priority and department. See [Apply AI classification suggestions](#apply-ai-classification)."
+                  ],
+                  [
+                    "**Suggested reply**",
+                    "**Draft reply**",
+                    "A reply based on articles and resolved tickets. See [Draft a reply with AI](#draft-reply-ai)."
+                  ],
+                  [
+                    "**Similar & duplicates**",
+                    "**Find**",
+                    "Possible duplicates and similar resolved tickets."
+                  ],
+                  [
+                    "**Likely root cause**",
+                    "**Analyse**",
+                    "Likely causes, based on similar resolved tickets."
+                  ],
+                  [
+                    "**Knowledge article**",
+                    "**Draft article**",
+                    "A draft article from this ticket. See [Draft an article from a ticket](#kb-draft-from-ticket)."
+                  ],
+                  [
+                    "**AI proposals**",
+                    "**Run agents**",
+                    "The proposals for this ticket. **Run agents** asks the AI agents to check it again."
+                  ]
+                ]
+              }
+            },
+            {
+              "note": "When a customer is **Frustrated**, the tab says: acknowledge the impact and give a concrete next step."
+            }
+          ]
+        },
+        {
+          "id": "summarize-ticket",
+          "title": "Summarise a ticket",
+          "type": "task",
+          "intro": "Get a short summary of a long conversation before you take over a ticket.",
+          "prerequisites": [
+            "You have the **Use AI assistance (summaries, suggestions, classification)** permission."
+          ],
+          "steps": [
+            "Open the ticket and its **AI** tab.",
+            "Under **Summary**, select **Summarize**. If a summary exists, the button says **Refresh**."
+          ],
+          "result": "The summary appears with the current status and any pending actions. The last line shows when it was made."
+        },
+        {
+          "id": "apply-ai-classification",
+          "title": "Apply AI classification suggestions",
+          "type": "task",
+          "intro": "Let the AI suggest the category, product, priority and department. Apply only the values you agree with.",
+          "prerequisites": [
+            "You have the **Use AI assistance (summaries, suggestions, classification)** permission.",
+            "To apply values, you also need the **Edit ticket fields** permission."
+          ],
+          "steps": [
+            "Open the ticket and its **AI** tab.",
+            "Under **Classification**, select **Suggest**.",
+            {
+              "text": "Check each suggestion. A crossed-out value shows the current value, and the arrow shows the suggested one.",
+              "image": "shots/11-ai-classification.png",
+              "caption": "Classification suggestions. Ticked values are applied; values with a check mark already match.",
+              "alt": "Classification section with category and department suggestions, confidence bars and Apply selected",
+              "width": 420
+            },
+            "Tick the suggestions you want to apply. Clear the others.",
+            "Select **Apply selected**."
+          ],
+          "result": "The message **Classification applied** appears, and the ticket fields change.",
+          "blocks": [
+            {
+              "tip": "The bar next to each value shows the AI's confidence. Be careful with short or red bars."
+            }
+          ]
+        },
+        {
+          "id": "draft-reply-ai",
+          "title": "Draft a reply with AI",
+          "type": "task",
+          "intro": "The AI writes a reply from your knowledge base and similar resolved tickets. You review it, then send it from the reply editor.",
+          "prerequisites": [
+            "You have the **Use AI assistance (summaries, suggestions, classification)** permission."
+          ],
+          "steps": [
+            "Open the ticket and its **AI** tab.",
+            "Optionally, under **Suggested reply**, enter instructions, such as `mention the 8.0.1 upgrade`.",
+            "Select **Draft reply**.",
+            {
+              "text": "Check the badge. **Grounded in knowledge** means the draft uses your articles or resolved tickets.",
+              "image": "shots/11-ai-draft-reply.png",
+              "caption": "A drafted reply with its badge, confidence and numbered sources.",
+              "alt": "Suggested reply with Grounded in knowledge badge, draft text, sources and Insert into composer, Copy, Helpful and Not helpful",
+              "width": 330
+            },
+            "Read the draft and the sources listed under it.",
+            "Select **Insert into composer**. Or select **Copy** to copy the text.",
+            "In the reply editor, remove the [1], [2] source markers and edit the text.",
+            "Send the reply as usual."
+          ],
+          "result": "The reply reaches the customer under your name.",
+          "blocks": [
+            {
+              "warning": "**Not grounded — review carefully** means no matching article or resolved ticket was found. Check every fact before you send it."
+            },
+            {
+              "tip": "Select **Redraft** for a new version. Select the thumbs-up or thumbs-down button to tell the AI whether the draft helped."
+            }
+          ]
+        },
+        {
+          "id": "draft-with-ai-composer",
+          "title": "Draft a reply from the reply editor",
+          "type": "task",
+          "intro": "You can also start an AI draft without opening the AI tab.",
+          "prerequisites": [
+            "You have the **Use AI assistance (summaries, suggestions, classification)** permission."
+          ],
+          "steps": [
+            "Open the ticket.",
+            "Select **Reply** to open the reply editor.",
+            "In the editor toolbar, select **Draft with AI**.",
+            "Read the message that appears. It says how many sources the draft used.",
+            "Edit the draft and remove the source markers.",
+            "Send the reply as usual."
+          ],
+          "result": "The draft is inserted into the reply editor. If the editor was empty, the draft fills it."
+        },
+        {
+          "id": "similar-duplicates",
+          "title": "Find similar and duplicate tickets",
+          "type": "task",
+          "intro": "Check whether the customer already reported the same problem. See how similar problems were solved.",
+          "prerequisites": [
+            "You have the **Use AI assistance (summaries, suggestions, classification)** permission."
+          ],
+          "steps": [
+            "Open the ticket and its **AI** tab.",
+            "Under **Similar & duplicates**, select **Find**.",
+            "Under **Possible duplicates**, check the open tickets from the same contact or customer.",
+            "Under **Similar resolved tickets**, read how each one was resolved and its root cause.",
+            "To merge a duplicate, select **Merge this ticket into** and the ticket number. Confirm with **Merge**."
+          ],
+          "result": "The lists show matches with a similarity bar. After a merge, this ticket is closed as a duplicate.",
+          "blocks": [
+            {
+              "warning": "A merge moves the conversation, attachments and watchers to the other ticket. You need the **Merge tickets** permission."
+            }
+          ]
+        },
+        {
+          "id": "root-cause-ai",
+          "title": "Find the likely root cause",
+          "type": "task",
+          "intro": "See what usually caused this kind of problem before.",
+          "prerequisites": [
+            "You have the **Use AI assistance (summaries, suggestions, classification)** permission."
+          ],
+          "steps": [
+            "Open the ticket and its **AI** tab.",
+            "Under **Likely root cause**, select **Analyse**.",
+            "Read the causes. Each has a likelihood bar and an explanation.",
+            "Under **Evidence**, select a ticket number to open a similar ticket."
+          ],
+          "result": "The causes are listed with the most likely first. The last line shows how many tickets were considered."
+        },
+        {
+          "id": "run-ai-agents",
+          "title": "Ask the AI agents to check a ticket again",
+          "type": "task",
+          "intro": "AI agents usually run when a ticket arrives. Run them again after the ticket changes.",
+          "prerequisites": [
+            "You have the **Use AI assistance (summaries, suggestions, classification)** and **Edit ticket fields** permissions."
+          ],
+          "steps": [
+            "Open the ticket and its **AI** tab.",
+            "Under **AI proposals**, select **Run agents**.",
+            "Read the new proposals. Approve or reject them as in [Review an AI proposal](#review-ai-proposal)."
+          ],
+          "result": "The message **AI agents finished** says how many agents ran and how many proposals they made."
+        },
+        {
+          "id": "ai-ticket-page",
+          "title": "The full-page AI assistant for one ticket",
+          "type": "concept",
+          "intro": "Links on the **Proposals**, **Semantic search** and **Anomalies** tabs open a full page for one ticket. It shows the ticket facts, a reply box and the same AI parts as the **AI** tab.",
+          "blocks": [
+            {
+              "image": "shots/11-ai-ticket-page.png",
+              "caption": "The full-page AI assistant with the ticket facts, the reply box and the AI parts.",
+              "alt": "AI assistant page for a ticket with ticket facts, Reply with AI draft and Send reply, and AI sections on the right"
+            },
+            {
+              "list": [
+                "To open another ticket, enter its number in **Ticket #** at the top right and select **Open**.",
+                "Select **Ticket** at the top right to open the ticket itself.",
+                "In **Reply**, select **AI draft** to fill the reply box with a draft.",
+                "Remove the [n] source markers. Then select **Send reply**, or press [[Ctrl+Enter]]."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ai-badges",
+          "title": "AI badges and scores",
+          "type": "reference",
+          "intro": "These badges and bars appear on AI results.",
+          "blocks": [
+            {
+              "table": {
+                "columns": [
+                  "Badge or bar",
+                  "Meaning"
+                ],
+                "widths": [
+                  35,
+                  65
+                ],
+                "rows": [
+                  [
+                    "**Grounded in knowledge**",
+                    "The draft is based on your articles or resolved tickets."
+                  ],
+                  [
+                    "**Not grounded — review carefully**",
+                    "No source was found. The text may contain guesses."
+                  ],
+                  [
+                    "Confidence bar",
+                    "How sure the AI is. Green is high, amber is medium and red is low."
+                  ],
+                  [
+                    "**Low confidence**",
+                    "The expected resolution time is based on few similar tickets."
+                  ],
+                  [
+                    "Similarity or relevance bar",
+                    "How close a ticket or article is to this one."
+                  ],
+                  [
+                    "**Frustrated**",
+                    "The customer seems upset. Respond with care."
+                  ],
+                  [
+                    "**Not analysed**",
+                    "The sentiment has not been worked out yet."
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    {
+      "problem": "An AI button shows **AI is turned off for this organisation**.",
+      "cause": "An administrator turned off AI.",
+      "fix": "Ask an administrator to turn it on in **AI settings**."
+    },
+    {
+      "problem": "An AI part says the feature is turned off.",
+      "cause": "An administrator turned off this AI feature.",
+      "fix": "Ask an administrator to turn the feature on in **AI settings**."
+    },
+    {
+      "problem": "The message **This AI feature is not included in your plan** appears.",
+      "cause": "Your subscription does not include the feature.",
+      "fix": "Ask your administrator about upgrading the plan."
+    },
+    {
+      "problem": "The message **Your role cannot use this AI feature** appears.",
+      "cause": "Your role is not allowed to use that AI feature.",
+      "fix": "Ask an administrator to change your role."
+    },
+    {
+      "problem": "An AI request fails with a message about the monthly budget.",
+      "cause": "The workspace has used its AI budget for this month.",
+      "fix": "Ask an administrator to raise the budget, or wait for the next month."
+    },
+    {
+      "problem": "The **AI** tab or the **AI Assistant** menu item is missing.",
+      "cause": "You lack the AI permission, or your plan has no AI.",
+      "fix": "Ask an administrator for the **Use AI assistance (summaries, suggestions, classification)** permission."
+    },
+    {
+      "problem": "**Ask analytics** shows **No matching tickets**.",
+      "cause": "No tickets match the question in that period.",
+      "fix": "Ask about a longer period, such as the last 90 days."
+    },
+    {
+      "problem": "**Approve & apply**, **Reject** and **Revert** are missing on proposals.",
+      "cause": "You can view proposals but not decide them.",
+      "fix": "Ask an administrator for the **Approve, apply and revert AI-proposed actions** permission."
+    }
+  ],
+  "faq": [
+    {
+      "q": "Does the AI send anything to customers by itself?",
+      "a": "Only if your administrator allows automatic replies for approved situations. Otherwise every reply waits for a person. Automatic replies are blocked for critical tickets and frustrated customers."
+    },
+    {
+      "q": "Can I undo an AI change?",
+      "a": "You can revert category, product, department, priority and tag changes on the **Proposals** tab. Messages that were sent cannot be undone."
+    },
+    {
+      "q": "Where do the AI's answers come from?",
+      "a": "From your published articles and resolved tickets. A reply draft lists its sources under the text."
+    },
+    {
+      "q": "Why did a proposal expire?",
+      "a": "Nobody approved or rejected it within 14 days."
+    }
+  ],
+  "glossary": [
+    {
+      "term": "AI proposal",
+      "definition": "An action that an AI agent suggests for a ticket, such as a new priority or a reply. A person approves or rejects it."
+    },
+    {
+      "term": "AI agent",
+      "definition": "An automatic AI helper that checks tickets and makes proposals, such as the triage assistant."
+    },
+    {
+      "term": "Grounded",
+      "definition": "Said of an AI draft that is based on your own articles or resolved tickets."
+    },
+    {
+      "term": "Semantic search",
+      "definition": "A search that finds items with the same meaning as your words, even when the wording differs."
+    },
+    {
+      "term": "Anomaly",
+      "definition": "A day with far more tickets than usual for a product, version, customer or category."
+    },
+    {
+      "term": "Sentiment",
+      "definition": "The customer's mood as the AI reads it: positive, neutral, negative or frustrated."
+    },
+    {
+      "term": "Confidence",
+      "definition": "How sure the AI is about a suggestion, shown as a bar or a percentage."
+    }
+  ]
+}

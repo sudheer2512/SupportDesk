@@ -1,0 +1,135 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "admin@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Two-step verification"
+    },
+    {
+      "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "23-delivery-defaults",
+      "file": "23-delivery-defaults.png",
+      "url": "/admin/notifications/defaults",
+      "waitFor": "text=Default channels per event",
+      "fullPage": true,
+      "highlight": [
+        "desk-admin-sections",
+        ".callout",
+        ".matrix thead",
+        ".matrix tbody tr:first-child",
+        "section.card:not(.matrix-card)",
+        ".savebar"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "23-quiet-hours",
+      "file": "23-quiet-hours.png",
+      "steps": [
+        {
+          "click": "text=Quiet hours"
+        },
+        {
+          "waitFor": "text=Until"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": "section.card:not(.matrix-card)",
+      "hide": [
+        ".savebar"
+      ]
+    },
+    {
+      "id": "23-templates",
+      "file": "23-templates.png",
+      "steps": [
+        {
+          "click": "text=Discard"
+        },
+        {
+          "goto": "/admin/notifications/templates"
+        },
+        {
+          "waitFor": "text=New ticket acknowledgement"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "highlight": [
+        "desk-admin-sections",
+        "section.group h2",
+        "section.group li .title",
+        "section.group li .subject",
+        "section.group li > a"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "23-template-editor",
+      "file": "23-template-editor.png",
+      "steps": [
+        {
+          "eval": "document.getElementById('um-flow')?.remove()"
+        },
+        {
+          "click": "section.group li > a"
+        },
+        {
+          "waitFor": "text=Save template"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "fullPage": true,
+      "highlight": [
+        ".head",
+        "label=Subject",
+        "label=Body (HTML)",
+        ".ph",
+        ".form sd-toggle",
+        "section.preview",
+        ".savebar"
+      ],
+      "numbered": true
+    }
+  ]
+}

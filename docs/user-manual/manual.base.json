@@ -1,0 +1,20 @@
+{
+  "title": "SupportDesk User Manual",
+  "subtitle": "Tickets, live chat, customers, knowledge, analytics, administration, the customer portal and the mobile app",
+  "product": "SupportDesk",
+  "version": "1.0",
+  "date": "2026-11-02",
+  "audience": "Everyone who uses SupportDesk: agents, supervisors, administrators, customers and platform operators. Each chapter says who it is for. You do not need any technical knowledge.",
+  "support": "If you need help, contact your SupportDesk administrator. Say what you were trying to do and what you saw on the screen. Give the ticket number if there is one. Customers can contact the support team through the portal.",
+  "page": "A4",
+  "tocDepth": 1,
+  "brand": {
+    "company": "Wings",
+    "tagline": "business made better",
+    "accent": "#8B08AF"
+  },
+  "output": { "basename": "SupportDesk-User-Manual" },
+  "versionHistory": [
+    { "version": "1.0", "date": "2026-11-02", "changes": "First edition. Covers the agent desk, supervision, administration, the customer portal, the mobile app and the platform console." }
+  ]
+}

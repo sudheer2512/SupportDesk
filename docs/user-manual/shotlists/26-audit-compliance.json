@@ -1,0 +1,267 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "admin@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Two-step verification"
+    },
+    {
+      "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "26-audit",
+      "file": "26-audit.png",
+      "steps": [
+        {
+          "goto": "/admin/audit"
+        },
+        {
+          "eval": "(async () => { const sleep = (ms) => new Promise((r) => setTimeout(r, ms)); const until = async (f) => { const end = Date.now() + 20000; while (Date.now() < end) { const v = f(); if (v) return v; await sleep(200); } return null; }; await sleep(1200); if (!location.pathname.startsWith('/login')) return 'signed in'; const set = (n, v) => { const el = document.querySelector('input[name=' + n + ']'); el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); }; await until(() => document.querySelector('input[name=tenant]')); set('tenant', 'wings'); set('email', 'admin@wings.demo'); set('password', '${env:SD_DESK_PASSWORD}'); document.querySelector('form button[type=submit]').click(); const code = await until(() => [...document.querySelectorAll('code')].map((c) => c.textContent.trim()).find((t) => /^\\d{6}$/.test(t))); set('code', code); [...document.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Verify').click(); await until(() => !location.pathname.startsWith('/login')); await sleep(800); location.assign('/admin/audit'); await sleep(2500); return 'signed in again'; })()"
+        }
+      ],
+      "waitFor": "table.data tbody tr",
+      "highlight": [
+        "text=Export CSV",
+        "text=Verify chain",
+        "form.filters",
+        "table.data tbody tr:first-child"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "26-audit-entry",
+      "file": "26-audit-entry.png",
+      "steps": [
+        {
+          "click": "table.data tbody tr:nth-child(1)"
+        },
+        {
+          "waitForText": "Previous hash"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "eval": "(() => { const w = document.createTreeWalker(document.querySelector('.drawer') || document.body, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) { if (n.nodeValue.includes('HeadlessChrome')) n.nodeValue = n.nodeValue.replace(/HeadlessChrome/g, 'Chrome'); } })()"
+        },
+        {
+          "eval": "(() => { const d = document.querySelector('.drawer[role=dialog]'); const b = d && d.querySelector('.body'); if (!b) return 0; const extra = b.scrollHeight - b.clientHeight; if (extra > 0) { d.style.height = Math.ceil(d.getBoundingClientRect().height + extra + 4) + 'px'; d.style.maxHeight = 'none'; } return extra; })()"
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "clip": ".drawer[role=dialog]"
+    },
+    {
+      "id": "26-retention",
+      "file": "26-retention.png",
+      "steps": [
+        {
+          "goto": "/admin/compliance"
+        },
+        {
+          "eval": "(async () => { const sleep = (ms) => new Promise((r) => setTimeout(r, ms)); const until = async (f) => { const end = Date.now() + 20000; while (Date.now() < end) { const v = f(); if (v) return v; await sleep(200); } return null; }; await sleep(1200); if (!location.pathname.startsWith('/login')) return 'signed in'; const set = (n, v) => { const el = document.querySelector('input[name=' + n + ']'); el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); }; await until(() => document.querySelector('input[name=tenant]')); set('tenant', 'wings'); set('email', 'admin@wings.demo'); set('password', '${env:SD_DESK_PASSWORD}'); document.querySelector('form button[type=submit]').click(); const code = await until(() => [...document.querySelectorAll('code')].map((c) => c.textContent.trim()).find((t) => /^\\d{6}$/.test(t))); set('code', code); [...document.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Verify').click(); await until(() => !location.pathname.startsWith('/login')); await sleep(800); location.assign('/admin/compliance'); await sleep(2500); return 'signed in again'; })()"
+        }
+      ],
+      "waitFor": "[role=tablist]",
+      "highlight": [
+        "[role=tablist]",
+        "text=New policy",
+        "[role=tabpanel] table.data tbody tr:first-child",
+        "[role=tabpanel] table.data tbody tr:first-child td.actions"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "26-dry-run",
+      "file": "26-dry-run.png",
+      "steps": [
+        {
+          "click": "table.data tbody tr:last-child td.actions button:first-of-type"
+        },
+        {
+          "waitFor": "tr.result"
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "clip": "[role=tabpanel] .table-wrap",
+      "highlight": [
+        "tr.result"
+      ]
+    },
+    {
+      "id": "26-new-retention-policy",
+      "file": "26-new-retention-policy.png",
+      "steps": [
+        {
+          "click": "text=New policy"
+        },
+        {
+          "waitForText": "Run automatically every day"
+        },
+        {
+          "fill": "input[name=name]",
+          "value": "Archive old closed tickets"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "eval": "(() => { const d = document.querySelector('.drawer[role=dialog]'); const b = d && d.querySelector('.body'); if (!b) return 0; const extra = b.scrollHeight - b.clientHeight; if (extra > 0) { d.style.height = Math.ceil(d.getBoundingClientRect().height + extra + 4) + 'px'; d.style.maxHeight = 'none'; } return extra; })()"
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "clip": ".drawer[role=dialog]"
+    },
+    {
+      "id": "26-legal-holds",
+      "file": "26-legal-holds.png",
+      "steps": [
+        {
+          "goto": "/admin/compliance?tab=holds"
+        },
+        {
+          "eval": "(async () => { const sleep = (ms) => new Promise((r) => setTimeout(r, ms)); const until = async (f) => { const end = Date.now() + 20000; while (Date.now() < end) { const v = f(); if (v) return v; await sleep(200); } return null; }; await sleep(1200); if (!location.pathname.startsWith('/login')) return 'signed in'; const set = (n, v) => { const el = document.querySelector('input[name=' + n + ']'); el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); }; await until(() => document.querySelector('input[name=tenant]')); set('tenant', 'wings'); set('email', 'admin@wings.demo'); set('password', '${env:SD_DESK_PASSWORD}'); document.querySelector('form button[type=submit]').click(); const code = await until(() => [...document.querySelectorAll('code')].map((c) => c.textContent.trim()).find((t) => /^\\d{6}$/.test(t))); set('code', code); [...document.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Verify').click(); await until(() => !location.pathname.startsWith('/login')); await sleep(800); location.assign('/admin/compliance?tab=holds'); await sleep(2500); return 'signed in again'; })()"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "waitFor": "text=Place legal hold",
+      "highlight": [
+        "text=Show released holds",
+        "text=Place legal hold"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "26-place-hold",
+      "file": "26-place-hold.png",
+      "steps": [
+        {
+          "click": "text=Place legal hold"
+        },
+        {
+          "waitForText": "Reason / matter"
+        },
+        {
+          "fill": "input[name=name]",
+          "value": "Contract dispute 2026"
+        },
+        {
+          "fill": "textarea[name=reason]",
+          "value": "Preserve records for arbitration matter ARB/2026/201."
+        },
+        {
+          "eval": "(() => { const d = document.querySelector('.drawer[role=dialog]'); const b = d && d.querySelector('.body'); if (!b) return 0; const extra = b.scrollHeight - b.clientHeight; if (extra > 0) { d.style.height = Math.ceil(d.getBoundingClientRect().height + extra + 4) + 'px'; d.style.maxHeight = 'none'; } return extra; })()"
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "clip": ".drawer[role=dialog]"
+    },
+    {
+      "id": "26-data-requests",
+      "file": "26-data-requests.png",
+      "steps": [
+        {
+          "goto": "/admin/compliance?tab=requests"
+        },
+        {
+          "eval": "(async () => { const sleep = (ms) => new Promise((r) => setTimeout(r, ms)); const until = async (f) => { const end = Date.now() + 20000; while (Date.now() < end) { const v = f(); if (v) return v; await sleep(200); } return null; }; await sleep(1200); if (!location.pathname.startsWith('/login')) return 'signed in'; const set = (n, v) => { const el = document.querySelector('input[name=' + n + ']'); el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); }; await until(() => document.querySelector('input[name=tenant]')); set('tenant', 'wings'); set('email', 'admin@wings.demo'); set('password', '${env:SD_DESK_PASSWORD}'); document.querySelector('form button[type=submit]').click(); const code = await until(() => [...document.querySelectorAll('code')].map((c) => c.textContent.trim()).find((t) => /^\\d{6}$/.test(t))); set('code', code); [...document.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Verify').click(); await until(() => !location.pathname.startsWith('/login')); await sleep(800); location.assign('/admin/compliance?tab=requests'); await sleep(2500); return 'signed in again'; })()"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "waitFor": "text=New request",
+      "highlight": [
+        "[role=tabpanel] .toolbar sd-form-field",
+        "text=New request"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "26-new-request",
+      "file": "26-new-request.png",
+      "steps": [
+        {
+          "click": "text=New request"
+        },
+        {
+          "waitForText": "New data-subject request"
+        },
+        {
+          "fill": "textarea[name=notes]",
+          "value": "Received by e-mail. Identity checked by a call to the number on file."
+        },
+        {
+          "eval": "(() => { const d = document.querySelector('.drawer[role=dialog]'); const b = d && d.querySelector('.body'); if (!b) return 0; const extra = b.scrollHeight - b.clientHeight; if (extra > 0) { d.style.height = Math.ceil(d.getBoundingClientRect().height + extra + 4) + 'px'; d.style.maxHeight = 'none'; } return extra; })()"
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "clip": ".drawer[role=dialog]"
+    },
+    {
+      "id": "26-support-access",
+      "file": "26-support-access.png",
+      "steps": [
+        {
+          "goto": "/admin/compliance?tab=support"
+        },
+        {
+          "eval": "(async () => { const sleep = (ms) => new Promise((r) => setTimeout(r, ms)); const until = async (f) => { const end = Date.now() + 20000; while (Date.now() < end) { const v = f(); if (v) return v; await sleep(200); } return null; }; await sleep(1200); if (!location.pathname.startsWith('/login')) return 'signed in'; const set = (n, v) => { const el = document.querySelector('input[name=' + n + ']'); el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); }; await until(() => document.querySelector('input[name=tenant]')); set('tenant', 'wings'); set('email', 'admin@wings.demo'); set('password', '${env:SD_DESK_PASSWORD}'); document.querySelector('form button[type=submit]').click(); const code = await until(() => [...document.querySelectorAll('code')].map((c) => c.textContent.trim()).find((t) => /^\\d{6}$/.test(t))); set('code', code); [...document.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Verify').click(); await until(() => !location.pathname.startsWith('/login')); await sleep(800); location.assign('/admin/compliance?tab=support'); await sleep(2500); return 'signed in again'; })()"
+        },
+        {
+          "wait": 1000
+        }
+      ],
+      "waitFor": "desk-support-access-tab table.data",
+      "clip": "desk-support-access-tab",
+      "highlight": [
+        "desk-support-access-tab td.actions"
+      ]
+    }
+  ]
+}

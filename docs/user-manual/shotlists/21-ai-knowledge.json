@@ -1,0 +1,205 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "admin@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Two-step verification"
+    },
+    {
+      "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "21-ai-settings",
+      "file": "21-ai-settings.png",
+      "url": "/admin/ai/settings",
+      "waitFor": "text=Test saved provider",
+      "fullPage": true,
+      "highlight": [
+        "nav.sections",
+        "form.grid > sd-card:nth-of-type(1)",
+        "form.grid > sd-card:nth-of-type(2)",
+        "form.grid > sd-card:nth-of-type(3)",
+        "form.grid > sd-card:nth-of-type(4)",
+        "form.grid .bar"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "21-ai-provider-openai",
+      "file": "21-ai-provider-openai.png",
+      "steps": [
+        {
+          "click": "sd-radio-group.providers sd-radio:nth-of-type(2) label.wrap"
+        },
+        {
+          "waitFor": "text=API key"
+        },
+        {
+          "fill": "input[name=model]",
+          "value": "gpt-4o-mini"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": "form.grid > sd-card:nth-of-type(1)"
+    },
+    {
+      "id": "21-ai-features",
+      "file": "21-ai-features.png",
+      "url": "/admin/ai/features",
+      "waitFor": "text=Min. confidence",
+      "clip": ".desk-page__body",
+      "clipPadding": 0,
+      "steps": [
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ]
+    },
+    {
+      "id": "21-ai-scenarios",
+      "file": "21-ai-scenarios.png",
+      "url": "/admin/ai/scenarios",
+      "waitFor": "text=Add scenario",
+      "clip": ".desk-page__body",
+      "clipPadding": 0,
+      "steps": [
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ]
+    },
+    {
+      "id": "21-ai-prompts",
+      "file": "21-ai-prompts.png",
+      "url": "/admin/ai/prompts",
+      "waitFor": "text=System prompt",
+      "clip": ".desk-page__body",
+      "clipPadding": 0,
+      "steps": [
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ]
+    },
+    {
+      "id": "21-ai-agents",
+      "file": "21-ai-agents.png",
+      "url": "/admin/ai/agents",
+      "waitFor": "text=New agent",
+      "clip": ".desk-page__body",
+      "clipPadding": 0,
+      "steps": [
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ]
+    },
+    {
+      "id": "21-ai-agent-editor",
+      "file": "21-ai-agent-editor.png",
+      "steps": [
+        {
+          "click": "text=New agent"
+        },
+        {
+          "waitFor": "text=Save agent"
+        },
+        {
+          "fill": "input[name=name]",
+          "value": "Billing triage"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "21-ai-usage",
+      "file": "21-ai-usage.png",
+      "url": "/admin/ai/usage",
+      "waitFor": "text=Suggestion outcomes",
+      "steps": [
+        {
+          "wait": 1500
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": ".desk-page__body",
+      "clipPadding": 0
+    },
+    {
+      "id": "21-ai-executions",
+      "file": "21-ai-executions.png",
+      "url": "/admin/ai/executions",
+      "waitFor": "text=Execution log",
+      "steps": [
+        {
+          "wait": 1500
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ]
+    },
+    {
+      "id": "21-ai-execution-detail",
+      "file": "21-ai-execution-detail.png",
+      "steps": [
+        {
+          "click": "sd-data-table .row--body"
+        },
+        {
+          "waitFor": "text=Prompt-injection checks"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": ".drawer[role=dialog]"
+    },
+    {
+      "id": "21-kb-categories",
+      "file": "21-kb-categories.png",
+      "url": "/kb/categories",
+      "waitFor": "text=New category"
+    }
+  ]
+}

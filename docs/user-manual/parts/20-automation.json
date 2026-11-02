@@ -1,0 +1,760 @@
+{
+  "chapters": [
+    {
+      "id": "automation",
+      "title": "Automation, blueprints and webhooks",
+      "intro": [
+        "This chapter is for administrators. It explains rules, which automate routine work, and blueprints, which guide tickets through fixed steps. It also covers webhooks, which send events to other systems.",
+        "Every rule and blueprint has versions. You can test a change before it goes live, and you can go back to an earlier version."
+      ],
+      "sections": [
+        {
+          "id": "au-automation-page",
+          "title": "The Automation page",
+          "type": "concept",
+          "intro": [
+            "To open automation, select **Automation** in the rail. You can also select **Administration** > **Automation & blueprints**.",
+            "You need the **Manage automation rules and blueprints** permission. The **Webhooks** tab appears only if you may also manage integrations."
+          ],
+          "blocks": [
+            {
+              "image": "shots/20-rules-list.png",
+              "caption": "The **Rules** tab. Rules are grouped by the event that starts them.",
+              "alt": "Automation page on the Rules tab with numbered highlights on the tabs, the search box, the trigger list, New rule, the first rule, its counts, its switch and its arrows",
+              "width": 560
+            },
+            {
+              "callouts": [
+                "The tabs: **Rules**, **Executions**, **Blueprints** and **Webhooks**.",
+                "**Search rules** finds rules by name or description.",
+                "The trigger list shows the rules of one trigger only.",
+                "**New rule** opens the rule designer.",
+                "The rule's name, its description and its badges.",
+                "How many times the rule ran, and when it last ran.",
+                "The switch turns the rule on or off. You can switch on a rule only after you publish it.",
+                "The arrows move the rule earlier or later within its trigger."
+              ]
+            },
+            { "heading": "Rule badges" },
+            {
+              "table": {
+                "columns": ["Badge", "What it means"],
+                "widths": [32, 68],
+                "rows": [
+                  ["**v1 published**", "Version 1 is live. Only the published version runs."],
+                  ["**Draft only**", "The rule has never been published, so it never runs."],
+                  ["**Unpublished draft v2**", "Someone saved changes that are not live yet."],
+                  ["**Stops processing**", "Later rules on the same trigger do not run when this rule matches."],
+                  ["**1 conflict**", "This rule may fight with another active rule. Point to the badge to read why."],
+                  ["**every 60 min**", "A scheduled rule and how often it runs."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "au-how-rules-work",
+          "title": "How rules work",
+          "type": "concept",
+          "intro": [
+            "A rule has three parts. **When** is the trigger, the event that starts the rule. **If** holds the conditions the ticket must meet. **Then** lists the actions that run, in order.",
+            "For example: when a ticket is created, and it is High priority from a VIP customer, raise it to Critical. Then notify a supervisor."
+          ],
+          "blocks": [
+            { "heading": "Order and stop processing" },
+            "Rules with the same trigger run in the order shown on the **Rules** tab. A rule with **Stop processing later rules when this rule matches** ends the run for that event when it matches.",
+            { "heading": "Versions" },
+            "Each save creates a new version. Only the published version runs. You can test a draft first, then publish it.",
+            { "heading": "Built-in safeguards" },
+            {
+              "list": [
+                "Each event runs each rule version only once.",
+                "A rule never reacts to changes made by its own actions.",
+                "Chains of rules that start other rules stop after five steps.",
+                "One rule runs at most 20 times an hour on the same ticket.",
+                "A scheduled run handles at most 500 tickets."
+              ]
+            },
+            { "note": "Rules cannot delete tickets, merge them or mark them as spam. Agents do those things by hand." }
+          ]
+        },
+        {
+          "id": "au-rule-designer",
+          "title": "The rule designer",
+          "type": "concept",
+          "intro": "Select a rule's name, or select **New rule**, to open the rule designer.",
+          "blocks": [
+            {
+              "image": "shots/20-rule-designer.png",
+              "caption": "The rule designer with an existing rule open.",
+              "alt": "Rule designer with numbered highlights on the toolbar, the name card, the When card and the side panel",
+              "width": 560
+            },
+            {
+              "callouts": [
+                "The toolbar. It shows the live version and the **Active** switch. It also has **Change note (optional)**, **Check**, **Save draft** and **Publish**.",
+                "**Rule name**, **Description** and the stop-processing switch.",
+                "The **When** card, followed by the **If** and **Then** cards further down.",
+                "The side panel with the **Simulate**, **Versions** and **Conflicts** tabs."
+              ]
+            },
+            "At the bottom of a saved rule, **Delete rule** removes it."
+          ]
+        },
+        {
+          "id": "au-create-rule",
+          "title": "Create a rule",
+          "type": "task",
+          "intro": "Create a rule to make SupportDesk act on tickets for you.",
+          "prerequisites": ["You have the **Manage automation rules and blueprints** permission."],
+          "steps": [
+            "Select **Automation** > **Rules**, then select **New rule**.",
+            "Enter a **Rule name** and, if you like, a **Description**.",
+            "In the **When** card, select the trigger. See [Rule triggers](#au-triggers).",
+            "In the **If** card, add the conditions. See [Rule conditions](#au-conditions).",
+            "In the **Then** card, select **Add action** and choose an action. Fill in its fields.",
+            "Add more actions if you need them. Use the arrows to change their order.",
+            "If later rules must not run when this one matches, turn on **Stop processing later rules when this rule matches**.",
+            "Optionally enter a **Change note (optional)** that says what you changed.",
+            "Select **Save draft**."
+          ],
+          "result": "The app shows **Draft v1 saved**. The draft does not run yet. Test it, then publish it. See [Simulate a rule](#au-simulate-rule) and [Check and publish a rule](#au-publish-rule)."
+        },
+        {
+          "id": "au-triggers",
+          "title": "Rule triggers",
+          "type": "reference",
+          "intro": "The trigger is the event that starts a rule. You choose one trigger per rule in the **When** card.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Trigger", "The rule starts when"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**Ticket created**", "A ticket is created from any channel."],
+                  ["**Ticket updated**", "Ticket fields change. In **Only when these fields change**, you can name the fields to watch."],
+                  ["**Status changed**", "The ticket's status changes. Use the **changed to** and **changed from** checks on the status."],
+                  ["**Ticket assigned**", "The assignee or the team changes."],
+                  ["**Agent replied**", "An agent sends a public reply."],
+                  ["**Customer replied**", "The customer replies through any channel."],
+                  ["**Note added**", "An internal or handover note is added."],
+                  ["**SLA warning**", "An SLA target reaches its warning point."],
+                  ["**SLA breached**", "An SLA target is missed."],
+                  ["**Customer activity**", "Something happens on a customer account. The rule runs on the related or open tickets."],
+                  ["**Scheduled**", "A set time passes. The rule checks open tickets every 5 minutes to 7 days."],
+                  ["**Inbound webhook**", "Another system calls the rule's own web address with a ticket number."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "au-conditions",
+          "title": "Rule conditions",
+          "type": "reference",
+          "intro": [
+            "Conditions decide which tickets the rule acts on. A rule without conditions acts on every ticket for its trigger.",
+            "Each condition has a field, a check and a value. Select **Condition** to add one, or **Group** to add a group of conditions."
+          ],
+          "blocks": [
+            {
+              "image": "shots/20-rule-conditions.png",
+              "caption": "Conditions for high-priority tickets from VIP contacts or Platinum customers.",
+              "alt": "If card with two conditions joined by All (AND) and a nested group joined by Any (OR)",
+              "width": 460
+            },
+            {
+              "list": [
+                "**All (AND)** means every condition in the group must be true.",
+                "**Any (OR)** means one true condition in the group is enough.",
+                "Groups can sit inside groups, up to four levels deep.",
+                "Select the bin icon to remove a condition. Select **Remove group** to remove a group."
+              ]
+            },
+            { "heading": "Checks" },
+            {
+              "table": {
+                "columns": ["Check", "Use it for"],
+                "widths": [40, 60],
+                "rows": [
+                  ["**is**, **is not**, **is any of**, **is none of**", "Exact values, such as a priority, status, team or customer."],
+                  ["**contains**, **does not contain**, **contains any of**, **starts with**, **ends with**", "Words in text fields and tags."],
+                  ["**matches pattern**", "A text pattern. Ask a technical colleague to write it."],
+                  ["**is empty**, **is not empty**", "Fields that are blank or filled in."],
+                  ["**greater than**, **at least**, **less than**, **at most**, **between**", "Numbers, priorities and dates."],
+                  ["**before**, **after**", "Dates."],
+                  ["**within the last (minutes)**, **older than (minutes)**", "Time since a date, such as the last activity. Use them in scheduled rules."],
+                  ["**changed**, **changed to**, **changed from**", "What the triggering event changed, such as the status."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "au-actions",
+          "title": "Rule actions",
+          "type": "reference",
+          "intro": [
+            "Actions run in the order listed in the **Then** card. Changes appear in the ticket history as **Automation:** followed by the rule name.",
+            "Text fields accept placeholders, such as `{{ticket.number}}` or `{{contact.name}}`. Select a placeholder chip under the field to insert it."
+          ],
+          "blocks": [
+            {
+              "image": "shots/20-rule-actions.png",
+              "caption": "The **Notify agents** action with its fields and the placeholder chips.",
+              "alt": "Notify agents action with Recipients, Specific agents, Roles, Title and Message fields, placeholder chips and Severity",
+              "width": 420
+            },
+            {
+              "table": {
+                "columns": ["Group", "Action", "What it does"],
+                "widths": [18, 30, 52],
+                "rows": [
+                  ["Ownership", "**Assign / reassign**", "Assigns an agent or team, or runs automatic routing again."],
+                  ["Ownership", "**Move to department**", "Moves the ticket to another department."],
+                  ["Ownership", "**Escalate**", "Escalates the ticket and notifies supervisors. It can also raise the priority."],
+                  ["Fields", "**Set priority**, **Set severity**", "Changes the priority or severity. SLA targets follow the new priority."],
+                  ["Fields", "**Set status**, **Set substatus**", "Changes the status. It is not allowed on blueprint tickets."],
+                  ["Fields", "**Set category**, **Set issue type**", "Classifies the ticket."],
+                  ["Fields", "**Set custom field**", "Fills in or clears a custom field."],
+                  ["Fields", "**Add tags**, **Remove tags**", "Adds or removes tags."],
+                  ["Conversation", "**Add internal note**", "Adds a note that only agents see."],
+                  ["Conversation", "**Reply with template**", "Sends a reply template to the customer."],
+                  ["Collaboration", "**Add followers**", "Adds agents as watchers, collaborators or specialists."],
+                  ["Collaboration", "**Create task**, **Create child ticket**", "Creates a task or a linked child ticket."],
+                  ["Notifications", "**Notify agents**", "Sends an in-app notification to chosen people."],
+                  ["Notifications", "**Send e-mail / SMS / WhatsApp**", "Sends a message to the contact, the assignee or an address."],
+                  ["Integrations", "**Call webhook / API**", "Calls another system's web address. Failed calls are retried."],
+                  ["Integrations", "**Update ERP record**", "Updates the related record in Wings ERP."],
+                  ["Approvals", "**Request approval**", "Asks a person or a role to approve something."],
+                  ["AI", "**AI classify**, **AI summarise**", "Lets the AI suggest a classification or write a summary."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "au-scheduled-rule",
+          "title": "Run a rule on a schedule",
+          "type": "task",
+          "intro": "A scheduled rule checks open tickets at a set interval. Use it for reminders and time limits, such as closing tickets that wait too long.",
+          "steps": [
+            "Open the rule designer.",
+            {
+              "text": "In the **When** card, select **Scheduled**.",
+              "image": "shots/20-new-rule-scheduled.png",
+              "caption": "The **Scheduled** trigger with the **Run every (minutes)** field.",
+              "alt": "When card with the Scheduled trigger selected and Run every (minutes) set to 60",
+              "width": 420
+            },
+            "In **Run every (minutes)**, enter a number from 5 to 10080.",
+            "In the **If** card, add a time condition, such as **older than (minutes)** on the last activity.",
+            "Add the actions, then select **Save draft**."
+          ],
+          "result": "After you publish and activate the rule, the list shows how often it runs. The designer shows the next run time.",
+          "blocks": [
+            { "warning": "A scheduled rule without conditions acts on every open ticket on every run. **Check** warns you about this." }
+          ]
+        },
+        {
+          "id": "au-inbound-webhook-rule",
+          "title": "Let another system start a rule",
+          "type": "task",
+          "intro": "With the **Inbound webhook** trigger, another system can start a rule for a ticket. For example, your ERP can add a note when a payment arrives.",
+          "steps": [
+            "Open the rule designer and select **Inbound webhook** in the **When** card.",
+            "Add the conditions and actions, then select **Save draft**.",
+            "Copy the **Webhook URL** that now appears in the **When** card.",
+            { "text": "Copy the secret in the yellow box and select **Copy**.", "warning": "The secret is shown only once. If you lose it, select **New secret** and give the new one to the other system." },
+            "Give the address and the secret to the person who sets up the other system."
+          ],
+          "result": "The other system can now start the rule. Each call names a ticket by its number.",
+          "blocks": [
+            "Values that the other system sends can be used in conditions and texts. In the **If** card, enter a field name and select **Add payload field**. In texts, use the placeholder `{{webhook.<field>}}`."
+          ]
+        },
+        {
+          "id": "au-simulate-rule",
+          "title": "Simulate a rule",
+          "type": "task",
+          "intro": "A simulation shows what a rule would do to real tickets. It changes nothing on the tickets.",
+          "steps": [
+            "Open the rule and select the **Simulate** tab in the side panel.",
+            "Choose **One ticket** and enter a **Ticket number**. Or choose **Most recent** and enter the **Number of tickets**, up to 50.",
+            "To test your unsaved edits, turn on **Use the unsaved changes in the editor**.",
+            {
+              "text": "Select **Run simulation**.",
+              "image": "shots/20-rule-simulate.png",
+              "caption": "The **Simulate** tab before a run.",
+              "alt": "Simulate tab with One ticket and Most recent options, Number of tickets and Run simulation",
+              "width": 300
+            }
+          ],
+          "result": "The panel shows how many tickets matched. Each ticket shows **Matches** or **No match**, the check of every condition, and each action as **would run** or **skipped**.",
+          "blocks": [
+            { "note": "Simulations appear on the **Executions** tab with the status **Simulated**." }
+          ]
+        },
+        {
+          "id": "au-publish-rule",
+          "title": "Check and publish a rule",
+          "type": "task",
+          "intro": "Publish a rule to make it live. Only the published version runs.",
+          "steps": [
+            "Open the rule and select **Check**.",
+            "If a red box lists problems under **Fix these before publishing:**, fix each one.",
+            "Read any yellow warnings, such as a scheduled rule without conditions.",
+            "Select **Publish**.",
+            "Turn on the **Active** switch in the toolbar."
+          ],
+          "result": "The app shows **Published v1** (or the next version number). The toolbar shows **Live: v1**.",
+          "blocks": [
+            { "tip": "To switch a rule off quickly, turn off its switch on the **Rules** tab. The app shows **Rule deactivated**." }
+          ]
+        },
+        {
+          "id": "au-rule-versions",
+          "title": "Compare and roll back rule versions",
+          "type": "task",
+          "intro": "Every save of a rule is a version. Use the **Versions** tab to see what changed and to go back.",
+          "steps": [
+            {
+              "text": "Open the rule and select the **Versions** tab.",
+              "image": "shots/20-rule-versions.png",
+              "caption": "The **Versions** tab with the published version 1.",
+              "alt": "Versions tab showing v1 with the Published and in editor badges, its date, author, change note, Open and Diff",
+              "width": 300
+            },
+            "To see what changed, select **Diff** on a version. Added lines start with + and removed lines start with -.",
+            "To load an old version into the editor, select **Open**.",
+            "To make a draft live, select **Publish** on it.",
+            "To return to an older published version, select **Roll back** on it and confirm."
+          ],
+          "result": "A rollback publishes the old definition again as a new version. The old version stays in the history."
+        },
+        {
+          "id": "au-conflicts",
+          "title": "Rule conflicts",
+          "type": "concept",
+          "intro": "SupportDesk compares active rules that share a trigger. It flags rules that may undo each other's work.",
+          "blocks": [
+            {
+              "list": [
+                "Two rules set the same field to different values.",
+                "Two rules assign the same tickets to different people or teams.",
+                "One rule adds a tag that another rule removes.",
+                "A rule stops processing before another rule can run."
+              ]
+            },
+            "The **Rules** tab shows the number of conflicts. In the designer, the **Conflicts** tab explains each one and links to the other rule.",
+            { "tip": "Most conflicts go away when you change the order of the rules or add a condition." }
+          ]
+        },
+        {
+          "id": "au-order-rules",
+          "title": "Change the order of rules",
+          "type": "task",
+          "intro": "Rules with the same trigger run from top to bottom.",
+          "steps": [
+            "Select **Automation** > **Rules**.",
+            "Clear **Search rules**. You cannot reorder while a search is active.",
+            "Drag a rule by its grip, or select the up and down arrows next to it."
+          ],
+          "result": "The new order applies to the next event."
+        },
+        {
+          "id": "au-delete-rule",
+          "title": "Delete a rule",
+          "type": "task",
+          "intro": "Delete a rule you no longer need. To keep it for later, switch it off instead.",
+          "steps": [
+            "Open the rule.",
+            "At the bottom, select **Delete rule**.",
+            "In the confirmation, select **Delete**."
+          ],
+          "result": "The app shows **Rule deleted**. The rule and its versions are gone. Its execution history stays."
+        },
+        {
+          "id": "au-executions",
+          "title": "Review rule executions",
+          "type": "concept",
+          "intro": "The **Executions** tab records every time a rule was checked. It shows what matched, what each action did and why rules were skipped.",
+          "blocks": [
+            {
+              "image": "shots/20-executions.png",
+              "caption": "The **Executions** tab with the newest runs first.",
+              "alt": "Executions tab with numbered highlights on the rule, status and trigger lists, the ticket box, Apply, a status badge and Details",
+              "width": 560
+            },
+            {
+              "callouts": [
+                "Show the runs of one rule.",
+                "Show the runs with one status.",
+                "Show the runs of one trigger.",
+                "Enter a ticket number to see the runs on that ticket.",
+                "**Apply** filters the list. **Clear** removes the filters.",
+                "The status of the run.",
+                "**Details** opens the condition check and the result of each action."
+              ]
+            },
+            { "heading": "Execution statuses" },
+            {
+              "table": {
+                "columns": ["Status", "What it means"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**Succeeded**", "The conditions matched and every action worked."],
+                  ["**Partially Failed**", "Some actions worked and some failed."],
+                  ["**Failed**", "The actions failed."],
+                  ["**Skipped Loop**", "The run was stopped to prevent an endless chain of rules."],
+                  ["**Not Matched**", "The ticket did not meet the conditions. Nothing happened."],
+                  ["**Simulated**", "A test run from the **Simulate** tab. Nothing changed."]
+                ]
+              }
+            },
+            { "note": "The **Depth** column shows how many rules ran before this one in the same chain." }
+          ]
+        },
+        {
+          "id": "au-execution-details",
+          "title": "See why a rule ran and retry failed actions",
+          "type": "task",
+          "intro": "Open a run to see each condition and each action. You can run failed actions again.",
+          "steps": [
+            "Select **Automation** > **Executions**.",
+            "Filter the list if needed, then select **Apply**.",
+            {
+              "text": "Select **Details** on a run.",
+              "image": "shots/20-execution-details.png",
+              "caption": "The **Execution details** panel for a scheduled rule that closed a ticket.",
+              "alt": "Execution details panel with the status, rule, trigger, ticket, times, the conditions table and two succeeded actions",
+              "width": 420
+            },
+            "Read the **Conditions** table. A green tick means the condition was true.",
+            "Read the **Actions** list. Failed actions show the reason in red.",
+            "If the run failed, select **Retry failed actions**."
+          ],
+          "result": "The app shows **Retried** and the new status of the run."
+        },
+        {
+          "id": "au-blueprints",
+          "title": "How blueprints work",
+          "type": "concept",
+          "intro": [
+            "A blueprint guides tickets through fixed states, such as investigation, fix, release and closed. Each step can need fields, a comment or an approval.",
+            "Blueprints need the blueprints feature of your plan."
+          ],
+          "blocks": [
+            {
+              "list": [
+                "A blueprint applies to new tickets of a department, a category, or both. If several blueprints fit, the most specific one wins.",
+                "A state sets the ticket's status and substatus. One state is the starting state, and some are final states.",
+                "A transition moves the ticket from one state to another. It can check roles, ask for fields and comments, or need an approval.",
+                "Agents run transitions from the ticket's **Blueprint** tab. They cannot change the status of a blueprint ticket directly."
+              ]
+            },
+            "Administrators with the automation permission can still change the status directly. They can also select **Remove ticket from blueprint** on the ticket.",
+            {
+              "image": "shots/20-blueprints-list.png",
+              "caption": "The **Blueprints** tab with one published blueprint.",
+              "alt": "Blueprints tab with numbered highlights on the ticket box with Open ticket blueprint, New blueprint, the blueprint name with its switch, its badges and its footer",
+              "width": 560
+            },
+            {
+              "callouts": [
+                "Enter a ticket number and select **Open ticket blueprint** to see that ticket's progress.",
+                "**New blueprint** opens the blueprint designer.",
+                "The blueprint name and its **Active** switch.",
+                "The department, the category and the published version.",
+                "How many open tickets follow the blueprint, and when it was last changed."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "au-blueprint-designer",
+          "title": "The blueprint designer",
+          "type": "concept",
+          "intro": "Select a blueprint's name, or select **New blueprint**, to open the designer. You draw the states and transitions on a canvas.",
+          "blocks": [
+            {
+              "image": "shots/20-blueprint-designer.png",
+              "caption": "The **Defect escalation** blueprint in the designer.",
+              "alt": "Blueprint designer with numbered highlights on the toolbar, the settings card, the canvas tools, the canvas and the inspector",
+              "width": 560
+            },
+            {
+              "callouts": [
+                "The toolbar with **Active**, **Check**, **Save draft** and **Publish**.",
+                "**Blueprint name**, **Department**, **Category** and **Description**.",
+                "The canvas tools: **Add state**, **Connect from selected** and **Delete selected**.",
+                "The canvas. Each box is a state, and each arrow is a transition.",
+                "The side panel with the **Inspector** and **Versions** tabs."
+              ]
+            },
+            {
+              "list": [
+                "Drag a state to move it. When a state has focus, the arrow keys move it.",
+                "Drag the arrow handle of a state onto another state to add a transition.",
+                "Select a state or a transition to edit it in the **Inspector**."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "au-design-blueprint",
+          "title": "Design a blueprint",
+          "type": "task",
+          "intro": "Create a blueprint to make tickets follow a fixed process.",
+          "prerequisites": [
+            "You have the **Manage automation rules and blueprints** permission.",
+            "The statuses and substatuses you need already exist in ticket configuration."
+          ],
+          "steps": [
+            "Select **Automation** > **Blueprints**, then select **New blueprint**.",
+            "Enter the **Blueprint name**. Choose the **Department**, the **Category**, or both.",
+            "Select **Add state** for each step of the process, then fill in each state in the **Inspector**.",
+            "Turn on **Initial state (new tickets start here)** for the first state, and **Final state** for the last ones.",
+            "Select a state, select **Connect from selected**, then select the target state.",
+            "Select each transition and fill in its fields in the **Inspector**.",
+            "Select **Check** and fix any problems it lists.",
+            "Select **Save draft**, then select **Publish**.",
+            "Turn on the **Active** switch."
+          ],
+          "result": "The app shows **Published v1**. New tickets that match the department or category follow the blueprint."
+        },
+        {
+          "id": "au-state-fields",
+          "title": "Blueprint state fields",
+          "type": "reference",
+          "intro": "Select a state on the canvas to see these fields.",
+          "blocks": [
+            {
+              "image": "shots/20-blueprint-state.png",
+              "caption": "The **Investigation** state in the **Inspector**.",
+              "alt": "Inspector showing the State fields Name, Key, Ticket status in this state, Substatus, the Initial state and Final state switches and the transitions from here",
+              "width": 340
+            },
+            {
+              "table": {
+                "columns": ["Field", "What it does"],
+                "widths": [36, 64],
+                "rows": [
+                  ["**Name**", "The state name agents see on the ticket."],
+                  ["**Key**", "A short fixed id in lower case. Other systems use it."],
+                  ["**Ticket status in this state**", "The status the ticket gets in this state. Empty keeps the current status."],
+                  ["**Substatus**", "The substatus the ticket gets, if the status has substatuses."],
+                  ["**Initial state (new tickets start here)**", "New tickets start in this state."],
+                  ["**Final state**", "The process ends in this state."],
+                  ["**Add transition from here**", "Starts a new arrow from this state."],
+                  ["**Delete state**", "Removes the state and its transitions from the draft."],
+                  ["**Transitions from here**", "Links to the arrows that leave this state."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "au-transition-fields",
+          "title": "Blueprint transition fields",
+          "type": "reference",
+          "intro": "Select an arrow or its label on the canvas to see these fields.",
+          "blocks": [
+            {
+              "image": "shots/20-blueprint-transition.png",
+              "caption": "The **Confirm defect** transition with roles, mandatory fields and an approver.",
+              "alt": "Inspector showing the transition fields Name, Key, From, To, Allowed roles, Mandatory fields, Comment required, Approval, Validation and After the transition",
+              "width": 340
+            },
+            {
+              "table": {
+                "columns": ["Field", "What it does"],
+                "widths": [32, 68],
+                "rows": [
+                  ["**Name**", "The button label agents see, such as `Confirm defect`."],
+                  ["**Key**", "A short fixed id for the transition."],
+                  ["**From**", "The states where the transition is offered. Choose several, or leave it empty for any state."],
+                  ["**To**", "The state the ticket moves to."],
+                  ["**Allowed roles**", "Who may run the transition. Empty means anyone who can edit the ticket."],
+                  ["**Mandatory fields**", "Fields the agent must fill in, such as severity, product or root cause."],
+                  ["**Comment required**", "The agent must write a comment."],
+                  ["**Approval**", "**No approval**, **A specific person**, **Anyone with a role** or **Department supervisors**."],
+                  ["**Approver**, **Approver role**", "Who approves, for the person and role choices."],
+                  ["**Note for the approver**", "A short note shown with the approval request."],
+                  ["**Validation**", "Conditions the ticket must meet. Values entered with the transition count."],
+                  ["**Message when not met**", "The message agents see when the validation fails."],
+                  ["**After the transition**", "Actions that run after the move, chosen with **Add action**."],
+                  ["**Delete transition**", "Removes the arrow from the draft."]
+                ]
+              }
+            },
+            { "note": "With **Department supervisors**, anyone who may decide approvals can approve the request." }
+          ]
+        },
+        {
+          "id": "au-manage-blueprints",
+          "title": "Turn off, version or delete a blueprint",
+          "type": "task",
+          "intro": "Blueprints have the same versions as rules.",
+          "steps": [
+            "To stop a blueprint for new tickets, turn off its switch on the **Blueprints** tab.",
+            "To see older versions, open the blueprint and select the **Versions** tab.",
+            "On a version, select **Open** to load it, **Diff** to compare it, or **Publish** to make a draft live.",
+            "To delete a blueprint, open it without selecting anything on the canvas. Select **Delete blueprint** in the **Inspector** and confirm."
+          ],
+          "result": "The app confirms each change with a message.",
+          "blocks": [
+            { "note": "**Delete blueprint** is greyed out while open tickets follow the blueprint. Close or move those tickets first." }
+          ]
+        },
+        {
+          "id": "au-webhooks",
+          "title": "How webhooks work",
+          "type": "concept",
+          "intro": [
+            "A webhook sends a message to another system each time something happens in SupportDesk. Examples are a new ticket, a customer change or a published article.",
+            "Every message is signed with a secret. The receiving system uses the signature to check that the message came from SupportDesk."
+          ],
+          "blocks": [
+            "To open webhooks, select **Administration** > **Webhooks**, or the **Webhooks** tab on the **Automation** page. You need the permission to manage integrations.",
+            {
+              "image": "shots/20-webhooks-list.png",
+              "caption": "The **Webhooks** page with one disabled example webhook.",
+              "alt": "Webhooks page with numbered highlights on New webhook, the webhook details, its last delivery, its switch, Deliveries and the more actions menu",
+              "width": 560
+            },
+            {
+              "callouts": [
+                "**New webhook** adds a webhook.",
+                "The name, status, address and events of the webhook.",
+                "When the last message was delivered, and the answer code.",
+                "The switch enables or disables the webhook.",
+                "**Deliveries** opens the delivery log.",
+                "The menu with **Edit**, **Send test ping**, **Rotate secret** and **Delete**."
+              ]
+            },
+            { "heading": "Webhook statuses" },
+            {
+              "table": {
+                "columns": ["Status", "What it means"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**Active**", "Messages are delivered."],
+                  ["**Failing**", "Recent deliveries failed. A red badge shows how many failed in a row."],
+                  ["**Disabled**", "Nothing is sent. You or SupportDesk switched the webhook off."]
+                ]
+              }
+            },
+            { "heading": "Retries" },
+            {
+              "list": [
+                "A failed delivery is retried, first after 30 seconds and finally after 12 hours.",
+                "After 8 attempts, the delivery stops with the status **Dead letter**.",
+                "After 20 failures in a row, SupportDesk disables the webhook and notifies administrators.",
+                "Webhooks cannot call addresses inside your own network unless your server administrator allows it."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "au-add-webhook",
+          "title": "Add a webhook",
+          "type": "task",
+          "intro": "Add a webhook to send SupportDesk events to your ERP, chat tool or data warehouse.",
+          "prerequisites": [
+            "You may manage integrations.",
+            "You have the web address of the receiving system."
+          ],
+          "steps": [
+            "Select **Administration** > **Webhooks**, then select **New webhook**.",
+            "Enter a **Name**.",
+            "Enter the **Payload URL**, the full web address of the receiving system.",
+            "Under **Events**, tick the events to send. Or tick **All events (current and future)**.",
+            { "text": "Optionally enter a **Signing secret** of at least 16 characters.", "note": "If you leave it empty, SupportDesk creates one for you." },
+            {
+              "text": "Leave **Enabled** on and select **Create webhook**.",
+              "image": "shots/20-webhook-editor.png",
+              "caption": "The **New webhook** panel with a name and an address filled in.",
+              "alt": "New webhook panel with Name, Payload URL, the Events list, Signing secret, Enabled and Create webhook",
+              "width": 380
+            },
+            { "text": "Copy the signing secret from the yellow box and select **Copy**.", "warning": "The secret is shown only once. Give it to the receiving system before you select **Dismiss**." }
+          ],
+          "result": "The app shows **Webhook created**. Select **Send test ping** in the webhook's menu to test it."
+        },
+        {
+          "id": "au-manage-webhook",
+          "title": "Edit, test or delete a webhook",
+          "type": "task",
+          "intro": "Use the webhook's menu for changes and tests.",
+          "steps": [
+            {
+              "text": "Select the menu button at the end of the webhook's row.",
+              "image": "shots/20-webhook-menu.png",
+              "caption": "The webhook menu.",
+              "alt": "Menu with Edit, Send test ping, Rotate secret and Delete",
+              "width": 220
+            },
+            "Choose **Edit** to change the name, address, events or secret. Then select **Save**.",
+            "Choose **Send test ping** to send a test message now. The app shows **Ping delivered** or **Ping failed**.",
+            "Choose **Rotate secret** to create a new secret, then confirm. Copy the new secret from the yellow box.",
+            "Choose **Delete** and confirm to remove the webhook and its delivery log."
+          ],
+          "result": "The list shows the changed webhook.",
+          "blocks": [
+            { "warning": "After **Rotate secret**, the receiving system rejects messages until it has the new secret." }
+          ]
+        },
+        {
+          "id": "au-webhook-deliveries",
+          "title": "Check deliveries and redeliver",
+          "type": "task",
+          "intro": "The delivery log shows every message sent by a webhook, with the answer from the receiving system.",
+          "steps": [
+            "On the webhook's row, select **Deliveries**.",
+            "To filter the log, choose a status, such as **Failed (retrying)** or **Dead letter**.",
+            {
+              "text": "Select a delivery to open it.",
+              "image": "shots/20-webhook-deliveries.png",
+              "caption": "The delivery log of a webhook that has not sent anything yet.",
+              "alt": "Deliveries panel with the status list, Refresh, Send test ping and the list of deliveries",
+              "width": 420
+            },
+            "Read the attempts, the times, the **Response** and the **Payload**.",
+            "To send it again, select **Redeliver**."
+          ],
+          "result": "The app shows **Queued for redelivery**. Select **Refresh** to see the new attempt.",
+          "blocks": [
+            { "note": "**Redeliver** is greyed out while the webhook is disabled. Fix the receiving system, turn the webhook on, then redeliver." }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "**Publish** stays greyed out, or a red box lists problems.", "cause": "The rule or blueprint has errors, such as a missing action or an unknown field.", "fix": "Select **Check**, then fix each item under **Fix these before publishing:**." },
+    { "problem": "You cannot turn on a rule's switch.", "cause": "The rule has no published version.", "fix": "Open the rule and select **Publish** first." },
+    { "problem": "A rule did not act on a ticket.", "cause": "The conditions did not match, the rule was inactive, or an earlier rule stopped processing.", "fix": "Open **Executions**, enter the ticket number and select **Details** on the run." },
+    { "problem": "A rule shows **Skipped Loop**.", "cause": "Rules started each other in a long chain, so SupportDesk stopped it.", "fix": "Add a condition so that the rules do not trigger each other." },
+    { "problem": "The webhook address is refused.", "cause": "It is not a full web address, contains a user name or password, or points inside your network.", "fix": "Enter a full public address that starts with https://." },
+    { "problem": "The app says the signing secret is too short.", "cause": "Secrets need at least 16 characters.", "fix": "Enter a longer secret, or leave the field empty to let SupportDesk create one." },
+    { "problem": "A webhook switched itself off.", "cause": "It failed 20 times in a row.", "fix": "Fix the receiving system. Turn the webhook on, then redeliver the failed messages." },
+    { "problem": "**Delete blueprint** is greyed out.", "cause": "Open tickets still follow the blueprint.", "fix": "Turn off the blueprint's switch. Delete it after its tickets are closed." }
+  ],
+  "faq": [
+    { "q": "Does a simulation change my tickets?", "a": "No. It only shows what would happen. The run is recorded as **Simulated** on the **Executions** tab." },
+    { "q": "Can a rule change the status of a blueprint ticket?", "a": "No. The **Set status** action is not allowed on blueprint tickets. Use a blueprint transition instead." },
+    { "q": "What happens to running tickets when I publish a new blueprint version?", "a": "New tickets use the new version. Tickets already on the blueprint keep the version they started with." }
+  ],
+  "glossary": [
+    { "term": "Rule", "definition": "An automation that runs actions on a ticket when a trigger fires and the conditions match." },
+    { "term": "Trigger", "definition": "The event that starts a rule, such as a new ticket or a customer reply." },
+    { "term": "Condition", "definition": "A check on a ticket field that must be true for a rule or transition to apply." },
+    { "term": "Execution", "definition": "One check of a rule against one event, recorded on the **Executions** tab." },
+    { "term": "Blueprint", "definition": "A fixed process of states and transitions that guides a ticket from start to finish." },
+    { "term": "Transition", "definition": "A step that moves a blueprint ticket from one state to another." },
+    { "term": "Webhook", "definition": "A signed message that SupportDesk sends to another system when an event happens." },
+    { "term": "Signing secret", "definition": "A shared secret that the receiving system uses to check that a webhook message came from SupportDesk." },
+    { "term": "Dead letter", "definition": "A webhook delivery that failed every retry and is no longer sent automatically." }
+  ]
+}

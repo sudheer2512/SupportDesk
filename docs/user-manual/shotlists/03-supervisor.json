@@ -1,0 +1,105 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "timeoutMs": 30000,
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "priya@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "03-command-center-supervisor",
+      "file": "03-command-center-supervisor.png",
+      "steps": [
+        {
+          "wait": 1500
+        }
+      ],
+      "highlight": [
+        "sd-page-header",
+        "sd-kpi-tile:nth-child(4)"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "03-sla-risk-board",
+      "file": "03-sla-risk-board.png",
+      "clip": "sd-card:has(desk-sla-risk-board)",
+      "steps": [
+        {
+          "hover": "desk-sla-risk-board .summary"
+        }
+      ]
+    },
+    {
+      "id": "03-team-workload",
+      "file": "03-team-workload.png",
+      "clip": "sd-card:has(desk-team-workload)"
+    },
+    {
+      "id": "03-approvals",
+      "file": "03-approvals.png",
+      "steps": [
+        {
+          "click": "sd-card[title='Pending approvals'] a"
+        },
+        {
+          "waitForText": "Transfers, workflow transitions and AI actions waiting for a decision."
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "highlight": [
+        "text=Refresh",
+        "[role=tab]:nth-child(1)",
+        "[role=tab]:nth-child(2)",
+        "[role=tab]:nth-child(3)",
+        "[role=tabpanel]"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "03-approvals-decided",
+      "file": "03-approvals-decided.png",
+      "steps": [
+        {
+          "click": "[role=tab]:nth-child(2)"
+        },
+        {
+          "wait": 1200
+        }
+      ],
+      "clip": "sd-tabs"
+    }
+  ]
+}

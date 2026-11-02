@@ -1,0 +1,464 @@
+{
+  "chapters": [
+    {
+      "id": "audit-compliance",
+      "title": "Audit log and compliance",
+      "intro": [
+        "This chapter is for administrators and the people who handle data protection. It explains the audit log, which records sensitive actions in a way nobody can quietly change.",
+        "It also covers the **Compliance** page. There you set how long to keep data, place legal holds, handle customers' data requests and decide on support access."
+      ],
+      "sections": [
+        {
+          "id": "aud-about",
+          "title": "What the audit log records",
+          "type": "concept",
+          "intro": [
+            "The audit log records sensitive actions in your workspace. You need the **View audit logs and verify integrity** permission to open it.",
+            "Every change and its log entry are saved together, so no change goes unrecorded."
+          ],
+          "blocks": [
+            { "list": [
+              "Sign-ins and two-step verification.",
+              "Changes to roles, permissions and settings.",
+              "Exports, deletions, merges and entitlement overrides.",
+              "Keys and OAuth clients, AI actions and subscription changes."
+            ] },
+            { "p": "Every few seconds, SupportDesk seals new entries into a chain. Each sealed entry carries a fingerprint of the entry before it. If anyone changes or removes an entry, the chain breaks, and **Verify chain** finds it." },
+            { "p": "New entries show **sealing** until they are sealed. When a retention policy removes old entries, the check starts from a recorded starting point." }
+          ]
+        },
+        {
+          "id": "aud-page",
+          "title": "The Audit log page",
+          "type": "concept",
+          "intro": "Open it with **Administration** > **Audit log**. The newest entries come first.",
+          "blocks": [
+            { "image": "shots/26-audit.png", "caption": "The **Audit log** page. The newest entry still shows **sealing**.", "alt": "Audit log page with Export CSV, Verify chain, the filter form and the list of entries" },
+            { "callouts": [
+              "**Export CSV** saves the filtered entries as a spreadsheet file.",
+              "**Verify chain** checks that no entry was changed or removed.",
+              "The filters. **Apply** filters the list and **Clear** resets it.",
+              "One entry. **#** shows its place in the chain, or **sealing** while it is new."
+            ] },
+            { "p": "The columns are **When**, **Actor**, **Action**, **Entity**, **Summary**, **IP** and **#**. Select **Load more** at the bottom to see older entries." }
+          ]
+        },
+        {
+          "id": "aud-filter",
+          "title": "Find audit entries",
+          "type": "task",
+          "intro": "Filter the log to answer a question, such as who changed a role last week.",
+          "steps": [
+            "Select **Administration** > **Audit log**.",
+            "Fill in one or more filters. See the table below.",
+            "Select **Apply**.",
+            "To see more entries, select **Load more** at the bottom."
+          ],
+          "result": "The list shows only matching entries. If nothing matches, it says **No audit entries match**.",
+          "blocks": [
+            { "table": {
+              "columns": ["Filter", "What to enter"],
+              "widths": [26, 74],
+              "rows": [
+                ["**Actor**", "Part of the person's name."],
+                ["**Action**", "One kind of action, such as `auth.login`."],
+                ["**Entity type**", "The kind of record, such as **User** or **Tenant**."],
+                ["**Entity id**", "The full identifier of one record. Copy it from another entry."],
+                ["**From** and **To**", "The first and last day to include."],
+                ["**IP address**", "The start of a network address, such as `10.0.`."],
+                ["**Summary contains**", "Words from the entry's summary."]
+              ]
+            } }
+          ]
+        },
+        {
+          "id": "aud-entry",
+          "title": "Open an audit entry",
+          "type": "task",
+          "intro": "Open an entry to see exactly what changed.",
+          "steps": [
+            "In the audit log, select the entry.",
+            {
+              "text": "Read the facts and the **Changes** table.",
+              "image": "shots/26-audit-entry.png",
+              "caption": "The **Audit entry** panel for a sign-in, with what it recorded.",
+              "alt": "Audit entry panel with when, actor, action, entity, summary, client, sequence, hashes and the changes table",
+              "width": 440
+            },
+            "Select the close button to return to the list."
+          ],
+          "result": "You see who did what, when, from where, and each field's value before and after.",
+          "blocks": [
+            { "table": {
+              "columns": ["Fact", "Meaning"],
+              "widths": [24, 76],
+              "rows": [
+                ["**When**, **Actor**, **Action**", "When it happened, who did it and what they did."],
+                ["**Entity**, **Summary**", "The record it affected, and a short description."],
+                ["**IP / client**", "The network address and the browser or app used."],
+                ["**Correlation**", "A reference shared by all entries from one action. Use it to find related entries."],
+                ["**Sequence**, **Hash**, **Previous hash**", "The entry's place in the chain and its fingerprints."],
+                ["**Changes**", "Each field with its **Before** and **After** value."],
+                ["**Raw record**", "Everything the entry stored, in full."]
+              ]
+            } }
+          ]
+        },
+        {
+          "id": "aud-export",
+          "title": "Export the audit log",
+          "type": "task",
+          "intro": "Export entries for an auditor or for your own records.",
+          "prerequisites": ["Your plan includes **Audit export**."],
+          "steps": [
+            "Select **Administration** > **Audit log**.",
+            "Set the filters for the entries you need, and select **Apply**.",
+            "Select **Export CSV**."
+          ],
+          "result": "Your browser saves a file named `audit-` followed by the date. It opens in Excel or any spreadsheet app.",
+          "blocks": [
+            { "note": "One export holds up to 50,000 entries. Cells that a spreadsheet could run as formulas are made safe. The export itself is recorded in the audit log." }
+          ]
+        },
+        {
+          "id": "aud-verify",
+          "title": "Verify the audit chain",
+          "type": "task",
+          "intro": "Check that no audit entry was changed or removed. Do it before an audit, or when you suspect tampering.",
+          "steps": [
+            "Select **Administration** > **Audit log**.",
+            "Select **Verify chain**.",
+            "Read the result at the top of the page."
+          ],
+          "result": "**Audit chain intact.** means the log is complete. The line below says how many entries were checked and how many still wait for sealing.",
+          "blocks": [
+            { "warning": "If the result says **Audit chain broken!**, select **Open entry** to see the first bad entry. Tell your security team and your SupportDesk provider at once." },
+            { "note": "Each check is itself recorded in the audit log." }
+          ]
+        },
+        {
+          "id": "cmp-page",
+          "title": "The Compliance page",
+          "type": "concept",
+          "intro": [
+            "Open it with **Administration** > **Compliance**. You need the **Retention, legal holds, data export and erasure** permission.",
+            "The page has four tabs: **Retention**, **Legal holds**, **Data requests** and **Support access**."
+          ],
+          "blocks": [
+            { "image": "shots/26-retention.png", "caption": "The **Retention** tab with the demo workspace's three policies.", "alt": "Compliance page on the Retention tab with three policies and their actions" },
+            { "callouts": [
+              "The four tabs of the **Compliance** page.",
+              "**New policy** creates a retention policy.",
+              "A policy: its name, its rule, its last run and whether it is **Active** or **Paused**.",
+              "**Dry run**, **Run now**, the edit button and the delete button."
+            ] }
+          ]
+        },
+        {
+          "id": "cmp-retention-types",
+          "title": "Retention data and actions",
+          "type": "reference",
+          "intro": [
+            "A retention policy removes or hides data after a number of days. Each kind of data allows some actions and has a minimum age.",
+            "Records covered by an active legal hold are never archived, anonymised or deleted."
+          ],
+          "blocks": [
+            { "table": {
+              "columns": ["Data", "Actions", "Minimum age", "What it covers"],
+              "widths": [20, 24, 14, 42],
+              "rows": [
+                ["**Closed tickets**", "Archive, Anonymize, Delete", "30 days", "Tickets closed more than the set number of days ago."],
+                ["**Channel messages**", "Anonymize, Delete", "30 days", "Raw e-mail, chat and social messages. The ticket conversation stays."],
+                ["**Ticket attachments**", "Delete", "30 days", "Files attached to tickets."],
+                ["**Audit log**", "Delete", "365 days", "Old sealed audit entries. The chain stays checkable."],
+                ["**AI execution log**", "Anonymize, Delete", "7 days", "Records of AI calls and their results."]
+              ]
+            } },
+            { "heading": "What each action does" },
+            { "list": [
+              "**Archive** hides closed tickets from queues.",
+              "**Anonymize** keeps the numbers for reports, but removes the text. A ticket's subject becomes `[redacted]`. Its description, resolution, survey comment, AI summary and custom fields are cleared.",
+              "**Delete** removes the records, their search entries and unused files for good.",
+              "A run on the audit log removes only the oldest sealed entries, up to 10,000 a run."
+            ] },
+            { "warning": "Deleted records cannot be recovered." }
+          ]
+        },
+        {
+          "id": "cmp-retention-new",
+          "title": "Create a retention policy",
+          "type": "task",
+          "intro": "Create a policy to keep data only as long as you need it.",
+          "steps": [
+            "Select **Administration** > **Compliance**. The **Retention** tab opens.",
+            "Select **New policy**.",
+            "Enter a **Name**, such as `Archive old closed tickets`.",
+            "In **Data**, choose the kind of data. The hint below explains it.",
+            "Choose the **Action**, and enter **After (days)**.",
+            "To run the policy on its own, keep **Run automatically every day** on.",
+            {
+              "text": "Read the blue box. It says how many records the policy would affect now.",
+              "image": "shots/26-new-retention-policy.png",
+              "caption": "A new policy that archives closed tickets after 730 days.",
+              "alt": "New retention policy panel with name, data, action, days, the automatic switch and the live count",
+              "width": 420
+            },
+            "Select **Create policy**."
+          ],
+          "result": "The app shows **Policy created**. The policy appears in the list.",
+          "blocks": [
+            { "note": "Automatic policies run several times a day, in batches. The page says daily." }
+          ]
+        },
+        {
+          "id": "cmp-dry-run",
+          "title": "Check a policy with a dry run",
+          "type": "task",
+          "intro": "A dry run counts what a policy would affect now. It changes nothing.",
+          "steps": [
+            "On the **Retention** tab, find the policy.",
+            {
+              "text": "Select **Dry run**.",
+              "image": "shots/26-dry-run.png",
+              "caption": "The result line under a policy after a dry run.",
+              "alt": "Retention policy list with a dry-run result line under the closed tickets policy"
+            }
+          ],
+          "result": "A line under the policy shows how many records it would affect, and how many legal holds keep. It also shows the cut-off date."
+        },
+        {
+          "id": "cmp-run-now",
+          "title": "Run a retention policy now",
+          "type": "task",
+          "intro": "Run a policy at once instead of waiting for the automatic run.",
+          "steps": [
+            "On the **Retention** tab, select **Dry run** on the policy, and check the numbers.",
+            {
+              "text": "Select **Run now**.",
+              "warning": "A **Delete** policy removes records for good. Check the dry run first."
+            },
+            "In the dialog, select **Run now**."
+          ],
+          "result": "The app shows **Retention run complete** with the number of records affected and kept by legal holds.",
+          "blocks": [
+            { "note": "One run handles up to 1,000 records. Run it again for more. Every run is recorded in the audit log." }
+          ]
+        },
+        {
+          "id": "cmp-retention-edit",
+          "title": "Change, pause or delete a retention policy",
+          "type": "task",
+          "intro": "Change a policy's rule, stop it from running on its own, or remove it.",
+          "steps": [
+            "On the **Retention** tab, select the edit button on the policy's row.",
+            "In **Edit retention policy**, make your changes.",
+            "To pause the policy, turn off **Run automatically every day**.",
+            "Select **Save**.",
+            "To remove a policy, select the delete button on its row. In the dialog, select **Delete**."
+          ],
+          "result": "The app shows **Policy saved**. A paused policy shows **Paused** in the **Active** column."
+        },
+        {
+          "id": "cmp-holds-about",
+          "title": "Legal holds",
+          "type": "concept",
+          "intro": [
+            "A legal hold preserves records during a dispute, an audit or an investigation. A hold covers the tickets that match all the criteria you set.",
+            "Held tickets keep their messages, attachments and AI records. Retention skips them, and nobody can delete them. A hold also blocks erasure of the contacts involved."
+          ],
+          "blocks": [
+            { "image": "shots/26-legal-holds.png", "caption": "The **Legal holds** tab with one active hold.", "alt": "Legal holds tab with the Show released holds switch, the Place legal hold button and one active hold" },
+            { "callouts": [
+              "**Show released holds** adds released holds to the list.",
+              "**Place legal hold** creates a new hold."
+            ] },
+            { "p": "Each hold shows its name, reason and who placed it. **Covers** lists its criteria. **Tickets** counts the tickets it covers now. **Status** is **Active** or **Released**." },
+            { "note": "You cannot change a hold. To change one, place a new hold, and then release the old one." }
+          ]
+        },
+        {
+          "id": "cmp-hold-place",
+          "title": "Place a legal hold",
+          "type": "task",
+          "intro": "Place a hold as soon as you learn that records may be needed as evidence.",
+          "steps": [
+            "Select **Administration** > **Compliance** > **Legal holds**.",
+            "Select **Place legal hold**.",
+            "Enter a **Name** and the **Reason / matter**.",
+            "Set at least one criterion: **Customer**, **Contact**, **Ticket numbers** or the **Created from** and **Created until** dates.",
+            {
+              "text": "For **Ticket numbers**, press [[Enter]] after each number.",
+              "image": "shots/26-place-hold.png",
+              "caption": "The **Place legal hold** panel with a name filled in.",
+              "alt": "Place legal hold panel with name, reason, customer, contact, ticket numbers and created dates",
+              "width": 420
+            },
+            "Select **Place hold**."
+          ],
+          "result": "The app shows **Legal hold placed** with the number of tickets now preserved."
+        },
+        {
+          "id": "cmp-hold-release",
+          "title": "Release a legal hold",
+          "type": "task",
+          "intro": "Release a hold when the matter is closed.",
+          "steps": [
+            "Select **Administration** > **Compliance** > **Legal holds**.",
+            "On the hold's row, select **Release**.",
+            "In the dialog, select **Release hold**."
+          ],
+          "result": "The app shows **Legal hold released**. The records follow the retention policies and erasure requests again.",
+          "blocks": [
+            { "tip": "Turn on **Show released holds** to see past holds." }
+          ]
+        },
+        {
+          "id": "cmp-dsr-about",
+          "title": "Data-subject requests",
+          "type": "concept",
+          "intro": [
+            "Customers can ask for a copy of their data, or ask you to erase it. Record such requests on the **Data requests** tab. Every step is recorded in the audit log.",
+            "A contact can have only one open request of each type."
+          ],
+          "blocks": [
+            { "image": "shots/26-data-requests.png", "caption": "The **Data requests** tab before any request is recorded.", "alt": "Data requests tab with the Status filter and the New request button" },
+            { "callouts": [
+              "The **Status** filter.",
+              "**New request** records an export or an erasure request."
+            ] },
+            { "table": {
+              "columns": ["Status", "Meaning"],
+              "widths": [24, 76],
+              "rows": [
+                ["**Awaiting approval**", "An erasure request waits for an administrator's decision."],
+                ["**Processing**", "SupportDesk is building the export or erasing the data. The list refreshes on its own."],
+                ["**Completed**", "The export is ready, or the erasure is done."],
+                ["**Rejected**", "An administrator rejected the erasure. The reason shows under the status."],
+                ["**Failed**", "Something went wrong. The error shows under the status."]
+              ]
+            } }
+          ]
+        },
+        {
+          "id": "cmp-dsr-export",
+          "title": "Export a contact's data",
+          "type": "task",
+          "intro": "Give a customer a copy of the data you hold about them.",
+          "prerequisites": ["You have checked the person's identity."],
+          "steps": [
+            "Select **Administration** > **Compliance** > **Data requests**.",
+            "Select **New request**, and choose **Export**.",
+            "In **Contact**, search for and choose the person.",
+            {
+              "text": "In **Notes**, record how the request arrived and how you checked the person's identity.",
+              "image": "shots/26-new-request.png",
+              "caption": "A new export request with notes about the identity check.",
+              "alt": "New data-subject request panel with Export chosen, the contact search and notes",
+              "width": 420
+            },
+            "Select **Start export**.",
+            "When the status changes to **Completed**, select **Get link**.",
+            "Select **Download export**, and send the file to the customer securely."
+          ],
+          "result": "Your browser saves a zip file with the contact's profile, identities, consents, tickets, messages and attachments.",
+          "blocks": [
+            { "warning": "The link works once and expires after 24 hours. SupportDesk removes the export after the download." }
+          ]
+        },
+        {
+          "id": "cmp-dsr-erase",
+          "title": "Request erasure of a contact's data",
+          "type": "task",
+          "intro": "Record a customer's request to be forgotten. The erasure waits for approval.",
+          "prerequisites": ["You have checked the person's identity."],
+          "steps": [
+            "Select **Administration** > **Compliance** > **Data requests**.",
+            "Select **New request**, and choose **Erasure**.",
+            "In **Contact**, choose the person.",
+            "In **Notes**, record how the request arrived and how you checked the identity.",
+            "Select **Request erasure**."
+          ],
+          "result": "The app shows **Erasure requested**. The request waits with the status **Awaiting approval**."
+        },
+        {
+          "id": "cmp-dsr-approve",
+          "title": "Approve or reject an erasure",
+          "type": "task",
+          "intro": "Decide on an erasure request after you check it.",
+          "prerequisites": ["Another administrator made the request. If someone else holds the compliance permission, you cannot approve your own request."],
+          "steps": [
+            "Select **Administration** > **Compliance** > **Data requests**.",
+            "In **Status**, choose **Awaiting approval**.",
+            "To reject, select **Reject**. Enter a **Reason**, and select **Reject**.",
+            {
+              "text": "To approve, select **Approve erasure**.",
+              "warning": "**Approve erasure** asks for no confirmation. The erasure cannot be undone."
+            }
+          ],
+          "result": "The app shows **Erasure approved**. SupportDesk erases the contact in the background.",
+          "blocks": [
+            { "p": "Erasure renames the contact to **Erased contact** and clears their personal details, identities, consents and portal access. Their messages become `[erased at the customer's request]`, and their uploads are deleted. Ticket statistics stay." },
+            { "note": "If a legal hold covers the contact, the row says **Blocked by a legal hold**. **Approve erasure** is then greyed out." }
+          ]
+        },
+        {
+          "id": "cmp-support-about",
+          "title": "Support access",
+          "type": "concept",
+          "intro": [
+            "SupportDesk staff never sign in as your users. When they need to diagnose a problem, they ask for read-only access for a limited time.",
+            "During access, they see usage, configuration counts, failed jobs and recent audit entries. They never see tickets or customer data."
+          ],
+          "blocks": [
+            { "image": "shots/26-support-access.png", "caption": "The **Support access** tab with one pending request from the platform operator.", "alt": "Support access tab with a pending request and the Reject and Approve buttons highlighted" },
+            { "p": "Each request shows who asked, when, for how many minutes and why. **Status** shows **Pending** until you decide. While access is active, the row shows when it ends." }
+          ]
+        },
+        {
+          "id": "cmp-support-decide",
+          "title": "Approve, reject or revoke support access",
+          "type": "task",
+          "intro": "Decide on a support access request, or end access early.",
+          "steps": [
+            "Select **Administration** > **Compliance** > **Support access**.",
+            "Read the reason and the duration of the request.",
+            "To approve, select **Approve**. In the dialog, select **Approve**.",
+            {
+              "text": "To refuse, select **Reject**.",
+              "note": "**Reject** asks for no confirmation."
+            },
+            "To end active access early, select **Revoke**."
+          ],
+          "result": "The app shows **Access approved**, **Request rejected** or **Access revoked**.",
+          "blocks": [
+            { "note": "Every step is recorded in your audit log and in the platform's audit log. While your workspace is suspended, you cannot approve access." }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "**Entity id** shows an error when you select **Apply**.", "cause": "The value is not a complete record identifier.", "fix": "Copy the identifier from the **Entity** line of another entry, or clear the field." },
+    { "problem": "**Export CSV** is refused.", "cause": "Your plan does not include **Audit export**.", "fix": "Change to a plan with **Audit export**. See the plan comparison on the **Subscription** page." },
+    { "problem": "**Verify chain** says **Audit chain broken!**.", "cause": "An audit entry was changed or removed outside SupportDesk.", "fix": "Select **Open entry** to see the first bad entry. Tell your security team and your SupportDesk provider at once." },
+    { "problem": "The app says a policy must keep data for at least a number of days.", "cause": "**After (days)** is below the minimum for that kind of data.", "fix": "Enter at least the minimum shown under **After (days)**." },
+    { "problem": "**Approve erasure** is greyed out, and the row says **Blocked by a legal hold**.", "cause": "An active legal hold covers the contact.", "fix": "Wait until the matter is closed. Then release the hold and approve the request." },
+    { "problem": "The app says another compliance administrator must approve the erasure.", "cause": "You made the request yourself. A second person must approve it.", "fix": "Ask another administrator with the compliance permission to approve it." },
+    { "problem": "The export download link does not work.", "cause": "The link works once and expires after 24 hours.", "fix": "Record a new export request for the contact." }
+  ],
+  "faq": [
+    { "q": "Can SupportDesk staff read our tickets?", "a": "No. With approved support access, they see only usage, configuration counts, failed jobs and recent audit entries. They never see tickets or customer data." },
+    { "q": "Can I undo an erasure or a deletion?", "a": "No. Erased and deleted data cannot be recovered. Use **Dry run** and check requests before you approve them." },
+    { "q": "Does a legal hold stop agents from working on tickets?", "a": "No. Agents work as usual. The hold only stops retention, deletion and erasure of the covered records." }
+  ],
+  "glossary": [
+    { "term": "Audit log", "definition": "The tamper-evident record of sensitive actions in your workspace." },
+    { "term": "Audit chain", "definition": "The way audit entries are linked, each with a fingerprint of the one before. A broken link shows that an entry was changed or removed." },
+    { "term": "Retention policy", "definition": "A rule that archives, anonymises or deletes a kind of data after a number of days." },
+    { "term": "Dry run", "definition": "A count of what a retention policy would affect now, without changing anything." },
+    { "term": "Legal hold", "definition": "A rule that preserves matching tickets and their records during a dispute, audit or investigation." },
+    { "term": "Data-subject request", "definition": "A customer's request to get a copy of their data or to have it erased." },
+    { "term": "Anonymise", "definition": "To remove personal text from records but keep the numbers for reports." },
+    { "term": "Support access", "definition": "Time-limited, read-only diagnostic access that you can grant to SupportDesk staff." }
+  ]
+}

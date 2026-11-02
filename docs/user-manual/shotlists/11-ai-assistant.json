@@ -1,0 +1,228 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "admin@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Two-step verification"
+    },
+    {
+      "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "11-ai-ask",
+      "file": "11-ai-ask.png",
+      "url": "/ai/ask",
+      "steps": [
+        {
+          "click": "text=Open tickets per agent"
+        },
+        {
+          "waitFor": "[aria-label='How the question was understood']"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "waitFor": ".results"
+        },
+        {
+          "wait": 1500
+        }
+      ],
+      "fullPage": true,
+      "highlight": [
+        "nav.sections",
+        "form.ask",
+        ".examples",
+        "[aria-label='How the question was understood']",
+        ".results"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "11-ai-search",
+      "file": "11-ai-search.png",
+      "url": "/ai/search",
+      "steps": [
+        {
+          "fill": "#ai-search",
+          "value": "Excel export of the sales register hangs for a full year"
+        },
+        {
+          "press": "Enter"
+        },
+        {
+          "waitFor": "ol.hits"
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "eval": "document.querySelectorAll('body *').forEach((el) => { const s = getComputedStyle(el); if (/(auto|scroll)/.test(s.overflowY + ' ' + s.overflowX) && (el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1)) { el.scrollTop = 0; el.setAttribute('data-um-frozen', '1'); el.style.overflow = 'clip'; } }); window.scrollTo(0, 0)"
+        }
+      ],
+      "highlight": [
+        "form.bar",
+        "sd-radio-group.scope",
+        "ol.hits li.hit:first-child"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "11-ai-proposals",
+      "file": "11-ai-proposals.png",
+      "url": "/ai/proposals",
+      "steps": [
+        {
+          "waitFor": "text=High risk waiting"
+        },
+        {
+          "click": "button[aria-label^='Clear']"
+        },
+        {
+          "waitFor": ".list desk-ai-proposal-card"
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "eval": "document.querySelectorAll('body *').forEach((el) => { const s = getComputedStyle(el); if (/(auto|scroll)/.test(s.overflowY + ' ' + s.overflowX) && (el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1)) { el.scrollTop = 0; el.setAttribute('data-um-frozen', '1'); el.style.overflow = 'clip'; } }); window.scrollTo(0, 0)"
+        }
+      ],
+      "highlight": [
+        ".kpis",
+        ".filters",
+        ".list desk-ai-proposal-card:first-child .badges",
+        ".list desk-ai-proposal-card:first-child desk-ai-meter"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "11-ai-ticket-page",
+      "file": "11-ai-ticket-page.png",
+      "url": "/ai/proposals",
+      "steps": [
+        {
+          "waitFor": "text=High risk waiting"
+        },
+        {
+          "click": "button[aria-label^='Clear']"
+        },
+        {
+          "waitFor": ".list a.ticket"
+        },
+        {
+          "click": ".list a.ticket"
+        },
+        {
+          "waitFor": "text=Send reply"
+        },
+        {
+          "wait": 2500
+        },
+        {
+          "eval": "document.querySelectorAll('body *').forEach((el) => { const s = getComputedStyle(el); if (/(auto|scroll)/.test(s.overflowY + ' ' + s.overflowX) && (el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1)) { el.scrollTop = 0; el.setAttribute('data-um-frozen', '1'); el.style.overflow = 'clip'; } }); window.scrollTo(0, 0)"
+        }
+      ]
+    },
+    {
+      "id": "11-ai-ticket-tab",
+      "file": "11-ai-ticket-tab.png",
+      "url": "/tickets/1004",
+      "steps": [
+        {
+          "waitFor": "button.details-btn"
+        },
+        {
+          "click": "button.details-btn"
+        },
+        {
+          "waitFor": "button[role=tab][id$='-tab-ai.assistant']"
+        },
+        {
+          "click": "button[role=tab][id$='-tab-ai.assistant']"
+        },
+        {
+          "waitFor": "text=Expected resolution"
+        },
+        {
+          "wait": 3000
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "11-ai-classification",
+      "file": "11-ai-classification.png",
+      "steps": [
+        {
+          "click": "section[aria-labelledby='ai-cls'] button"
+        },
+        {
+          "waitFor": "section[aria-labelledby='ai-cls'] ul.fields"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": "section[aria-labelledby='ai-cls']"
+    },
+    {
+      "id": "11-ai-draft-reply",
+      "file": "11-ai-draft-reply.png",
+      "steps": [
+        {
+          "click": "section[aria-labelledby='ai-reply'] header button"
+        },
+        {
+          "waitFor": "section[aria-labelledby='ai-reply'] .draft"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "eval": "document.querySelector(\"section[aria-labelledby='ai-reply']\").scrollIntoView({ block: 'start' })"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    }
+  ]
+}

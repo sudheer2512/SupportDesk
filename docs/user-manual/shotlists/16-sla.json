@@ -1,0 +1,269 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "admin@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Two-step verification"
+    },
+    {
+      "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "16-policies",
+      "file": "16-policies.png",
+      "steps": [
+        {
+          "click": "a[href='/sla']"
+        },
+        {
+          "waitFor": "text=New policy"
+        },
+        {
+          "waitFor": "table.dt tbody tr"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "highlight": [
+        "desk-module-tabs",
+        "text=New policy",
+        "p.intro",
+        "table.dt thead",
+        "table.dt tbody tr:first-child .row-actions"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "16-policy-editor",
+      "file": "16-policy-editor.png",
+      "steps": [
+        {
+          "click": "table.dt tbody tr:first-child td:nth-child(2)"
+        },
+        {
+          "waitFor": "text=Targets per priority"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "eval": "(() => { window.scrollTo(0,0); document.querySelectorAll('*').forEach(e => { if (e.scrollTop) e.scrollTop = 0; }); })()"
+        },
+        {
+          "wait": 300
+        }
+      ],
+      "highlight": [
+        "sd-page-header .actions",
+        "sd-card[title='Policy']",
+        "sd-card[title='Applies to']",
+        "sd-card[title='Targets per priority']",
+        "sd-card[title='Escalation levels']",
+        "sd-card[title='Simulate against a ticket']"
+      ],
+      "numbered": true,
+      "fullPage": true
+    },
+    {
+      "id": "16-policy-card",
+      "file": "16-policy-settings.png",
+      "clip": "sd-card[title='Policy']",
+      "hide": [
+        "desk-top-bar"
+      ]
+    },
+    {
+      "id": "16-conditions",
+      "file": "16-policy-conditions.png",
+      "clip": "sd-card[title='Applies to']",
+      "hide": [
+        "desk-top-bar"
+      ]
+    },
+    {
+      "id": "16-targets",
+      "file": "16-policy-targets.png",
+      "clip": "sd-card[title='Targets per priority']",
+      "hide": [
+        "desk-top-bar"
+      ]
+    },
+    {
+      "id": "16-escalations",
+      "file": "16-policy-escalations.png",
+      "clip": "sd-card[title='Escalation levels']",
+      "hide": [
+        "desk-top-bar"
+      ]
+    },
+    {
+      "id": "16-simulate",
+      "file": "16-policy-simulate.png",
+      "steps": [
+        {
+          "fill": "label=Ticket number",
+          "value": "1010"
+        },
+        {
+          "click": "sd-card[title='Simulate against a ticket'] button[type=submit]"
+        },
+        {
+          "waitFor": ".sim"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": "sd-card[title='Simulate against a ticket']",
+      "hide": [
+        "desk-top-bar"
+      ]
+    },
+    {
+      "id": "16-calendars",
+      "file": "16-calendars.png",
+      "steps": [
+        {
+          "click": "a[href='/sla/calendars']"
+        },
+        {
+          "waitFor": "text=New calendar"
+        },
+        {
+          "waitFor": "text=Save calendar"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "fullPage": true,
+      "highlight": [
+        "text=New calendar",
+        "nav.clist",
+        ".detail sd-card:first-child",
+        "desk-weekly-hours-editor",
+        "text=Save calendar",
+        "sd-card[title='Holidays']",
+        "sd-card[title='Business time preview']"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "16-holidays",
+      "file": "16-holidays.png",
+      "clip": "sd-card[title='Holidays']",
+      "hide": [
+        "desk-top-bar"
+      ]
+    },
+    {
+      "id": "16-import",
+      "file": "16-import-holidays-dialog.png",
+      "steps": [
+        {
+          "click": "text=Import CSV"
+        },
+        {
+          "waitFor": "text=Replace all existing holidays"
+        },
+        {
+          "fill": "textarea[name=csv]",
+          "value": "date,name,recurring\n2026-12-31,Year-end closing,no\n2027-01-14,Pongal,no"
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "16-preview",
+      "file": "16-business-time-preview.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "sd-card[title='Business time preview'] button[type=submit]"
+        },
+        {
+          "waitFor": "sd-card[title='Business time preview'] .result"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": "sd-card[title='Business time preview']",
+      "hide": [
+        "desk-top-bar"
+      ]
+    },
+    {
+      "id": "16-breaches",
+      "file": "16-live-breaches.png",
+      "steps": [
+        {
+          "click": "a[href='/sla/breaches']"
+        },
+        {
+          "waitFor": "text=Due in the next hour"
+        },
+        {
+          "waitFor": "table.dt tbody tr"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "eval": "(() => { window.scrollTo(0,0); document.querySelectorAll('*').forEach(e => { if (e.scrollTop) e.scrollTop = 0; }); })()"
+        },
+        {
+          "wait": 300
+        }
+      ],
+      "highlight": [
+        "sd-page-header button",
+        ".kpis",
+        "#br-state",
+        "#br-ms",
+        "#br-dept",
+        "table.dt thead"
+      ],
+      "numbered": true
+    }
+  ]
+}

@@ -1,0 +1,779 @@
+{
+  "chapters": [
+    {
+      "id": "customers",
+      "title": "Customers",
+      "intro": [
+        "This chapter is for agents and account managers who look up customers or keep customer records up to date.",
+        "A customer is an organisation you support. A contact is a person who works there. The Customer 360 page shows everything about one customer: tickets, contacts, sites, products, contracts, visits and records from Wings ERP."
+      ],
+      "sections": [
+        {
+          "id": "customers-module",
+          "title": "The Customers module",
+          "type": "concept",
+          "intro": [
+            "Open it from **Customers** in the menu on the left. You can also press [[G]] and then [[U]].",
+            "The module has five tabs: **Customers**, **Contacts**, **Duplicates**, **Service activities** and **Groups**."
+          ],
+          "blocks": [
+            {
+              "image": "shots/08-customers-list.png",
+              "caption": "The **Customers** list with its search and filters.",
+              "alt": "Customers page with the New customer button, the module tabs, the search and filter bar and the customer table, each numbered"
+            },
+            {
+              "callouts": [
+                "**New customer** adds an organisation. You see it only if you can manage customers.",
+                "The module tabs.",
+                "Search and filters. The **Views** menu saves and opens sets of filters.",
+                "The customer list. Select a row to open the customer's Customer 360 page."
+              ]
+            },
+            {
+              "note": "You need permission to view customers to open this module. You need permission to manage customers to add or change them. Some roles see only the customers they manage as account manager."
+            }
+          ]
+        },
+        {
+          "id": "find-a-customer",
+          "title": "Find a customer",
+          "type": "task",
+          "intro": "Search and filter the list to find an organisation quickly.",
+          "steps": [
+            "In the menu on the left, select **Customers**.",
+            "In the search box, enter part of the name, code, e-mail domain, e-mail address or phone number.",
+            "To narrow the list, choose values in **Status**, **Tier**, **Region**, **Industry**, **Group** or **Account manager**.",
+            {
+              "text": "Turn on a switch if you need it: **My accounts**, **Open tickets** or **Top level**.",
+              "note": "**My accounts** shows customers you manage. **Open tickets** shows customers with open tickets. **Top level** hides subsidiaries."
+            },
+            "Select the customer in the list."
+          ],
+          "result": "The customer's Customer 360 page opens.",
+          "blocks": [
+            {
+              "tip": "Select **Clear** to remove all filters. To show more columns, select **Choose columns** at the right of the table header. Extra columns include **Group**, **Subsidiaries** and **ERP code**."
+            }
+          ]
+        },
+        {
+          "id": "save-a-customer-view",
+          "title": "Save a customer view",
+          "type": "task",
+          "intro": "A view saves your search and filters so you can open the same list again later.",
+          "steps": [
+            "In the **Customers** list, set the search and filters you want.",
+            "Select **Views**.",
+            "Select **Save current filters as view…**. The **Save view** dialog opens.",
+            "Enter a **View name**.",
+            "Select **Save**."
+          ],
+          "result": "A message says **View saved**. The view appears under **Saved views** in the **Views** menu. It is a personal view.",
+          "blocks": [
+            {
+              "list": [
+                "To open a view, select **Views** and then the view's name. The list shows **View:** and its name above the table.",
+                "Views shared by others show a people icon and the word **shared**.",
+                "To delete your own view, open it, select **Views**, and then select **Delete** with the view's name."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "add-a-customer",
+          "title": "Add a customer",
+          "type": "task",
+          "intro": "Add an organisation that you support.",
+          "prerequisites": ["You can manage customers."],
+          "steps": [
+            "In the **Customers** list, select **New customer**. The **New customer** form opens.",
+            {
+              "text": "Enter the **Name**.",
+              "image": "shots/08-customer-form.png",
+              "caption": "The **New customer** form.",
+              "alt": "New customer form with name, code, tier, status, group, industry, parent organisation, account manager and contact fields",
+              "width": 520
+            },
+            "Choose the **Tier** and the **Status**.",
+            "Fill in the other fields you know. The table below explains them.",
+            "Select **Create customer**."
+          ],
+          "result": "A message says **Customer created**. The customer appears in the list."
+        },
+        {
+          "id": "customer-fields",
+          "title": "Customer fields",
+          "type": "reference",
+          "intro": "The same form opens when you add or edit a customer.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Field", "What to enter"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**Name**", "The organisation's name. Required."],
+                  ["**Customer code**", "A unique code, for example the customer code in Wings ERP."],
+                  ["**Tier**", "**Platinum**, **Gold**, **Silver**, **Bronze** or **Standard**. The tier decides which SLA policy applies to the customer's tickets."],
+                  ["**Status**", "**Active**, **Inactive**, **Prospect** or **OnHold**."],
+                  ["**Group**", "The customer group, such as **Key Accounts**. A customer belongs to one group at most."],
+                  ["**Industry**, **Category**, **Service region**", "Used to filter lists and reports."],
+                  ["**Parent organisation**", "The head company, if this customer is a subsidiary. Leave it empty for a top-level customer."],
+                  ["**Account manager**", "The person in your team who looks after this customer. They get contract renewal reminders."],
+                  ["**E-mail**, **Phone**, **Website**", "The organisation's general contact details."],
+                  ["**E-mail domains**", "Domains such as `abcretail.demo`. New contacts with an address on these domains are linked to this customer by themselves."],
+                  ["**Preferred language**, **Time zone**", "Used for messages to the customer and for dates."],
+                  ["**Communication preferences**", "Switches for **E-mail**, **Phone**, **SMS** and **WhatsApp**, and a **Preferred channel**."],
+                  ["**Custom fields**", "Extra fields that your administrator added, if any."],
+                  ["**Notes**", "Anything else your team should know."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "customer-360",
+          "title": "The Customer 360 page",
+          "type": "concept",
+          "intro": "Select a customer in the list to open its Customer 360 page. The **Overview** tab shows the customer's health at a glance.",
+          "blocks": [
+            {
+              "image": "shots/08-c360-tour.png",
+              "caption": "The top of the Customer 360 page for a Platinum customer.",
+              "alt": "Customer 360 page with the header and buttons, the badges, the tabs and the key figures, each numbered"
+            },
+            {
+              "callouts": [
+                "The customer's name, code, industry and region. The buttons are **Edit**, **Subsidiary**, **Merge…** and a delete button.",
+                "Badges for the tier, the status, the group and the Wings ERP code. The account manager's name follows them.",
+                "The tabs. A number shows how many items each tab has.",
+                "Key figures for the last 90 days, such as open tickets, SLA breaches and satisfaction."
+              ]
+            },
+            { "heading": "Lower on the Overview tab" },
+            {
+              "list": [
+                "Three charts: **Satisfaction trend**, **Ticket volume** and **Open tickets by priority**.",
+                "**Outstanding complaints & escalations**: tickets that are escalated, past their SLA, critical or rated badly by the customer.",
+                "**Recent conversations**: the latest messages with the customer on any channel. Select a ticket number to open it.",
+                "**Profile**: the customer's details from the customer form.",
+                "**Hierarchy**: the parent company and the subsidiaries, with totals that include the subsidiaries.",
+                "**Upcoming activities**: the next planned visits and calls."
+              ]
+            },
+            {
+              "image": "shots/08-c360-profile.png",
+              "caption": "The **Profile** card of a customer.",
+              "alt": "Profile card showing the account manager, industry, region, contact details, website, e-mail domains, preferences, language and last sync with Wings ERP",
+              "width": 300
+            },
+            {
+              "note": "If other customers were merged into this one, a line says **Merged from** and the number of customers. Select it to see which ones."
+            }
+          ]
+        },
+        {
+          "id": "customer-360-figures",
+          "title": "Customer 360 figures and tabs",
+          "type": "reference",
+          "intro": "These tables explain the key figures and the tabs of the Customer 360 page.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Figure", "What it counts"],
+                "widths": [30, 70],
+                "rows": [
+                  ["**Open tickets**", "Tickets that are not resolved or closed. The line below shows how many are overdue."],
+                  ["**Escalated**", "Open tickets that someone escalated."],
+                  ["**SLA breaches (90 d)**", "Tickets that missed a target in the last 90 days. The line below counts open tickets."],
+                  ["**CSAT (90 d)**", "The average satisfaction score out of 5, and the number of answers."],
+                  ["**Avg. resolution**", "The average time to resolve a ticket, in hours."],
+                  ["**Tickets (90 d)**", "Tickets created in the last 90 days, with a small trend line."],
+                  ["**Active contracts**", "Contracts in force now. The line below shows how many end within 60 days."],
+                  ["**Installations**", "Sites where the customer runs your products. The line below counts contacts."]
+                ]
+              }
+            },
+            {
+              "table": {
+                "columns": ["Tab", "What it shows"],
+                "widths": [30, 70],
+                "rows": [
+                  ["**Overview**", "Key figures, charts, complaints, recent conversations, profile, hierarchy and upcoming activities."],
+                  ["**Tickets**", "The customer's tickets. Choose **Open**, **Resolved & closed** or **All**, filter by priority, or search by subject."],
+                  ["**Contacts**", "The customer's people and any possible duplicates."],
+                  ["**Locations**", "The customer's sites and departments."],
+                  ["**Installations & assets**", "Installations, licences and assets. You need permission to view products."],
+                  ["**Contracts**", "The support eligibility check, contracts and entitlements. You need permission to view contracts. Chapter 9 explains them."],
+                  ["**Activities**", "A calendar of service visits and calls for this customer."],
+                  ["**ERP records**", "Invoices, orders, receipts, AMC contracts and installations from Wings ERP. You can only read them."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "edit-a-customer",
+          "title": "Edit a customer",
+          "type": "task",
+          "intro": "Change a customer's details, tier, group or account manager.",
+          "prerequisites": ["You can manage customers."],
+          "steps": [
+            "Open the customer's Customer 360 page.",
+            "Select **Edit**. The form opens with the current values.",
+            "Change the fields you need.",
+            "Select **Save changes**."
+          ],
+          "result": "A message says **Customer updated**. The Customer 360 page shows the new values."
+        },
+        {
+          "id": "add-a-subsidiary",
+          "title": "Add a subsidiary",
+          "type": "task",
+          "intro": "A subsidiary is a customer that belongs to a parent customer, such as a branch company or a franchise.",
+          "prerequisites": ["You can manage customers."],
+          "steps": [
+            "Open the parent customer's Customer 360 page.",
+            "Select **Subsidiary**. The **New customer** form opens with the parent already filled in.",
+            "Enter the **Name** and the other details.",
+            "Select **Create customer**."
+          ],
+          "result": "A message says **Subsidiary created**. The new customer appears in the parent's **Hierarchy** card."
+        },
+        {
+          "id": "delete-a-customer",
+          "title": "Delete a customer",
+          "type": "task",
+          "intro": "Delete a customer that you added by mistake or no longer support.",
+          "prerequisites": ["You have permission to delete customers. Otherwise the delete button does not appear."],
+          "steps": [
+            "Open the customer's Customer 360 page.",
+            "Select the delete button at the right of the header.",
+            "Read the message, then select **Delete customer**."
+          ],
+          "result": "A message says **Customer deleted**. The customer is hidden from lists. Its tickets, contacts and history are kept.",
+          "blocks": [
+            { "note": "There is no restore button in the desk. Ask your administrator if you deleted a customer by mistake." }
+          ]
+        },
+        {
+          "id": "merge-customers",
+          "title": "Merge two customer organisations",
+          "type": "task",
+          "intro": "Use this when the same organisation exists twice, for example under two spellings.",
+          "prerequisites": ["You have permission to merge customer organisations."],
+          "steps": [
+            "Go to the Customer 360 page of one of the two customers.",
+            "Select **Merge…**. The **Merge customer organisations** dialog opens.",
+            "In **Find the duplicate organisation**, enter part of the other customer's name, code, ERP code or domain.",
+            "Select the other customer in the results, then select **Next**.",
+            {
+              "text": "Choose which customer to keep, for example **Keep ABC Retail Pvt Ltd**.",
+              "image": "shots/08-merge-customers-compare.png",
+              "caption": "Step 2 compares the two customers. Rows that differ are shaded.",
+              "alt": "Merge customer organisations dialog at step 2 with the Keep choice and a table comparing fields of the two customers",
+              "width": 520
+            },
+            "Tick **Use merged value** for any value you want from the other customer.",
+            "Select **Review**.",
+            {
+              "text": "Read the summary of what moves.",
+              "image": "shots/08-merge-customers-review.png",
+              "caption": "Step 3 shows the final values before you merge.",
+              "alt": "Merge customer organisations dialog at step 3 with the field table and the Merge customers button",
+              "width": 520
+            },
+            {
+              "text": "Select **Merge customers**.",
+              "warning": "You cannot undo a merge. The merged customer cannot be edited or restored afterwards."
+            }
+          ],
+          "result": "The dialog says **Customers merged** and lists how many records moved. Select **Done**.",
+          "blocks": [
+            {
+              "p": "Everything of the merged customer moves to the kept one. That includes contacts, tickets, locations, departments, contracts, installations, licences, assets, service activities, subsidiaries and Wings ERP links. The merge is recorded in the audit log."
+            },
+            {
+              "p": "If someone opens the merged customer later, the page says **This customer was merged**. A button opens the customer that was kept."
+            }
+          ]
+        },
+        {
+          "id": "customer-contacts-tab",
+          "title": "Contacts of a customer",
+          "type": "concept",
+          "intro": "The **Contacts** tab of the Customer 360 page lists the customer's people.",
+          "blocks": [
+            {
+              "image": "shots/08-c360-contacts.png",
+              "caption": "The **Contacts** tab with one possible duplicate.",
+              "alt": "Contacts tab with four contacts, their e-mail, phone, location, portal access and open tickets, and a possible duplicate below",
+              "width": 600
+            },
+            {
+              "list": [
+                "Each row shows the e-mail, phone, location, portal access and open tickets. Badges mark the **Primary** contact and **VIP** contacts.",
+                "Select a name to open the contact's page.",
+                "Select **Add contact** to add a person to this customer.",
+                "**Possible duplicates** lists pairs of contacts that may be the same person. Select **Review & merge** to compare them."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "locations-and-departments",
+          "title": "Manage locations and departments",
+          "type": "task",
+          "intro": "Locations are the customer's sites, such as a head office and branches. Departments group the customer's contacts, such as Finance or IT.",
+          "prerequisites": ["You can manage customers."],
+          "steps": [
+            {
+              "text": "On the Customer 360 page, select the **Locations** tab.",
+              "image": "shots/08-c360-locations.png",
+              "caption": "The **Locations** tab with two sites and three departments.",
+              "alt": "Locations tab with a table of two locations and a row of customer departments with edit and delete buttons",
+              "width": 600
+            },
+            "To add a site, select **Add location**. The **New location** form opens.",
+            "Enter the **Name** and, if you like, the code, address, phone, service region and time zone.",
+            "Tick **Head office** for the main site. Clear **Active** for a site that is no longer used.",
+            "Select **Save**.",
+            "To add a department, select **Add department**, enter the **Department name**, and select **Save**."
+          ],
+          "result": "The location or department appears on the tab. Use the pencil button to edit one and the bin button to delete one.",
+          "blocks": [
+            {
+              "note": "If contacts, installations or tickets use a location, deleting it makes it inactive instead. Deleting a department keeps its contacts with the customer."
+            }
+          ]
+        },
+        {
+          "id": "erp-records",
+          "title": "View Wings ERP records",
+          "type": "task",
+          "intro": "See the customer's invoices, orders, receipts and AMC contracts from Wings ERP without leaving SupportDesk.",
+          "prerequisites": ["An administrator has connected Wings ERP."],
+          "steps": [
+            {
+              "text": "On the Customer 360 page, select the **ERP records** tab.",
+              "image": "shots/08-c360-erp.png",
+              "caption": "The **ERP records** tab with the AMC contracts list open.",
+              "alt": "ERP records tab with four key figures, the ERP customer card with tax numbers and credit limit, and a list of AMC contracts",
+              "width": 600
+            },
+            "Read the key figures: **Outstanding**, **Invoices (latest)**, **Open orders** and **AMC contracts**.",
+            "Choose a list: **Invoices**, **Orders & deliveries**, **Receipts**, **AMC contracts** or **Installations**.",
+            {
+              "text": "Select an invoice, order or receipt to see its details.",
+              "image": "shots/08-erp-record.png",
+              "caption": "The details of an invoice from Wings ERP.",
+              "alt": "Side panel with an invoice's type, date, status, place of supply, item lines, tax and total",
+              "width": 340
+            },
+            "Select the close button to close the panel."
+          ],
+          "result": "The panel shows the document's lines, GST, total and balance due. **Tickets about this record** lists tickets raised about it."
+        },
+        {
+          "id": "contacts-list",
+          "title": "Find a contact",
+          "type": "task",
+          "intro": "The **Contacts** tab lists the people at all your customers.",
+          "steps": [
+            "In **Customers**, select the **Contacts** tab.",
+            "In the search box, enter part of a name, e-mail address, phone number or job title.",
+            "To change which contacts show, choose **Active**, **Inactive**, **Merged** or **All**.",
+            "To filter by portal access, choose a value in **Any portal access**.",
+            "To see only important people, turn on **VIP only**.",
+            "Select the contact in the list."
+          ],
+          "result": "The contact's page opens."
+        },
+        {
+          "id": "add-a-contact",
+          "title": "Add a contact",
+          "type": "task",
+          "intro": "Add a person who contacts your support team.",
+          "prerequisites": ["You can manage customers."],
+          "steps": [
+            "In **Customers** > **Contacts**, select **New contact**. You can also select **Add contact** on a Customer 360 page.",
+            {
+              "text": "Enter the name, e-mail address and phone numbers.",
+              "image": "shots/08-contact-form.png",
+              "caption": "The **New contact** form.",
+              "alt": "New contact form with name, e-mail, job title, phone, mobile, WhatsApp, customer, location, department, preferred channel, language, portal access, VIP and primary contact fields",
+              "width": 520
+            },
+            {
+              "text": "Choose the **Customer**.",
+              "note": "If you leave it empty, SupportDesk matches the customer by the e-mail domain."
+            },
+            "Choose the **Location** and **Department**, if you know them.",
+            "Choose the **Portal access**.",
+            "Tick **VIP** or **Primary contact** if they apply.",
+            "Select **Create contact**."
+          ],
+          "result": "A message says **Contact created**.",
+          "blocks": [
+            {
+              "note": "**Display name** fills itself from the first and last name. **Location** and **Department** stay greyed out until you choose a customer."
+            }
+          ]
+        },
+        {
+          "id": "contact-page",
+          "title": "The contact page",
+          "type": "concept",
+          "intro": "A contact's page shows who they are, how they reach you, what they agreed to receive and their portal access.",
+          "blocks": [
+            {
+              "image": "shots/08-contact-tour.png",
+              "caption": "The page of a VIP contact who is the customer's primary contact.",
+              "alt": "Contact page with the header, the profile card, channel identities, consent grid, customer portal card, possible duplicates and tickets, each numbered"
+            },
+            {
+              "callouts": [
+                "The contact's name and job title, with **Edit** and the delete button.",
+                "The profile: status, badges, customer, contact details, location, department, preferences and ticket totals.",
+                "**Channel identities**: the addresses and numbers that link incoming messages to this contact.",
+                "**Consent**: what the contact agreed to receive, per channel and purpose.",
+                "**Customer portal**: the contact's portal access, password status and last sign-in.",
+                "**Possible duplicates**: other contacts that may be the same person.",
+                "The contact's tickets. The **Merge history** shows below them if any contact was merged."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "edit-a-contact",
+          "title": "Edit or delete a contact",
+          "type": "task",
+          "intro": "Keep a contact's details up to date, or remove a contact.",
+          "prerequisites": ["You can manage customers."],
+          "steps": [
+            "Open the contact's page.",
+            "Select **Edit**.",
+            {
+              "text": "Change the fields you need, then select **Save changes**.",
+              "note": "Tick **Inactive** for a person who has left the company."
+            },
+            "To delete the contact, select the delete button in the header instead.",
+            "Read the message, then select **Delete contact**."
+          ],
+          "result": "A message says **Contact updated** or **Contact deleted**. A deleted contact is hidden, and its identities become free for other contacts. Its tickets keep their history."
+        },
+        {
+          "id": "add-channel-identity",
+          "title": "Add a channel identity",
+          "type": "task",
+          "intro": "Channel identities let SupportDesk recognise the contact when they write or call from another address or number.",
+          "prerequisites": ["You can manage customers."],
+          "steps": [
+            "Open the contact's page.",
+            "In **Channel identities**, choose the channel in the list.",
+            "Enter the address, number or id in **Address, number or id**.",
+            "Select **Add**."
+          ],
+          "result": "The identity appears in the list. Messages from it now link to this contact. To remove an identity, select the cross next to it.",
+          "blocks": [
+            { "note": "The channels are **Email**, **Phone**, **WhatsApp**, **Sms**, **Facebook**, **Instagram** and **Chat**. A **Verified** badge shows that the contact proved the address." }
+          ]
+        },
+        {
+          "id": "record-consent",
+          "title": "Record a contact's consent",
+          "type": "task",
+          "intro": "Record what each contact agreed to receive. An opt-out stops outbound messages on that channel for that purpose.",
+          "prerequisites": ["You can manage customers."],
+          "steps": [
+            "Open the contact's page.",
+            "In the **Consent** card, find the row for the channel: **Email**, **SMS**, **WhatsApp** or **Phone**.",
+            "In the column for the purpose, choose **Opted in**, **Opted out** or **Unknown**."
+          ],
+          "result": "SupportDesk saves the change at once. The date appears under the choice. Point at the date to see where the consent came from.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Purpose", "Covers"],
+                "widths": [25, 75],
+                "rows": [
+                  ["**Transactional**", "Messages about the contact's own tickets, such as replies and updates."],
+                  ["**Marketing**", "News and offers."],
+                  ["**Surveys**", "Satisfaction surveys after a ticket is resolved."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "portal-access",
+          "title": "Give a contact portal access",
+          "type": "task",
+          "intro": "Let a contact sign in to the customer portal to raise and follow tickets.",
+          "prerequisites": [
+            "You can manage portal access.",
+            "The contact is active and has an e-mail address."
+          ],
+          "steps": [
+            "Open the contact's page.",
+            "In the **Customer portal** card, choose the level in the **Access** list.",
+            "Select **Send invitation**."
+          ],
+          "result": "A message says **Invitation sent**. The card shows the address and how long the code is valid. The invitation code is valid for 72 hours.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Access", "The contact can see"],
+                "widths": [35, 65],
+                "rows": [
+                  ["**No access**", "Nothing. The contact cannot sign in to the portal."],
+                  ["**Own tickets**", "Only the tickets they raised."],
+                  ["**Location's tickets**", "The tickets of everyone at their location."],
+                  ["**Whole organisation's tickets**", "All tickets of their organisation."]
+                ]
+              }
+            },
+            {
+              "p": "If the contact forgets their password, select **Send password reset**. The reset code is valid for 30 minutes. The card also shows whether a password is set, whether the account is **Locked**, and the last sign-in."
+            }
+          ]
+        },
+        {
+          "id": "duplicate-contacts",
+          "title": "How duplicate contacts are found",
+          "type": "concept",
+          "intro": [
+            "The same person sometimes ends up as two contacts, for example after writing from a personal e-mail address. SupportDesk looks for such pairs.",
+            "It compares e-mail addresses, phone numbers, how similar the names are and the customer. The **Why** column lists the reasons. The **Match** column shows a score and a confidence of **High**, **Medium** or **Low**."
+          ],
+          "blocks": [
+            {
+              "image": "shots/08-duplicates.png",
+              "caption": "The **Duplicate contacts** tab with one likely pair.",
+              "alt": "Duplicate contacts page with the Minimum match list, the Rescan button and one pair of contacts with a 91 percent match",
+              "width": 620
+            },
+            {
+              "list": [
+                "The same e-mail address or phone number counts anywhere in the workspace.",
+                "Near-identical names count only within the same customer.",
+                "Choose a **Minimum match** of 40% (all candidates), 60% (medium and high) or 85% (high only)."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "merge-duplicate-contacts",
+          "title": "Merge duplicate contacts",
+          "type": "task",
+          "intro": "Combine two contacts that are the same person into one.",
+          "prerequisites": ["You have permission to merge contacts."],
+          "steps": [
+            "In **Customers**, select the **Duplicates** tab.",
+            "Choose a **Minimum match**, then select **Rescan**.",
+            "Select **Review & merge** next to a pair. The **Merge duplicate contacts** dialog opens.",
+            {
+              "text": "Choose which contact to keep, then select **Next**.",
+              "note": "SupportDesk suggests the contact with more tickets. The kept contact fills its empty fields from the other one."
+            },
+            {
+              "text": "Tick **Use merged value** for any value you want from the other contact.",
+              "image": "shots/08-contact-merge.png",
+              "caption": "Step 2 of the contact merge. Shaded rows have different values.",
+              "alt": "Merge duplicate contacts dialog at step 2 with a field comparison table and Use merged value check boxes",
+              "width": 520
+            },
+            {
+              "text": "Select **Merge contacts**.",
+              "warning": "There is no unmerge. The other contact becomes **Merged** and cannot be edited."
+            },
+            "Read the summary, then select **Done**."
+          ],
+          "result": "The dialog says **Contacts merged**. The kept contact now has the tickets, conversations, identities, consents and survey answers of both.",
+          "blocks": [
+            { "tip": "You can also start a merge from a contact's page. Select **Merge…** next to a possible duplicate." },
+            { "note": "A merged contact's page says **This contact was merged.** Select **Open the surviving contact** to go to the kept one." }
+          ]
+        },
+        {
+          "id": "service-activities",
+          "title": "Service activities",
+          "type": "concept",
+          "intro": [
+            "Service activities are planned visits and calls, such as on-site visits, training or maintenance. Use them to plan work and to keep a history of what happened.",
+            "The **Service activities** tab shows all customers. The **Activities** tab on a Customer 360 page shows one customer."
+          ],
+          "blocks": [
+            {
+              "image": "shots/08-activities.png",
+              "caption": "The **Service activities** calendar and agenda.",
+              "alt": "Service activities page with a colour legend, the Schedule activity button, the calendar bar, a month calendar and the agenda list, each numbered",
+              "width": 560
+            },
+            {
+              "callouts": [
+                "The colour of each activity type.",
+                "**Schedule activity** adds a new activity.",
+                "**Today**, the arrows and **Month** or **Week** move around the calendar.",
+                "The calendar. Select an activity to open it. Select an empty day to schedule an activity on that day.",
+                "The **Agenda** lists every activity in the period shown."
+              ]
+            },
+            {
+              "table": {
+                "columns": ["Types", "Statuses"],
+                "widths": [55, 45],
+                "rows": [
+                  ["**Onsite visit**, **Remote session**, **Training**, **Preventive maintenance**, **Upgrade**, **Call**, **Meeting**", "**Scheduled**, **In progress**, **Completed**, **Cancelled**, **Missed**"]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "schedule-an-activity",
+          "title": "Schedule a service activity",
+          "type": "task",
+          "intro": "Plan a visit, a remote session, a training or another activity for a customer.",
+          "prerequisites": ["You can manage customers."],
+          "steps": [
+            "In **Customers** > **Service activities**, select **Schedule activity**.",
+            {
+              "text": "Choose the **Customer**.",
+              "image": "shots/08-activity-form.png",
+              "caption": "The **Schedule activity** form.",
+              "alt": "Schedule activity form with customer, type, status, title, start and end, assigned agent, location, installation, description and outcome fields",
+              "width": 520
+            },
+            "Choose the **Type** and enter a **Title**.",
+            "Set **Starts** and **Ends**.",
+            "In **Assigned to**, choose the agent. Add the **Location** and **Installation** if they apply.",
+            "Enter a **Description** of the work.",
+            "Tick **Visible to the customer in the portal** if the customer should see it.",
+            "Select **Save**."
+          ],
+          "result": "The activity appears in the calendar and the agenda."
+        },
+        {
+          "id": "update-an-activity",
+          "title": "Record the outcome of an activity",
+          "type": "task",
+          "intro": "After a visit or call, record what happened.",
+          "prerequisites": ["You can manage customers."],
+          "steps": [
+            "In the calendar or the agenda, select the activity. The **Service activity** form opens.",
+            "Change the **Status**, for example to **Completed**.",
+            "Enter the **Outcome**. It appears in the customer's history.",
+            "Select **Save**."
+          ],
+          "result": "The activity shows its new status. To remove an activity, open it and select **Delete**.",
+          "blocks": [
+            { "note": "If you cannot manage customers, the form opens read-only with a **Close** button." }
+          ]
+        },
+        {
+          "id": "customer-groups",
+          "title": "Customer groups",
+          "type": "task",
+          "intro": "Groups bundle customers, for example key accounts or customers of one partner. Use them to filter lists and saved views. Knowledge base access rules can use them too.",
+          "prerequisites": ["You can manage customers."],
+          "steps": [
+            {
+              "text": "In **Customers**, select the **Groups** tab.",
+              "image": "shots/08-groups.png",
+              "caption": "The **Customer groups** tab with one group.",
+              "alt": "Customer groups page with the New group button and a table with the Key Accounts group",
+              "width": 600
+            },
+            "Select **New group**. The **New customer group** dialog opens.",
+            "Enter the **Group name** and a **Description**.",
+            "Select **Create group**.",
+            "To put customers in the group, edit each customer and choose the group in **Group**."
+          ],
+          "result": "A message says **Group created**. The table shows how many customers belong to each group.",
+          "blocks": [
+            { "note": "A customer belongs to one group at most. Deleting a group keeps its customers, but they no longer belong to a group. SLA and routing conditions cannot use groups yet." }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    {
+      "problem": "A customer page says **Customer not found**.",
+      "cause": "The customer was deleted, or your role shows only the customers you manage.",
+      "fix": "Check the name in the **Customers** list. Ask your supervisor if you need to see that customer."
+    },
+    {
+      "problem": "A customer page says **This customer was merged**.",
+      "cause": "Someone merged this customer into another one.",
+      "fix": "Select the button on the page to open the customer that was kept."
+    },
+    {
+      "problem": "The **Merge…** or **Review & merge** button is missing.",
+      "cause": "You do not have permission to merge customers or contacts.",
+      "fix": "Ask a supervisor or an administrator to do the merge."
+    },
+    {
+      "problem": "Saving a new contact fails and the message suggests the duplicate finder.",
+      "cause": "Another contact already uses the same e-mail address or phone number.",
+      "fix": "Open the **Duplicates** tab and merge the two contacts, or edit the existing contact instead."
+    },
+    {
+      "problem": "**Location** and **Department** are greyed out in the contact form.",
+      "cause": "No customer is chosen yet.",
+      "fix": "Choose the **Customer** first. Its locations and departments then appear."
+    },
+    {
+      "problem": "A deleted location is still listed, marked **Inactive**.",
+      "cause": "Contacts, installations or tickets use it, so SupportDesk keeps it for history.",
+      "fix": "No action is needed. An inactive location is not offered for new records."
+    },
+    {
+      "problem": "**Send invitation** is missing on a contact's page.",
+      "cause": "The contact has no e-mail address, is not active, or you cannot manage portal access.",
+      "fix": "Add an e-mail address and make sure the contact is active. Ask an administrator for the permission if needed."
+    },
+    {
+      "problem": "The **ERP records** tab says **Wings ERP is not connected**.",
+      "cause": "Nobody has connected Wings ERP to SupportDesk yet.",
+      "fix": "Ask an administrator to connect it under **Products & Assets** > **ERP integration**."
+    },
+    {
+      "problem": "The **ERP records** tab says **ERP records unavailable**.",
+      "cause": "SupportDesk could not reach Wings ERP at that moment.",
+      "fix": "Try again later. If the message stays, tell your administrator."
+    }
+  ],
+  "faq": [
+    {
+      "q": "Can I undo a merge of two customers or two contacts?",
+      "a": "No. A merge cannot be undone. Check the comparison carefully before you select the merge button."
+    },
+    {
+      "q": "Why was a new contact linked to a customer by itself?",
+      "a": "The contact's e-mail domain matches one of the customer's **E-mail domains**. SupportDesk links such contacts automatically."
+    },
+    {
+      "q": "What does a customer's tier change?",
+      "a": "The tier decides which SLA policy applies to the customer's tickets. A Platinum customer can get faster targets than a Standard one."
+    },
+    {
+      "q": "Can I change Wings ERP invoices from SupportDesk?",
+      "a": "No. The **ERP records** tab is read-only. Change the records in Wings ERP itself."
+    }
+  ],
+  "glossary": [
+    { "term": "Customer", "definition": "An organisation that you support. Customers can have a parent company and subsidiaries." },
+    { "term": "Contact", "definition": "A person who works for a customer and contacts your support team." },
+    { "term": "Customer 360", "definition": "The page that shows everything about one customer: tickets, contacts, locations, products, contracts, activities and Wings ERP records." },
+    { "term": "Tier", "definition": "A customer's service level: Platinum, Gold, Silver, Bronze or Standard. It decides which SLA policy applies." },
+    { "term": "Account manager", "definition": "The person in your team who looks after a customer. They get reminders before the customer's contracts end." },
+    { "term": "Subsidiary", "definition": "A customer that belongs to a parent customer, such as a branch company or a franchise." },
+    { "term": "Channel identity", "definition": "An e-mail address, phone number or messaging id that links incoming messages to a contact." },
+    { "term": "Consent", "definition": "A contact's choice to receive or refuse messages, per channel and purpose." },
+    { "term": "Customer group", "definition": "A named set of customers, such as Key Accounts, used to filter lists and in knowledge base access rules." },
+    { "term": "Service activity", "definition": "A planned visit, session, training, maintenance, upgrade, call or meeting with a customer." },
+    { "term": "Portal access", "definition": "Which tickets a contact can see in the customer portal: none, their own, their location's or their whole organisation's." }
+  ]
+}

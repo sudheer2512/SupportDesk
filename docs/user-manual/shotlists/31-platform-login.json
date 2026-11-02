@@ -1,0 +1,54 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": { "width": 1280, "height": 800, "scale": 1.5 },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": ["sd-toast-outlet"],
+  "setup": [],
+  "shots": [
+    {
+      "id": "31-desk-link",
+      "file": "31-desk-link.png",
+      "url": "/login",
+      "waitFor": "text=Sign in to SupportDesk",
+      "highlight": ["a[href$='/platform/login']"],
+      "clip": ".card"
+    },
+    {
+      "id": "31-sign-in",
+      "file": "31-sign-in.png",
+      "url": "/platform/login",
+      "steps": [
+        { "waitFor": "label=Operator e-mail" },
+        { "fill": "label=Operator e-mail", "value": "platform@supportdesk.demo" }
+      ],
+      "highlight": ["input[name=email]", "input[name=password]", "main.card button[type=submit]"],
+      "numbered": true,
+      "clip": "main.card",
+      "clipPadding": 24
+    },
+    {
+      "id": "31-sign-in-error",
+      "file": "31-sign-in-error.png",
+      "url": "/platform/login",
+      "steps": [
+        { "waitFor": "label=Operator e-mail" },
+        { "click": "main.card button[type=submit]" },
+        { "waitForText": "Enter your e-mail address and password." }
+      ],
+      "highlight": [".callout--danger"],
+      "clip": "main.card",
+      "clipPadding": 16
+    },
+    {
+      "id": "31-session-ended",
+      "file": "31-session-ended.png",
+      "url": "/platform/login?expired=1",
+      "steps": [{ "waitForText": "Your platform session ended. Sign in again." }],
+      "highlight": [".callout--info"],
+      "clip": "main.card",
+      "clipPadding": 16
+    }
+  ]
+}

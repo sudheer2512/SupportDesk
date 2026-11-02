@@ -1,0 +1,164 @@
+{
+  "baseUrl": "http://localhost:4832",
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "scale": 2,
+    "mobile": true
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "settleMs": 800,
+  "shots": [
+    {
+      "id": "30-sign-in-customer",
+      "file": "30-sign-in-customer.png",
+      "url": "/login",
+      "steps": [
+        {
+          "waitFor": "input[name=tenant]"
+        },
+        {
+          "click": "text=Customer"
+        },
+        {
+          "waitFor": "input[name=brand]"
+        },
+        {
+          "fill": "input[name=brand]",
+          "value": "wings"
+        },
+        {
+          "fill": "input[name=cemail]",
+          "value": "ramesh@abcretail.demo"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "highlight": [
+        "ion-list",
+        "ion-segment.method",
+        "ion-button[type=submit]"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "30-customer-tickets",
+      "file": "30-customer-tickets.png",
+      "steps": [
+        {
+          "fill": "input[name=cpassword]",
+          "value": "${env:SD_PORTAL_PASSWORD}"
+        },
+        {
+          "click": "ion-button[type=submit]"
+        },
+        {
+          "waitFor": "ion-searchbar"
+        },
+        {
+          "wait": 2500
+        }
+      ],
+      "highlight": [
+        "ion-header ion-toolbar:nth-of-type(2) ion-segment-button.segment-button-checked",
+        "ion-header ion-toolbar:nth-of-type(3) ion-segment-button.segment-button-checked",
+        "ion-searchbar .searchbar-input-container",
+        "ion-fab-button"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "30-customer-request",
+      "file": "30-customer-request.png",
+      "url": "/customer/tickets/cdd51772-76a0-4c5d-94a1-08df29f98fc3",
+      "steps": [
+        {
+          "waitFor": ".stars"
+        },
+        {
+          "click": ".stars button:nth-child(4)"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "eval": "document.querySelector('ion-content:not(.ion-page-hidden) ion-content, .ion-page:not(.ion-page-hidden) ion-content') && document.querySelector('.ion-page:not(.ion-page-hidden) ion-content').scrollToTop(0)"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "eval": "Element.prototype.scrollIntoView = function () {}"
+        }
+      ],
+      "highlight": [
+        ".callout",
+        ".reopen ion-button",
+        "ion-footer ion-textarea"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "30-reopen-prompt",
+      "file": "30-reopen-prompt.png",
+      "steps": [
+        {
+          "click": ".reopen ion-button"
+        },
+        {
+          "waitFor": "ion-alert textarea"
+        },
+        {
+          "fill": "ion-alert textarea",
+          "value": "The GSTR-1 export fails again."
+        },
+        {
+          "wait": 600
+        }
+      ]
+    },
+    {
+      "id": "30-new-request",
+      "file": "30-new-request.png",
+      "steps": [
+        {
+          "click": "ion-alert .alert-button-role-cancel"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "ion-tab-button[tab=new]"
+        },
+        {
+          "waitFor": "ion-input input"
+        },
+        {
+          "fill": "ion-content ion-input input",
+          "value": "GST total does not match on invoice"
+        },
+        {
+          "wait": 2000
+        }
+      ]
+    },
+    {
+      "id": "30-help",
+      "file": "30-help.png",
+      "steps": [
+        {
+          "click": "ion-tab-button[tab=help]"
+        },
+        {
+          "waitForText": "Recently updated"
+        },
+        {
+          "wait": 800
+        }
+      ]
+    }
+  ]
+}

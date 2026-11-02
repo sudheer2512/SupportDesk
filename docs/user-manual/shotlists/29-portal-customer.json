@@ -1,0 +1,319 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/portal/wings/login"
+    },
+    {
+      "fill": "input[name=email]",
+      "value": "ramesh@abcretail.demo"
+    },
+    {
+      "fill": "input[name=password]",
+      "value": "${env:SD_PORTAL_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Hi Ramesh"
+    }
+  ],
+  "shots": [
+    {
+      "id": "29-home-signed-in",
+      "file": "29-home-signed-in.png",
+      "steps": [
+        {
+          "waitForText": "Awaiting your confirmation"
+        }
+      ],
+      "highlight": [
+        "section.stats-panel",
+        "header button.account"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "29-my-tickets",
+      "file": "29-my-tickets.png",
+      "steps": [
+        {
+          "goto": "/portal/wings/tickets?scope=organisation"
+        },
+        {
+          "waitForText": "Every request from"
+        }
+      ],
+      "highlight": [
+        "div.scopes",
+        "div.chips",
+        "form.search",
+        "table.table thead",
+        ".portal-page-head a"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "29-ticket-detail",
+      "file": "29-ticket-detail.png",
+      "url": "/portal/wings/tickets/362b392b-7efb-4d82-92d9-08df29f98fc3",
+      "steps": [
+        {
+          "waitForText": "Add a reply"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "highlight": [
+        "header.head",
+        "section.request",
+        "section.conversation",
+        "section.reply",
+        "aside.side"
+      ],
+      "numbered": true,
+      "fullPage": true
+    },
+    {
+      "id": "29-reply",
+      "file": "29-reply.png",
+      "steps": [
+        {
+          "fill": "section.reply [contenteditable=true]",
+          "value": "Thanks. The address is still the old one on invoices printed from counter 2."
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "clip": "section.reply"
+    },
+    {
+      "id": "29-closed-ticket",
+      "file": "29-closed-ticket.png",
+      "url": "/portal/wings/tickets/cdd51772-76a0-4c5d-94a1-08df29f98fc3",
+      "steps": [
+        {
+          "waitForText": "How did we do?"
+        }
+      ],
+      "highlight": [
+        "section.banner--reopen",
+        "section.csat"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "29-reopen-form",
+      "file": "29-reopen-form.png",
+      "steps": [
+        {
+          "click": "section.banner--reopen button"
+        },
+        {
+          "fill": "section.banner--reopen textarea",
+          "value": "The GSTR-1 export fails again after the latest update."
+        }
+      ],
+      "clip": "section.banner--reopen"
+    },
+    {
+      "id": "29-rate",
+      "file": "29-rate.png",
+      "steps": [
+        {
+          "click": "text=Cancel"
+        },
+        {
+          "click": "section.csat label.star:nth-child(4)"
+        },
+        {
+          "fill": "section.csat textarea",
+          "value": "Quick fix, thank you."
+        }
+      ],
+      "clip": "section.csat"
+    },
+    {
+      "id": "29-submit-form",
+      "file": "29-submit-form.png",
+      "url": "/portal/wings/submit",
+      "steps": [
+        {
+          "waitForText": "Attachments"
+        },
+        {
+          "fill": "input[name=subject]",
+          "value": "GST total does not match on invoice"
+        },
+        {
+          "fill": "portal-ticket-form [contenteditable=true]",
+          "value": "The GST total on invoice SI/26-27/1201 is one rupee more than the sum of the lines."
+        },
+        {
+          "wait": 1500
+        }
+      ],
+      "clip": ".card",
+      "fullPage": true
+    },
+    {
+      "id": "29-deflection-drawer",
+      "file": "29-deflection-drawer.png",
+      "steps": [
+        {
+          "click": "portal-deflection button.article"
+        },
+        {
+          "waitForText": "This solved my problem"
+        },
+        {
+          "wait": 800
+        }
+      ]
+    },
+    {
+      "id": "29-new-topic",
+      "file": "29-new-topic.png",
+      "url": "/portal/wings/community/new",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "fill": "input[name=title]",
+          "value": "How do I print the GST summary for one branch only?"
+        },
+        {
+          "wait": 1200
+        }
+      ],
+      "clip": "form.form"
+    },
+    {
+      "id": "29-topic",
+      "file": "29-topic.png",
+      "url": "/portal/wings/community",
+      "steps": [
+        {
+          "waitForText": "Before you post"
+        },
+        {
+          "click": "text=Best way to handle GST rounding for mixed 5% and 18% items?"
+        },
+        {
+          "waitForText": "Accepted answer"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "highlight": [
+        "article.topic button.vote",
+        "section.accepted-summary",
+        "li.post:not(.is-accepted) .post-actions",
+        "section.reply"
+      ],
+      "numbered": true,
+      "fullPage": true
+    },
+    {
+      "id": "29-assistant",
+      "file": "29-assistant.png",
+      "url": "/portal/wings/",
+      "steps": [
+        {
+          "waitForText": "Browse by topic"
+        },
+        {
+          "click": "button.ask"
+        },
+        {
+          "waitFor": "#assistant-input"
+        },
+        {
+          "fill": "#assistant-input",
+          "value": "How do I fix GST rounding differences?"
+        }
+      ]
+    },
+    {
+      "id": "29-account-profile",
+      "file": "29-account-profile.png",
+      "url": "/portal/wings/account",
+      "steps": [
+        {
+          "waitForText": "Ticket access"
+        }
+      ],
+      "highlight": [
+        "header.head",
+        "[role=tablist]",
+        "form.form",
+        "aside.info"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "29-account-notifications",
+      "file": "29-account-notifications.png",
+      "steps": [
+        {
+          "click": "[role=tab]:nth-child(2)"
+        },
+        {
+          "waitForText": "What we may send you"
+        }
+      ],
+      "clip": "portal-notifications-tab",
+      "hide": [
+        "button.ask"
+      ]
+    },
+    {
+      "id": "29-account-password",
+      "file": "29-account-password.png",
+      "steps": [
+        {
+          "click": "[role=tab]:nth-child(3)"
+        },
+        {
+          "waitForText": "Confirm new password"
+        }
+      ],
+      "clip": "portal-password-tab",
+      "hide": [
+        "button.ask"
+      ]
+    },
+    {
+      "id": "29-account-contracts",
+      "file": "29-account-contracts.png",
+      "steps": [
+        {
+          "click": "[role=tab]:nth-child(4)"
+        },
+        {
+          "wait": 1500
+        }
+      ],
+      "clip": "[role=tabpanel]:not([hidden])",
+      "hide": [
+        "button.ask"
+      ]
+    }
+  ]
+}

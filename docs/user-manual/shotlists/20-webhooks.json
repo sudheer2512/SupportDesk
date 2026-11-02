@@ -1,0 +1,127 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "admin@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Two-step verification"
+    },
+    {
+      "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "20-webhooks-list",
+      "file": "20-webhooks-list.png",
+      "url": "/admin/webhooks",
+      "waitFor": "sd-page-header button",
+      "highlight": [
+        "sd-page-header button",
+        "li.hook .main",
+        "li.hook .last",
+        "li.hook sd-toggle",
+        "li.hook button.sd-btn, li.hook > button",
+        "li.hook sd-dropdown-menu"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "20-webhook-menu",
+      "file": "20-webhook-menu.png",
+      "steps": [
+        {
+          "click": "li.hook sd-dropdown-menu button"
+        },
+        {
+          "waitFor": ".sd-menu"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": ".sd-menu"
+    },
+    {
+      "id": "20-webhook-editor",
+      "file": "20-webhook-editor.png",
+      "url": "/admin/webhooks",
+      "steps": [
+        {
+          "waitFor": "sd-page-header button"
+        },
+        {
+          "click": "sd-page-header button"
+        },
+        {
+          "waitFor": "text=Create webhook"
+        },
+        {
+          "fill": "input[name=name]",
+          "value": "ERP ticket feed"
+        },
+        {
+          "fill": "input[name=url]",
+          "value": "https://erp.wings.demo/hooks/supportdesk"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": ".drawer[role=dialog]"
+    },
+    {
+      "id": "20-webhook-deliveries",
+      "file": "20-webhook-deliveries.png",
+      "url": "/admin/webhooks",
+      "steps": [
+        {
+          "waitFor": "text=Deliveries"
+        },
+        {
+          "click": "text=Deliveries"
+        },
+        {
+          "waitFor": "text=Send test ping"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": ".drawer[role=dialog]"
+    }
+  ]
+}

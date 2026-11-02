@@ -1,0 +1,199 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "admin@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Two-step verification"
+    },
+    {
+      "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "13-eng-board",
+      "file": "13-eng-board.png",
+      "url": "/engineering",
+      "steps": [
+        {
+          "waitFor": "li.card"
+        },
+        {
+          "wait": 1200
+        }
+      ],
+      "highlight": [
+        ".toolbar",
+        "section.column:first-child .col-head",
+        "li.card",
+        "li.card sd-dropdown-menu",
+        "text=Releases",
+        "text=New work item"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "13-eng-move-menu",
+      "file": "13-eng-move-menu.png",
+      "steps": [
+        {
+          "click": "button[aria-label='Move ENG-2']"
+        },
+        {
+          "waitFor": ".sd-menu"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": ".sd-menu",
+      "clipPadding": 10
+    },
+    {
+      "id": "13-eng-work-item",
+      "file": "13-eng-work-item.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "text=POS billing counter freezes when scanning more than 30 items"
+        },
+        {
+          "waitFor": "text=Linked tickets"
+        },
+        {
+          "wait": 1200
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "13-eng-releases",
+      "file": "13-eng-releases.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "click": "text=Releases"
+        },
+        {
+          "waitFor": "text=Add release"
+        },
+        {
+          "wait": 1200
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "13-eng-ticket-tab",
+      "file": "13-eng-ticket-tab.png",
+      "url": "/tickets/1004",
+      "steps": [
+        {
+          "waitFor": "button.details-btn"
+        },
+        {
+          "click": "button.details-btn"
+        },
+        {
+          "waitFor": "button[role=tab][id$='-tab-engineering.links']"
+        },
+        {
+          "click": "button[role=tab][id$='-tab-engineering.links']"
+        },
+        {
+          "waitFor": "text=Engineering work items"
+        },
+        {
+          "wait": 2000
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "13-eng-escalate",
+      "file": "13-eng-escalate.png",
+      "steps": [
+        {
+          "click": "text=Escalate"
+        },
+        {
+          "waitFor": "text=Escalate to engineering"
+        },
+        {
+          "wait": 2500
+        }
+      ],
+      "clip": "[aria-label='Escalate to engineering']"
+    },
+    {
+      "id": "13-eng-link",
+      "file": "13-eng-link.png",
+      "steps": [
+        {
+          "click": "[aria-label='Cancel escalation']"
+        },
+        {
+          "waitFor": "text=Link existing"
+        },
+        {
+          "click": "text=Link existing"
+        },
+        {
+          "waitFor": "text=Link existing work item"
+        },
+        {
+          "fill": "label=Work item id or URL",
+          "value": "ENG-3"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": "[aria-label='Link an existing work item']"
+    }
+  ]
+}

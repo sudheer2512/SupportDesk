@@ -1,0 +1,241 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "shots": [
+    {
+      "id": "29-home-public",
+      "file": "29-home-public.png",
+      "url": "/portal/wings/",
+      "steps": [
+        {
+          "waitForText": "Browse by topic"
+        }
+      ],
+      "highlight": [
+        "nav.nav",
+        "portal-search-box",
+        "header a.submit",
+        "header a.signin",
+        "button.ask"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "29-sign-in",
+      "file": "29-sign-in.png",
+      "url": "/portal/wings/login",
+      "steps": [
+        {
+          "fill": "label=E-mail",
+          "value": "ramesh@abcretail.demo"
+        }
+      ],
+      "clip": ".card"
+    },
+    {
+      "id": "29-sign-in-code",
+      "file": "29-sign-in-code.png",
+      "steps": [
+        {
+          "click": "text=E-mail code"
+        },
+        {
+          "waitForText": "one-time sign-in code"
+        }
+      ],
+      "clip": ".card"
+    },
+    {
+      "id": "29-register",
+      "file": "29-register.png",
+      "url": "/portal/wings/register",
+      "steps": [
+        {
+          "fill": "input[name=fullName]",
+          "value": "Kavya Iyer"
+        },
+        {
+          "fill": "input[name=email]",
+          "value": "kavya@abcretail.demo"
+        },
+        {
+          "fill": "input[name=company]",
+          "value": "ABC Retail"
+        }
+      ],
+      "clip": ".card"
+    },
+    {
+      "id": "29-submit-anonymous",
+      "file": "29-submit-anonymous.png",
+      "url": "/portal/wings/submit",
+      "steps": [
+        {
+          "fill": "input[name=name]",
+          "value": "Kavya Iyer"
+        },
+        {
+          "fill": "input[name=email]",
+          "value": "kavya@abcretail.demo"
+        },
+        {
+          "fill": "input[name=subject]",
+          "value": "GST total does not match on invoice"
+        },
+        {
+          "fill": "textarea[name=description]",
+          "value": "The GST total on invoice SI/26-27/1201 is one rupee more than the sum of the lines."
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "eval": "document.activeElement && document.activeElement.blur()"
+        }
+      ],
+      "clip": ".card"
+    },
+    {
+      "id": "29-kb-home",
+      "file": "29-kb-home.png",
+      "url": "/portal/wings/kb",
+      "steps": [
+        {
+          "waitForText": "Recently updated"
+        }
+      ],
+      "highlight": [
+        "header.head portal-search-box",
+        "ul.cats > li:first-child",
+        "aside.side section.panel:first-child"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "29-kb-article",
+      "file": "29-kb-article.png",
+      "steps": [
+        {
+          "click": "aside.side portal-article-list a"
+        },
+        {
+          "waitForText": "Was this article helpful?"
+        }
+      ],
+      "highlight": [
+        "header.head .meta",
+        "portal-article-feedback",
+        "section.help"
+      ],
+      "numbered": true,
+      "fullPage": true
+    },
+    {
+      "id": "29-kb-feedback",
+      "file": "29-kb-feedback.png",
+      "steps": [
+        {
+          "click": "portal-article-feedback button"
+        },
+        {
+          "waitForText": "Anything to add?"
+        },
+        {
+          "click": "portal-article-feedback label.star:nth-child(5)"
+        }
+      ],
+      "clip": "portal-article-feedback"
+    },
+    {
+      "id": "29-search",
+      "file": "29-search.png",
+      "url": "/portal/wings/search?q=password",
+      "steps": [
+        {
+          "waitForText": "Didn't find what you need?"
+        }
+      ],
+      "fullPage": true
+    },
+    {
+      "id": "29-community",
+      "file": "29-community.png",
+      "url": "/portal/wings/community",
+      "steps": [
+        {
+          "waitForText": "Before you post"
+        }
+      ],
+      "highlight": [
+        ".portal-page-head a",
+        "div.filters",
+        "div.chips",
+        "portal-topic-list li:first-child",
+        "aside.side section.card:first-child"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "29-help",
+      "file": "29-help.png",
+      "url": "/portal/wings/help",
+      "steps": [
+        {
+          "waitForText": "Other ways to get help"
+        }
+      ],
+      "fullPage": true
+    },
+    {
+      "id": "29-flow",
+      "file": "29-flow.png",
+      "steps": [
+        {
+          "click": "ul.flows a.flow"
+        },
+        {
+          "waitFor": "section.step"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "hover": "h1"
+        }
+      ],
+      "clip": "div.portal-page"
+    },
+    {
+      "id": "29-widget",
+      "file": "29-widget.png",
+      "url": "/widget/demo.html",
+      "steps": [
+        {
+          "wait": 1500
+        },
+        {
+          "eval": "document.querySelector('[data-supportdesk-chat]').shadowRoot.querySelector('.launcher').click()"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "eval": "(() => { const r = document.querySelector('[data-supportdesk-chat]').shadowRoot; const set = (el, v) => { el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); }; set(r.querySelector('.prechat input[type=text]'), 'Kavya Iyer'); set(r.querySelector('.prechat input[type=email]'), 'kavya@abcretail.demo'); set(r.querySelector('.prechat textarea'), 'How do I change the invoice print layout?'); })()"
+        },
+        {
+          "wait": 400
+        }
+      ]
+    }
+  ]
+}

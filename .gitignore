@@ -494,3 +494,8 @@ clients/.angular/
 # Generated keys (development fallbacks) and IIS stdout logs — never commit
 **/keys/*.key
 src/SupportDesk.Api/logs/
+
+# User manual: scratch and built outputs (rebuild with docs/user-manual/refresh.mjs)
+docs/user-manual/_check-*.json
+docs/user-manual/shots/_failed-*.png
+docs/user-manual/dist/

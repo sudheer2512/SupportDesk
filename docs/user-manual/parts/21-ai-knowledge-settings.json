@@ -1,0 +1,466 @@
+{
+  "chapters": [
+    {
+      "id": "ai-knowledge-settings",
+      "title": "AI and knowledge settings",
+      "intro": [
+        "This chapter is for administrators. It explains how to set up the AI that helps agents and customers, and how to control its cost.",
+        "It also shows where the knowledge base settings are, because the AI answers from your knowledge base."
+      ],
+      "sections": [
+        {
+          "id": "ai-settings-page",
+          "title": "The AI settings page",
+          "type": "concept",
+          "intro": [
+            "To open it, select **Administration** > **AI**. You need the **Manage AI models, prompts, budgets and agents** permission. AI also needs the AI feature of your plan.",
+            "The header shows whether AI is on and which provider it uses. **AI Assistant** opens the agents' AI workspace."
+          ],
+          "blocks": [
+            {
+              "image": "shots/21-ai-settings.png",
+              "caption": "The **Provider & budget** tab of the **AI settings** page.",
+              "alt": "AI settings page with numbered highlights on the tabs, the Model provider card, the Embeddings and knowledge index card, the Budget and cost card, the Privacy and retention card and Save settings",
+              "width": 560
+            },
+            {
+              "callouts": [
+                "The tabs: **Provider & budget**, **Features**, **Auto-reply scenarios**, **Prompt templates**, **AI agents**, **Usage & cost** and **Execution log**.",
+                "**Model provider**: the AI service, the **AI enabled** switch and **Test saved provider**.",
+                "**Embeddings & knowledge index**: how SupportDesk searches by meaning, and **Reindex knowledge now**.",
+                "**Budget & cost**: the monthly limit and what happens when it is used up.",
+                "**Privacy & retention**: personal data protection and how long the log is kept.",
+                "**Save settings** saves the whole tab. It is greyed out until you change something."
+              ]
+            },
+            { "note": "Every AI call passes the same checks. SupportDesk checks permissions and the budget, hides personal data and records the call in the log." }
+          ]
+        },
+        {
+          "id": "ai-providers",
+          "title": "AI providers",
+          "type": "reference",
+          "intro": "The provider is the AI service that writes summaries, drafts and answers. You choose one provider for the whole workspace.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Provider", "What it is", "What you enter"],
+                "widths": [24, 42, 34],
+                "rows": [
+                  ["**Local (built-in)**", "Built in, offline and free. Nothing leaves your servers. It cannot translate.", "Nothing."],
+                  ["**OpenAI**", "The OpenAI service.", "**Model** and the key. **Endpoint** is optional."],
+                  ["**Azure OpenAI**", "Your own OpenAI resource in Microsoft Azure.", "**Deployment name**, **Endpoint** and the key."],
+                  ["**OpenAI-compatible**", "Any service that works like OpenAI, such as a model your company hosts.", "**Model**, **Endpoint** and, if needed, the key."],
+                  ["**Anthropic**", "The Anthropic service. It cannot search by meaning, so keep **Local** for embeddings.", "**Model** and the key. **Endpoint** is optional."]
+                ]
+              }
+            },
+            "The key is stored encrypted and is never shown again. To delete a saved key, tick **Remove the stored key**."
+          ]
+        },
+        {
+          "id": "ai-choose-provider",
+          "title": "Choose the AI provider",
+          "type": "task",
+          "intro": "Switch from the built-in provider to an external AI service, or back.",
+          "prerequisites": ["For an external provider, you have its model name and key from your AI account."],
+          "steps": [
+            "Select **Administration** > **AI**. The **Provider & budget** tab opens.",
+            "Make sure **AI enabled** is on.",
+            {
+              "text": "Choose the provider.",
+              "image": "shots/21-ai-provider-openai.png",
+              "caption": "**OpenAI** chosen, with the fields for that provider below.",
+              "alt": "Model provider card with OpenAI selected, the Model field filled in, an empty Endpoint field and the key field",
+              "width": 460
+            },
+            "Enter the **Model**, or the **Deployment name** for Azure OpenAI.",
+            "Enter the **Endpoint** if your provider needs one. The hint under the field tells you.",
+            "Paste the key into **API key**.",
+            "Select **Save settings**.",
+            "Select **Test saved provider**."
+          ],
+          "result": "The test shows **Chat OK** with the response time, and **Embeddings OK**. If a part fails, the reason appears under the badges.",
+          "blocks": [
+            { "note": "The test uses the saved settings. Save your changes before you test." },
+            { "tip": "To switch AI off for everyone, turn off **AI enabled** and select **Save settings**." }
+          ]
+        },
+        {
+          "id": "ai-budget",
+          "title": "Set the AI budget",
+          "type": "task",
+          "intro": "External AI services charge for each use. Set a monthly budget so that the cost cannot run away. The built-in provider is free.",
+          "steps": [
+            "On the **Provider & budget** tab, find the **Budget & cost** card.",
+            "Enter the **Monthly budget**. Enter `0` for no limit.",
+            "Enter the **Currency**, such as `USD` or `INR`.",
+            "Enter the **Input cost per 1K tokens** and the **Output cost per 1K tokens** from your provider's price list.",
+            { "text": "Choose what happens when the money runs out: **Block** or **Warn**.", "note": "**Block** refuses paid AI calls until next month. **Warn** keeps AI working and notifies AI administrators once." },
+            "Select **Save settings**."
+          ],
+          "result": "The card shows **Spent this month** against the budget, with a bar. It also shows the tokens used against your plan's allowance."
+        },
+        {
+          "id": "ai-privacy",
+          "title": "Privacy and retention",
+          "type": "reference",
+          "intro": "The **Privacy & retention** card protects customer data that goes to an external AI service.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Setting", "What it does"],
+                "widths": [38, 62],
+                "rows": [
+                  ["**Redact personal data before calling external providers**", "Replaces e-mail addresses, phone numbers, card numbers, and Aadhaar- and PAN-like numbers with placeholders. Card and ID numbers are never put back into answers."],
+                  ["**Keep the AI execution log for (days)**", "How long each AI call stays in the log, from 7 to 3650 days. The default is 180."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "ai-features",
+          "title": "Turn AI features on or off",
+          "type": "task",
+          "intro": "Each AI feature has its own switch. You can also limit a feature to some roles and set how sure the AI must be.",
+          "steps": [
+            "Select the **Features** tab.",
+            "In the **Enabled** column, turn each feature on or off.",
+            "In **Limit to roles**, add roles to limit who can use the feature. Leave **All roles** to allow everyone.",
+            "In **Min. confidence**, enter a number from 0 to 1. The AI acts only when it is at least this sure.",
+            "For **Classification**, turn on **Auto-apply** to fill empty fields on new tickets automatically.",
+            "Select **Save**."
+          ],
+          "result": "The app shows **AI features saved**.",
+          "blocks": [
+            {
+              "image": "shots/21-ai-features.png",
+              "caption": "The **AI features** table with every feature switched on.",
+              "alt": "AI features table with a row per feature showing the Enabled switch, Limit to roles, Min. confidence and Auto-apply",
+              "width": 520
+            },
+            { "note": "Role limits apply to people who use a feature themselves. AI agents have their own settings. Actions with real consequences always need a person's approval." }
+          ]
+        },
+        {
+          "id": "ai-feature-list",
+          "title": "AI features",
+          "type": "reference",
+          "intro": "These are the features on the **Features** tab.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Feature", "What it does"],
+                "widths": [30, 70],
+                "rows": [
+                  ["**Classification**", "Suggests the category, product, priority and department of a ticket."],
+                  ["**Summarization**", "Summarises a conversation, its current status and the pending actions."],
+                  ["**Reply suggestion**", "Drafts replies from published articles and similar solved tickets, with sources."],
+                  ["**Semantic search**", "Searches by meaning. It suggests articles and similar tickets."],
+                  ["**Sentiment**", "Rates the mood of each customer message and flags frustrated customers."],
+                  ["**Duplicate detection**", "Finds similar open tickets from the same contact or customer."],
+                  ["**Root cause**", "Suggests likely causes from similar solved tickets."],
+                  ["**Knowledge generation**", "Drafts help articles from solved tickets."],
+                  ["**Translation**", "Translates text. It needs an external provider."],
+                  ["**Resolution prediction**", "Estimates the time to solve a ticket from similar tickets."],
+                  ["**Anomaly detection**", "Checks every hour for unusual ticket volume and notifies supervisors."],
+                  ["**NL analytics**", "Answers report questions written in plain language."],
+                  ["**Agents**", "Runs the AI agents. See [Set up AI agents](#ai-agents)."],
+                  ["**Portal assistant**", "Answers customers in the help center and the chat widget from customer-visible articles."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "ai-scenarios",
+          "title": "Approve auto-reply scenarios",
+          "type": "task",
+          "intro": [
+            "The auto-responder agent may answer customers on its own, but only inside approved scenarios. A scenario is a type of question, such as how to reset a password.",
+            "Without a scenario, the auto-responder never replies by itself. It only proposes replies for an agent to check."
+          ],
+          "steps": [
+            "Select the **Auto-reply scenarios** tab.",
+            "Select **Add scenario**.",
+            "Enter a **Name** and a **Key**, such as `password_reset_howto`.",
+            "Enter a **Description** of what the customer asks.",
+            "In **Keywords**, add phrases that identify the question, such as `reset password`.",
+            "Choose the **Channels** and, if you like, the **Categories (optional)**.",
+            "Enter the **Minimum confidence**, from 0.5 to 1.",
+            "Optionally add **Approved article ids (optional)**. Replies must then cite one of these articles.",
+            "Make sure **Enabled** is on and select **Save scenarios**."
+          ],
+          "result": "The auto-responder can now reply to matching questions on the chosen channels.",
+          "blocks": [
+            {
+              "image": "shots/21-ai-scenarios.png",
+              "caption": "An approved scenario for password reset questions.",
+              "alt": "Auto-reply scenario card with Name, Key, Description, Keywords, Channels, Categories, Minimum confidence and Approved article ids",
+              "width": 520
+            },
+            "To stop a scenario, turn off **Enabled**. To remove it, select the bin icon, confirm, and save."
+          ]
+        },
+        {
+          "id": "ai-prompts",
+          "title": "Customise a prompt template",
+          "type": "task",
+          "intro": [
+            "A prompt template is the instruction SupportDesk gives the AI for one feature. Each feature has a built-in default.",
+            "Change a template only if you need a different tone or extra guidance. Most workspaces keep the defaults."
+          ],
+          "steps": [
+            "Select the **Prompt templates** tab.",
+            "In the **Templates** list, select a feature.",
+            "Edit the **System prompt**, which sets the AI's role and rules.",
+            "Edit the **User message template**. Keep the placeholders listed under the field.",
+            "To start again, select **Start from default**.",
+            "Select **Save as version 1** (or the next number)."
+          ],
+          "result": "The app shows that the template was saved as a new version. The list shows the version number instead of **default**.",
+          "blocks": [
+            {
+              "image": "shots/21-ai-prompts.png",
+              "caption": "The **Classification** prompt with its built-in default active.",
+              "alt": "Prompt templates tab with the list of templates, the System prompt and User message template fields, Start from default, Save as version 1 and the Versions card",
+              "width": 520
+            },
+            {
+              "list": [
+                "In the **Versions** card, select **Activate** to use another version or the default.",
+                "Select **Load** to copy an old version into the editor.",
+                "Select **Reset to default** to go back to the built-in prompt. Saved versions are kept."
+              ]
+            },
+            { "note": "SupportDesk always adds its security rules to the prompt and checks the AI's answers. A template cannot switch these off." }
+          ]
+        },
+        {
+          "id": "ai-agents",
+          "title": "Set up AI agents",
+          "type": "concept",
+          "intro": [
+            "AI agents work on tickets when they arrive or when customers reply. They propose actions, such as a category or a reply.",
+            "Requests with real consequences always go to a person. Examples are refunds, contracts, and account or data changes."
+          ],
+          "blocks": [
+            {
+              "image": "shots/21-ai-agents.png",
+              "caption": "The **AI agents** tab with four agents.",
+              "alt": "AI agents table with the agent name, kind, mode, scope, runs, Enabled switch, Edit and delete",
+              "width": 520
+            },
+            { "heading": "Kinds of agent" },
+            {
+              "table": {
+                "columns": ["Kind", "What it does"],
+                "widths": [26, 74],
+                "rows": [
+                  ["**Triage**", "Classifies new tickets: category, product, department, priority and tags."],
+                  ["**Info collector**", "Spots missing details, such as the version or the error message. It drafts a request to the customer."],
+                  ["**Knowledge resolver**", "Drafts a solution from published articles and similar solved tickets."],
+                  ["**Auto responder**", "Replies automatically, but only inside approved scenarios, above the threshold and on allowed channels."]
+                ]
+              }
+            },
+            { "heading": "Modes" },
+            {
+              "table": {
+                "columns": ["Mode", "What happens"],
+                "widths": [26, 74],
+                "rows": [
+                  ["**Suggest only**", "Everything becomes a proposal for a person to approve."],
+                  ["**Act on low-risk**", "The agent fills empty fields and adds tags by itself, above the threshold. The rest is proposed. The auto responder replies inside approved scenarios."]
+                ]
+              }
+            },
+            "People with the **Approve, apply and revert AI-proposed actions** permission review proposals. They do this on the **Proposals** tab of the AI Assistant.",
+            { "note": "Auto-replies are always blocked for critical tickets, frustrated customers and messages that try to trick the AI." }
+          ]
+        },
+        {
+          "id": "ai-add-agent",
+          "title": "Add an AI agent",
+          "type": "task",
+          "intro": "Start with a triage agent in **Suggest only** mode. Check its proposals for a while before you let it act.",
+          "steps": [
+            "On the **AI agents** tab, select **New agent**.",
+            "Enter a **Name** and choose the **Kind**. You cannot change the kind later.",
+            "Choose **Suggest only** or **Act on low-risk**.",
+            "Optionally choose **Departments** and **Channels**. Empty means all.",
+            "Optionally enter a **Minimum confidence**. Empty uses the **Agents** feature setting.",
+            "For an auto responder, set **Max automatic replies per ticket** and the **Approved scenarios**. For an info collector, tick the **Information to ask for**.",
+            "Under **Allowed actions**, tick the actions the agent may take. None ticked means all.",
+            {
+              "text": "Optionally write **Instructions**, such as the tone to use.",
+              "image": "shots/21-ai-agent-editor.png",
+              "caption": "The **New AI agent** dialog for a triage agent.",
+              "alt": "New AI agent dialog with Name, Kind, the two modes, Departments, Channels, Minimum confidence, Allowed actions and Save agent",
+              "width": 460
+            },
+            "Make sure **Enabled** is on and select **Save agent**."
+          ],
+          "result": "The new agent appears in the list. To change it, select **Edit**. To pause it, turn off its switch in the **Enabled** column.",
+          "blocks": [
+            { "note": "**Instructions** guide external AI services only. The built-in provider uses fixed, reviewed wording." }
+          ]
+        },
+        {
+          "id": "ai-usage",
+          "title": "Usage and cost",
+          "type": "concept",
+          "intro": "The **Usage & cost** tab shows how much AI you use and how often people accept its work.",
+          "blocks": [
+            {
+              "list": [
+                "Tiles at the top show **Spent this month**, **Monthly budget**, **Budget used**, **Metered tokens (external)** and **AI calls this month**.",
+                "Charts show the use **By feature**, **By model** and **By month**.",
+                "**Suggestion outcomes** shows, for the last 30 days, how often people accepted, applied, rejected or reverted AI results.",
+                "Choose 3, 6 or 12 months in **History**, then select **Refresh**."
+              ]
+            },
+            {
+              "image": "shots/21-ai-usage.png",
+              "caption": "The **Usage & cost** tab with the **Suggestion outcomes** table.",
+              "alt": "Usage and cost tab with tiles, charts by feature, model and month, and the Suggestion outcomes table",
+              "width": 520
+            },
+            "**Use rate** is the share of results that people accepted or applied."
+          ]
+        },
+        {
+          "id": "ai-execution-log",
+          "title": "Check the AI execution log",
+          "type": "task",
+          "intro": "The execution log lists every AI call. Use it to see what the AI did, what it cost and whether people used the result.",
+          "steps": [
+            {
+              "text": "Select the **Execution log** tab.",
+              "image": "shots/21-ai-executions.png",
+              "caption": "The AI execution log, newest first.",
+              "alt": "AI execution log with the Feature, Status, Outcome, From and To filters above the list of AI calls",
+              "width": 560
+            },
+            "Filter by **Feature**, **Status**, **Outcome**, **From** or **To**.",
+            {
+              "text": "Select a row to open its details.",
+              "image": "shots/21-ai-execution-detail.png",
+              "caption": "The details of one AI agent call.",
+              "alt": "Execution details panel with time, provider, status, outcome, confidence, tokens, cost, latency, prompt version, entity, prompt-injection checks, citations and output",
+              "width": 420
+            },
+            "Read the facts, the **Prompt-injection checks** and the **Output**. Select **Ticket · AI view** to open the ticket.",
+            "To see more rows, select **Load more** at the bottom of the list."
+          ],
+          "result": "You can see each call's provider, confidence, tokens, cost and result.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Status", "What it means"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**Succeeded**", "The AI answered and the answer passed the checks."],
+                  ["**Failed**", "The provider returned an error or an invalid answer."],
+                  ["**Blocked**", "The call was refused, for example by the plan or a missing permission."],
+                  ["**Budget exceeded**", "The monthly budget was used up and set to **Block**."],
+                  ["**Disabled**", "AI or the feature was switched off."]
+                ]
+              }
+            },
+            "The outcome shows what people did with the result: **Pending**, **Accepted**, **Applied**, **Rejected**, **Reverted** or **Expired**.",
+            { "note": "A red shield in the **Injection** column means a message tried to give the AI orders. SupportDesk treated it as data, and agents sent nothing automatically." }
+          ]
+        },
+        {
+          "id": "kn-where",
+          "title": "Where the knowledge settings are",
+          "type": "reference",
+          "intro": "There is no separate knowledge settings page. The settings are in three places.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Setting", "Where", "Who can change it"],
+                "widths": [34, 36, 30],
+                "rows": [
+                  ["Categories of the knowledge base", "**Knowledge Base** > **Categories**", "**Publish, archive and expire articles**, or **Manage knowledge base settings and portals**"],
+                  ["Knowledge base, community forums and AI assistant in the help center, and portal languages", "**Administration** > **Brands & portals**, per brand", "**Manage departments, teams, brands and calendars**"],
+                  ["The search index used by AI", "**Administration** > **AI** > **Embeddings & knowledge index**", "**Manage AI models, prompts, budgets and agents**"],
+                  ["Knowledge base analytics and export", "**Knowledge Base** > **Analytics**", "**Manage knowledge base settings and portals**, or a knowledge base role"]
+                ]
+              }
+            },
+            {
+              "image": "shots/21-kb-categories.png",
+              "caption": "**Knowledge Base** > **Categories** with the category tree.",
+              "alt": "Knowledge base categories page with Refresh, New category, the filter and the table of categories with visibility, brands, articles and order",
+              "width": 560
+            }
+          ]
+        },
+        {
+          "id": "kn-categories",
+          "title": "Organise knowledge base categories",
+          "type": "task",
+          "intro": "Categories group articles for agents and in the help center. A category's visibility and brands also apply in the portal.",
+          "prerequisites": ["You have the **Publish, archive and expire articles** or **Manage knowledge base settings and portals** permission."],
+          "steps": [
+            "Select **Knowledge Base** > **Categories**.",
+            "Select **New category**. To change one, select its pencil icon.",
+            "Enter the **Name** and the **Slug**, the short name used in help center addresses.",
+            "To nest it, choose a **Parent category**. Leave **Top level** for a main category.",
+            "Choose the **Visibility**: **Public**, **Signed-in customers**, **Internal** or **Restricted**.",
+            "In **Brands**, choose the brand portals that show it. Empty means every brand portal.",
+            "Enter a **Sort order**. Lower numbers come first.",
+            "Select **Create category**, or **Save changes** for an existing one."
+          ],
+          "result": "The category appears in the tree. Articles in it follow its visibility in the help center.",
+          "blocks": [
+            "More about articles and categories is in the knowledge base chapter."
+          ]
+        },
+        {
+          "id": "kn-reindex",
+          "title": "Rebuild the knowledge index",
+          "type": "task",
+          "intro": "The knowledge index lets the AI and the search find articles and solved tickets by meaning. It updates itself, but you can rebuild it at once.",
+          "steps": [
+            "Select **Administration** > **AI**.",
+            "In the **Embeddings & knowledge index** card, check the **Embedding provider**. **Local (feature hashing, 384 dims)** is free and offline.",
+            "If you use an external provider, enter the **Embedding model** and select **Save settings**.",
+            "Select **Reindex knowledge now**."
+          ],
+          "result": "The app shows **Knowledge index updated**. The card shows how many articles and solved tickets were indexed.",
+          "blocks": [
+            { "note": "When you change the embedding model, SupportDesk rebuilds the whole index in the background. Search results may be weaker until it finishes." }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "**Test saved provider** shows **Chat failed**.", "cause": "The model name, address or key is wrong, or the service cannot be reached.", "fix": "Check the values with your AI account, select **Save settings** and test again." },
+    { "problem": "**Embeddings failed** after you switch provider.", "cause": "The provider cannot create embeddings, or the embedding model is wrong.", "fix": "Choose **Local (feature hashing, 384 dims)** as the **Embedding provider**, save, and test again." },
+    { "problem": "AI features stop working in the middle of the month.", "cause": "The monthly budget is used up and the budget action is **Block**.", "fix": "Raise the **Monthly budget** or choose **Warn**, then save. The log shows **Budget exceeded** for blocked calls." },
+    { "problem": "The app says to check the highlighted fields.", "cause": "A setting is outside its allowed range, such as a log period under 7 days.", "fix": "Correct the fields marked in red and save again." },
+    { "problem": "The auto-responder never replies by itself.", "cause": "No enabled scenario matches, the agent is in **Suggest only** mode, or the ticket is critical.", "fix": "Add and enable a scenario, and set the agent to **Act on low-risk**." },
+    { "problem": "The app says every scenario needs a name.", "cause": "A scenario card has an empty **Name**.", "fix": "Enter a name or remove the empty card, then select **Save scenarios**." }
+  ],
+  "faq": [
+    { "q": "Does the built-in AI send our data anywhere?", "a": "No. The **Local (built-in)** provider runs inside SupportDesk. Nothing leaves your servers." },
+    { "q": "Can an AI agent issue a refund or change a contract?", "a": "No. Requests with real consequences always go to a person for a decision." },
+    { "q": "Where do agents approve AI proposals?", "a": "On the **Proposals** tab of the AI Assistant. They need the **Approve, apply and revert AI-proposed actions** permission." }
+  ],
+  "glossary": [
+    { "term": "AI provider", "definition": "The AI service that SupportDesk uses, either the built-in one or an external service." },
+    { "term": "Embedding", "definition": "A number pattern that describes the meaning of a text. SupportDesk uses embeddings to search by meaning." },
+    { "term": "Knowledge index", "definition": "The searchable store of articles and solved tickets that the AI uses to find answers." },
+    { "term": "Token", "definition": "A small piece of text that external AI services count to calculate their price." },
+    { "term": "Confidence", "definition": "How sure the AI is about a result, from 0 to 1." },
+    { "term": "Auto-reply scenario", "definition": "An approved type of customer question that the auto-responder may answer by itself." },
+    { "term": "AI agent", "definition": "An automatic helper that proposes or takes low-risk actions on tickets." },
+    { "term": "Prompt template", "definition": "The instruction text that SupportDesk sends to the AI for one feature." },
+    { "term": "Prompt injection", "definition": "Text in a customer message that tries to give the AI orders. SupportDesk treats it as data only." }
+  ]
+}

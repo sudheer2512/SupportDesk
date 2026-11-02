@@ -1,0 +1,354 @@
+{
+  "chapters": [
+    {
+      "id": "engineering-board",
+      "title": "Engineering board",
+      "intro": [
+        "This chapter is for agents who send product defects to engineering, and for engineers who fix them.",
+        "It explains the engineering board, escalating a ticket, linking tickets to work items, and releasing fixes."
+      ],
+      "sections": [
+        {
+          "id": "about-engineering",
+          "title": "How engineering work connects to tickets",
+          "type": "concept",
+          "intro": "Some problems are product defects that only engineers can fix. You escalate such a ticket to engineering. SupportDesk then creates a work item and links it to the ticket.",
+          "blocks": [
+            { "list": [
+              "A **work item** is a bug, feature or task for engineers. Each one has a key, such as `ENG-12`.",
+              "One work item can cover many tickets. All linked tickets follow the same fix.",
+              "A **release** is a product version, such as 8.1. You plan work items for a release.",
+              "When a release is published, linked tickets get an internal note, and their assignees are notified."
+            ] },
+            "The **Engineering** board shows work items of the built-in tracker. Your administrator can also connect Azure DevOps or GitHub. Items from those trackers appear on the ticket, not on the board. Jira is not supported.",
+            { "heading": "Permissions" },
+            { "table": {
+              "columns": ["Permission", "Lets you"],
+              "widths": [45, 55],
+              "rows": [
+                ["**View the engineering board, work items and releases**", "Open the **Engineering** board and the ticket's **Engineering** tab."],
+                ["**Create and link engineering work items**", "Escalate a ticket and link a ticket to an existing work item."],
+                ["**Create, update and move engineering work items; publish releases**", "Create, edit and move work items. Add, publish and delete releases."]
+              ]
+            } },
+            { "note": "The board needs the built-in tracker. An administrator turns it on under **Administration** > **Engineering**." }
+          ]
+        },
+        {
+          "id": "engineering-board-tour",
+          "title": "The engineering board at a glance",
+          "type": "concept",
+          "intro": "Select **Engineering** in the main menu. The board shows one column for each work item state.",
+          "blocks": [
+            { "image": "shots/13-eng-board.png", "caption": "The engineering board with its filters, state columns and work item cards.", "alt": "Engineering board with numbered highlights on the filters, the New column, a card, the card menu, Releases and New work item" },
+            { "callouts": [
+              "The filters: search, engineer, release and **Show closed**. The item count and the reload button are on the right.",
+              "A state column with its name, the number of cards and a short hint.",
+              "A work item card. It shows the key, title, priority, severity, fix version, linked tickets and assignee.",
+              "The card menu. Use it to move the card or open its details.",
+              "**Releases** opens the list of product versions.",
+              "**New work item** creates a work item without a ticket."
+            ] },
+            { "table": {
+              "columns": ["Column", "Meaning"],
+              "widths": [25, 75],
+              "rows": [
+                ["**New**", "Escalated, not started."],
+                ["**Active**", "Being worked on."],
+                ["**Resolved**", "Fixed, waiting for a release."],
+                ["**Closed**", "Released or done. This column appears only when **Show closed** is on."]
+              ]
+            } },
+            { "tip": "The ticket badge on a card shows how many tickets are linked to it. A green fix version with a rocket means the version is released." }
+          ]
+        },
+        {
+          "id": "find-work-items",
+          "title": "Find work items on the board",
+          "type": "task",
+          "intro": "Narrow the board to the items you care about.",
+          "prerequisites": ["You have the **View the engineering board, work items and releases** permission."],
+          "steps": [
+            "Select **Engineering** in the main menu.",
+            "In the search box, enter part of a title, a key such as `ENG-12`, or a version. Press [[Enter]].",
+            "In the engineer list, choose an engineer, or choose **All engineers**.",
+            "In the release list, choose a release, or choose **All releases**.",
+            "To include finished items, turn on **Show closed**.",
+            "If **Load more** appears below the board, select it to see more cards."
+          ],
+          "result": "The board shows only the matching work items. The count next to the reload button shows how many there are."
+        },
+        {
+          "id": "move-work-item",
+          "title": "Move a work item to another state",
+          "type": "task",
+          "intro": "Move a card when work starts, when the fix is ready, or when the item is done.",
+          "prerequisites": ["You have the **Create, update and move engineering work items; publish releases** permission."],
+          "steps": [
+            "Open the **Engineering** board.",
+            "Drag the card to the new column.",
+            {
+              "text": "Or select the card menu (**...**), then choose the new state under **Move to**.",
+              "image": "shots/13-eng-move-menu.png",
+              "caption": "The card menu with the states you can move the card to.",
+              "alt": "Card menu with Move to New, Resolved, Closed and Open details",
+              "width": 200
+            }
+          ],
+          "result": "The card moves to the new column. A message shows how many linked tickets were updated.",
+          "blocks": [
+            { "note": "When a work item becomes **Resolved**, its linked tickets get an internal note, and their assignees are notified." }
+          ]
+        },
+        {
+          "id": "edit-work-item",
+          "title": "Open and edit a work item",
+          "type": "task",
+          "intro": "Change a work item's details, plan it for a release, or see its linked tickets.",
+          "prerequisites": ["To change a work item, you need the **Create, update and move engineering work items; publish releases** permission."],
+          "steps": [
+            "Open the **Engineering** board.",
+            {
+              "text": "Select the title of a card. The work item panel opens.",
+              "image": "shots/13-eng-work-item.png",
+              "caption": "The work item panel with its fields, repro steps and linked tickets.",
+              "alt": "Work item panel for ENG-2 with title, type, state, priority, severity, assignee, release, product, tags, description and linked tickets",
+              "width": 440
+            },
+            "Change the fields you need. [Work item fields](#work-item-fields) lists them all.",
+            "To plan the fix, choose a version in **Release (fix version)**.",
+            "Select **Save**."
+          ],
+          "result": "The message **Work item saved** appears, and the card shows the new details.",
+          "blocks": [
+            { "tip": "Under **Linked tickets**, select a ticket number to open that ticket." },
+            { "warning": "**Delete** removes the work item for good. Select it only for items created by mistake." }
+          ]
+        },
+        {
+          "id": "create-work-item",
+          "title": "Create a work item without a ticket",
+          "type": "task",
+          "intro": "Use this for engineering work that no customer has reported yet. To start from a ticket, [escalate the ticket](#escalate-ticket) instead.",
+          "prerequisites": ["You have the **Create, update and move engineering work items; publish releases** permission."],
+          "steps": [
+            "Open the **Engineering** board.",
+            "Select **New work item**. An empty work item panel opens.",
+            "Enter the **Title**.",
+            "Choose the **Type**, **Priority** and, if needed, the **Severity**.",
+            "Fill in the other fields you need, such as **Assignee** and **Description / repro steps**.",
+            "Select **Save**."
+          ],
+          "result": "The message **Work item created** appears. The new card appears in the **New** column."
+        },
+        {
+          "id": "work-item-fields",
+          "title": "Work item fields",
+          "type": "reference",
+          "intro": "These fields appear in the work item panel. Fields marked optional on the screen can stay empty.",
+          "blocks": [
+            { "table": {
+              "columns": ["Field", "What it holds"],
+              "widths": [28, 72],
+              "rows": [
+                ["**Title**", "A short description of the problem. Required."],
+                ["**Type**", "**Bug**, **Feature** or **Task**."],
+                ["**State**", "**New**, **Active**, **Resolved** or **Closed**."],
+                ["**Priority**", "**Low**, **Medium**, **High** or **Critical**."],
+                ["**Severity**", "How badly customers are affected: **Cosmetic**, **Minor**, **Major** or **Critical**."],
+                ["**Assignee**", "The engineer who works on the item, or **Unassigned**."],
+                ["**Release (fix version)**", "The release that will ship the fix, or **Not planned**."],
+                ["**Product**", "The product the item belongs to."],
+                ["**Iteration** and **Area**", "Optional planning labels that your engineering team uses."],
+                ["**Tags**", "Keywords. Press [[Enter]] after each tag."],
+                ["**Description / repro steps**", "How to reproduce the problem. An escalation fills this from the ticket."],
+                ["**Linked tickets**", "The tickets that follow this work item. You cannot edit this list here."]
+              ]
+            } }
+          ]
+        },
+        {
+          "id": "escalate-ticket",
+          "title": "Escalate a ticket to engineering",
+          "type": "task",
+          "intro": "Escalate a ticket when the customer's problem is a product defect. SupportDesk creates a work item and fills the repro steps from the ticket.",
+          "prerequisites": [
+            "You have the **Create and link engineering work items** permission.",
+            "Your administrator has set up at least one engineering tracker."
+          ],
+          "steps": [
+            "Open the ticket.",
+            {
+              "text": "Open the **Engineering** tab.",
+              "note": "On a narrow screen, the tabs are in a side panel. Select **Ticket details** (the sliders button) to open it.",
+              "image": "shots/13-eng-ticket-tab.png",
+              "caption": "The ticket's Engineering tab with one linked work item.",
+              "alt": "Ticket details panel on the Engineering tab with Escalate, Link existing and the linked work item ENG-2",
+              "width": 330
+            },
+            "Select **Escalate**. The **Escalate to engineering** form opens.",
+            {
+              "text": "Check the **Tracker**, **Type**, **Priority**, **Title** and **Severity**.",
+              "image": "shots/13-eng-escalate.png",
+              "caption": "The Escalate to engineering form. The repro steps are filled from the ticket.",
+              "alt": "Escalate to engineering form with type, priority, title, severity, repro steps, engineer, tags, the substatus check box, Cancel and Create work item",
+              "width": 330
+            },
+            { "text": "Read the **Repro steps** and add anything the engineers need.", "note": "Some trackers also ask for an **Area path** and an **Iteration path**." },
+            "If you know who should fix it, choose the engineer in **Assign to engineer**.",
+            "To show the ticket as waiting for engineering, tick **Set the ticket substatus “Engineering”**.",
+            "Select **Create work item**."
+          ],
+          "result": "The work item appears on the ticket's **Engineering** tab and in the **New** column of the board.",
+          "blocks": [
+            { "note": "The repro steps include the description, the customer's messages, analysis notes, product details and impact. Remove anything private before you create the item." },
+            { "note": "If the message **Ticket status unchanged** appears, the work item was created, but the ticket status could not change. Change the status yourself if needed." }
+          ]
+        },
+        {
+          "id": "link-existing-work-item",
+          "title": "Link a ticket to an existing work item",
+          "type": "task",
+          "intro": "If engineering already tracks the problem, link the ticket to that work item. Do not create a second item.",
+          "prerequisites": ["You have the **Create and link engineering work items** permission."],
+          "steps": [
+            "Open the ticket and its **Engineering** tab.",
+            "Select **Link existing**.",
+            "In **Tracker**, choose the tracker that holds the work item.",
+            {
+              "text": "In **Work item id or URL**, enter the key or number, such as `ENG-12` or `1234`. You can also paste the item's web address.",
+              "image": "shots/13-eng-link.png",
+              "caption": "The Link existing work item form with a work item key entered.",
+              "alt": "Link existing work item form with Tracker, Work item id or URL, the substatus check box, Cancel and Link",
+              "width": 380
+            },
+            "Tick or clear **Set the ticket substatus “Engineering”**.",
+            "Select **Link**."
+          ],
+          "result": "The work item appears on the ticket's **Engineering** tab."
+        },
+        {
+          "id": "follow-work-from-ticket",
+          "title": "Follow engineering work from a ticket",
+          "type": "concept",
+          "intro": "The ticket's **Engineering** tab lists every linked work item. Each entry shows the item's state and fix version.",
+          "blocks": [
+            { "table": {
+              "columns": ["What you see", "Meaning"],
+              "widths": [35, 65],
+              "rows": [
+                ["State badge", "The item's state in the tracker, such as **Active** or **Resolved**."],
+                ["**Fix in** and a version", "The item is planned for that release."],
+                ["**Released** and a version", "The fix has shipped in that release."],
+                ["**Customer notified**", "The customer was told that the fix is released."],
+                ["**Moved in tracker** or **Deleted in tracker**", "The item left the tracker. SupportDesk keeps the last known details."],
+                ["**Sync failed**", "SupportDesk could not get the latest state from the tracker."],
+                ["Ticket and customer count", "Select it to see the other tickets that follow the same item."]
+              ]
+            } },
+            { "heading": "Actions on a linked work item" },
+            { "list": [
+              "Select the key, such as **ENG-2**, to open the item on the board or in the external tracker.",
+              "Select the refresh button on the item to get its latest state. The refresh button at the top refreshes all items.",
+              "Select the external link button to open the item in Azure DevOps or GitHub.",
+              "Select the cross button to unlink the item. Confirm with **Unlink**. The timeline keeps a record of the link."
+            ] },
+            { "note": "When a linked work item is resolved or released, the ticket gets an internal note, and its assignee is notified. If your administrator turned it on, the customer also gets a reply that the fix is released." }
+          ]
+        },
+        {
+          "id": "releases",
+          "title": "Releases and fix versions",
+          "type": "concept",
+          "intro": "A release groups the work items that ship together. Select **Releases** on the board to see them.",
+          "blocks": [
+            { "image": "shots/13-eng-releases.png", "caption": "The Releases panel with the form for a new release and the list of releases.", "alt": "Releases panel with Version, Planned date, Product, Release notes, Add release, and releases 8.1 Planned and 8.0.1 Deployed", "width": 420 },
+            { "table": {
+              "columns": ["Status", "Meaning", "Next action"],
+              "widths": [18, 50, 32],
+              "rows": [
+                ["**Planned**", "The version is not out yet. The line shows how many items are still open.", "**Publish** when it ships."],
+                ["**Released**", "The version is published. Its items carry the fix version.", "**Mark deployed** when it is installed."],
+                ["**Deployed**", "The version is installed. The deployment date is recorded.", "None."]
+              ]
+            } }
+          ]
+        },
+        {
+          "id": "add-release",
+          "title": "Add a release",
+          "type": "task",
+          "intro": "Add the next version before you plan work items for it.",
+          "prerequisites": ["You have the **Create, update and move engineering work items; publish releases** permission."],
+          "steps": [
+            "On the **Engineering** board, select **Releases**.",
+            "In **Version**, enter the version name, such as `8.1.0`.",
+            "Optionally, choose a **Planned date** and a **Product**.",
+            "Optionally, enter **Release notes**.",
+            "Select **Add release**."
+          ],
+          "result": "The message **Release added** appears. The release appears in the list with the status **Planned**.",
+          "blocks": [
+            { "tip": "To change a planned release, select its pencil button, change the fields and select **Save release**. Select **Cancel edit** to stop without saving." },
+            { "note": "You can delete a release only when no work items are planned for it. Otherwise its bin button is unavailable." }
+          ]
+        },
+        {
+          "id": "publish-release",
+          "title": "Publish a release",
+          "type": "task",
+          "intro": "Publish a release when the version ships to customers.",
+          "prerequisites": ["You have the **Create, update and move engineering work items; publish releases** permission."],
+          "steps": [
+            "On the **Engineering** board, select **Releases**.",
+            "Find the release with the status **Planned**.",
+            "Select **Publish**. A message explains what happens next.",
+            "Select **Publish** again to confirm."
+          ],
+          "result": "The message **Release published** appears. The fix version is stamped on the release's work items, and resolved items are closed. Linked tickets get an internal note, and their assignees are notified.",
+          "blocks": [
+            { "warning": "If your administrator turned on automatic customer notices, customers get a “fix released” reply at once. Check the release before you publish it." }
+          ]
+        },
+        {
+          "id": "mark-release-deployed",
+          "title": "Mark a release as deployed",
+          "type": "task",
+          "intro": "Record the date when a released version was installed.",
+          "prerequisites": [
+            "You have the **Create, update and move engineering work items; publish releases** permission.",
+            "The release is published."
+          ],
+          "steps": [
+            "On the **Engineering** board, select **Releases**.",
+            "Find the released version.",
+            "Select **Mark deployed**.",
+            "Select **Mark deployed** again to confirm."
+          ],
+          "result": "The message **Deployment recorded** appears. The release shows the status **Deployed**."
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "The board says **The built-in tracker is not set up**.", "cause": "Your workspace does not use the built-in engineering board yet.", "fix": "Ask an administrator to set it up under **Administration** > **Engineering**." },
+    { "problem": "The **Engineering** menu item or the ticket's **Engineering** tab is missing.", "cause": "Your role does not include an engineering permission.", "fix": "Ask an administrator for the **View the engineering board, work items and releases** permission." },
+    { "problem": "You cannot drag cards, and the card menu is missing.", "cause": "You can view the board but not change work items.", "fix": "Ask an administrator for the **Create, update and move engineering work items; publish releases** permission." },
+    { "problem": "The ticket's **Engineering** tab says that no engineering tracker is set up.", "cause": "No tracker is connected.", "fix": "Ask an administrator to connect Azure DevOps, GitHub or the built-in board." },
+    { "problem": "A linked work item shows **Sync failed**.", "cause": "SupportDesk could not reach the external tracker.", "fix": "Select the refresh button on the item later. If it keeps failing, tell your administrator." },
+    { "problem": "The bin button of a release is unavailable.", "cause": "Work items are still planned for that release.", "fix": "Move those work items to another release, or set them to **Not planned**. Then delete the release." },
+    { "problem": "The message **Could not move** a work item appears.", "cause": "Someone else changed the work item at the same time.", "fix": "The board reloads. Move the card again." }
+  ],
+  "faq": [
+    { "q": "Can one work item cover several tickets?", "a": "Yes. Link each ticket to the same work item. All linked tickets get the updates when the item is resolved or released." },
+    { "q": "Is the customer told when a fix ships?", "a": "Only if your administrator turned on automatic notices. Then the customer gets a “fix released” reply when the release is published. The work item shows **Customer notified**." },
+    { "q": "Can I link a ticket to a Jira issue?", "a": "No. SupportDesk works with the built-in board, Azure DevOps and GitHub." }
+  ],
+  "glossary": [
+    { "term": "Work item", "definition": "A bug, feature or task for engineers, with a key such as ENG-12. Tickets link to work items to follow a fix." },
+    { "term": "Release", "definition": "A product version that ships a set of work items. It is Planned, Released or Deployed." },
+    { "term": "Fix version", "definition": "The release that will ship, or has shipped, the fix for a work item." },
+    { "term": "Repro steps", "definition": "The steps that reproduce a problem. Engineers use them to see the defect for themselves." },
+    { "term": "Engineering escalation", "definition": "Sending a ticket's product defect to engineers by creating a work item from the ticket." }
+  ]
+}

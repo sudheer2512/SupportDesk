@@ -1,0 +1,68 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": { "width": 1280, "height": 800, "scale": 1.5 },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": ["sd-toast-outlet"],
+  "shots": [
+    {
+      "id": "02-accept-invite",
+      "file": "02-accept-invite.png",
+      "url": "/accept-invite?tenant=wings&email=kavya.iyer@wings.demo",
+      "steps": [
+        { "waitForText": "Join your team" },
+        { "fill": "label=Invitation code", "value": "K7QM-4ZP2" },
+        { "fill": "input[name=name]", "value": "Kavya Iyer" }
+      ],
+      "clip": ".card"
+    },
+    {
+      "id": "02-session-ended",
+      "file": "02-session-ended.png",
+      "url": "/login?expired=1",
+      "steps": [{ "waitForText": "Your session ended. Please sign in again." }],
+      "clip": ".card"
+    },
+    {
+      "id": "02-sign-in",
+      "file": "02-sign-in.png",
+      "url": "/login",
+      "steps": [
+        { "waitForText": "Sign in to SupportDesk" },
+        { "fill": "label=Workspace", "value": "wings" },
+        { "fill": "label=Work e-mail", "value": "priya@wings.demo" }
+      ],
+      "highlight": ["label=Workspace", "label=Work e-mail", "label=Password", "button.reveal", "form button[type=submit]", "button.theme"],
+      "numbered": true
+    },
+    {
+      "id": "02-sign-in-errors",
+      "file": "02-sign-in-errors.png",
+      "url": "/login",
+      "steps": [
+        { "waitForText": "Sign in to SupportDesk" },
+        { "click": "form button[type=submit]" },
+        { "waitForText": "Enter your workspace name." }
+      ],
+      "clip": ".card"
+    },
+    {
+      "id": "02-two-step",
+      "file": "02-two-step.png",
+      "url": "/login",
+      "steps": [
+        { "waitForText": "Sign in to SupportDesk" },
+        { "fill": "label=Workspace", "value": "wings" },
+        { "fill": "label=Work e-mail", "value": "admin@wings.demo" },
+        { "fill": "label=Password", "value": "${env:SD_DESK_PASSWORD}" },
+        { "click": "form button[type=submit]" },
+        { "waitForText": "Two-step verification" },
+        { "eval": "document.querySelectorAll(\".callout--demo\").forEach(e => e.remove())" }
+      ],
+      "highlight": ["label=Verification code", "text=Verify", "text=Use a different account"],
+      "numbered": true,
+      "clip": ".card"
+    }
+  ]
+}

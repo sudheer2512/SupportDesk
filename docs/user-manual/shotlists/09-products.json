@@ -1,0 +1,644 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "timeoutMs": 30000,
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "admin@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Two-step verification"
+    },
+    {
+      "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "09-catalog-tour",
+      "file": "09-catalog-tour.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "eval": "(() => { const b = document.querySelector(\"button[aria-label='Close panel']\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "click": "desk-nav-list a[href='/products']"
+        },
+        {
+          "waitForText": "Product catalog, versions"
+        },
+        {
+          "click": ".plist button:nth-of-type(2)"
+        },
+        {
+          "waitForText": "12 installations at"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "eval": "(() => { document.querySelectorAll('*').forEach((e) => { if (e.scrollTop > 0) e.scrollTop = 0; }); window.scrollTo(0, 0); return true; })()"
+        }
+      ],
+      "fullPage": true,
+      "highlight": [
+        "text=New product",
+        "desk-module-tabs",
+        ".plist",
+        ".detail > sd-card",
+        ".chips",
+        ".detail .dt-wrap"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "09-product-form",
+      "file": "09-product-form.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "eval": "(() => { const b = document.querySelector(\"button[aria-label='Close panel']\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "click": "desk-nav-list a[href='/products']"
+        },
+        {
+          "waitForText": "Product catalog, versions"
+        },
+        {
+          "click": "text=New product"
+        },
+        {
+          "waitFor": "sd-dialog"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "09-version-form",
+      "file": "09-version-form.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "eval": "(() => { const b = document.querySelector(\"button[aria-label='Close panel']\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "click": "desk-nav-list a[href='/products']"
+        },
+        {
+          "waitForText": "Product catalog, versions"
+        },
+        {
+          "click": ".plist button:nth-of-type(2)"
+        },
+        {
+          "waitForText": "12 installations at"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "text=Add version"
+        },
+        {
+          "waitFor": "sd-dialog"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "09-release-form",
+      "file": "09-release-form.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "eval": "(() => { const b = document.querySelector(\"button[aria-label='Close panel']\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "click": "desk-nav-list a[href='/products']"
+        },
+        {
+          "waitForText": "Product catalog, versions"
+        },
+        {
+          "click": ".plist button:nth-of-type(2)"
+        },
+        {
+          "waitForText": "12 installations at"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "button[aria-label='Add release to 8.0']"
+        },
+        {
+          "waitFor": "sd-dialog"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "09-installations-tour",
+      "file": "09-installations-tour.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "eval": "(() => { const b = document.querySelector(\"button[aria-label='Close panel']\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "click": "desk-nav-list a[href='/products']"
+        },
+        {
+          "waitForText": "Product catalog, versions"
+        },
+        {
+          "click": "desk-module-tabs a[href='/products/installations']"
+        },
+        {
+          "waitForText": "Where each product runs"
+        },
+        {
+          "waitForText": "Zenith ERP"
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "highlight": [
+        "text=New installation",
+        ".toolbar",
+        "sd-data-table"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "09-installation-drawer",
+      "file": "09-installation-drawer.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "eval": "(() => { const b = document.querySelector(\"button[aria-label='Close panel']\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "click": "desk-nav-list a[href='/products']"
+        },
+        {
+          "waitForText": "Product catalog, versions"
+        },
+        {
+          "click": "desk-module-tabs a[href='/products/installations']"
+        },
+        {
+          "waitForText": "Where each product runs"
+        },
+        {
+          "click": "text=ABC ERP – Production"
+        },
+        {
+          "waitFor": ".drawer"
+        },
+        {
+          "waitForText": "Enabled modules"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": ".drawer[role=dialog]",
+      "clipPadding": 0
+    },
+    {
+      "id": "09-installation-form",
+      "file": "09-installation-form.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "eval": "(() => { const b = document.querySelector(\"button[aria-label='Close panel']\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "click": "desk-nav-list a[href='/products']"
+        },
+        {
+          "waitForText": "Product catalog, versions"
+        },
+        {
+          "click": "desk-module-tabs a[href='/products/installations']"
+        },
+        {
+          "waitForText": "Where each product runs"
+        },
+        {
+          "click": "text=New installation"
+        },
+        {
+          "waitFor": "sd-dialog"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "09-licences",
+      "file": "09-licences.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "eval": "(() => { const b = document.querySelector(\"button[aria-label='Close panel']\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "click": "desk-nav-list a[href='/products']"
+        },
+        {
+          "waitForText": "Product catalog, versions"
+        },
+        {
+          "click": "desk-module-tabs a[href='/products/licences']"
+        },
+        {
+          "waitForText": "Licence keys (masked)"
+        },
+        {
+          "waitForText": "WERP-"
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "fullPage": true
+    },
+    {
+      "id": "09-assets",
+      "file": "09-assets.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "eval": "(() => { const b = document.querySelector(\"button[aria-label='Close panel']\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "click": "desk-nav-list a[href='/products']"
+        },
+        {
+          "waitForText": "Product catalog, versions"
+        },
+        {
+          "click": "desk-module-tabs a[href='/products/assets']"
+        },
+        {
+          "waitForText": "Hardware and other serialised"
+        },
+        {
+          "waitForText": "Thermal receipt printer"
+        },
+        {
+          "eval": "(() => { for (const s of ['.desk-page', '.desk-page__body']) { const e = document.querySelector(s); if (e) { e.style.flex = 'none'; e.style.minHeight = '0'; e.style.height = 'auto'; } } return true; })()"
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "clip": ".desk-page"
+    },
+    {
+      "id": "09-install-base",
+      "file": "09-install-base.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "eval": "(() => { const b = document.querySelector(\"button[aria-label='Close panel']\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "click": "desk-nav-list a[href='/products']"
+        },
+        {
+          "waitForText": "Product catalog, versions"
+        },
+        {
+          "click": "desk-module-tabs a[href='/products/install-base']"
+        },
+        {
+          "waitForText": "Which versions customers run"
+        },
+        {
+          "waitForText": "by version"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "fullPage": true
+    },
+    {
+      "id": "09-contracts-tour",
+      "file": "09-contracts-tour.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "eval": "(() => { const b = document.querySelector(\"button[aria-label='Close panel']\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "click": "desk-nav-list a[href='/products']"
+        },
+        {
+          "waitForText": "Product catalog, versions"
+        },
+        {
+          "click": "desk-module-tabs a[href='/products/contracts']"
+        },
+        {
+          "waitForText": "Warranties, AMCs"
+        },
+        {
+          "waitForText": "AMC-2026-1001"
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "highlight": [
+        "text=New contract",
+        ".toolbar",
+        "sd-data-table"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "09-contract-form",
+      "file": "09-contract-form.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "eval": "(() => { const b = document.querySelector(\"button[aria-label='Close panel']\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "click": "desk-nav-list a[href='/products']"
+        },
+        {
+          "waitForText": "Product catalog, versions"
+        },
+        {
+          "click": "desk-module-tabs a[href='/products/contracts']"
+        },
+        {
+          "waitForText": "Warranties, AMCs"
+        },
+        {
+          "click": "text=New contract"
+        },
+        {
+          "waitFor": "sd-dialog"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "09-contract-tour",
+      "file": "09-contract-tour.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "eval": "(() => { const b = document.querySelector(\"button[aria-label='Close panel']\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "click": "desk-nav-list a[href='/products']"
+        },
+        {
+          "waitForText": "Product catalog, versions"
+        },
+        {
+          "click": "desk-module-tabs a[href='/products/contracts']"
+        },
+        {
+          "waitForText": "Warranties, AMCs"
+        },
+        {
+          "waitForText": "AMC-2026-1001"
+        },
+        {
+          "click": "text=AMC-2026-1001"
+        },
+        {
+          "waitForText": "Consumption by month"
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "eval": "(() => { document.querySelectorAll('*').forEach((e) => { if (e.scrollTop > 0) e.scrollTop = 0; }); window.scrollTo(0, 0); return true; })()"
+        }
+      ],
+      "fullPage": true,
+      "highlight": [
+        "sd-page-header",
+        ".badges",
+        ".kpis",
+        "sd-card[title='Terms']",
+        "sd-card[title='Consumption by month']",
+        ".cols ~ .section-head",
+        ".cols ~ .dt-wrap"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "09-entitlement-form",
+      "file": "09-entitlement-form.png",
+      "steps": [
+        {
+          "click": "text=Add entitlement"
+        },
+        {
+          "waitFor": "sd-dialog"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "09-renewals",
+      "file": "09-renewals.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "eval": "(() => { const b = document.querySelector(\"button[aria-label='Close panel']\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "click": "desk-nav-list a[href='/products']"
+        },
+        {
+          "waitForText": "Product catalog, versions"
+        },
+        {
+          "click": "desk-module-tabs a[href='/products/renewals']"
+        },
+        {
+          "waitForText": "Contracts ending soon"
+        },
+        {
+          "select": "#renew-days",
+          "option": "12 months"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "fullPage": true
+    },
+    {
+      "id": "09-eligibility-check",
+      "file": "09-eligibility-check.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "click": "desk-nav-list a[href='/customers']"
+        },
+        {
+          "waitForText": "Zenith Motors"
+        },
+        {
+          "click": "text=Pioneer Textiles"
+        },
+        {
+          "waitForText": "Satisfaction trend"
+        },
+        {
+          "click": "[role=tab][id$=contracts]"
+        },
+        {
+          "waitForText": "Check support eligibility"
+        },
+        {
+          "click": "sd-card.elig button"
+        },
+        {
+          "waitFor": ".elig-result"
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "clip": "[role=tabpanel]"
+    },
+    {
+      "id": "09-override-dialog",
+      "file": "09-override-dialog.png",
+      "steps": [
+        {
+          "click": "[role=tab][id$=tickets]"
+        },
+        {
+          "waitFor": "desk-c360-tickets tbody a"
+        },
+        {
+          "click": "desk-c360-tickets tbody a"
+        },
+        {
+          "waitFor": "button[aria-label='More actions']"
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "click": "button[aria-label='More actions']"
+        },
+        {
+          "waitFor": ".sd-menu"
+        },
+        {
+          "click": "text=Override entitlement…"
+        },
+        {
+          "waitFor": "sd-dialog"
+        },
+        {
+          "fill": "sd-dialog textarea",
+          "value": "AMC renewal is in progress. The account manager approved support for this ticket."
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "clip": "sd-dialog"
+    }
+  ]
+}

@@ -1,0 +1,241 @@
+{
+  "baseUrl": "http://localhost:4832",
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "scale": 2,
+    "mobile": true
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "settleMs": 800,
+  "shots": [
+    {
+      "id": "30-sign-in-agent",
+      "file": "30-sign-in-agent.png",
+      "url": "/login",
+      "steps": [
+        {
+          "waitFor": "input[name=tenant]"
+        },
+        {
+          "fill": "input[name=tenant]",
+          "value": "wings"
+        },
+        {
+          "fill": "input[name=email]",
+          "value": "priya@wings.demo"
+        }
+      ],
+      "highlight": [
+        "ion-segment",
+        "ion-list",
+        "ion-button[type=submit]"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "30-agent-home",
+      "file": "30-agent-home.png",
+      "steps": [
+        {
+          "fill": "input[name=password]",
+          "value": "${env:SD_DESK_PASSWORD}"
+        },
+        {
+          "click": "ion-button[type=submit]"
+        },
+        {
+          "waitForText": "Hi Priya"
+        },
+        {
+          "wait": 2500
+        }
+      ],
+      "highlight": [
+        "ion-header ion-buttons ion-button",
+        ".tiles .tile",
+        "ion-list[lines=full] ion-item m-sla-chip",
+        "ion-tab-button[tab=tickets]"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "30-agent-tickets",
+      "file": "30-agent-tickets.png",
+      "steps": [
+        {
+          "click": "ion-tab-button[tab=tickets]"
+        },
+        {
+          "waitFor": "ion-item-sliding"
+        },
+        {
+          "wait": 1500
+        }
+      ],
+      "highlight": [
+        "ion-searchbar .searchbar-input-container",
+        "ion-segment-button.segment-button-checked",
+        "ion-item-sliding .chips",
+        "ion-item-sliding ion-item > ion-button"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "30-ticket-actions",
+      "file": "30-ticket-actions.png",
+      "steps": [
+        {
+          "click": "text=Unassigned"
+        },
+        {
+          "wait": 2000
+        },
+        {
+          "click": "ion-item-sliding ion-item > ion-button"
+        },
+        {
+          "waitFor": "ion-action-sheet .action-sheet-cancel"
+        },
+        {
+          "wait": 600
+        }
+      ]
+    },
+    {
+      "id": "30-agent-ticket",
+      "file": "30-agent-ticket.png",
+      "steps": [
+        {
+          "click": "ion-action-sheet .action-sheet-cancel"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "text=Mine"
+        },
+        {
+          "wait": 2000
+        },
+        {
+          "click": "ion-item-sliding:nth-of-type(3) .subject"
+        },
+        {
+          "waitFor": ".quick"
+        },
+        {
+          "wait": 2500
+        }
+      ],
+      "highlight": [
+        ".quick",
+        ".sla",
+        "ion-content > ion-segment",
+        "ion-footer ion-textarea"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "30-status-sheet",
+      "file": "30-status-sheet.png",
+      "steps": [
+        {
+          "click": ".quick ion-chip"
+        },
+        {
+          "waitFor": "ion-action-sheet .action-sheet-cancel"
+        },
+        {
+          "wait": 600
+        }
+      ]
+    },
+    {
+      "id": "30-composer",
+      "file": "30-composer.png",
+      "steps": [
+        {
+          "click": "ion-action-sheet .action-sheet-cancel"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "fill": "ion-footer textarea",
+          "value": "Thanks for the screenshot. I am checking the print template now."
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": "ion-footer",
+      "clipPadding": 0
+    },
+    {
+      "id": "30-customer-tab",
+      "file": "30-customer-tab.png",
+      "steps": [
+        {
+          "click": "ion-content ion-segment-button[value=customer]"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    {
+      "id": "30-offline",
+      "file": "30-offline.png",
+      "steps": [
+        {
+          "click": "ion-content ion-segment-button[value=conversation]"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "eval": "window.dispatchEvent(new Event('offline'))"
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    {
+      "id": "30-alerts",
+      "file": "30-alerts.png",
+      "steps": [
+        {
+          "eval": "window.dispatchEvent(new Event('online'))"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "click": "ion-tab-button[tab=notifications]"
+        },
+        {
+          "wait": 2000
+        }
+      ]
+    },
+    {
+      "id": "30-me-agent",
+      "file": "30-me-agent.png",
+      "steps": [
+        {
+          "click": "ion-tab-button[tab=profile]"
+        },
+        {
+          "waitForText": "Appearance"
+        },
+        {
+          "wait": 800
+        }
+      ]
+    }
+  ]
+}

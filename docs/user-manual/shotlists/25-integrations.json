@@ -1,0 +1,181 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "admin@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Two-step verification"
+    },
+    {
+      "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "25-erp",
+      "file": "25-erp.png",
+      "steps": [
+        {
+          "goto": "/products/erp"
+        },
+        {
+          "eval": "(async () => { const sleep = (ms) => new Promise((r) => setTimeout(r, ms)); const until = async (f) => { const end = Date.now() + 20000; while (Date.now() < end) { const v = f(); if (v) return v; await sleep(200); } return null; }; await sleep(1200); if (!location.pathname.startsWith('/login')) return 'signed in'; const set = (n, v) => { const el = document.querySelector('input[name=' + n + ']'); el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); }; await until(() => document.querySelector('input[name=tenant]')); set('tenant', 'wings'); set('email', 'admin@wings.demo'); set('password', '${env:SD_DESK_PASSWORD}'); document.querySelector('form button[type=submit]').click(); const code = await until(() => [...document.querySelectorAll('code')].map((c) => c.textContent.trim()).find((t) => /^\\d{6}$/.test(t))); set('code', code); [...document.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Verify').click(); await until(() => !location.pathname.startsWith('/login')); await sleep(800); location.assign('/products/erp'); await sleep(2500); return 'signed in again'; })()"
+        }
+      ],
+      "waitFor": "text=Synchronisation",
+      "fullPage": true,
+      "highlight": [
+        "[aria-label=\"ERP system\"]",
+        ".status",
+        "form sd-card:nth-of-type(1)",
+        "form sd-card:nth-of-type(2)",
+        ".actions button",
+        ".section-head"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "25-erp-http",
+      "file": "25-erp-http.png",
+      "steps": [
+        {
+          "select": "select[name=mode]",
+          "option": "Wings API (HTTP)"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": "form sd-card:nth-of-type(1)"
+    },
+    {
+      "id": "25-engineering",
+      "file": "25-engineering.png",
+      "steps": [
+        {
+          "goto": "/admin/engineering"
+        },
+        {
+          "eval": "(async () => { const sleep = (ms) => new Promise((r) => setTimeout(r, ms)); const until = async (f) => { const end = Date.now() + 20000; while (Date.now() < end) { const v = f(); if (v) return v; await sleep(200); } return null; }; await sleep(1200); if (!location.pathname.startsWith('/login')) return 'signed in'; const set = (n, v) => { const el = document.querySelector('input[name=' + n + ']'); el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); }; await until(() => document.querySelector('input[name=tenant]')); set('tenant', 'wings'); set('email', 'admin@wings.demo'); set('password', '${env:SD_DESK_PASSWORD}'); document.querySelector('form button[type=submit]').click(); const code = await until(() => [...document.querySelectorAll('code')].map((c) => c.textContent.trim()).find((t) => /^\\d{6}$/.test(t))); set('code', code); [...document.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Verify').click(); await until(() => !location.pathname.startsWith('/login')); await sleep(800); location.assign('/admin/engineering'); await sleep(2500); return 'signed in again'; })()"
+        }
+      ],
+      "waitFor": "text=Sync-back rules",
+      "fullPage": true,
+      "highlight": [
+        "sd-page-header sd-dropdown-menu",
+        "ul.trackers li:first-child .main",
+        "ul.trackers li:first-child .actions",
+        "form.settings .toggles",
+        "form.settings .grid",
+        "form.settings .footer"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "25-add-tracker",
+      "file": "25-add-tracker.png",
+      "steps": [
+        {
+          "click": "sd-page-header sd-dropdown-menu button"
+        },
+        {
+          "waitFor": "[role=menu]"
+        }
+      ],
+      "clip": "[role=menu]",
+      "clipPadding": 6
+    },
+    {
+      "id": "25-tracker-editor",
+      "file": "25-tracker-editor.png",
+      "steps": [
+        {
+          "click": "text=Azure DevOps Services / Server (TFS)"
+        },
+        {
+          "waitForText": "Type mapping"
+        },
+        {
+          "fill": "input[name=name]",
+          "value": "Product backlog"
+        },
+        {
+          "eval": "(() => { const d = document.querySelector('.drawer[role=dialog]'); const b = d && d.querySelector('.body'); if (!b) return 0; const extra = b.scrollHeight - b.clientHeight; if (extra > 0) { d.style.height = Math.ceil(d.getBoundingClientRect().height + extra + 4) + 'px'; d.style.maxHeight = 'none'; } return extra; })()"
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "clip": ".drawer[role=dialog]"
+    },
+    {
+      "id": "25-collaboration",
+      "file": "25-collaboration.png",
+      "steps": [
+        {
+          "goto": "/admin/collaboration"
+        },
+        {
+          "eval": "(async () => { const sleep = (ms) => new Promise((r) => setTimeout(r, ms)); const until = async (f) => { const end = Date.now() + 20000; while (Date.now() < end) { const v = f(); if (v) return v; await sleep(200); } return null; }; await sleep(1200); if (!location.pathname.startsWith('/login')) return 'signed in'; const set = (n, v) => { const el = document.querySelector('input[name=' + n + ']'); el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); }; await until(() => document.querySelector('input[name=tenant]')); set('tenant', 'wings'); set('email', 'admin@wings.demo'); set('password', '${env:SD_DESK_PASSWORD}'); document.querySelector('form button[type=submit]').click(); const code = await until(() => [...document.querySelectorAll('code')].map((c) => c.textContent.trim()).find((t) => /^\\d{6}$/.test(t))); set('code', code); [...document.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Verify').click(); await until(() => !location.pathname.startsWith('/login')); await sleep(800); location.assign('/admin/collaboration'); await sleep(2500); return 'signed in again'; })()"
+        }
+      ],
+      "waitFor": "sd-page-header",
+      "highlight": [
+        "sd-page-header button"
+      ]
+    },
+    {
+      "id": "25-add-channel",
+      "file": "25-add-channel.png",
+      "steps": [
+        {
+          "click": "sd-page-header button"
+        },
+        {
+          "waitForText": "Post these events"
+        },
+        {
+          "fill": "input[name=name]",
+          "value": "#support-escalations"
+        },
+        {
+          "eval": "(() => { const d = document.querySelector('.drawer[role=dialog]'); const b = d && d.querySelector('.body'); if (!b) return 0; const extra = b.scrollHeight - b.clientHeight; if (extra > 0) { d.style.height = Math.ceil(d.getBoundingClientRect().height + extra + 4) + 'px'; d.style.maxHeight = 'none'; } return extra; })()"
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "clip": ".drawer[role=dialog]"
+    }
+  ]
+}

@@ -1,0 +1,884 @@
+{
+  "chapters": [
+    {
+      "id": "teams-agents-routing",
+      "title": "Teams, agents and routing",
+      "intro": [
+        "This chapter is for supervisors and administrators. It covers the **Teams & Agents** module.",
+        "You use it to watch live workload, organise departments and teams, and decide who gets new tickets. You also manage agents, skills, shifts, leave and out-of-office delegates."
+      ],
+      "sections": [
+        {
+          "id": "teams-module-overview",
+          "title": "The Teams & Agents module",
+          "type": "concept",
+          "intro": [
+            "Open **Teams & Agents** in the left rail. Tabs across the top take you to each part of the module.",
+            "You see the module when your role includes `agents.manage` or `supervisor.monitor`. What you can change depends on your other permissions. The [permission reference](#permission-reference) lists every permission."
+          ],
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Tab", "What it shows", "Who can change it"],
+                "widths": [18, 47, 35],
+                "rows": [
+                  ["**Departments**", "Departments, their e-mail alias, routing team, business hours and SLA default.", "`admin.organisation`"],
+                  ["**Teams**", "Teams, their members, and how new tickets are routed to them.", "`admin.organisation` or `agents.manage`"],
+                  ["**Agents**", "Every agent with roles, departments, availability, load and last sign-in.", "Invite and edit: `admin.users`. Routing profile: also `agents.manage`."],
+                  ["**Skills**", "The skills catalogue used by skill-based routing.", "`admin.organisation` or `agents.manage`"],
+                  ["**Shifts & leave**", "Shift patterns, shift assignments, leave requests and the team calendar.", "Shifts: `agents.manage` or `admin.organisation`. Anyone can request leave."],
+                  ["**Delegations**", "Out-of-office delegates.", "Anyone for themselves. `agents.manage` or `admin.users` for others."],
+                  ["**Monitor**", "The live monitor of agents, queues, SLA risk and waiting chats.", "Needs `supervisor.monitor`."]
+                ]
+              }
+            },
+            { "tip": "Supervisors who cannot manage the organisation land on **Monitor** when they open the module. Everyone else lands on **Departments**." }
+          ]
+        },
+        {
+          "id": "live-monitor",
+          "title": "The live monitor",
+          "type": "concept",
+          "intro": [
+            "The live monitor shows the current state of your departments on one screen. It refreshes by itself when tickets, chats or availability change. It also refreshes every minute.",
+            "You need `supervisor.monitor`. Supervisors see their own departments. Administrators see all departments."
+          ],
+          "blocks": [
+            {
+              "image": "shots/15-monitor.png",
+              "caption": "The live monitor filtered to the Customer Success department.",
+              "alt": "Live monitor with numbered areas: live indicator, tabs, department filter, KPI tiles, agents table, queues, SLA risk list and chats waiting"
+            },
+            {
+              "callouts": [
+                "**Live** shows that updates arrive as they happen. The refresh button reloads the view at once.",
+                "The module tabs.",
+                "The department filter. Choose **All my departments** or one department.",
+                "Tiles for agents online, open tickets, unassigned, SLA at risk, SLA breached and chats waiting.",
+                "**Agents**: availability, load against capacity, tickets in progress, overdue tickets, chats and idle time.",
+                "**Queues**: open, unassigned, at-risk and breached tickets for each team, with the oldest waiting ticket.",
+                "**SLA risk**: the riskiest open tickets, breached first, then by due time. Up to 50 are shown.",
+                "**Chats waiting**: visitors who wait for an agent, with the time they have waited."
+              ]
+            },
+            { "heading": "Badges and colours" },
+            {
+              "list": [
+                "**On leave** means the agent has approved leave now. **Off shift** means the agent is outside their shift. **Delegated** means a delegate covers the agent.",
+                "The load bar turns amber at 75% of capacity and red at 100%.",
+                "A waiting chat turns red after five minutes."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "monitor-change-availability",
+          "title": "Change an agent's availability from the monitor",
+          "type": "task",
+          "intro": "Set an agent to **Online**, **Away**, **Busy** or **Offline** when they forgot to do it themselves.",
+          "prerequisites": ["Your role includes `agents.manage` or `admin.users`. Otherwise the availability shows as a badge only."],
+          "steps": [
+            "Open **Teams & Agents** > **Monitor**.",
+            "In the **Agents** table, find the agent.",
+            "In the **Availability** list of that row, choose the new value."
+          ],
+          "result": "A message confirms the change, for example \"Priya Raman is now Away\". Routing uses the new availability at once."
+        },
+        {
+          "id": "monitor-reassign",
+          "title": "Reassign an at-risk ticket",
+          "type": "task",
+          "intro": "Move a ticket that is about to breach, or has breached, to an agent with more room.",
+          "prerequisites": ["Your role includes `tickets.assign`. Otherwise the **Reassign** button is hidden."],
+          "steps": [
+            "Open **Teams & Agents** > **Monitor**.",
+            "In **SLA risk**, find the ticket.",
+            {
+              "text": "Select **Reassign** under the ticket.",
+              "image": "shots/15-reassign-dialog.png",
+              "caption": "The **Reassign** dialog for ticket #1010.",
+              "alt": "Reassign dialog with New owner and Note fields",
+              "width": 520
+            },
+            "In **New owner**, choose an agent. The list shows the least loaded agents first.",
+            "Optionally, enter a **Note** for the new owner.",
+            "Select **Reassign**."
+          ],
+          "result": "A message confirms that the ticket is reassigned. The monitor refreshes.",
+          "blocks": [{ "note": "The list offers agents of the ticket's department only. Agents on leave and the current owner are left out." }]
+        },
+        {
+          "id": "departments",
+          "title": "Departments",
+          "type": "concept",
+          "intro": [
+            "Every ticket belongs to exactly one department. The department's routing team, business calendar and SLA apply to its tickets.",
+            "Open **Teams & Agents** > **Departments** to see one card for each department."
+          ],
+          "blocks": [
+            {
+              "image": "shots/15-departments.png",
+              "caption": "The **Departments** tab with one card for each department.",
+              "alt": "Departments tab with numbered New department button, Show archived box, badges, details, edit and archive buttons and counts"
+            },
+            {
+              "callouts": [
+                "**New department** creates a department.",
+                "**Show archived** adds archived departments to the list.",
+                "Badges show the department code, **In portal** and **Transfers need approval**.",
+                "The e-mail alias, routing team, business hours, default SLA and department head.",
+                "The edit button opens the department.",
+                "The archive button archives the department.",
+                "Links to the department's teams and agents, and its open tickets."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "department-fields",
+          "title": "Department fields",
+          "type": "reference",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Field", "What to enter"],
+                "widths": [30, 70],
+                "rows": [
+                  ["**Name**", "Required. Up to 120 characters."],
+                  ["**Code**", "2–12 letters or digits. Left empty, the app makes one from the name."],
+                  ["**Description**", "A short explanation shown on the card."],
+                  ["**E-mail alias**", "Mail to this address lands in the department."],
+                  ["**Department head**", "An agent shown as the head of the department."],
+                  ["**Routing team**", "The team that receives the department's new tickets. A new department gets a default team automatically."],
+                  ["**Business calendar**", "The working hours for SLA clocks. **24x7** means no calendar."],
+                  ["**Default SLA policy**", "Shown on the card. **Policy rules decide** leaves the choice to the SLA policies."],
+                  ["**Visible in the customer portal**", "Customers can choose the department on portal forms."],
+                  ["**Transfers out need supervisor approval**", "Moving a ticket to another department creates an approval request first."],
+                  ["**Sort order**", "A number from 0 to 1000 that orders the departments in lists."]
+                ]
+              }
+            },
+            { "note": "In this release, the department's **Default SLA policy** does not change which policy a ticket gets. Use SLA policy conditions instead. See [How a policy is chosen](#how-sla-policy-is-chosen)." }
+          ]
+        },
+        {
+          "id": "create-department",
+          "title": "Create or edit a department",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.organisation`."],
+          "steps": [
+            "Open **Teams & Agents** > **Departments**.",
+            "Select **New department**, or select the edit button on a department card.",
+            {
+              "text": "Enter the **Name** and, if you want, a **Code** and **Description**.",
+              "image": "shots/15-department-dialog.png",
+              "caption": "The department dialog for Technical Support.",
+              "alt": "Edit department dialog with name, code, description, e-mail alias, head, routing team, calendar, SLA policy and options",
+              "width": 560
+            },
+            "Enter the **E-mail alias** and choose the **Department head**.",
+            "Choose the **Routing team**, **Business calendar** and **Default SLA policy**.",
+            "Turn on **Visible in the customer portal** or **Transfers out need supervisor approval** if you need them.",
+            "Select **Save**."
+          ],
+          "result": "A message says \"Department created\" or \"Department updated\". The card shows the new details.",
+          "blocks": [{ "note": "You can choose the **Routing team** only when you edit an existing department. A new department gets its routing team automatically." }]
+        },
+        {
+          "id": "archive-department",
+          "title": "Archive or restore a department",
+          "type": "task",
+          "intro": "Archive a department you no longer use. Archived departments receive no new tickets and disappear from the portal.",
+          "prerequisites": ["Your role includes `admin.organisation`.", "At least one other active department exists."],
+          "steps": [
+            "Open **Teams & Agents** > **Departments**.",
+            {
+              "text": "Select the archive button on the department card.",
+              "image": "shots/15-archive-dialog.png",
+              "caption": "The archive dialog asks where to move open tickets.",
+              "alt": "Archive Technical Support dialog with the Move open tickets to list",
+              "width": 520
+            },
+            "If the department has open tickets, choose a department in **Move open tickets to**.",
+            "Select **Archive**."
+          ],
+          "result": "A message says \"Department archived\". Open tickets move to the department you chose.",
+          "blocks": [
+            { "p": "Moved tickets keep their owner when the owner belongs to the new department. Other tickets are routed again." },
+            { "heading": "Restore a department" },
+            {
+              "steps": [
+                "Turn on **Show archived**.",
+                "Select **Restore** on the archived department's card."
+              ]
+            },
+            { "note": "You cannot archive a department that a brand uses as its default. Change the brand first." }
+          ]
+        },
+        {
+          "id": "teams-and-routing",
+          "title": "Teams and routing",
+          "type": "concept",
+          "intro": [
+            "A team is a group of agents inside one department. Each department has one routing team that receives its new tickets.",
+            "Each team has routing settings. They decide which member gets a new ticket."
+          ],
+          "blocks": [
+            {
+              "image": "shots/15-teams.png",
+              "caption": "The **Teams** tab filtered to the Technical Support department.",
+              "alt": "Teams tab with numbered department filter, Test routing, New team, routing badges, routing, edit and delete buttons, and member list"
+            },
+            {
+              "callouts": [
+                "The department filter.",
+                "**Test routing** opens a preview of who would get a sample ticket.",
+                "**New team** creates a team.",
+                "Badges show the assignment mode and routing options, such as **Shift-aware** and **Max 20 per agent**.",
+                "The routing button opens the team's routing settings.",
+                "The edit button opens the team.",
+                "The delete button. The department's routing team has no delete button.",
+                "Members with their availability and load. **Lead** marks the team lead."
+              ]
+            },
+            { "heading": "Assignment modes" },
+            {
+              "table": {
+                "columns": ["Mode", "Who gets the ticket"],
+                "widths": [25, 75],
+                "rows": [
+                  ["**Manual**", "Nobody. Tickets wait in the team queue until someone picks or assigns them."],
+                  ["**Round robin**", "Eligible members take turns in a fixed rotation."],
+                  ["**Load balanced**", "The eligible member with the lowest share of open tickets against capacity. This is the default."],
+                  ["**Skill based**", "The best match on product, category, territory, tier, language and skill levels, then load."],
+                  ["**Territory**", "Members whose territory matches the customer's service region first, then load."]
+                ]
+              }
+            },
+            { "heading": "Who routing skips" },
+            {
+              "list": [
+                "A customer's dedicated agent always gets the ticket first.",
+                "Routing skips inactive agents, light agents and agents who are not team members.",
+                "Routing skips agents on approved leave and agents with an active delegate.",
+                "Routing skips agents who are not online, when **Only agents who are Online** is on.",
+                "Routing skips agents who are off shift, when **Skip agents who are off shift** is on.",
+                "Routing skips agents who reached their own capacity or the team cap."
+              ]
+            },
+            { "p": "When nobody qualifies, the ticket goes to the **Fallback queue**. Without a fallback, it waits in the team queue." },
+            { "note": "**Skill based** routing uses each agent's average skill level. It does not yet match the skills a ticket needs." }
+          ]
+        },
+        {
+          "id": "create-team",
+          "title": "Create or edit a team",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.organisation` or `agents.manage`."],
+          "steps": [
+            "Open **Teams & Agents** > **Teams**.",
+            "Select **New team**, or select the edit button on a team card.",
+            {
+              "text": "For a new team, choose the **Department** and enter a **Name**.",
+              "image": "shots/15-team-dialog.png",
+              "caption": "The team dialog with its members and team lead.",
+              "alt": "Edit team dialog with department, name, description, members, team lead and Active option",
+              "width": 520
+            },
+            "In **Members**, add the agents of the department.",
+            "Choose the **Team lead**.",
+            "Leave **Active (receives routed tickets)** on, unless the team should stop receiving tickets.",
+            "Select **Save**."
+          ],
+          "result": "A message says \"Team created\" or \"Team updated\".",
+          "blocks": [{ "note": "You cannot move an existing team to another department. Light agents may be members, but they never own tickets." }]
+        },
+        {
+          "id": "team-routing",
+          "title": "Set how a team routes tickets",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.organisation` or `agents.manage`."],
+          "steps": [
+            "Open **Teams & Agents** > **Teams**.",
+            {
+              "text": "Select the routing button on the team card.",
+              "image": "shots/15-team-routing-dialog.png",
+              "caption": "The routing dialog with the five assignment modes.",
+              "alt": "Routing dialog with assignment modes, online and shift options, team cap and fallback queue",
+              "width": 520
+            },
+            "Under **Assignment mode**, choose a mode.",
+            "Turn on **Only agents who are Online** or **Skip agents who are off shift** if you need them.",
+            "In **Max open tickets per agent**, enter a team cap, or leave it empty.",
+            "In **Fallback queue**, choose the team that takes tickets when nobody here is eligible.",
+            "Select **Save routing**."
+          ],
+          "result": "A message says \"Routing updated\". New tickets for the team follow the new settings.",
+          "blocks": [{ "note": "Routing settings apply to new tickets only. Manual assignment is never blocked." }]
+        },
+        {
+          "id": "delete-team",
+          "title": "Delete a team",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.organisation` or `agents.manage`.", "No open tickets wait in the team's queue."],
+          "steps": [
+            "Open **Teams & Agents** > **Teams**.",
+            "Select the delete button on the team card.",
+            "In the confirmation, select **Delete**."
+          ],
+          "result": "A message says \"Team removed\".",
+          "blocks": [{ "note": "A team with ticket history is deactivated instead of deleted. A department's routing team cannot be deleted. Choose another routing team first." }]
+        },
+        {
+          "id": "test-routing",
+          "title": "Test routing for a sample ticket",
+          "type": "task",
+          "intro": "See who would get a ticket right now, and why. Nothing is created or assigned.",
+          "steps": [
+            "Open **Teams & Agents** > **Teams**.",
+            "Select **Test routing**.",
+            "Choose the **Department**, and a **Team** if you want a team other than the routing team.",
+            "Optionally, choose a **Customer**, **Product**, **Priority** and **Language**.",
+            "Select **Preview**."
+          ],
+          "result": "The panel shows the agent who would get the ticket, or **Stays in queue**. A table lists every candidate with the reason for the result.",
+          "blocks": [
+            {
+              "image": "shots/15-test-routing.png",
+              "caption": "**Test routing** shows Meera Iyer as the best match, with all candidates below.",
+              "alt": "Test routing panel with the chosen agent and a table of candidates with availability, load, shift, result and score"
+            },
+            { "p": "**Fallback used** means nobody in the team qualified and the fallback team took the ticket. Select **Test routing** again to close the panel." }
+          ]
+        },
+        {
+          "id": "agents-list",
+          "title": "The agents list",
+          "type": "concept",
+          "intro": "Open **Teams & Agents** > **Agents** to see every agent of your organisation.",
+          "blocks": [
+            {
+              "image": "shots/15-agents.png",
+              "caption": "The **Agents** tab with plan seats, filters and the agents table.",
+              "alt": "Agents tab with numbered Invite agent button, seats panel, search box, status, department and agent type filters, and table header"
+            },
+            {
+              "callouts": [
+                "**Invite agent** sends an invitation. You need `admin.users`.",
+                "Seats used against your plan for agents and light agents, and pending invitations.",
+                "Search by name or e-mail.",
+                "Filter by status: **Active**, **Invited** or **Deactivated**.",
+                "Filter by department.",
+                "Filter by agent type: **Full agents** or **Light agents**.",
+                "Each row shows status, roles, departments, availability, load and last sign-in. Select a row to open the agent."
+              ]
+            },
+            { "note": "Full agents, administrators and pending invitations count against the agent seats. Light agents count against a separate limit." }
+          ]
+        },
+        {
+          "id": "invite-agent",
+          "title": "Invite an agent",
+          "type": "task",
+          "intro": "Add a new person to your desk. They receive an e-mail with a code to choose their password.",
+          "prerequisites": ["Your role includes `admin.users`.", "Your plan has a free seat."],
+          "steps": [
+            "Open **Teams & Agents** > **Agents**.",
+            {
+              "text": "Select **Invite agent**.",
+              "image": "shots/15-invite-dialog.png",
+              "caption": "The **Invite an agent** dialog with sample details.",
+              "alt": "Invite an agent dialog with work e-mail, full name, title, time zone, light agent option, roles, departments, supervises and teams",
+              "width": 560
+            },
+            "Enter the **Work e-mail** and **Full name**. Optionally, enter a **Title** and choose a **Time zone**.",
+            "Turn on **Light agent** if the person only views tickets and adds internal notes.",
+            "In **Roles**, choose one or more roles. Leave it empty to give the Agent role.",
+            "In **Departments**, choose at least one department.",
+            "Optionally, choose **Supervises** and **Teams**.",
+            "Select **Send invitation**."
+          ],
+          "result": "The **Invitation sent** dialog opens. It shows when the code expires and an accept link you can copy. Select **Done**.",
+          "blocks": [{ "note": "The invitation code is valid for 72 hours. In demo mode, the dialog also shows the code itself." }]
+        },
+        {
+          "id": "agent-details",
+          "title": "The agent page",
+          "type": "concept",
+          "intro": "Select an agent in the list to open their page. It shows who they are, what they can access and how routing treats them.",
+          "blocks": [
+            {
+              "image": "shots/15-agent-detail.png",
+              "caption": "The agent page for Priya Raman.",
+              "alt": "Agent page with numbered Deactivate button, photo, status, availability, and Profile, Access, Routing profile, Shifts and Account-managed customers cards"
+            },
+            {
+              "callouts": [
+                "Actions for the agent: **Deactivate**, **Reactivate**, **Resend invitation** or **Revoke**, depending on the status.",
+                "The photo. **Add photo**, **Change photo** and **Remove** appear for administrators and for the agents themselves.",
+                "Badges for status, **Light agent**, **MFA** and a pending or expired invitation.",
+                "**Availability**, with the time it last changed.",
+                "**Profile**: e-mail, phone, time zone, locale, last sign-in and e-mail signature.",
+                "**Access**: roles, departments (with supervisor marks), teams and the person the agent reports to.",
+                "**Routing profile**: capacity, languages, skills and routing attributes.",
+                "**Shifts**: the agent's shift assignments. **Manage shifts & leave** opens the **Shifts & leave** tab.",
+                "**Account-managed customers**: customers this agent manages. You set account managers on the customer record."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "edit-agent-profile",
+          "title": "Edit an agent's profile",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.users`."],
+          "steps": [
+            "Open the agent page.",
+            {
+              "text": "In the **Profile** card, select **Edit**.",
+              "image": "shots/15-agent-profile-dialog.png",
+              "caption": "The profile dialog with name, title, phone, time zone, locale and signature.",
+              "alt": "Profile dialog for Priya Raman",
+              "width": 560
+            },
+            "Change the **Display name**, **First name**, **Last name**, **Title** or **Phone**.",
+            "Choose the **Time zone** and enter the **Locale**, such as `en` or `en-IN`.",
+            "Edit the **E-mail signature**. You can use basic formatting.",
+            "Select **Save**."
+          ],
+          "result": "A message says \"Profile saved\"."
+        },
+        {
+          "id": "edit-agent-access",
+          "title": "Change an agent's roles and departments",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.users`.", "You hold every permission of the roles you give or take away. See [The escalation guard](#escalation-guard)."],
+          "steps": [
+            "Open the agent page.",
+            {
+              "text": "In the **Access** card, select **Edit**.",
+              "image": "shots/15-agent-access-dialog.png",
+              "caption": "The access dialog with roles, departments, supervised departments, teams and manager.",
+              "alt": "Access dialog for Priya Raman",
+              "width": 560
+            },
+            "In **Roles**, add or remove roles. Keep at least one role.",
+            "In **Departments**, add or remove departments. Keep at least one department.",
+            "Optionally, change **Supervises**, **Teams** and **Reports to**.",
+            "Turn **Light agent** on or off.",
+            "Select **Save**."
+          ],
+          "result": "A message says \"Access saved\". The change applies to the agent's open sessions at once.",
+          "blocks": [
+            { "note": "**Reports to** receives the agent's leave requests." },
+            { "note": "You cannot remove a department while the agent still owns open tickets in it. Reassign those tickets first." }
+          ]
+        },
+        {
+          "id": "edit-routing-profile",
+          "title": "Edit an agent's routing profile",
+          "type": "task",
+          "intro": "The routing profile tells routing how much work the agent can take and what they are good at.",
+          "prerequisites": ["Your role includes `admin.users` or `agents.manage`."],
+          "steps": [
+            "Open the agent page.",
+            {
+              "text": "In the **Routing profile** card, select **Edit**.",
+              "image": "shots/15-routing-profile-dialog.png",
+              "caption": "The routing profile with capacity, languages, skills and a territory attribute.",
+              "alt": "Routing profile dialog for Priya Raman",
+              "width": 560
+            },
+            "Enter **Max open tickets** and **Max concurrent chats**.",
+            "In **Languages**, add language codes such as `en`, `hi` or `ta`.",
+            "Under **Skills**, select **Add skill**, choose a skill and its level from 1 (basic) to 5 (expert).",
+            "Under **Routing attributes**, select **Add attribute**, choose the kind and enter or choose the value.",
+            "Select **Save**."
+          ],
+          "result": "A message says \"Routing profile saved\". The card shows the new capacity, skills and attributes.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Setting", "Range and meaning"],
+                "widths": [30, 70],
+                "rows": [
+                  ["**Max open tickets**", "1–1000. Default 25. Routing stops at this number."],
+                  ["**Max concurrent chats**", "0–50. Default 3. Live chats the agent can hold at once."],
+                  ["**Skills**", "Skills from the catalogue, each with a level from 1 to 5."],
+                  ["**Routing attributes**", "**Territory**, **Product**, **Customer**, **Language**, **Category** or **CustomerTier**. Territory and skill-based routing use them."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "set-agent-availability",
+          "title": "Set an agent's availability",
+          "type": "task",
+          "prerequisites": ["You are the agent, or your role includes `admin.users` or `agents.manage`.", "The agent is not deactivated."],
+          "steps": [
+            "Open the agent page.",
+            "In **Availability**, choose **Online**, **Away**, **Busy** or **Offline**."
+          ],
+          "result": "A message says \"Availability set to\" and the new value."
+        },
+        {
+          "id": "agent-photo",
+          "title": "Change or remove an agent's photo",
+          "type": "task",
+          "prerequisites": ["You are the agent, or your role includes `admin.users`."],
+          "steps": [
+            "Open the agent page.",
+            "Select **Add photo** or **Change photo**.",
+            "Choose a PNG, JPEG, GIF or WebP image of up to 2 MB."
+          ],
+          "result": "A message says \"Photo updated\". To take the photo away, select **Remove** under it."
+        },
+        {
+          "id": "resend-invitation",
+          "title": "Resend or revoke an invitation",
+          "type": "task",
+          "intro": "Use these actions while an agent has the status **Invited**.",
+          "prerequisites": ["Your role includes `admin.users`."],
+          "steps": [
+            "Open the agent page.",
+            "Select **Resend invitation** to send a new code. The **Invitation sent** dialog opens.",
+            "Or select **Revoke**, then **Revoke** again in the confirmation."
+          ],
+          "result": "A resent invitation has a new 72-hour code. A revoked invitation frees the seat, and the person cannot join."
+        },
+        {
+          "id": "deactivate-agent",
+          "title": "Deactivate an agent",
+          "type": "task",
+          "intro": "Deactivate an agent who leaves. They are signed out everywhere, cannot sign in, and their seat is freed.",
+          "prerequisites": ["Your role includes `admin.users`.", "You are not deactivating yourself.", "The agent is not the last active administrator."],
+          "steps": [
+            "Open the agent page.",
+            {
+              "text": "Select **Deactivate**.",
+              "image": "shots/15-deactivate-dialog.png",
+              "caption": "The deactivate dialog asks what happens to the agent's open tickets.",
+              "alt": "Deactivate Priya Raman dialog with Route again, Give to an agent and Return to the team queue options",
+              "width": 520
+            },
+            "Under **Their open tickets**, choose **Route again**, **Give to an agent** or **Return to the team queue**.",
+            "If you chose **Give to an agent**, choose the **New owner**.",
+            "Optionally, enter a **Reason**.",
+            "Select **Deactivate**."
+          ],
+          "result": "A message confirms the deactivation and how many open tickets are being reassigned. The status changes to **Deactivated**.",
+          "blocks": [
+            { "warning": "The agent loses access at once. Check the open tickets choice before you select **Deactivate**." },
+            { "p": "**Give to an agent** moves only the tickets of departments that the new owner belongs to. Other tickets go back to the queue." }
+          ]
+        },
+        {
+          "id": "reactivate-agent",
+          "title": "Reactivate an agent",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.users`.", "Your plan has a free seat."],
+          "steps": [
+            "In the agents list, choose **Deactivated** in the status filter.",
+            "Open the agent.",
+            "Select **Reactivate**."
+          ],
+          "result": "A message says the agent is reactivated. They can sign in again."
+        },
+        {
+          "id": "skills",
+          "title": "Manage the skills catalogue",
+          "type": "task",
+          "intro": "Skills are things such as products, modules or languages. You give agents a level for each skill in their routing profile.",
+          "prerequisites": ["Your role includes `admin.organisation` or `agents.manage`."],
+          "steps": [
+            {
+              "text": "Open **Teams & Agents** > **Skills**.",
+              "image": "shots/15-skills.png",
+              "caption": "The **Skills** tab with the skills catalogue.",
+              "alt": "Skills tab with numbered New skill button, filter box, table and edit and delete buttons"
+            },
+            {
+              "text": "Select **New skill**, or the edit button on a skill row.",
+              "image": "shots/15-skill-dialog.png",
+              "caption": "The **New skill** dialog with a name and category.",
+              "alt": "New skill dialog with Name, Category and Description",
+              "width": 520
+            },
+            "Enter the **Name**, and optionally a **Category** and **Description**.",
+            "Select **Save**."
+          ],
+          "result": "A message says \"Skill added\" or \"Skill updated\". The **Agents** column shows how many agents have the skill.",
+          "blocks": [
+            { "p": "To delete a skill, select its delete button and confirm. Agents who have the skill lose it." },
+            { "tip": "Type in **Filter skills** to find a skill in a long list." }
+          ]
+        },
+        {
+          "id": "shifts",
+          "title": "Shifts",
+          "type": "concept",
+          "intro": [
+            "A shift is a weekly working pattern in a time zone. You assign agents to a shift from a start date.",
+            "Shifts matter only for teams with **Skip agents who are off shift** turned on. Agents without a shift count as always on shift."
+          ],
+          "blocks": [
+            {
+              "image": "shots/15-shifts.png",
+              "caption": "The **Shifts & leave** tab with three shift patterns.",
+              "alt": "Shifts and leave tab with numbered Request leave and New shift buttons, inner tabs and a shift card"
+            },
+            {
+              "callouts": [
+                "**Request leave** and **New shift**.",
+                "Inner tabs: **Shifts**, **Assignments**, **Leave** and **Calendar**. **Leave** shows how many requests wait.",
+                "A shift card: colour, weekly hours, time zone, hours per week and agents on it today.",
+                "The edit and delete buttons."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "create-shift",
+          "title": "Create or edit a shift",
+          "type": "task",
+          "prerequisites": ["Your role includes `agents.manage` or `admin.organisation`."],
+          "steps": [
+            "Open **Teams & Agents** > **Shifts & leave**.",
+            {
+              "text": "Select **New shift**, or the edit button on a shift card.",
+              "image": "shots/15-shift-dialog.png",
+              "caption": "The shift dialog with weekly hours from Monday to Friday.",
+              "alt": "Edit India day shift dialog with name, time zone, colour, description, weekly hours and Active",
+              "width": 560
+            },
+            "Enter the **Name**, choose the **Time zone** and pick a **Colour**.",
+            "Under **Weekly hours**, select a preset, such as **Mon–Fri 09–18**.",
+            "Adjust each day. Tick a day to make it a working day, and enter the start and end times.",
+            "To add a break, select **Split** and enter a second interval. A day can have up to four intervals.",
+            "Select **Save**."
+          ],
+          "result": "A message says \"Shift created\" or \"Shift updated\".",
+          "blocks": [
+            { "tip": "**Copy Monday to weekdays** copies Monday's hours to Tuesday to Friday. The end time can be `24:00`." },
+            { "p": "To delete a shift, select its delete button and confirm. Its assignments are removed too." }
+          ]
+        },
+        {
+          "id": "assign-shift",
+          "title": "Assign agents to a shift",
+          "type": "task",
+          "prerequisites": ["Your role includes `agents.manage` or `admin.organisation`.", "At least one shift exists."],
+          "steps": [
+            {
+              "text": "Open **Teams & Agents** > **Shifts & leave**, then the **Assignments** tab.",
+              "image": "shots/15-shift-assignments.png",
+              "caption": "The **Assignments** tab lists each agent's shift and whether they are on shift now.",
+              "alt": "Assignments tab with the Assign shift button and a table of agents, shifts, dates and status"
+            },
+            {
+              "text": "Select **Assign shift**.",
+              "image": "shots/15-assign-shift-dialog.png",
+              "caption": "The **Assign shift** dialog.",
+              "alt": "Assign shift dialog with Shift, Agents, From and To",
+              "width": 520
+            },
+            "Choose the **Shift** and one or more **Agents**.",
+            "Enter the **From** date. Optionally, enter a **To** date.",
+            "Select **Assign**."
+          ],
+          "result": "A message says \"Shift assigned\" with the number of agents.",
+          "blocks": [
+            { "p": "An empty **To** date means open-ended. A new assignment closes any older assignment that overlaps it." },
+            { "p": "To remove an assignment, select the remove button on its row and confirm." }
+          ]
+        },
+        {
+          "id": "leave",
+          "title": "Leave",
+          "type": "concept",
+          "intro": [
+            "Agents request leave on the **Leave** tab. Approved leave takes the agent out of routing for the period. Their existing tickets stay with them.",
+            "A request goes to the person the agent reports to. If nobody is set, it goes to a supervisor of one of the agent's departments. If there is none, anyone with `approvals.decide` can decide it."
+          ],
+          "blocks": [
+            {
+              "image": "shots/15-leave.png",
+              "caption": "The **Leave** tab with one request waiting for approval.",
+              "alt": "Leave tab with numbered status filter, Request leave button and Approve and Reject buttons"
+            },
+            {
+              "callouts": [
+                "The status filter: **All**, **Awaiting approval**, **Approved**, **Rejected** or **Cancelled**.",
+                "**Request leave**.",
+                "**Approve** and **Reject** appear when you may decide. **Cancel** appears on leave you may cancel."
+              ]
+            },
+            {
+              "table": {
+                "columns": ["Status", "Meaning"],
+                "widths": [25, 75],
+                "rows": [
+                  ["**Requested**", "Waiting for a decision."],
+                  ["**Approved**", "The agent is skipped by routing during the period."],
+                  ["**Rejected**", "Declined. The reason shows in the **Reason** column."],
+                  ["**Cancelled**", "Withdrawn before or during the period."]
+                ]
+              }
+            },
+            { "p": "Leave types are **Leave**, **Sick**, **Training**, **Public holiday** and **Other**." }
+          ]
+        },
+        {
+          "id": "request-leave",
+          "title": "Request leave",
+          "type": "task",
+          "steps": [
+            "Open **Teams & Agents** > **Shifts & leave**.",
+            {
+              "text": "Select **Request leave**.",
+              "image": "shots/15-leave-dialog.png",
+              "caption": "The **Leave** dialog with a reason filled in.",
+              "alt": "Leave dialog with Agent, Starts, Ends, Type and Reason",
+              "width": 520
+            },
+            "Enter when the leave **Starts** and **Ends**.",
+            "Choose the **Type**.",
+            "Optionally, enter a **Reason**.",
+            "Select **Request leave**."
+          ],
+          "result": "A message says \"Leave requested\" and \"Sent for approval\". The request appears on the **Leave** tab as **Requested**.",
+          "blocks": [{ "note": "A request cannot overlap another leave request of the same agent." }]
+        },
+        {
+          "id": "record-leave",
+          "title": "Record leave for an agent",
+          "type": "task",
+          "intro": "Managers can enter leave for someone else, for example a sick day reported by phone.",
+          "prerequisites": ["Your role includes `agents.manage` or `admin.organisation`."],
+          "steps": [
+            "Open **Teams & Agents** > **Shifts & leave**.",
+            "Select **Request leave**.",
+            "In **Agent**, choose the agent.",
+            "Enter the dates, the **Type** and a **Reason**.",
+            "Select **Record leave**."
+          ],
+          "result": "A message says \"Leave recorded\". Leave you record for someone else is approved at once."
+        },
+        {
+          "id": "decide-leave",
+          "title": "Approve or reject leave",
+          "type": "task",
+          "prerequisites": ["The request waits for you. Or your role includes `approvals.decide` and also `agents.manage` or `admin.users`.", "The leave is not your own."],
+          "steps": [
+            "Open **Teams & Agents** > **Shifts & leave**, then the **Leave** tab.",
+            "Choose **Awaiting approval** in the status filter.",
+            {
+              "text": "Select **Approve** or **Reject** on the request.",
+              "image": "shots/15-leave-decision-dialog.png",
+              "caption": "The approval dialog with an optional note.",
+              "alt": "Approve leave dialog for Arjun Nair with a Note field",
+              "width": 520
+            },
+            "Optionally, enter a **Note**. The agent sees it.",
+            "Select **Approve** or **Reject**."
+          ],
+          "result": "A message says \"Leave approved\" or \"Leave rejected\". The calendar updates."
+        },
+        {
+          "id": "cancel-leave",
+          "title": "Cancel leave",
+          "type": "task",
+          "prerequisites": ["The leave is your own, or your role includes `agents.manage` or `admin.users`.", "The leave is requested or approved, and has not ended yet."],
+          "steps": [
+            "Open the **Leave** tab.",
+            "Select **Cancel** on the leave row.",
+            "In the confirmation, select **Cancel leave**."
+          ],
+          "result": "The status changes to **Cancelled**, and routing includes the agent again."
+        },
+        {
+          "id": "team-calendar",
+          "title": "The team calendar",
+          "type": "concept",
+          "intro": "The **Calendar** tab shows leave, leave requests, delegations and the holidays of the default business calendar. Use it to spot gaps before you approve leave.",
+          "blocks": [
+            {
+              "image": "shots/15-team-calendar.png",
+              "caption": "The **Calendar** tab for November 2026 with a holiday.",
+              "alt": "Month calendar with a legend for leave, requested leave, delegations and holidays"
+            },
+            { "p": "Select **Month** or **Week** to change the view. Use the arrows to move between periods, and **Today** to come back." }
+          ]
+        },
+        {
+          "id": "delegations",
+          "title": "Set up a delegation",
+          "type": "task",
+          "intro": "A delegation names someone to cover for an agent who is away. While it is active, routing skips the away agent. Their new assignments and approval requests go to the delegate.",
+          "prerequisites": ["To set up a delegation for someone else, your role includes `agents.manage` or `admin.users`."],
+          "steps": [
+            "Open **Teams & Agents** > **Delegations**.",
+            {
+              "text": "Select **New delegation**.",
+              "image": "shots/15-delegation-dialog.png",
+              "caption": "The **New delegation** dialog with a delegate and reason.",
+              "alt": "New delegation dialog with Away, Delegate, From, To, Reason and two options",
+              "width": 520
+            },
+            "In **Away**, keep **Me** or choose the agent who will be away.",
+            "In **Delegate**, choose the agent who covers.",
+            "Enter the **From** and **To** dates and times, and a **Reason**.",
+            "Leave **Route approval requests to the delegate** on, unless approvals should wait.",
+            "Turn on **Also move open tickets when the window starts** to hand over open tickets too.",
+            "Select **Save**."
+          ],
+          "result": "A message says \"Delegation created\". The delegation shows as **Scheduled**, then **Active** when the period starts.",
+          "blocks": [
+            { "note": "Delegations of one agent cannot overlap. The delegate cannot be away during the same period." }
+          ]
+        },
+        {
+          "id": "end-delegation",
+          "title": "Edit or end a delegation",
+          "type": "task",
+          "steps": [
+            "Open **Teams & Agents** > **Delegations**.",
+            "To change dates or options, select the edit button on the row, change the values, then select **Save**.",
+            "To stop a delegation early, select **End now**, then **End now** again in the confirmation."
+          ],
+          "result": "An ended delegation shows the state **Ended**. Turn on **Show ended** to see past delegations."
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "Your plan allows a number of agents and they are in use.", "cause": "Every agent seat of the plan is taken. Pending invitations also use a seat.", "fix": "Deactivate an agent or revoke an unused invitation. Or upgrade the plan." },
+    { "problem": "Your plan allows a number of light agents and they are in use.", "cause": "The light-agent limit of the plan is reached.", "fix": "Deactivate a light agent, or upgrade the plan." },
+    { "problem": "\"The department has 21 open tickets. Choose a department to move them to.\"", "cause": "You archive a department that still has open tickets.", "fix": "Choose a department in **Move open tickets to**, then select **Archive**." },
+    { "problem": "\"A brand/portal uses this department as its default.\"", "cause": "A brand sends its portal tickets to this department.", "fix": "Change the brand's default department first, then archive." },
+    { "problem": "\"10 open tickets are queued in this team. Move them before deleting the team.\"", "cause": "The team still has tickets in its queue.", "fix": "Assign or move the queued tickets, then delete the team." },
+    { "problem": "\"This is a department's default routing team.\"", "cause": "You try to delete a department's routing team.", "fix": "Choose another **Routing team** on the department first." },
+    { "problem": "\"You cannot deactivate your own account.\"", "cause": "You opened your own agent page.", "fix": "Ask another administrator to deactivate your account." },
+    { "problem": "\"This overlaps another leave request.\"", "cause": "The agent already has leave in that period.", "fix": "Change the dates, or cancel the other request first." },
+    { "problem": "\"Another delegation for this agent overlaps the period.\"", "cause": "Two delegations of one agent cannot cover the same time.", "fix": "End or edit the other delegation, or pick other dates." },
+    { "problem": "An agent never gets new tickets.", "cause": "The agent is offline, off shift, on leave, delegated, at capacity, a light agent, or not a team member.", "fix": "Use **Test routing** on the **Teams** tab. The **Result** column gives the reason for each agent." }
+  ],
+  "faq": [
+    { "q": "Does approved leave move an agent's tickets?", "a": "No. Approved leave only stops new tickets from reaching the agent. To hand over open tickets, reassign them. Or set up a delegation with **Also move open tickets when the window starts**." },
+    { "q": "Why does an agent without a shift still get tickets at night?", "a": "Agents without a shift count as always on shift. Shifts also matter only for teams with **Skip agents who are off shift** turned on." },
+    { "q": "Can a light agent be a team member?", "a": "Yes. Light agents can be members and see the team's tickets. Routing never gives them tickets, and they cannot own tickets." },
+    { "q": "Does Test routing assign the sample ticket?", "a": "No. **Test routing** only shows who would get the ticket and why. Nothing is created or assigned." }
+  ],
+  "glossary": [
+    { "term": "Assignment mode", "definition": "The rule a team uses to pick the agent for a new ticket: Manual, Round robin, Load balanced, Skill based or Territory." },
+    { "term": "Capacity", "definition": "The most open tickets an agent may own, set in the routing profile. Routing stops giving tickets to an agent at capacity." },
+    { "term": "Delegation", "definition": "An out-of-office arrangement. While it is active, the away agent's new assignments and approval requests go to a delegate." },
+    { "term": "Fallback queue", "definition": "The team that receives a team's new tickets when none of its own members can take them." },
+    { "term": "Light agent", "definition": "A collaborator who can view tickets and add internal notes, but never replies to customers or owns tickets." },
+    { "term": "Routing profile", "definition": "An agent's capacity, chat limit, languages, skills and routing attributes, which routing uses to pick an agent." },
+    { "term": "Routing team", "definition": "The team that receives a department's new tickets." },
+    { "term": "Shift", "definition": "A weekly working pattern in a time zone. Teams can skip agents who are outside their shift." },
+    { "term": "Skill", "definition": "A product, module, language or other ability that agents hold at a level from 1 to 5." }
+  ]
+}

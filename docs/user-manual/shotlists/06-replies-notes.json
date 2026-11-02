@@ -1,0 +1,255 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "priya@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "06-composer-tour",
+      "file": "06-composer-tour.png",
+      "steps": [
+        {
+          "goto": "/tickets/1206"
+        },
+        {
+          "waitForText": "Invalid voucher date"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "click": "desk-composer .bar button"
+        },
+        {
+          "waitFor": "desk-composer [contenteditable=true]"
+        },
+        {
+          "click": "button[aria-label='Add Cc recipients']"
+        },
+        {
+          "click": "desk-composer [contenteditable=true]"
+        },
+        {
+          "eval": "(() => { document.execCommand('insertText', false, 'Hi Harpreet, the GRN date must fall inside an open accounting period. Please reopen October in Period settings and post the GRN again.'); return true; })()"
+        },
+        {
+          "waitForText": "Draft saved"
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "highlight": [
+        "desk-composer .modes",
+        "desk-composer .recipients",
+        "desk-composer sd-rich-text-editor",
+        "button[aria-label='Attach files']",
+        "desk-composer .actions sd-dropdown-menu",
+        "text=Draft with AI",
+        "desk-composer .send"
+      ],
+      "numbered": true,
+      "clip": "desk-composer",
+      "clipPadding": 12
+    },
+    {
+      "id": "06-templates-menu",
+      "file": "06-templates-menu.png",
+      "steps": [
+        {
+          "click": "desk-composer .actions sd-dropdown-menu button"
+        },
+        {
+          "waitFor": ".sd-menu"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": ".sd-menu"
+    },
+    {
+      "id": "06-send-and-status",
+      "file": "06-send-and-status.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 300
+        },
+        {
+          "click": "desk-composer .send sd-dropdown-menu button"
+        },
+        {
+          "waitFor": ".sd-menu"
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "clip": ".sd-menu"
+    },
+    {
+      "id": "06-internal-note",
+      "file": "06-internal-note.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 300
+        },
+        {
+          "click": "text=Internal note"
+        },
+        {
+          "waitForText": "Only agents see internal notes"
+        },
+        {
+          "click": "desk-composer [contenteditable=true]"
+        },
+        {
+          "eval": "(() => { document.execCommand('insertText', false, 'Over to '); return true; })()"
+        },
+        {
+          "eval": "(() => { document.execCommand('insertText', false, '@Mee'); return true; })()"
+        },
+        {
+          "wait": 1200
+        }
+      ],
+      "clip": "desk-ticket-view .conversation",
+      "clipPadding": 0
+    },
+    {
+      "id": "06-handover",
+      "file": "06-handover.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "click": "desk-composer [contenteditable=true]"
+        },
+        {
+          "eval": "(() => { document.execCommand('selectAll'); document.execCommand('delete'); return true; })()"
+        },
+        {
+          "click": "text=Handover"
+        },
+        {
+          "waitForText": "Only agents see handover notes"
+        },
+        {
+          "click": "desk-composer [contenteditable=true]"
+        },
+        {
+          "eval": "(() => { document.execCommand('insertText', false, 'Waiting for Harpreet to reopen October. If the error stays, check the GRN series settings.'); return true; })()"
+        },
+        {
+          "wait": 1500
+        }
+      ],
+      "clip": "desk-composer",
+      "clipPadding": 0
+    },
+    {
+      "id": "06-share-dialog",
+      "file": "06-share-dialog.png",
+      "steps": [
+        {
+          "click": "text=Internal note"
+        },
+        {
+          "waitForText": "Only agents see internal notes"
+        },
+        {
+          "click": "text=Share to Teams/Slack"
+        },
+        {
+          "waitForText": "Share to Teams / Slack"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "06-composer-bar",
+      "file": "06-composer-bar.png",
+      "steps": [
+        {
+          "click": "sd-dialog [sddialogfooter] button"
+        },
+        {
+          "wait": 300
+        },
+        {
+          "click": "desk-composer [contenteditable=true]"
+        },
+        {
+          "eval": "(() => { document.execCommand('selectAll'); document.execCommand('delete'); return true; })()"
+        },
+        {
+          "wait": 2000
+        },
+        {
+          "click": "text=Reply"
+        },
+        {
+          "click": "desk-composer [contenteditable=true]"
+        },
+        {
+          "eval": "(() => { document.execCommand('selectAll'); document.execCommand('delete'); return true; })()"
+        },
+        {
+          "wait": 2500
+        },
+        {
+          "click": "button[aria-label='Minimise composer']"
+        },
+        {
+          "waitFor": "desk-composer .bar"
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "clip": "desk-composer",
+      "clipPadding": 0
+    }
+  ]
+}

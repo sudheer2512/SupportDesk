@@ -1,0 +1,521 @@
+{
+  "chapters": [
+    {
+      "id": "integrations",
+      "title": "Integrations",
+      "intro": [
+        "This chapter is for administrators. It explains how to connect SupportDesk to Wings ERP and Wings Books. It also covers engineering trackers, Microsoft Teams and Slack.",
+        "For each connection, it says what the connection does and how to set it up. It also shows how to check that it works, and what to do when it fails."
+      ],
+      "sections": [
+        {
+          "id": "int-overview",
+          "title": "Integrations at a glance",
+          "type": "concept",
+          "intro": [
+            "You find the integrations in the **Integrations** group on the **Administration** page. You need the **Manage integrations, API keys, OAuth clients and webhooks** permission.",
+            "Passwords, tokens and webhook addresses you enter are stored encrypted. The app never shows them again. Leave such a field empty to keep the stored value."
+          ],
+          "blocks": [
+            { "table": {
+              "columns": ["Card on the Administration page", "What the connection does"],
+              "widths": [30, 70],
+              "rows": [
+                ["**Wings ERP & Books**", "Brings customer masters and branches, installations, licences and AMC contracts from Wings ERP or Wings Books. ERP screens can also create tickets."],
+                ["**Engineering**", "Sends escalated tickets to Azure DevOps, GitHub or the built-in engineering board. It brings fixes and releases back to the tickets."],
+                ["**Teams & Slack**", "Posts urgent tickets, SLA breaches, escalations, mentions and engineering news to team channels."]
+              ]
+            } },
+            { "note": "Outgoing webhooks and keys for other systems have their own pages. See the chapter on webhooks and [Keys and OAuth clients for other systems](#sec-api-about)." }
+          ]
+        },
+        {
+          "id": "int-erp-page",
+          "title": "The ERP integration page",
+          "type": "concept",
+          "intro": [
+            "Open it with **Administration** > **Wings ERP & Books**. It is also the **ERP integration** tab under **Products & Assets**.",
+            "SupportDesk reads the ERP through the ERP's own service. It never reads the ERP's tables directly. Wings ERP and Wings Books each have their own settings."
+          ],
+          "blocks": [
+            { "image": "shots/25-erp.png", "caption": "The **Wings ERP** tab of the demo workspace, which uses the simulator.", "alt": "ERP integration page with the system tabs, status bar, Connection and Synchronisation cards and the integration log" },
+            { "callouts": [
+              "Choose **Wings ERP** or **Wings Books**.",
+              "The status and the last sync, with **Test connection** and **Sync now**.",
+              "The **Connection** card: name, mode and the **Integration enabled** switch.",
+              "The **Synchronisation** card: how often to sync and what to bring in.",
+              "**Save settings** saves both cards. Before the first connection, the button says **Connect** and the system name.",
+              "The **Integration log** and its filter."
+            ] }
+          ]
+        },
+        {
+          "id": "int-erp-connect",
+          "title": "Connect Wings ERP or Wings Books",
+          "type": "task",
+          "intro": "Connect the live ERP so that customers, installations and contracts stay up to date in SupportDesk.",
+          "prerequisites": [
+            "You have the ERP service address and its sign-in details. Your Wings ERP administrator can give them to you."
+          ],
+          "steps": [
+            "Select **Administration** > **Wings ERP & Books**.",
+            "Select the **Wings ERP** or the **Wings Books** tab.",
+            {
+              "text": "In **Mode**, choose **Wings API (HTTP)**.",
+              "image": "shots/25-erp-http.png",
+              "caption": "The **Connection** card after you choose the live mode, with OAuth 2.0 sign-in.",
+              "alt": "Connection card with API base URL, Authentication, Timeout, Token URL, Client id, Client secret and Scope",
+              "note": "**Simulator (development / demo)** makes demo data from your own customers. Use it only for training and demos."
+            },
+            "Enter the **API base URL**, such as `https://erp.example.com`.",
+            "In **Authentication**, choose how SupportDesk signs in to the ERP. Then fill in the fields that appear.",
+            "Turn on **Integration enabled**.",
+            "In the **Synchronisation** card, choose what to bring in. See [Choose what to sync from the ERP](#int-erp-sync).",
+            "Select **Save settings**. On a first connection, the button says **Connect** and the system name."
+          ],
+          "result": "The app shows **ERP settings saved**. Next, [check the connection and sync now](#int-erp-test)."
+        },
+        {
+          "id": "int-erp-fields",
+          "title": "ERP connection fields",
+          "type": "reference",
+          "intro": "This table explains each field in the **Connection** card.",
+          "blocks": [
+            { "table": {
+              "columns": ["Field", "What to enter or choose"],
+              "widths": [28, 72],
+              "rows": [
+                ["**Name**", "A name for this connection, such as `Wings ERP`."],
+                ["**Mode**", "**Simulator (development / demo)** for demo data, or **Wings API (HTTP)** for the live ERP."],
+                ["**Integration enabled**", "Turns the connection and the automatic sync on or off."],
+                ["**API base URL**", "The address of the ERP service. Required in the live mode."],
+                ["**Authentication**", "**OAuth 2.0 client credentials**, **API key (X-Api-Key)** or **None (trusted network)**."],
+                ["**Timeout (seconds)**", "How long to wait for the ERP to answer, from 5 to 300 seconds."],
+                ["**Token URL**", "Optional. The default is the service address followed by `/oauth/token`."],
+                ["**Client id**", "Required for OAuth 2.0 sign-in."],
+                ["**Client secret**", "The OAuth 2.0 secret. Stored encrypted and never shown again."],
+                ["**Scope**", "Optional. The rights to ask the ERP for, such as `erp.read erp.write`."],
+                ["**API key**", "The key for key sign-in. Stored encrypted and never shown again."]
+              ]
+            } }
+          ]
+        },
+        {
+          "id": "int-erp-sync",
+          "title": "Choose what to sync from the ERP",
+          "type": "task",
+          "intro": "Choose which records SupportDesk brings in from the ERP, and how often.",
+          "steps": [
+            "In the **Synchronisation** card, enter **Sync every (minutes)**. You can enter 5 to 10080 minutes.",
+            "Turn on the records to bring in: **Customer masters & branches**, **Installations**, **Licences** and **AMC contracts**.",
+            "To add customers that exist only in the ERP, turn on **Create customers that exist only in the ERP**.",
+            "Select **Save settings**."
+          ],
+          "result": "The app shows **ERP settings saved**. The next sync uses your choices.",
+          "blocks": [
+            { "note": "**Installations** and **Licences** appear only on the **Wings ERP** tab." },
+            { "p": "The ERP's record numbers match records in both systems. Fields your team owns in SupportDesk are never overwritten. These are the tier, the account manager, the SLA and the coverage." }
+          ]
+        },
+        {
+          "id": "int-erp-test",
+          "title": "Check the ERP connection and sync now",
+          "type": "task",
+          "intro": "Test the connection after you set it up, and whenever the status shows **Error**.",
+          "steps": [
+            "Select **Administration** > **Wings ERP & Books**, and then the system's tab.",
+            "Select **Test connection**. A message shows whether the ERP answered, and how long it took.",
+            "Select **Sync now** to bring in changes at once.",
+            "Read the **Sync completed** card. For each kind of record, it shows how many were received, created, updated, unchanged and skipped."
+          ],
+          "result": "The status shows **Connected** and the time of the last sync.",
+          "blocks": [
+            { "note": "**Sync now** works only while **Integration enabled** is on. If a sync fails, the card says **Sync failed** and shows the error." }
+          ]
+        },
+        {
+          "id": "int-erp-log",
+          "title": "The integration log",
+          "type": "concept",
+          "intro": "The **Integration log** at the bottom of the page lists everything the connection did. Use it to find out why something failed.",
+          "blocks": [
+            { "list": [
+              "The filter shows **All entries**, **Sync runs**, **Tickets from ERP** or **Record updates**.",
+              "Each row shows **When**, **Operation**, **Direction**, **Result**, **Duration** and **Details**.",
+              "**Result** shows **OK** or **Failed**, often with a status code.",
+              "Select a row to see the ERP's full answer. Select it again to close it."
+            ] },
+            { "tip": "For ERP screens to create tickets, the ERP needs its own key or OAuth client with the `tickets:write` scope. See [Create a key](#sec-new-key)." }
+          ]
+        },
+        {
+          "id": "int-erp-status",
+          "title": "ERP connection statuses",
+          "type": "reference",
+          "intro": "The badge at the top of the ERP page shows the state of the connection.",
+          "blocks": [
+            { "table": {
+              "columns": ["Status", "Meaning", "What to do"],
+              "widths": [18, 40, 42],
+              "rows": [
+                ["**Not configured**", "No settings are saved for this system yet.", "Connect it. See [Connect Wings ERP or Wings Books](#int-erp-connect)."],
+                ["**Disabled**", "**Integration enabled** is off. Nothing syncs.", "Turn on **Integration enabled**, and select **Save settings**."],
+                ["**Connected**", "The last test or sync worked.", "Nothing."],
+                ["**Error**", "The last test or sync failed. The error appears next to the badge.", "Read the error, select **Test connection**, and check the address and sign-in details. Then check the integration log."]
+              ]
+            } }
+          ]
+        },
+        {
+          "id": "int-eng-page",
+          "title": "The Engineering page",
+          "type": "concept",
+          "intro": [
+            "Open it with **Administration** > **Engineering**. Here you connect the trackers where engineers fix bugs. Agents escalate tickets to them, and fixes flow back to the tickets.",
+            "Azure DevOps and GitHub need the **Engineering integration** plan feature. The built-in engineering board works on every plan."
+          ],
+          "blocks": [
+            { "image": "shots/25-engineering.png", "caption": "The **Engineering** page with the built-in board and the sync-back rules.", "alt": "Engineering administration page with the Add tracker menu, a tracker row and the sync-back rules" },
+            { "callouts": [
+              "**Add tracker** connects Azure DevOps, GitHub or the built-in board.",
+              "A tracker, with its type, its status and the number of linked items.",
+              "**Edit** and the more menu. Azure DevOps and GitHub trackers also have **Test** and **Sync now**.",
+              "The sync-back rules decide what linked tickets get when engineering work changes.",
+              "The reply template, the escalation status and the default tracker.",
+              "**Save rules** saves the rules."
+            ] },
+            { "note": "Agents can open the **Engineering** board in the left rail only after you enable the built-in board." }
+          ]
+        },
+        {
+          "id": "int-eng-local",
+          "title": "Enable the built-in engineering board",
+          "type": "task",
+          "intro": "Use the built-in board when your engineers do not use Azure DevOps or GitHub. Work items and releases then stay inside SupportDesk.",
+          "steps": [
+            "Select **Administration** > **Engineering**.",
+            "Select **Add tracker** > **Built-in engineering board**. On an empty page, select **Enable the built-in board**.",
+            "Enter a **Name** that agents see when they escalate.",
+            "Make sure **Active** is on.",
+            "Select **Create tracker**."
+          ],
+          "result": "The app shows **Tracker saved**. The board appears in the list as **Built-in board**.",
+          "blocks": [
+            { "note": "A workspace has one built-in board. When it exists, the menu item is greyed out." }
+          ]
+        },
+        {
+          "id": "int-eng-ado",
+          "title": "Connect Azure DevOps",
+          "type": "task",
+          "intro": "Connect Azure DevOps Services, or Azure DevOps Server (TFS) in your own network.",
+          "prerequisites": ["A personal access token with **Work Items (Read & write)** and **Project and Team (Read)**."],
+          "steps": [
+            "Select **Administration** > **Engineering**.",
+            {
+              "text": "Select **Add tracker** > **Azure DevOps Services / Server (TFS)**.",
+              "image": "shots/25-add-tracker.png",
+              "caption": "The **Add tracker** menu. The built-in board is greyed out because it already exists.",
+              "alt": "Add tracker menu with Azure DevOps, GitHub and Built-in engineering board",
+              "width": 320
+            },
+            "Enter a **Name** that agents see when they escalate.",
+            "Enter the **Organization / collection URL** and the **Project**.",
+            "In **Authentication**, choose **Personal access token** or **OAuth access token**. Paste the token.",
+            {
+              "text": "Check the type, field and state mappings.",
+              "image": "shots/25-tracker-editor.png",
+              "caption": "The **Connect Azure DevOps** panel with the default mappings.",
+              "alt": "Connect Azure DevOps panel with connection, type mapping, field mapping, state mapping and polling fields",
+              "width": 420,
+              "note": "The defaults suit a standard Azure DevOps project. See [Tracker fields](#int-eng-fields)."
+            },
+            "Set **Poll every (minutes)**.",
+            "Select **Create tracker**.",
+            "Copy the webhook secret from the yellow box. The app shows it only once."
+          ],
+          "result": "The tracker appears in the list with its **Webhook URL**. Next, [set up the tracker webhook](#int-eng-webhook)."
+        },
+        {
+          "id": "int-eng-github",
+          "title": "Connect GitHub",
+          "type": "task",
+          "intro": "Connect a GitHub repository, on GitHub.com or on GitHub Enterprise Server.",
+          "prerequisites": ["A fine-grained token with **Issues** (read and write) and **Metadata** and **Contents** (read). A GitHub App installation also works."],
+          "steps": [
+            "Select **Administration** > **Engineering**.",
+            "Select **Add tracker** > **GitHub**.",
+            "Enter a **Name** that agents see when they escalate.",
+            "In **API URL**, keep `https://api.github.com`. For your own GitHub Enterprise, enter its address.",
+            "Enter the **Owner** and the **Repository**.",
+            "In **Authentication**, choose **Personal / fine-grained token** and paste the **Token**. For an app, choose **GitHub App installation** and fill in its fields.",
+            "Check the type, label and state mappings, and set **Poll every (minutes)**.",
+            "Select **Create tracker**.",
+            "Copy the webhook secret from the yellow box. The app shows it only once."
+          ],
+          "result": "The tracker appears in the list with its **Webhook URL**. Next, [set up the tracker webhook](#int-eng-webhook).",
+          "blocks": [
+            { "tip": "When you edit a saved tracker, **Load repositories** or **Load projects** lists what the token can see. Pick one in the field above the button." }
+          ]
+        },
+        {
+          "id": "int-eng-fields",
+          "title": "Tracker fields",
+          "type": "reference",
+          "intro": "This table explains the fields in the tracker panel. Azure DevOps and GitHub show slightly different fields.",
+          "blocks": [
+            { "table": {
+              "columns": ["Field", "What it does"],
+              "widths": [32, 68],
+              "rows": [
+                ["**Name**", "The name agents see when they escalate a ticket."],
+                ["**Organization / collection URL**, **Project**", "Azure DevOps only. Where new work items go."],
+                ["**API URL**, **Owner**, **Repository**", "GitHub only. Where new issues go."],
+                ["**App id**, **Installation id**, **Private key (PEM)**", "GitHub App sign-in only. The key is stored encrypted."],
+                ["**Bug →**, **Feature →**, **Task →**", "The work item type (Azure DevOps) or label (GitHub) for each kind of escalation."],
+                ["**Repro steps field** and the other field boxes", "Azure DevOps only. Which tracker fields receive the steps, severity, priority, fix version and customer impact."],
+                ["**Severity label prefix**, **Priority label prefix**", "GitHub only. Labels such as `severity:high` carry the severity and priority."],
+                ["**Default tags** or **Default labels**", "Tags or labels added to every new item."],
+                ["**Resolved when the state is**", "Tracker states that mean fixed. You can also enter `label:x` or `tag:x`."],
+                ["**Released when the state is**", "States that mean the fix is released. A reported release of the fix version also counts."],
+                ["**Default item type**", "**Bug**, **Feature** or **Task**."],
+                ["**Poll every (minutes)**", "How often SupportDesk asks the tracker for changes, from 5 to 1440. It is a fallback when webhooks are not set up."],
+                ["**Active**", "Turns the tracker on or off."]
+              ]
+            } },
+            { "p": "On GitHub, the issue milestone is the fix version. A published release whose tag or name matches it marks the fix as released." }
+          ]
+        },
+        {
+          "id": "int-eng-webhook",
+          "title": "Set up the tracker webhook",
+          "type": "task",
+          "intro": "A webhook lets the tracker tell SupportDesk about changes at once. Without it, SupportDesk checks for changes on the poll schedule.",
+          "prerequisites": ["The webhook secret you copied when you created the tracker. If you lost it, see [Replace a webhook secret](#int-eng-rotate)."],
+          "steps": [
+            "Select **Administration** > **Engineering**.",
+            "On the tracker's row, select the copy button next to **Webhook URL**.",
+            "In GitHub, add a webhook to the repository with that address. Paste the secret as the webhook secret.",
+            "In Azure DevOps, add a service hook with that address. Send the secret as the password of the hook.",
+            "Back in SupportDesk, open the tracker's more menu and select **Deliveries & call log**.",
+            "On the **Webhook deliveries** tab, check that new deliveries show **Processed**."
+          ],
+          "result": "Changes in the tracker reach the linked tickets within moments.",
+          "blocks": [
+            { "note": "A **No secret** badge next to the webhook address means the tracker has no secret yet. Replace the secret to create one." }
+          ]
+        },
+        {
+          "id": "int-eng-test",
+          "title": "Test a tracker and sync now",
+          "type": "task",
+          "intro": "Check an Azure DevOps or GitHub tracker after you set it up, or when it shows an error.",
+          "steps": [
+            "Select **Administration** > **Engineering**.",
+            "On the tracker's row, select **Test**. The app shows **Connection OK** or **Connection problem**.",
+            "Select **Sync now**. The app shows how many linked items it checked and updated.",
+            "To see details, open the more menu and select **Deliveries & call log**.",
+            "On the **API calls** tab, read the result of each call to the tracker."
+          ],
+          "result": "The status badge shows **Connected**, and the row shows when the tracker last synced.",
+          "blocks": [
+            { "note": "**Sync now** works only while the tracker is **Active**." }
+          ]
+        },
+        {
+          "id": "int-eng-rotate",
+          "title": "Replace a webhook secret",
+          "type": "task",
+          "intro": "Replace the secret if it leaked, or if you lost it before you set up the webhook.",
+          "steps": [
+            "Select **Administration** > **Engineering**.",
+            "Open the tracker's more menu, and select **Rotate webhook secret**.",
+            {
+              "text": "In the dialog, select **Rotate**.",
+              "warning": "Deliveries signed with the old secret are refused until you update the tracker."
+            },
+            "Copy the new secret from the yellow box.",
+            "Update the webhook in GitHub or Azure DevOps with the new secret."
+          ],
+          "result": "New deliveries show **Processed** again."
+        },
+        {
+          "id": "int-eng-delete",
+          "title": "Delete a tracker",
+          "type": "task",
+          "intro": "Delete a tracker that you no longer use.",
+          "steps": [
+            "Select **Administration** > **Engineering**.",
+            "Open the tracker's more menu, and select **Delete**.",
+            "In the dialog, select **Delete**."
+          ],
+          "result": "The app shows **Tracker deleted**. Its sync and delivery logs are removed too.",
+          "blocks": [
+            { "note": "You cannot delete a tracker that still has linked items. **Delete** is greyed out for it. Turn off **Active** instead." }
+          ]
+        },
+        {
+          "id": "int-eng-rules",
+          "title": "Set the sync-back rules",
+          "type": "task",
+          "intro": "Sync-back rules decide what happens to linked tickets when engineering work changes. They apply to every tracker.",
+          "steps": [
+            "Select **Administration** > **Engineering**.",
+            "Under **Sync-back rules**, turn each rule on or off.",
+            "If customers hear about releases, choose a **Customer reply template**. **Built-in message** uses the standard text.",
+            "If the substatus rule is on, choose an **Escalation status**. SupportDesk uses it when a ticket's status has no **Engineering** substatus.",
+            "In **Default tracker**, choose the tracker that agents get first.",
+            "Select **Save rules**."
+          ],
+          "result": "The app shows **Sync-back rules saved**.",
+          "blocks": [
+            { "table": {
+              "columns": ["Rule", "What it does"],
+              "widths": [48, 52],
+              "rows": [
+                ["**Add an internal note when a linked item is resolved**", "Adds a note to the ticket when engineers fix the item."],
+                ["**Add an internal note when the fix is released**", "Adds a note when the fix ships."],
+                ["**Notify the ticket assignee (resolved, released, deleted)**", "Sends the ticket's agent a notification."],
+                ["**Tell the customer when the fix is released (“fix released in version X”)**", "Sends the customer a reply. It is off by default."],
+                ["**Set the ticket substatus “Engineering” on escalation**", "Marks the ticket as waiting for engineering."]
+              ]
+            } },
+            { "note": "A reply template can use placeholders such as `{{engineering.fixVersion}}`, `{{ticket.number}}` and `{{contact.name}}`." }
+          ]
+        },
+        {
+          "id": "int-collab-about",
+          "title": "Teams and Slack channels",
+          "type": "concept",
+          "intro": [
+            "Open **Administration** > **Teams & Slack** to post ticket events to team channels. Each post is a card with the ticket's facts and an **Open in SupportDesk** link.",
+            "Agents can also share a ticket to a channel from the internal note box on a ticket."
+          ],
+          "blocks": [
+            { "image": "shots/25-collaboration.png", "caption": "The **Teams & Slack** page before any channel is added.", "alt": "Teams and Slack page with no channels and the Add channel button highlighted" },
+            { "p": "After you add channels, each row shows the channel's name, its platform and the events it receives. It also shows when it last posted." },
+            { "list": [
+              "A red **Failing** badge and an error mean the last post did not arrive.",
+              "The switch on the row turns the channel on or off.",
+              "**Send test** posts a test card to the channel.",
+              "The more menu has **Edit**, **Post log** and **Delete**."
+            ] }
+          ]
+        },
+        {
+          "id": "int-collab-webhook",
+          "title": "Create an incoming webhook in Teams or Slack",
+          "type": "task",
+          "intro": "SupportDesk posts to a channel through an incoming webhook. A webhook is a private address that accepts posts for one channel.",
+          "steps": [
+            "In Microsoft Teams, open the channel and its **Workflows**.",
+            { "text": "Add the workflow that posts to a channel from a webhook, and copy the address it creates.", "note": "In Teams, the workflow is called **Post to a channel when a webhook request is received**." },
+            "In Slack, create an app with **Incoming Webhooks** turned on.",
+            "Add a webhook for your channel, and copy its address. It starts with `https://hooks.slack.com/services/`."
+          ],
+          "result": "You have the address to paste into SupportDesk.",
+          "blocks": [
+            { "note": "Treat the address like a password. Anyone who has it can post to your channel." }
+          ]
+        },
+        {
+          "id": "int-collab-add",
+          "title": "Add a Teams or Slack channel",
+          "type": "task",
+          "intro": "Add a channel and choose which ticket events it receives.",
+          "prerequisites": ["The channel's incoming webhook address. See [Create an incoming webhook in Teams or Slack](#int-collab-webhook)."],
+          "steps": [
+            "Select **Administration** > **Teams & Slack**.",
+            "Select **Add channel**.",
+            "Under **Platform**, choose **Microsoft Teams** or **Slack**.",
+            "Enter a **Name**, such as `#support-escalations`.",
+            "Paste the **Incoming webhook URL**.",
+            {
+              "text": "Under **Post these events**, tick the events you want.",
+              "image": "shots/25-add-channel.png",
+              "caption": "A new Teams channel for urgent tickets and SLA breaches.",
+              "alt": "Add channel panel with platform, name, webhook address, events, minimum priority and departments",
+              "width": 420
+            },
+            "If you ticked **New urgent ticket**, choose **Urgent means priority at least**.",
+            "Optional: tick **Departments** to limit the channel. With none ticked, it covers all departments.",
+            "Keep **Active** on, and select **Add channel**."
+          ],
+          "result": "The app shows **Channel added**. Next, select **Send test** on the new row."
+        },
+        {
+          "id": "int-collab-events",
+          "title": "Events you can post",
+          "type": "reference",
+          "intro": "This table lists the events a Teams or Slack channel can receive.",
+          "blocks": [
+            { "table": {
+              "columns": ["Event", "Posted when"],
+              "widths": [30, 70],
+              "rows": [
+                ["**New urgent ticket**", "A ticket is created with at least the channel's minimum priority."],
+                ["**SLA breach**", "A first-response, next-response or resolution target is missed."],
+                ["**Escalation**", "A ticket is escalated by an agent, by automation or by SLA escalation levels."],
+                ["**Mention**", "An agent is @mentioned in an internal note."],
+                ["**Escalated to engineering**", "A ticket is escalated to, or linked with, an engineering work item."],
+                ["**Engineering fix done**", "A linked work item is resolved in the tracker."],
+                ["**Fix released**", "The fix for a linked work item is released."]
+              ]
+            } }
+          ]
+        },
+        {
+          "id": "int-collab-test",
+          "title": "Send a test and check the post log",
+          "type": "task",
+          "intro": "Check that a channel receives posts. Do it after you add a channel, and whenever it shows **Failing**.",
+          "steps": [
+            "Select **Administration** > **Teams & Slack**.",
+            "On the channel's row, select **Send test**.",
+            { "text": "Read the message that appears.", "note": "**Test message posted** means the card arrived. **Test failed** shows the reason." },
+            "To see every attempt, open the more menu and select **Post log**.",
+            "In the **Posts** panel, read the status code, the time taken and any error for each post."
+          ],
+          "result": "The test card appears in the Teams or Slack channel."
+        },
+        {
+          "id": "int-collab-manage",
+          "title": "Pause, change or delete a Teams or Slack channel",
+          "type": "task",
+          "intro": "Pause a channel for a while, change its events, or remove it.",
+          "steps": [
+            "Select **Administration** > **Teams & Slack**.",
+            "To pause or restart posts, use the switch on the channel's row.",
+            "To change the channel, open the more menu and select **Edit**. Make your changes and select **Save**.",
+            "To remove the channel, open the more menu and select **Delete**. In the dialog, select **Delete**."
+          ],
+          "result": "The app shows **Channel saved** or **Channel deleted**.",
+          "blocks": [
+            { "note": "You cannot change the platform of a saved channel. Leave **Incoming webhook URL** empty to keep the stored address." }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "The ERP status shows **Error**.", "cause": "The ERP did not answer, or it refused SupportDesk's sign-in.", "fix": "Read the error next to the badge. Select **Test connection**, then check the address, the sign-in details and the integration log." },
+    { "problem": "**Sync now** is greyed out on the ERP page.", "cause": "**Integration enabled** is off.", "fix": "Turn on **Integration enabled**, and select **Save settings**." },
+    { "problem": "A tracker test shows **Connection problem**.", "cause": "The address, the project or repository, or the token is wrong. The token may also lack rights.", "fix": "Edit the tracker and check each field. Give the token the rights listed under its field." },
+    { "problem": "Escalated tickets do not update when engineers fix the work item.", "cause": "The tracker webhook is not set up, or its secret is wrong.", "fix": "Check **Deliveries & call log**. Set up the webhook again, or replace the webhook secret." },
+    { "problem": "A Teams or Slack channel shows **Failing**.", "cause": "Someone removed or changed the webhook in Teams or Slack.", "fix": "Create a new incoming webhook. Edit the channel, paste the new address and select **Send test**." },
+    { "problem": "The app says to choose at least one event.", "cause": "No event is ticked under **Post these events**.", "fix": "Tick at least one event, and save again." }
+  ],
+  "faq": [
+    { "q": "Does SupportDesk change data in Wings ERP?", "a": "The sync reads customers, installations, licences and contracts from the ERP. ERP screens can create tickets in SupportDesk through their own key." },
+    { "q": "Will a sync overwrite what my team typed in SupportDesk?", "a": "No. Fields your team owns, such as tier, account manager, SLA and coverage, are never overwritten." },
+    { "q": "Do I need Azure DevOps or GitHub to escalate tickets?", "a": "No. The built-in engineering board works on every plan and keeps work items inside SupportDesk." }
+  ],
+  "glossary": [
+    { "term": "Wings ERP", "definition": "Wings' business software that holds customer masters, installations, licences and AMC contracts. SupportDesk can sync with it." },
+    { "term": "Sync", "definition": "One run that brings changed records from another system into SupportDesk." },
+    { "term": "Tracker", "definition": "The system where engineers manage bugs and features: Azure DevOps, GitHub or the built-in engineering board." },
+    { "term": "Sync-back rules", "definition": "Rules that decide what linked tickets get when engineering work is resolved or released." },
+    { "term": "Incoming webhook", "definition": "A private address in Teams or Slack that accepts posts for one channel." },
+    { "term": "Webhook secret", "definition": "A shared password that proves a tracker's messages really come from your tracker." }
+  ]
+}

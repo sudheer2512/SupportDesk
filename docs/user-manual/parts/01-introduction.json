@@ -1,0 +1,122 @@
+{
+  "chapters": [
+    {
+      "id": "introduction",
+      "title": "Introduction",
+      "intro": [
+        "This chapter is for everyone. It explains what SupportDesk does, which part of it you use, and the ideas you meet in every chapter.",
+        "Read it first. Then go to the chapters for your role."
+      ],
+      "sections": [
+        {
+          "id": "what-supportdesk-does",
+          "title": "What SupportDesk does",
+          "type": "concept",
+          "intro": [
+            "SupportDesk is a help desk. It collects customer questions from e-mail, the customer portal, live chat, messaging apps and phone calls in one place.",
+            "Each question becomes a ticket. Agents answer tickets, and timers show how much time is left to respond. Customers follow their tickets in the portal or the mobile app.",
+            "SupportDesk also keeps your customers, their products and their contracts. It has a knowledge base of help articles and reports on how the team performs. An AI assistant can summarise tickets and draft replies for you to check."
+          ]
+        },
+        {
+          "id": "who-uses-which-part",
+          "title": "Who uses which part",
+          "type": "reference",
+          "intro": "SupportDesk has several apps. You use only the ones your role needs.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Part", "Who uses it", "What it is for", "Chapters"],
+                "widths": [20, 22, 38, 20],
+                "rows": [
+                  ["**Desk**", "Agents and supervisors", "Answer tickets and chats, look up customers, use the knowledge base, see your work and the team's work.", "2 to 16"],
+                  ["**Administration**", "Administrators", "Set up the workspace: users and roles, channels, SLA policies, automation, brands, security and billing.", "15 to 28"],
+                  ["**Customer portal**", "Your customers", "Raise and follow tickets, read help articles, ask the community and chat with support.", "29"],
+                  ["**Mobile app**", "Agents and customers", "Work on tickets or follow your own tickets from a phone, even with a weak connection.", "30"],
+                  ["**Platform console**", "Platform operators", "Run the SupportDesk service: workspaces, plans, invoices and support access.", "31"]
+                ]
+              }
+            },
+            { "note": "You see only the menus and buttons your role allows. If a task in this manual names a menu you cannot see, ask your administrator for access." }
+          ]
+        },
+        {
+          "id": "desk-at-a-glance",
+          "title": "The desk at a glance",
+          "type": "concept",
+          "intro": "The desk opens after you sign in. The same frame surrounds every page: the menu on the left and the top bar above the page.",
+          "blocks": [
+            { "image": "shots/01-desk-at-a-glance.png", "caption": "The desk with the **Command Center** page open.", "alt": "SupportDesk desk with the navigation menu, top bar and the Command Center page, with numbered highlights" },
+            { "callouts": [
+              "The **navigation menu** opens each part of the desk. It is grouped into **Work**, **Customers**, **Operations** and **Settings**.",
+              "**Search** finds tickets and opens pages and commands. Press [[Ctrl+K]] to open it from anywhere.",
+              "**New ticket** creates a ticket for a customer.",
+              "The **notifications** bell shows how many notifications you have not read.",
+              "**Availability** tells your team whether you can take new work, for example **Online** or **Away**.",
+              "Your **account menu** holds your profile, your preferences and **Sign out**.",
+              "The **page header** shows the page title and its main buttons."
+            ] },
+            { "tip": "Select **Collapse** at the bottom of the menu to show icons only. This gives the page more room." }
+          ]
+        },
+        {
+          "id": "key-ideas",
+          "title": "Key ideas",
+          "type": "concept",
+          "intro": "These words appear throughout the manual. The glossary at the end explains more of them.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Idea", "What it means"],
+                "widths": [24, 76],
+                "rows": [
+                  ["**Ticket**", "One customer question or problem, with every message, note and change about it. Each ticket has a number, such as **#1004**."],
+                  ["**Status**", "Where a ticket is in its life, such as **Open**, **In Progress** or **Resolved**. Chapter 5 lists every status."],
+                  ["**Priority**", "How urgent a ticket is: **Low**, **Medium**, **High** or **Critical**."],
+                  ["**SLA**", "The service level agreement. It sets how soon the team must respond to and resolve a ticket. Timers count down on each ticket."],
+                  ["**Channel**", "The way a ticket arrives, such as e-mail, the portal, live chat, a messaging app or a phone call."],
+                  ["**View**", "A saved list of tickets, such as **My open tickets** or **Unassigned**. Agents work from views."],
+                  ["**Department** and **team**", "Groups of agents. A ticket belongs to a department, and routing assigns it to a team or an agent."],
+                  ["**Workspace**", "Your organisation's own SupportDesk. You enter its short name when you sign in."],
+                  ["**Brand**", "A company name, logo and portal that customers see. One workspace can serve several brands."],
+                  ["**Knowledge base**", "Help articles for agents and customers. Customers read published articles in the portal."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "how-to-use-this-manual",
+          "title": "How to use this manual",
+          "type": "concept",
+          "intro": [
+            "Each chapter starts by saying who it is for. Tasks have numbered steps, and the result tells you what you see when you finish.",
+            "The screenshots come from a demonstration workspace. Your workspace has its own names, numbers and settings, so your screens look a little different."
+          ],
+          "blocks": [
+            { "list": [
+              "New to the desk? Read chapters 2 to 6 first.",
+              "Supervisors: read chapters 12, 15 and 16 as well.",
+              "Administrators: start with chapter 17, then the chapters for each setting you manage.",
+              "Customers: go straight to chapter 29.",
+              "Platform operators: go straight to chapter 31."
+            ] }
+          ]
+        }
+      ]
+    }
+  ],
+  "glossary": [
+    { "term": "Agent", "definition": "A support team member who answers tickets and chats in the desk." },
+    { "term": "Supervisor", "definition": "A team lead who watches the queue, SLA risk and the team's workload, and moves work between agents." },
+    { "term": "Administrator", "definition": "A person who sets up the workspace: users, roles, channels, policies, security and billing." },
+    { "term": "Platform operator", "definition": "A person at the company that runs the SupportDesk service. Operators manage workspaces, plans and invoices in the platform console." },
+    { "term": "Ticket", "definition": "One customer question or problem, with all its messages, notes and changes. Each ticket has a number." },
+    { "term": "SLA", "definition": "Service level agreement. The response and resolution times the team promises, measured by timers on each ticket." },
+    { "term": "Channel", "definition": "A way customers reach you, such as e-mail, the portal, live chat, a messaging app or phone." },
+    { "term": "Workspace", "definition": "Your organisation's own SupportDesk, with its own users, customers and settings. You enter its short name when you sign in." },
+    { "term": "Brand", "definition": "A company name, logo and customer portal. One workspace can serve several brands." },
+    { "term": "Customer portal", "definition": "The website where customers raise and follow tickets, read help articles and chat with support." },
+    { "term": "Desk", "definition": "The SupportDesk app that agents, supervisors and administrators use in a web browser." }
+  ]
+}

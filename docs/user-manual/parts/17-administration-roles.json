@@ -1,0 +1,504 @@
+{
+  "chapters": [
+    {
+      "id": "administration-roles-permissions",
+      "title": "Administration, roles and permissions",
+      "intro": [
+        "This chapter is for administrators. It starts with the **Administration** home, where every setting area begins.",
+        "It then explains roles. You learn what each built-in role may do and which records it sees. You also learn how to make your own roles safely."
+      ],
+      "sections": [
+        {
+          "id": "administration-home",
+          "title": "The Administration home",
+          "type": "concept",
+          "intro": [
+            "Open **Administration** in the left rail. The page shows one card for each area you can manage, in seven groups.",
+            "A card appears when your role holds any of its permissions. Settings you change apply to the next request. Open desks refresh by themselves."
+          ],
+          "blocks": [
+            {
+              "image": "shots/17-admin-home.png",
+              "caption": "The **Administration** home with the Organisation and Ticketing groups.",
+              "alt": "Administration home with numbered search box, group heading and the Roles and permissions card"
+            },
+            {
+              "callouts": [
+                "**Find a setting** filters the cards as you type. Press [[Enter]] to open the first match.",
+                "A group heading, such as **Organisation**.",
+                "A card. Select it to open the area."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "administration-cards",
+          "title": "Administration cards",
+          "type": "reference",
+          "intro": "Some cards open screens outside **Administration**, because supervisors use the same screens. Reading is often allowed more widely than changing.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Group", "Card", "Shown with any of"],
+                "widths": [22, 38, 40],
+                "rows": [
+                  ["Organisation", "**Departments & teams**", "`agents.manage`, `supervisor.monitor`"],
+                  ["Organisation", "**Agents**", "`agents.manage`, `supervisor.monitor`"],
+                  ["Organisation", "**Shifts, leave & delegation**", "`agents.manage`, `supervisor.monitor`"],
+                  ["Organisation", "**Roles & permissions**", "`admin.roles`"],
+                  ["Ticketing", "**SLA policies**", "`admin.sla`, `supervisor.monitor`"],
+                  ["Ticketing", "**Business hours & holidays**", "`admin.sla`, `supervisor.monitor`"],
+                  ["Ticketing", "**Ticket configuration**", "`admin.ticket_config`"],
+                  ["Ticketing", "**Fields & form layouts**", "`admin.ticket_config`"],
+                  ["Channels & portal", "**Channels**", "`admin.channels`"],
+                  ["Channels & portal", "**Brands & portals**", "`admin.organisation`"],
+                  ["Channels & portal", "**Notifications & e-mail templates**", "`admin.organisation`, `admin.channels`"],
+                  ["Automation & AI", "**Automation & blueprints**", "`admin.automation`"],
+                  ["Automation & AI", "**AI**", "`admin.ai`"],
+                  ["Security & compliance", "**Audit log**", "`admin.audit`"],
+                  ["Security & compliance", "**Compliance**", "`admin.compliance`"],
+                  ["Security & compliance", "**Configuration transfer**", "`admin.config_transfer`"],
+                  ["Security & compliance", "**Security & sign-in**", "`admin.security`"],
+                  ["Integrations", "**Webhooks**", "`admin.integrations`"],
+                  ["Integrations", "**Wings ERP & Books**", "`admin.integrations`"],
+                  ["Integrations", "**Engineering**", "`admin.integrations`"],
+                  ["Integrations", "**Teams & Slack**", "`admin.integrations`"],
+                  ["Integrations", "**API keys & OAuth clients**", "`admin.integrations`"],
+                  ["Subscription", "**Subscription & billing**", "`admin.billing`"]
+                ]
+              }
+            },
+            { "note": "Hiding a card never replaces a permission check. Each screen checks the permission again when it opens." }
+          ]
+        },
+        {
+          "id": "built-in-roles",
+          "title": "Built-in roles",
+          "type": "concept",
+          "intro": "Every new workspace gets six system roles. They are read-only. You can clone them to make your own versions.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Role", "Tickets seen", "Customers seen", "Purpose"],
+                "widths": [18, 16, 16, 50],
+                "rows": [
+                  ["**Administrator**", "All", "All", "Every permission."],
+                  ["**Supervisor**", "Departments", "All", "Agent work plus transfer, bulk changes, delete, approvals, monitoring, costs, team analytics, knowledge review and AI approvals."],
+                  ["**Agent**", "Departments", "All", "Day-to-day ticket work, customers, knowledge drafts, AI help and engineering links."],
+                  ["**Light Agent**", "Departments", "All", "View tickets and add internal notes."],
+                  ["**Knowledge Manager**", "All", "All", "Knowledge base writing, review, publishing and settings."],
+                  ["**Analyst**", "All", "All", "Read-only reports, including costs."]
+                ]
+              }
+            },
+            { "p": "The [permission reference](#permission-reference) shows exactly which permissions each role holds." }
+          ]
+        },
+        {
+          "id": "roles-list",
+          "title": "The Roles & permissions list",
+          "type": "concept",
+          "intro": "Open **Administration** > **Roles & permissions**. You need `admin.roles`.",
+          "blocks": [
+            {
+              "image": "shots/17-roles.png",
+              "caption": "The **Roles & permissions** list with six system roles and two custom roles.",
+              "alt": "Roles list with numbered New role button, filter box, role name and badges, scope and counts, and actions menu"
+            },
+            {
+              "callouts": [
+                "**New role** creates a custom role.",
+                "**Filter roles** finds a role by name or description.",
+                "The role name with badges: **System** or **Custom**, **Administrator** for roles that can manage roles, and **Light agent**.",
+                "The ticket scope, the number of permissions and the number of members.",
+                "The actions menu: **View** or **Edit**, **Clone** and, for custom roles, **Delete**."
+              ]
+            },
+            {
+              "image": "shots/17-role-menu.png",
+              "caption": "The actions menu of the custom Account Manager role.",
+              "alt": "Roles list with the actions menu open showing Edit, Clone and Delete"
+            },
+            { "note": "Custom roles need a plan that includes them, such as Trial, Professional or Enterprise. On other plans, **New role** and **Clone** are turned off." }
+          ]
+        },
+        {
+          "id": "data-scope",
+          "title": "Data scope",
+          "type": "concept",
+          "intro": [
+            "Each role has a ticket scope and a customer scope. They decide which records the role's members can see at all.",
+            "A user with several roles gets the broadest scope of them. Records outside the scope are invisible. They behave as if they did not exist."
+          ],
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Ticket scope", "Members see"],
+                "widths": [45, 55],
+                "rows": [
+                  ["**Own tickets — assigned to or raised by the agent**", "Tickets they own or raised."],
+                  ["**Team — tickets of the agent's teams**", "Tickets of their teams."],
+                  ["**Departments — tickets of the agent's departments**", "Tickets of their departments."],
+                  ["**All tickets in the organisation**", "Every ticket."]
+                ]
+              }
+            },
+            {
+              "table": {
+                "columns": ["Customer scope", "Members see"],
+                "widths": [45, 55],
+                "rows": [
+                  ["**Account-managed customers only**", "Only customers they manage as account manager."],
+                  ["**All customers**", "Every customer."]
+                ]
+              }
+            },
+            {
+              "image": "shots/17-custom-role.png",
+              "caption": "The **Data scope** card of the Account Manager role.",
+              "alt": "Data scope card with ticket and customer scope options and the Light agent role switch"
+            },
+            { "note": "You cannot give a role a broader scope than your own. Those options are turned off." }
+          ]
+        },
+        {
+          "id": "system-roles-read-only",
+          "title": "Open a system role",
+          "type": "concept",
+          "intro": "Select a system role to see its settings. Everything is read-only.",
+          "blocks": [
+            {
+              "image": "shots/17-role-system.png",
+              "caption": "The Administrator system role, which is read-only.",
+              "alt": "Administrator role page with numbered Clone to customise button, read-only notice and General card"
+            },
+            {
+              "callouts": [
+                "**Clone to customise** makes an editable copy.",
+                "The notice **System role — read-only.**",
+                "The **General** card with the name and description."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "clone-role",
+          "title": "Clone a role",
+          "type": "task",
+          "intro": "Cloning is the quickest way to make a role that is close to an existing one.",
+          "prerequisites": ["Your role includes `admin.roles`.", "Your plan includes custom roles."],
+          "steps": [
+            "Open **Administration** > **Roles & permissions**.",
+            "Open the actions menu of the role and select **Clone**. On a system role page, you can also select **Clone to customise**.",
+            {
+              "text": "In **Name of the new role**, enter a unique name.",
+              "image": "shots/17-clone-drawer.png",
+              "caption": "The clone panel suggests a name ending in (copy).",
+              "alt": "Clone Account Manager panel with the Name of the new role field and Clone role button",
+              "width": 320
+            },
+            "Select **Clone role**."
+          ],
+          "result": "A message says \"Role cloned\". The new role opens with the same permissions, data scope and light-agent setting."
+        },
+        {
+          "id": "create-custom-role",
+          "title": "Create a custom role",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.roles`.", "Your plan includes custom roles."],
+          "steps": [
+            "Open **Administration** > **Roles & permissions** and select **New role**.",
+            {
+              "text": "In **General**, enter a **Name** and a **Description**.",
+              "image": "shots/17-new-role.png",
+              "caption": "The **General** card of a new role.",
+              "alt": "General card with the name Billing desk and a description"
+            },
+            "In **Data scope**, choose the **Tickets** and **Customers** scopes.",
+            "Turn on **Light agent role** only for collaborators who must never reply or own tickets.",
+            {
+              "text": "Under **Permissions**, tick the permissions the role needs.",
+              "image": "shots/17-permission-matrix.png",
+              "caption": "The permission matrix filtered by the word merge.",
+              "alt": "Permissions card with numbered filter box, group check box, permission code and Sensitive badge"
+            },
+            {
+              "text": "Select **Create role**.",
+              "image": "shots/17-role-savebar.png",
+              "caption": "The save bar shows **Unsaved changes** until you save.",
+              "alt": "Save bar with Unsaved changes, Discard and Create role"
+            }
+          ],
+          "result": "A message says \"Role created\". The **Members** card appears, so you can add people to the role.",
+          "blocks": [
+            { "p": "The name must be unique and 2–100 characters long. **Discard** throws away your changes." },
+            { "p": "In the matrix, each permission shows a description and its code. A group check box ticks or clears a whole group. **Sensitive** marks high-impact permissions." },
+            { "tip": "Type in **Filter permissions** to find a permission by its description or code." },
+            { "note": "A lock next to a permission means you do not hold it, so you cannot grant it." }
+          ]
+        },
+        {
+          "id": "edit-role-members",
+          "title": "Add or remove role members",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.roles`.", "The role is a custom role."],
+          "steps": [
+            "Open the role.",
+            {
+              "text": "In **Members**, choose a user in **Add a user to this role…**.",
+              "image": "shots/17-role-members.png",
+              "caption": "The **Members** card with one member.",
+              "alt": "Members card with numbered user picker and Remove button"
+            },
+            "Select **Add**.",
+            "To take someone out, select **Remove** on their row."
+          ],
+          "result": "A message says \"Member added\" or \"Member removed\". The change applies to the member's open sessions at once.",
+          "blocks": [{ "p": "Each member row lists the other roles the person holds. You can also change roles from the agent page. See [Change an agent's roles and departments](#edit-agent-access)." }]
+        },
+        {
+          "id": "light-agents",
+          "title": "Light agents",
+          "type": "concept",
+          "intro": "A light agent is a collaborator who helps on tickets without talking to customers. Engineers and managers are typical light agents.",
+          "blocks": [
+            {
+              "list": [
+                "A user is a light agent when their agent record says so. Any light-agent role also makes them one.",
+                "Light agents can never reply to customers, own tickets, transfer, bulk-edit or delete. This holds whatever their permissions say.",
+                "Light agents count against a separate plan limit. By default it equals the plan's agent limit.",
+                "The limit is checked when you invite or reactivate a light agent."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "escalation-guard",
+          "title": "The escalation guard",
+          "type": "concept",
+          "intro": "You can never give away more than you have. SupportDesk blocks a change when:",
+          "blocks": [
+            {
+              "list": [
+                "you create, change or delete a role with a permission you do not hold;",
+                "you create, change or delete a role whose data scope is broader than yours;",
+                "you add a user to such a role, or remove a user from it;",
+                "you choose such a role as the single sign-on default role;",
+                "you create a key or client app for an integration with rights you do not have."
+              ]
+            },
+            { "p": "The message names the permissions you lack. Ask an administrator with those permissions to make the change." },
+            { "note": "This applies to a role's current contents too. You cannot edit a role that already holds permissions you lack." }
+          ]
+        },
+        {
+          "id": "last-administrator",
+          "title": "The last-administrator rule",
+          "type": "concept",
+          "intro": "The workspace must always keep at least one administrator. That is an active user with a role that holds `admin.roles`.",
+          "blocks": [
+            { "p": "SupportDesk refuses any change that would remove the last one:" },
+            {
+              "list": [
+                "removing `admin.roles` from a role;",
+                "deleting an administrative role;",
+                "changing a user's roles;",
+                "deactivating or deleting the user."
+              ]
+            },
+            { "tip": "Make someone else an administrator first. Then make the change." }
+          ]
+        },
+        {
+          "id": "delete-role",
+          "title": "Delete a custom role",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.roles`.", "The role is a custom role.", "The role is not the single sign-on default role."],
+          "steps": [
+            "Open **Administration** > **Roles & permissions**.",
+            "Open the actions menu of the role and select **Delete**.",
+            {
+              "text": "If people hold the role, choose a role in **Move members to**.",
+              "image": "shots/17-delete-drawer.png",
+              "caption": "The delete panel asks where the role's members move.",
+              "alt": "Delete Account Manager panel with the Move members to list and Delete role button",
+              "width": 320
+            },
+            "Select **Delete role**. If nobody holds the role, select **Delete** in the confirmation."
+          ],
+          "result": "A message says \"Role deleted\". Its members now hold the role you chose.",
+          "blocks": [
+            { "warning": "You cannot undo a delete. Clone the role first if you might need it again." },
+            { "note": "System roles cannot be deleted or changed." }
+          ]
+        },
+        {
+          "id": "permission-reference",
+          "title": "Permission reference",
+          "type": "reference",
+          "intro": [
+            "This table lists every permission, grouped as in the permission matrix. A tick means the built-in role holds it.",
+            "**Sensitive** marks high-impact permissions. Light agents lose reply, assign, transfer, delete and bulk rights whatever their roles say."
+          ],
+          "blocks": [
+            { "heading": "Tickets" },
+            {
+              "table": {
+                "columns": ["Permission", "Code", "Admin", "Supervisor", "Agent", "Light", "Knowledge", "Analyst"],
+                "widths": [30, 22, 7, 9, 7, 7, 9, 8],
+                "rows": [
+                  ["View tickets within the role's data scope", "`tickets.view`", "✓", "✓", "✓", "✓", "✓", "✓"],
+                  ["Create and clone tickets", "`tickets.create`", "✓", "✓", "✓", "", "", ""],
+                  ["Edit ticket fields", "`tickets.edit`", "✓", "✓", "✓", "", "", ""],
+                  ["Send public replies to customers", "`tickets.reply`", "✓", "✓", "✓", "", "", ""],
+                  ["Add internal notes", "`tickets.note`", "✓", "✓", "✓", "✓", "✓", ""],
+                  ["Assign and reassign tickets", "`tickets.assign`", "✓", "✓", "✓", "", "", ""],
+                  ["Transfer tickets between departments", "`tickets.transfer`", "✓", "✓", "", "", "", ""],
+                  ["Escalate tickets", "`tickets.escalate`", "✓", "✓", "✓", "", "", ""],
+                  ["Resolve and close tickets", "`tickets.resolve`", "✓", "✓", "✓", "", "", ""],
+                  ["Reopen resolved/closed tickets", "`tickets.reopen`", "✓", "✓", "✓", "", "", ""],
+                  ["Merge tickets", "`tickets.merge`", "✓", "✓", "✓", "", "", ""],
+                  ["Split tickets", "`tickets.split`", "✓", "✓", "✓", "", "", ""],
+                  ["Delete tickets and mark spam. **Sensitive**", "`tickets.delete`", "✓", "✓", "", "", "", ""],
+                  ["Bulk-update tickets", "`tickets.bulk`", "✓", "✓", "", "", "", ""],
+                  ["Log time on tickets", "`tickets.time`", "✓", "✓", "✓", "", "", ""],
+                  ["See support costs and billable amounts. **Sensitive**", "`tickets.view_costs`", "✓", "✓", "", "", "", "✓"],
+                  ["Override support eligibility. **Sensitive**", "`tickets.override_entitlement`", "✓", "✓", "", "", "", ""],
+                  ["Export ticket lists", "`tickets.export`", "✓", "✓", "", "", "", ""]
+                ]
+              }
+            },
+            { "heading": "Customers" },
+            {
+              "table": {
+                "columns": ["Permission", "Code", "Admin", "Supervisor", "Agent", "Light", "Knowledge", "Analyst"],
+                "widths": [30, 22, 7, 9, 7, 7, 9, 8],
+                "rows": [
+                  ["View customers and contacts", "`customers.view`", "✓", "✓", "✓", "✓", "✓", "✓"],
+                  ["Create and edit customers, contacts and locations", "`customers.manage`", "✓", "✓", "✓", "", "", ""],
+                  ["Merge duplicate contacts. **Sensitive**", "`contacts.merge`", "✓", "✓", "", "", "", ""],
+                  ["Merge duplicate customer organisations. **Sensitive**", "`customers.merge`", "✓", "✓", "", "", "", ""]
+                ]
+              }
+            },
+            { "heading": "Products" },
+            {
+              "table": {
+                "columns": ["Permission", "Code", "Admin", "Supervisor", "Agent", "Light", "Knowledge", "Analyst"],
+                "widths": [30, 22, 7, 9, 7, 7, 9, 8],
+                "rows": [
+                  ["View products, installations and assets", "`products.view`", "✓", "✓", "✓", "✓", "✓", "✓"],
+                  ["Manage products, versions, installations and assets", "`products.manage`", "✓", "", "", "", "", ""],
+                  ["View contracts and entitlements", "`contracts.view`", "✓", "✓", "✓", "", "", "✓"],
+                  ["Manage contracts and entitlements. **Sensitive**", "`contracts.manage`", "✓", "✓", "", "", "", ""]
+                ]
+              }
+            },
+            { "heading": "Knowledge" },
+            {
+              "table": {
+                "columns": ["Permission", "Code", "Admin", "Supervisor", "Agent", "Light", "Knowledge", "Analyst"],
+                "widths": [30, 22, 7, 9, 7, 7, 9, 8],
+                "rows": [
+                  ["Read internal knowledge articles", "`kb.view_internal`", "✓", "✓", "✓", "✓", "✓", ""],
+                  ["Write and edit article drafts", "`kb.author`", "✓", "✓", "✓", "", "✓", ""],
+                  ["Review and approve articles", "`kb.review`", "✓", "✓", "", "", "✓", ""],
+                  ["Publish, archive and expire articles", "`kb.publish`", "✓", "✓", "", "", "✓", ""],
+                  ["Moderate community forums", "`community.moderate`", "✓", "✓", "", "", "✓", ""]
+                ]
+              }
+            },
+            { "heading": "Collaboration" },
+            {
+              "table": {
+                "columns": ["Permission", "Code", "Admin", "Supervisor", "Agent", "Light", "Knowledge", "Analyst"],
+                "widths": [30, 22, 7, 9, 7, 7, 9, 8],
+                "rows": [
+                  ["Approve or reject approval requests", "`approvals.decide`", "✓", "✓", "", "", "", ""],
+                  ["Supervisor monitoring (live queues, agent status)", "`supervisor.monitor`", "✓", "✓", "", "", "", ""],
+                  ["Manage agent availability, shifts, leave and delegation", "`agents.manage`", "✓", "✓", "", "", "", ""],
+                  ["Create and link engineering work items", "`engineering.link`", "✓", "✓", "✓", "", "", ""],
+                  ["View the engineering board, work items and releases", "`engineering.view`", "✓", "✓", "✓", "✓", "", ""],
+                  ["Create, update and move engineering work items; publish releases", "`engineering.manage`", "✓", "✓", "", "✓", "", ""]
+                ]
+              }
+            },
+            { "heading": "Analytics" },
+            {
+              "table": {
+                "columns": ["Permission", "Code", "Admin", "Supervisor", "Agent", "Light", "Knowledge", "Analyst"],
+                "widths": [30, 22, 7, 9, 7, 7, 9, 8],
+                "rows": [
+                  ["View personal dashboards and reports", "`analytics.view`", "✓", "✓", "✓", "✓", "✓", "✓"],
+                  ["View team, department and organisation analytics", "`analytics.team`", "✓", "✓", "", "", "", "✓"],
+                  ["Export reports (CSV/Excel/PDF)", "`analytics.export`", "✓", "✓", "", "", "", "✓"],
+                  ["Schedule report delivery", "`analytics.schedule`", "✓", "✓", "", "", "", "✓"]
+                ]
+              }
+            },
+            { "heading": "AI" },
+            {
+              "table": {
+                "columns": ["Permission", "Code", "Admin", "Supervisor", "Agent", "Light", "Knowledge", "Analyst"],
+                "widths": [30, 22, 7, 9, 7, 7, 9, 8],
+                "rows": [
+                  ["Use AI assistance (summaries, suggestions, classification)", "`ai.use`", "✓", "✓", "✓", "", "✓", ""],
+                  ["Approve, apply and revert AI-proposed actions. **Sensitive**", "`ai.approve_actions`", "✓", "✓", "", "", "", ""]
+                ]
+              }
+            },
+            { "heading": "Administration" },
+            {
+              "table": {
+                "columns": ["Permission", "Code", "Admin", "Supervisor", "Agent", "Light", "Knowledge", "Analyst"],
+                "widths": [30, 22, 7, 9, 7, 7, 9, 8],
+                "rows": [
+                  ["Manage agents and users. **Sensitive**", "`admin.users`", "✓", "", "", "", "", ""],
+                  ["Manage roles and permissions. **Sensitive**", "`admin.roles`", "✓", "", "", "", "", ""],
+                  ["Manage departments, teams, brands and calendars", "`admin.organisation`", "✓", "", "", "", "", ""],
+                  ["Manage ticket fields, statuses, categories and layouts", "`admin.ticket_config`", "✓", "", "", "", "", ""],
+                  ["Manage SLA policies and calendars", "`admin.sla`", "✓", "", "", "", "", ""],
+                  ["Manage automation rules and blueprints", "`admin.automation`", "✓", "", "", "", "", ""],
+                  ["Manage email accounts and messaging channels. **Sensitive**", "`admin.channels`", "✓", "", "", "", "", ""],
+                  ["Manage knowledge base settings and portals", "`admin.knowledge`", "✓", "", "", "", "✓", ""],
+                  ["Manage AI models, prompts, budgets and agents. **Sensitive**", "`admin.ai`", "✓", "", "", "", "", ""],
+                  ["Manage integrations, API keys, OAuth clients and webhooks. **Sensitive**", "`admin.integrations`", "✓", "", "", "", "", ""],
+                  ["Manage password, session, MFA and SSO policies. **Sensitive**", "`admin.security`", "✓", "", "", "", "", ""],
+                  ["View audit logs and verify integrity", "`admin.audit`", "✓", "", "", "", "", ""],
+                  ["Retention, legal holds, data export and erasure. **Sensitive**", "`admin.compliance`", "✓", "", "", "", "", ""],
+                  ["Manage subscription, plan and billing. **Sensitive**", "`admin.billing`", "✓", "", "", "", "", ""],
+                  ["Export, import, publish and roll back configuration. **Sensitive**", "`admin.config_transfer`", "✓", "", "", "", "", ""]
+                ]
+              }
+            },
+            { "p": "There are 58 permissions in all. Column headings: Light means Light Agent, and Knowledge means Knowledge Manager." }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "**New role** and **Clone** are turned off.", "cause": "Your plan does not include custom roles.", "fix": "Upgrade to a plan with custom roles, such as Professional or Enterprise." },
+    { "problem": "A message says you cannot manage a role because it includes permissions you do not have.", "cause": "The escalation guard stops you giving or editing rights you do not hold yourself.", "fix": "Ask an administrator who holds those permissions to make the change." },
+    { "problem": "A message says you cannot manage a role because its data scope is broader than yours.", "cause": "The role sees more tickets or customers than you do.", "fix": "Ask an administrator with a broader scope to make the change." },
+    { "problem": "\"This change would leave the organisation without an administrator.\"", "cause": "The change removes the last active user who can manage roles.", "fix": "Give another user the Administrator role first." },
+    { "problem": "\"System roles cannot be changed. Clone the role to customise it.\"", "cause": "Built-in roles are read-only.", "fix": "Select **Clone to customise** and edit the copy." },
+    { "problem": "\"Single sign-on gives this role to new users.\"", "cause": "You try to delete the single sign-on default role.", "fix": "Choose another default role under **Security & sign-in** > single sign-on first." },
+    { "problem": "A user still cannot see some tickets after you add a permission.", "cause": "The data scope of their roles hides those tickets.", "fix": "Check the **Data scope** of the user's roles. The broadest scope across their roles applies." }
+  ],
+  "faq": [
+    { "q": "What happens when a user holds two roles?", "a": "They get every permission of both roles. Their data scope is the broadest scope of the two." },
+    { "q": "Do role changes need the user to sign in again?", "a": "No. Changes apply to the user's open sessions at once." },
+    { "q": "Can a light agent reply to customers if their role allows it?", "a": "No. Light agents can never reply, own, transfer, bulk-edit or delete tickets, whatever their permissions say." },
+    { "q": "Why do I not see some cards on the Administration home?", "a": "A card shows only when your role holds one of its permissions. Ask an administrator if you need another area." }
+  ],
+  "glossary": [
+    { "term": "Custom role", "definition": "A role that an administrator creates or clones. You can change its permissions, data scope and members." },
+    { "term": "Data scope", "definition": "The tickets and customers a role's members can see: own, team, departments or all tickets, and account-managed or all customers." },
+    { "term": "Escalation guard", "definition": "The rule that you cannot grant permissions or a data scope that you do not hold yourself." },
+    { "term": "Permission", "definition": "One right, such as replying to customers or managing roles. Roles bundle permissions." },
+    { "term": "Role", "definition": "A named set of permissions and a data scope that you give to users." },
+    { "term": "Sensitive permission", "definition": "A high-impact permission, such as deleting tickets or managing billing, marked with a Sensitive badge." },
+    { "term": "System role", "definition": "One of the six built-in roles. System roles are read-only, but you can clone them." }
+  ]
+}

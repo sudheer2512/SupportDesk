@@ -1,0 +1,1211 @@
+{
+  "chapters": [
+    {
+      "id": "knowledge-base",
+      "title": "Knowledge base",
+      "intro": [
+        "This chapter is for agents who use articles, for authors who write them, and for reviewers who approve them. It is also for community moderators.",
+        "It covers articles, review and publishing, versions and translations. It also covers reader feedback, the community, troubleshooting flows and analytics."
+      ],
+      "sections": [
+        {
+          "id": "about-kb",
+          "title": "How the knowledge base is organised",
+          "type": "concept",
+          "intro": "Select **Knowledge Base** in the main menu. The page has six tabs. You see only the tabs your role allows.",
+          "blocks": [
+            {
+              "table": {
+                "columns": [
+                  "Tab",
+                  "What it is for"
+                ],
+                "widths": [
+                  24,
+                  76
+                ],
+                "rows": [
+                  [
+                    "**Articles**",
+                    "Find, write, review and publish help articles."
+                  ],
+                  [
+                    "**Categories**",
+                    "Arrange articles in a tree of topics for the help center."
+                  ],
+                  [
+                    "**Feedback**",
+                    "Read what readers say about articles."
+                  ],
+                  [
+                    "**Community**",
+                    "Answer and moderate the customer forums."
+                  ],
+                  [
+                    "**Troubleshooting**",
+                    "Build guided question-and-answer flows for customers."
+                  ],
+                  [
+                    "**Analytics**",
+                    "See how articles, searches and flows perform."
+                  ]
+                ]
+              }
+            },
+            {
+              "heading": "Permissions"
+            },
+            {
+              "table": {
+                "columns": [
+                  "Permission",
+                  "Lets you"
+                ],
+                "widths": [
+                  40,
+                  60
+                ],
+                "rows": [
+                  [
+                    "**Read internal knowledge articles**",
+                    "Read articles that are for agents only."
+                  ],
+                  [
+                    "**Write and edit article drafts**",
+                    "Write drafts, submit them for review, import articles and build flows."
+                  ],
+                  [
+                    "**Review and approve articles**",
+                    "Approve or reject articles in review."
+                  ],
+                  [
+                    "**Publish, archive and expire articles**",
+                    "Publish and archive articles and flows, and manage categories."
+                  ],
+                  [
+                    "**Moderate community forums**",
+                    "Use the **Community** tab."
+                  ]
+                ]
+              }
+            },
+            {
+              "note": "By default, administrators, supervisors and knowledge managers can review and publish. Agents can write drafts."
+            }
+          ]
+        },
+        {
+          "id": "kb-articles-tour",
+          "title": "The article list at a glance",
+          "type": "concept",
+          "intro": "The **Articles** tab lists every article you may see. The newest changes come first.",
+          "blocks": [
+            {
+              "image": "shots/10-kb-articles.png",
+              "caption": "The Articles tab with its tabs, actions, filters and list.",
+              "alt": "Knowledge Base Articles tab with numbered highlights on the section tabs, Import / export, New article, the filters and the article list"
+            },
+            {
+              "callouts": [
+                "The knowledge base tabs.",
+                "**Import / export** brings in articles or saves a copy of them.",
+                "**New article** opens an empty article.",
+                "The filters: **Search**, **Status**, **Visibility**, **Category**, **Sort by** and **More filters**.",
+                "The article list. Select a title to open the article. Tick rows to export only those."
+              ]
+            },
+            {
+              "table": {
+                "columns": [
+                  "Badge or column",
+                  "Meaning"
+                ],
+                "widths": [
+                  30,
+                  70
+                ],
+                "rows": [
+                  [
+                    "**Live**",
+                    "Readers can see a published version of the article."
+                  ],
+                  [
+                    "**Pending changes**",
+                    "Someone edited a live article. The changes are not published yet."
+                  ],
+                  [
+                    "**Locales**",
+                    "The main language. A plus number shows how many translations exist."
+                  ],
+                  [
+                    "**Helpful**",
+                    "The share of readers who found the article helpful."
+                  ],
+                  [
+                    "**Review due**",
+                    "The date to check the article again. A red date is overdue."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "find-article",
+          "title": "Find an article",
+          "type": "task",
+          "intro": "Use search and filters to find the article you need.",
+          "prerequisites": [
+            "You can read articles. Internal articles need the **Read internal knowledge articles** permission."
+          ],
+          "steps": [
+            "Select **Knowledge Base**. The **Articles** tab opens.",
+            "In **Search**, enter words from the title, content or keywords.",
+            "Optionally, choose a **Status**, **Visibility** or **Category**.",
+            "For more filters, select **More filters**. Choose a **Locale**, **Owner**, **Article type**, **Product** or **Tag**.",
+            "To see only articles due for review, turn on **Review due**. To see only published articles, turn on **Live only**.",
+            "In **Sort by**, choose **Recently updated**, **Title (A–Z)**, **Most viewed**, **Most helpful** or **Review due soonest**.",
+            "Select the article's title to open it."
+          ],
+          "result": "The article opens in the article editor. If you cannot change it, a note says that you can only read it.",
+          "blocks": [
+            {
+              "tip": "Select **Clear all** to remove every filter. Use **Previous** and **Next** below the list to change pages."
+            }
+          ]
+        },
+        {
+          "id": "write-article",
+          "title": "Write a new article",
+          "type": "task",
+          "intro": "Write an article as a draft. Nobody outside your team sees it until it is published.",
+          "prerequisites": [
+            "You have the **Write and edit article drafts** permission."
+          ],
+          "steps": [
+            "On the **Articles** tab, select **New article**.",
+            "In **Title**, enter a clear title, such as `How to reset your password`.",
+            "Optionally, in **Summary**, enter one or two sentences. They appear in search results.",
+            "In **Body**, write the article. Use the toolbar for headings, lists, links, code, images, videos and tables.",
+            "In **Search keywords**, enter words readers might search for. Separate them with commas.",
+            "In the panel on the right, choose the category, article type, visibility and owner. See [Article properties](#kb-article-properties).",
+            "Select **Create draft**, or press [[Ctrl+S]]."
+          ],
+          "result": "The message **Draft created** appears. The article shows the status **Draft** and its first version.",
+          "blocks": [
+            {
+              "image": "shots/10-kb-new-article.png",
+              "caption": "A new article with its title, body and properties.",
+              "alt": "New article editor with numbered highlights on Title, Body, the properties panel and Create draft"
+            },
+            {
+              "callouts": [
+                "**Title**. It is required.",
+                "**Body**. Paste or drop images into it to upload them.",
+                "The properties panel: status, classification, audience, ownership and lifecycle.",
+                "**Create draft** saves the article. On a saved article, the button is **Save**."
+              ]
+            },
+            {
+              "tip": "Each save creates a version. Enter a **Change note** to say what changed and why."
+            },
+            {
+              "note": "If you leave with unsaved changes, the app asks you to confirm. Select **Discard changes** only if you do not need them."
+            }
+          ]
+        },
+        {
+          "id": "kb-article-properties",
+          "title": "Article properties",
+          "type": "reference",
+          "intro": "These fields are in the panel to the right of the article.",
+          "blocks": [
+            {
+              "table": {
+                "columns": [
+                  "Field",
+                  "What to enter"
+                ],
+                "widths": [
+                  26,
+                  74
+                ],
+                "rows": [
+                  [
+                    "**Category**",
+                    "Where the article appears in the help center."
+                  ],
+                  [
+                    "**Article type**",
+                    "**FAQ**, **How-to**, **Troubleshooting**, **Reference**, **Release note** or **Product doc**."
+                  ],
+                  [
+                    "**Tags**",
+                    "Keywords for grouping. Press [[Enter]] or a comma after each tag."
+                  ],
+                  [
+                    "**Product**",
+                    "The product the article is about."
+                  ],
+                  [
+                    "**Related articles**",
+                    "Other articles to show next to this one."
+                  ],
+                  [
+                    "**Visibility**",
+                    "Who can read it. See the table below."
+                  ],
+                  [
+                    "**Brands**",
+                    "The brand portals that show it. Leave it empty for every brand portal."
+                  ],
+                  [
+                    "**Primary language**",
+                    "The language the article is written in."
+                  ],
+                  [
+                    "**Owner**",
+                    "The person responsible for keeping it accurate."
+                  ],
+                  [
+                    "**Review due**",
+                    "When the owner should check it again. The owner gets a reminder."
+                  ],
+                  [
+                    "**Expires**",
+                    "After this date, the article is unpublished automatically. It must be after the review date."
+                  ],
+                  [
+                    "**URL slug**",
+                    "The last part of the article's web address. Leave it empty to make it from the title."
+                  ]
+                ]
+              }
+            },
+            {
+              "heading": "Visibility options"
+            },
+            {
+              "table": {
+                "columns": [
+                  "Option",
+                  "Who can read the article"
+                ],
+                "widths": [
+                  28,
+                  72
+                ],
+                "rows": [
+                  [
+                    "**Public**",
+                    "Anyone can read it on the help center."
+                  ],
+                  [
+                    "**Signed-in customers**",
+                    "Customers who have signed in to the portal."
+                  ],
+                  [
+                    "**Internal**",
+                    "Agents only. It never appears in the portal."
+                  ],
+                  [
+                    "**Restricted**",
+                    "Only customers who match an access rule. See [Limit an article to some customers](#kb-restricted-article)."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "kb-restricted-article",
+          "title": "Limit an article to some customers",
+          "type": "task",
+          "intro": "Use **Restricted** visibility for content that only some customers may read, such as a premium guide.",
+          "prerequisites": [
+            "You have the **Write and edit article drafts** permission."
+          ],
+          "steps": [
+            "Open the article.",
+            "In **Visibility**, choose **Restricted**. The **Access rules** section appears.",
+            "Select **Add rule**.",
+            "Choose one or more conditions: **Customer**, **Customer group**, **Tier** and **Product**.",
+            "To allow another group of customers, select **Add rule** again.",
+            "Select **Save**."
+          ],
+          "result": "A customer can read the article when they match any rule. Within a rule, every chosen condition must match.",
+          "blocks": [
+            {
+              "note": "Empty rules are ignored. A **Restricted** article needs at least one rule with a condition. Without a rule, no customer can read it."
+            }
+          ]
+        },
+        {
+          "id": "kb-attachments",
+          "title": "Attach files to an article",
+          "type": "task",
+          "intro": "Add downloads such as PDFs or spreadsheets that readers may need.",
+          "prerequisites": [
+            "You have the **Write and edit article drafts** permission.",
+            "The article is saved. You cannot attach files to a new article before you select **Create draft**."
+          ],
+          "steps": [
+            "Open the article.",
+            "Under **Attachments**, select **Attach files**.",
+            "Choose one or more files on your computer."
+          ],
+          "result": "The files appear under **Attachments**. Select a file name to download it.",
+          "blocks": [
+            {
+              "tip": "To remove a file, select its bin button and confirm with **Delete**. Readers can no longer download it."
+            }
+          ]
+        },
+        {
+          "id": "kb-review-workflow",
+          "title": "How review and publishing work",
+          "type": "concept",
+          "intro": "An article moves through these statuses. The buttons at the top of the article change with the status.",
+          "blocks": [
+            {
+              "table": {
+                "columns": [
+                  "Status",
+                  "Next step",
+                  "Who can do it"
+                ],
+                "widths": [
+                  20,
+                  44,
+                  36
+                ],
+                "rows": [
+                  [
+                    "**Draft**",
+                    "**Submit for review**",
+                    "Authors"
+                  ],
+                  [
+                    "**In review**",
+                    "**Approve**, or **Reject** with a note",
+                    "Reviewers"
+                  ],
+                  [
+                    "**Approved**",
+                    "**Publish**",
+                    "Publishers"
+                  ],
+                  [
+                    "**Published**",
+                    "**Archive** (in the **...** menu)",
+                    "Publishers"
+                  ],
+                  [
+                    "**Archived** or **Expired**",
+                    "**Reopen as draft**",
+                    "Authors"
+                  ]
+                ]
+              }
+            },
+            {
+              "list": [
+                "If you can both review and publish, **Publish** also appears on drafts and articles in review.",
+                "When you edit a published article, your saves create a new version. The published version stays live until you publish again. The article shows **Unpublished changes**.",
+                "An article expires on its **Expires** date. It is then removed from the help center.",
+                "Owners get a reminder when the **Review due** date arrives.",
+                "You cannot schedule publishing for a later date."
+              ]
+            },
+            {
+              "note": "If a reviewer rejects an article, the **Reviewer note** box shows their note at the top of the article."
+            }
+          ]
+        },
+        {
+          "id": "kb-submit-review",
+          "title": "Submit an article for review",
+          "type": "task",
+          "intro": "Send a finished draft to a reviewer.",
+          "prerequisites": [
+            "You have the **Write and edit article drafts** permission."
+          ],
+          "steps": [
+            "Open the draft.",
+            "Save any changes.",
+            "Select **Submit for review**."
+          ],
+          "result": "The article shows the status **In review**. Reviewers can now approve or reject it."
+        },
+        {
+          "id": "kb-approve-reject",
+          "title": "Approve or reject an article",
+          "type": "task",
+          "intro": "Check an article in review and decide whether it is ready.",
+          "prerequisites": [
+            "You have the **Review and approve articles** permission."
+          ],
+          "steps": [
+            "On the **Articles** tab, in **Status**, choose **In review**.",
+            "Open the article and read it.",
+            {
+              "text": "If it is ready, select **Approve**.",
+              "image": "shots/10-kb-review-actions.png",
+              "caption": "The actions of an article in review: Approve, Reject and Publish.",
+              "alt": "Article header with Save, Approve, Reject, Publish and the more actions menu highlighted"
+            },
+            "If it needs changes, select **Reject**.",
+            {
+              "text": "In **What needs to change?**, enter your note for the author. Then select **Reject**.",
+              "image": "shots/10-kb-reject-dialog.png",
+              "caption": "The Reject this article? dialog with a note for the author.",
+              "alt": "Reject this article dialog with the What needs to change field, Cancel and Reject",
+              "width": 420
+            }
+          ],
+          "result": "An approved article shows **Approved**. A rejected article goes back to the author as a **Draft** with your note."
+        },
+        {
+          "id": "kb-publish",
+          "title": "Publish an article",
+          "type": "task",
+          "intro": "Make an article visible to its readers.",
+          "prerequisites": [
+            "You have the **Publish, archive and expire articles** permission."
+          ],
+          "steps": [
+            "Open the approved article.",
+            "Select **Publish**."
+          ],
+          "result": "The article shows **Published** and **Live**. Readers can now find it in the help center and in agent suggestions."
+        },
+        {
+          "id": "kb-archive",
+          "title": "Archive an article",
+          "type": "task",
+          "intro": "Archive an article that is out of date but may be useful later.",
+          "prerequisites": [
+            "You have the **Publish, archive and expire articles** permission."
+          ],
+          "steps": [
+            "Open the published article.",
+            "Select the **...** button at the top right.",
+            "Select **Archive**.",
+            "Select **Archive** again to confirm."
+          ],
+          "result": "The article is removed from the help center and from agent suggestions. Its status is **Archived**."
+        },
+        {
+          "id": "kb-reopen",
+          "title": "Reopen an archived or expired article",
+          "type": "task",
+          "intro": "Bring an old article back so you can update and publish it again.",
+          "prerequisites": [
+            "You have the **Write and edit article drafts** permission."
+          ],
+          "steps": [
+            "On the **Articles** tab, in **Status**, choose **Archived** or **Expired**.",
+            "Open the article.",
+            "Select **Reopen as draft**."
+          ],
+          "result": "The article becomes a **Draft**. Update it, then send it for review again."
+        },
+        {
+          "id": "kb-delete",
+          "title": "Delete an article",
+          "type": "task",
+          "intro": "Delete an article only when you are sure nobody needs it.",
+          "prerequisites": [
+            "Your role allows deleting articles."
+          ],
+          "steps": [
+            "Open the article.",
+            "Select the **...** button at the top right.",
+            "Select **Delete article...**.",
+            "Select **Delete article** to confirm."
+          ],
+          "result": "The message **Article deleted** appears, and the list opens.",
+          "blocks": [
+            {
+              "warning": "Deleting removes the article, its versions, translations, attachments and feedback for good. Archive it instead if you may need it later."
+            }
+          ]
+        },
+        {
+          "id": "kb-versions",
+          "title": "Compare and restore article versions",
+          "type": "task",
+          "intro": "Each save creates a version. Compare versions to see what changed, or restore an older one.",
+          "prerequisites": [
+            "To restore a version, you need the **Write and edit article drafts** permission."
+          ],
+          "steps": [
+            "Open the article.",
+            {
+              "text": "Select the **Versions** tab.",
+              "image": "shots/10-kb-versions.png",
+              "caption": "The Versions tab with the version list and Compare selected.",
+              "alt": "Versions tab with Compare selected and the version table with its status, author, save date and change note",
+              "width": 520
+            },
+            "To read an old version, select **View**.",
+            "To compare a version with the current one, select **Diff**.",
+            "To compare any two versions, tick both, then select **Compare selected**.",
+            "To go back to a version, select **Restore**. Optionally enter a **Change note**, then select **Restore**."
+          ],
+          "result": "A comparison shows the changes. Added text and removed text are marked. A restore saves the old content as a new working version."
+        },
+        {
+          "id": "kb-translate",
+          "title": "Translate an article",
+          "type": "task",
+          "intro": "Add a version of the article in another language. Readers of that language see it instead of the original.",
+          "prerequisites": [
+            "You have the **Write and edit article drafts** permission. To publish a translation, you need the **Publish, archive and expire articles** permission."
+          ],
+          "steps": [
+            "Open the article and select the **Translations** tab.",
+            "In **Add a translation**, choose a language. Select **Add**.",
+            "Enter the translated **Title**, **Summary** and **Body**. The tab shows the original text for reference.",
+            "If a translation tool wrote the text, tick **Machine translated (flag for human review)**.",
+            "Select **Save translation**.",
+            "When you finish the translation, select **Submit for review** on it.",
+            {
+              "text": "After the review, select **Publish** on the translation.",
+              "image": "shots/10-kb-translations.png",
+              "caption": "The Translations tab with a published Hindi translation.",
+              "alt": "Translations tab with Add a translation, a Hindi translation marked Published, and Edit, Reopen and delete buttons",
+              "width": 520
+            }
+          ],
+          "result": "The translation shows **Published**. Readers who choose that language see it.",
+          "blocks": [
+            {
+              "table": {
+                "columns": [
+                  "Translation status",
+                  "Meaning",
+                  "Buttons"
+                ],
+                "widths": [
+                  24,
+                  46,
+                  30
+                ],
+                "rows": [
+                  [
+                    "**Draft**",
+                    "Newly added.",
+                    "**Start translating**, **Submit for review**"
+                  ],
+                  [
+                    "**In translation**",
+                    "Someone is translating it.",
+                    "**Submit for review**"
+                  ],
+                  [
+                    "**In review**",
+                    "Ready to be checked.",
+                    "**Publish**, **Reopen**"
+                  ],
+                  [
+                    "**Published**",
+                    "Readers can see it.",
+                    "**Reopen**"
+                  ],
+                  [
+                    "**Outdated**",
+                    "The original article was published again after this translation.",
+                    "**Start translating**, **Reopen**"
+                  ]
+                ]
+              }
+            },
+            {
+              "note": "SupportDesk does not translate text for you. Select **Edit** to change a translation. Select its bin button to delete it."
+            }
+          ]
+        },
+        {
+          "id": "kb-import-export",
+          "title": "Import and export articles",
+          "type": "task",
+          "intro": "Export articles to keep a copy or move them. Import articles written elsewhere as drafts.",
+          "prerequisites": [
+            "To import, you need the **Write and edit article drafts** permission."
+          ],
+          "steps": [
+            "On the **Articles** tab, tick the articles to export. To export all of them, tick none.",
+            "Select **Import / export**.",
+            { "text": "Choose one of the two export options. The file downloads.", "note": "The ZIP file holds each article as Markdown and HTML." },
+            "To import, select **Import / export**, then **Import articles...**.",
+            "Choose the file to import. The menu lists the file types it accepts.",
+            "In the **Import finished** dialog, check the counts and any **Issues**.",
+            "Select **Open first draft** to review the first new draft, or select **Done**."
+          ],
+          "result": "Imported articles appear as drafts. The dialog shows **Drafts created**, **Skipped** and **Categories created**."
+        },
+        {
+          "id": "kb-feedback",
+          "title": "Review reader feedback",
+          "type": "task",
+          "intro": "Portal readers rate articles as helpful or not, give one to five stars and may add a comment. Read the comments and fix articles that confuse readers.",
+          "prerequisites": [
+            "You can write, review or publish articles."
+          ],
+          "steps": [
+            "On the **Knowledge Base** page, select the **Feedback** tab.",
+            "In **Review state**, choose **Needs review**, **Reviewed** or **All**.",
+            "In **Verdict**, choose **Helpful**, **Not helpful**, or both.",
+            "To hide ratings without text, turn on **With comments only**.",
+            "Select the article title on a comment to open the article.",
+            "When you have dealt with a comment, select **Mark reviewed** on it."
+          ],
+          "result": "The comment shows **Reviewed** and leaves the **Needs review** list.",
+          "blocks": [
+            {
+              "image": "shots/10-kb-feedback.png",
+              "caption": "The Feedback tab with comments that need review.",
+              "alt": "Feedback tab with numbered highlights on the filters, the selection bar, a feedback item and its Mark reviewed button"
+            },
+            {
+              "callouts": [
+                "The filters: **Review state**, **Verdict** and **With comments only**.",
+                "Tick **Select all on page**, then select **Mark reviewed** to mark many at once.",
+                "One reader's verdict, stars, article, comment, name and date. **New** means not reviewed yet.",
+                "**Mark reviewed** for this comment."
+              ]
+            },
+            {
+              "tip": "An article's own **Feedback** tab shows its views, helpful rate, rating and comments. Turn on **Unreviewed only** there to see new comments."
+            }
+          ]
+        },
+        {
+          "id": "kb-categories",
+          "title": "Organise articles into categories",
+          "type": "task",
+          "intro": "Categories form a tree of topics in the help center, such as Billing > Invoices.",
+          "prerequisites": [
+            "You have the **Publish, archive and expire articles** or **Manage knowledge base settings and portals** permission."
+          ],
+          "steps": [
+            "On the **Knowledge Base** page, select the **Categories** tab.",
+            "Select **New category**. To add a sub-category, select the plus button on the parent row instead.",
+            {
+              "text": "Enter the **Name**. The app fills in the **Slug** for you.",
+              "image": "shots/10-kb-category-dialog.png",
+              "caption": "The New category dialog with a name entered.",
+              "alt": "New category dialog with Name, Slug, Parent category, Description, Visibility, Icon, Brands and Sort order",
+              "width": 420
+            },
+            "Optionally, choose a **Parent category** and enter a **Description**.",
+            "Choose the **Visibility** and, if needed, the **Brands**.",
+            "In **Sort order**, enter a number. Lower numbers come first.",
+            "Select **Create category**."
+          ],
+          "result": "The message **Category created** appears, and the category appears in the tree.",
+          "blocks": [
+            {
+              "tip": "Select the pencil button on a row to edit a category. Select the number in **Articles** to see its articles."
+            },
+            {
+              "note": "You can delete only an empty category. Move its articles and sub-categories first."
+            }
+          ]
+        },
+        {
+          "id": "kb-community",
+          "title": "The community forums",
+          "type": "concept",
+          "intro": "Customers ask questions and share tips in the portal's community. Moderators answer, accept answers and keep the forums tidy on the **Community** tab.",
+          "blocks": [
+            {
+              "image": "shots/10-kb-topic.png",
+              "caption": "A community question with its moderation buttons, replies and the agent reply box.",
+              "alt": "Community topic with numbered highlights on the topic actions, the original post, a reply's actions and Reply as an agent"
+            },
+            {
+              "callouts": [
+                "Topic actions: **Edit**, **Pin**, **Close**, **Hide** and **Convert to ticket**.",
+                "The customer's original post with its tags.",
+                "Reply actions: **Accept answer**, **Edit** and **Hide**.",
+                "**Reply as an agent**. Agent replies show an **Agent** badge."
+              ]
+            },
+            {
+              "table": {
+                "columns": [
+                  "Topic status",
+                  "Meaning"
+                ],
+                "widths": [
+                  22,
+                  78
+                ],
+                "rows": [
+                  [
+                    "**Open**",
+                    "People can reply."
+                  ],
+                  [
+                    "**Answered**",
+                    "A reply was accepted as the answer."
+                  ],
+                  [
+                    "**Closed**",
+                    "Nobody can reply until it is reopened."
+                  ],
+                  [
+                    "**Hidden**",
+                    "Customers cannot see it."
+                  ]
+                ]
+              }
+            },
+            {
+              "note": "In the topic list, use **Search**, **Status** and **Sort by** to find topics. Select a tag to show only topics with that tag."
+            }
+          ]
+        },
+        {
+          "id": "kb-answer-topic",
+          "title": "Answer a community question",
+          "type": "task",
+          "intro": "Reply to a customer's question in the community, and mark the best reply as the answer.",
+          "prerequisites": [
+            "You have the **Moderate community forums** permission."
+          ],
+          "steps": [
+            "On the **Knowledge Base** page, select the **Community** tab.",
+            "In **Status**, choose **Unanswered**.",
+            "Select a topic title to open it.",
+            "Under **Reply as an agent**, write your answer.",
+            "Select **Post reply**, or press [[Ctrl+Enter]].",
+            "If a reply solves the question, select **Accept answer** on that reply."
+          ],
+          "result": "Your reply appears with an **Agent** badge. An accepted reply moves to the top with the **Accepted answer** badge."
+        },
+        {
+          "id": "kb-moderate-topic",
+          "title": "Moderate a topic or reply",
+          "type": "task",
+          "intro": "Keep the community useful and safe. Pin important topics, close finished ones and hide unsuitable posts.",
+          "prerequisites": [
+            "You have the **Moderate community forums** permission."
+          ],
+          "steps": [
+            "Open the topic on the **Community** tab.",
+            "To keep it at the top of the list, select **Pin**. Select **Unpin** to undo it.",
+            "To stop new replies, select **Close**. Enter a **Reason**, then select **Close topic**.",
+            "To hide the topic from customers, select **Hide**. Enter a **Reason**, then select **Hide topic**.",
+            "To correct the text or tags, select **Edit**. Make the changes, then select **Save changes**.",
+            "To hide one reply, select **Hide** on it. Enter a **Reason**, then select **Hide reply**."
+          ],
+          "result": "The topic or reply shows its new state. The reasons are kept in the moderation log.",
+          "blocks": [
+            {
+              "tip": "Select **Reopen** to allow replies again. Select **Unhide** to show a hidden topic or reply again."
+            }
+          ]
+        },
+        {
+          "id": "kb-convert-topic",
+          "title": "Convert a community topic to a ticket",
+          "type": "task",
+          "intro": "When a question needs private follow-up, turn it into a ticket for its author.",
+          "prerequisites": [
+            "You have the **Moderate community forums** permission.",
+            "You have the **Create and clone tickets** permission."
+          ],
+          "steps": [
+            "Open the topic on the **Community** tab.",
+            "Select **Convert to ticket**.",
+            "Select **Create ticket** to confirm."
+          ],
+          "result": "The message shows the new ticket number. The topic gets an agent reply that a ticket was opened. A **Ticket** button on the topic opens the ticket.",
+          "blocks": [
+            {
+              "note": "The ticket gets the topic's title, text and tags. The community replies are not copied into it."
+            }
+          ]
+        },
+        {
+          "id": "kb-flows",
+          "title": "Troubleshooting flows",
+          "type": "concept",
+          "intro": "A troubleshooting flow is a short decision tree. It asks the customer questions and leads them to a fix, an article or an agent. Customers run flows in the portal. Agents cannot run them from a ticket.",
+          "blocks": [
+            {
+              "image": "shots/10-kb-flow-designer.png",
+              "caption": "The flow designer with the flow details, the problem check, the diagram and the step editor.",
+              "alt": "Flow designer with numbered highlights on Design and Preview, the flow details, the problems bar, the diagram and the step editor"
+            },
+            {
+              "callouts": [
+                "**Design** and **Preview** switch between building and testing the flow.",
+                "The flow details and its usage: **Started**, **Resolved** and **Escalated**.",
+                "The problem check. Fix every problem before you publish.",
+                "The diagram. Select a step to edit it. Use the minus and plus buttons to zoom.",
+                "The step editor for the selected step."
+              ]
+            },
+            {
+              "table": {
+                "columns": [
+                  "Step type",
+                  "What it does"
+                ],
+                "widths": [
+                  22,
+                  78
+                ],
+                "rows": [
+                  [
+                    "**Question**",
+                    "Asks the customer to pick an answer. Each answer leads to another step."
+                  ],
+                  [
+                    "**Solution**",
+                    "Shows the fix and ends the flow. The customer is asked if it solved the problem."
+                  ],
+                  [
+                    "**Article**",
+                    "Points to a published knowledge base article."
+                  ],
+                  [
+                    "**Escalate**",
+                    "Hands over to an agent. The customer can open a ticket with their answers attached."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "kb-build-flow",
+          "title": "Build a troubleshooting flow",
+          "type": "task",
+          "intro": "Create a flow for a common problem, such as a printer that will not print.",
+          "prerequisites": [
+            "You have the **Write and edit article drafts** permission."
+          ],
+          "steps": [
+            "On the **Knowledge Base** page, select the **Troubleshooting** tab.",
+            "Select **New flow**.",
+            "Enter the **Name**. Choose the **Visibility** and, optionally, a **Product** and **Category**.",
+            "In **Description**, enter what the flow helps with. Customers see it before they start.",
+            "Select the first step in the diagram. Enter its **Question** and its answers.",
+            "To add a step after an answer, select **Add answer with new step** and choose the step type.",
+            "Select each new step and fill in its text, article or message.",
+            "Check the problem bar. Select a problem to go to the step that has it.",
+            "Select **Create flow**, or press [[Ctrl+S]]."
+          ],
+          "result": "The message **Flow created** appears. The flow is saved but not yet published.",
+          "blocks": [
+            {
+              "tip": "Use **Go to step** below the diagram to jump to any step. Select **Set as start** to make the selected step the first one."
+            },
+            {
+              "note": "An **Article** step can link only to a published article. A flow can have up to 200 steps."
+            }
+          ]
+        },
+        {
+          "id": "kb-preview-publish-flow",
+          "title": "Test and publish a flow",
+          "type": "task",
+          "intro": "Walk through the flow as a customer would. Then publish it.",
+          "prerequisites": [
+            "To publish, you need the **Publish, archive and expire articles** permission."
+          ],
+          "steps": [
+            "Open the flow on the **Troubleshooting** tab.",
+            {
+              "text": "Select **Preview**.",
+              "image": "shots/10-kb-flow-preview.png",
+              "caption": "The flow preview at its first question.",
+              "alt": "Flow preview showing step 1 with Yes and No answers, Back and Restart",
+              "width": 520
+            },
+            "Select answers to go through the flow. Use **Back** and **Restart** to try other paths.",
+            "Select **Design** to fix anything that is wrong. Then select **Save**.",
+            "When the problem bar says **No problems found**, select **Publish**."
+          ],
+          "result": "The message **Flow published** appears. Customers can start the flow in the portal.",
+          "blocks": [
+            {
+              "note": "The preview records nothing. Select **Unpublish** to take a flow out of the portal. In the **...** menu, **Archive** stops customers from starting it."
+            },
+            {
+              "warning": "**Delete flow...** in the **...** menu deletes the flow and its usage numbers for good."
+            }
+          ]
+        },
+        {
+          "id": "kb-flow-problems",
+          "title": "Flow problems and how to fix them",
+          "type": "reference",
+          "intro": "The problem bar lists what stops a flow from working. Each problem names the step.",
+          "blocks": [
+            {
+              "table": {
+                "columns": [
+                  "Problem",
+                  "How to fix it"
+                ],
+                "widths": [
+                  48,
+                  52
+                ],
+                "rows": [
+                  [
+                    "Add at least one step.",
+                    "Add a step to the diagram."
+                  ],
+                  [
+                    "Choose the first step.",
+                    "Select a step and select **Set as start**."
+                  ],
+                  [
+                    "A question needs at least one answer.",
+                    "Select **Add answer** on that question."
+                  ],
+                  [
+                    "An escalation step cannot have answers.",
+                    "Remove the answers, or change the step type."
+                  ],
+                  [
+                    "An article step must link an existing article, or links an article that is not published.",
+                    "Choose a published article in **Article**."
+                  ],
+                  [
+                    "An answer has no label.",
+                    "Enter the answer text."
+                  ],
+                  [
+                    "An answer points to a missing step, or back to the same step.",
+                    "Choose another next step for the answer."
+                  ],
+                  [
+                    "A step cannot be reached from the first step.",
+                    "Link an answer to it, or delete the step."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "kb-analytics",
+          "title": "Knowledge base analytics",
+          "type": "concept",
+          "intro": "The **Analytics** tab shows how customers and agents use the knowledge base. It also shows where content is missing. Choose **7 days**, **30 days** or **90 days** at the top right.",
+          "blocks": [
+            {
+              "image": "shots/10-kb-analytics.png",
+              "caption": "Knowledge base analytics with the period buttons and the counters.",
+              "alt": "Knowledge base Analytics tab with 7, 30 and 90 days buttons and counters for articles, live, drafts, in review, review overdue, expiring soon, views, helpful, average rating, feedback to review, searches and searches without results"
+            },
+            {
+              "table": {
+                "columns": [
+                  "Part",
+                  "What it shows"
+                ],
+                "widths": [
+                  32,
+                  68
+                ],
+                "rows": [
+                  [
+                    "Counters",
+                    "Articles, live articles, drafts, articles in review, overdue reviews, articles expiring soon, views, helpful rate, average rating, feedback to review, searches and searches without results."
+                  ],
+                  [
+                    "**Searches and feedback per day**",
+                    "A daily chart. Select **Show the numbers** for a table."
+                  ],
+                  [
+                    "**Most viewed articles**",
+                    "The most read articles with their helpful rate and rating."
+                  ],
+                  [
+                    "**Least helpful articles**",
+                    "Candidates for a rewrite."
+                  ],
+                  [
+                    "**Top searches**",
+                    "What readers search for most, with the average number of results."
+                  ],
+                  [
+                    "**Searches with no results**",
+                    "Searches that found nothing, with **Create article**."
+                  ],
+                  [
+                    "**Guided troubleshooting**",
+                    "Starts, resolutions and escalations for each flow."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "kb-content-gap",
+          "title": "Write an article for a search with no results",
+          "type": "task",
+          "intro": "Close a content gap. Write an article for something readers search for but cannot find.",
+          "prerequisites": [
+            "You have the **Write and edit article drafts** permission."
+          ],
+          "steps": [
+            "On the **Knowledge Base** page, select the **Analytics** tab.",
+            {
+              "text": "Under **Searches with no results**, find the search.",
+              "image": "shots/10-kb-content-gaps.png",
+              "caption": "Top searches and searches with no results, each with Create article.",
+              "alt": "Top searches table next to the Searches with no results table with a Create article button on each row"
+            },
+            "Select **Create article** on that row.",
+            "Write the article as in [Write a new article](#write-article). The app uses the search words as the title."
+          ],
+          "result": "A new article draft opens with the search words as its title."
+        },
+        {
+          "id": "kb-on-ticket",
+          "title": "Use the knowledge base on a ticket",
+          "type": "concept",
+          "intro": "Articles help you answer tickets faster. You also turn solved tickets into new articles.",
+          "blocks": [
+            {
+              "list": [
+                "The context pane of a ticket lists **Suggested articles**. Each shows its visibility and a match score. Select a title to open the article.",
+                "**Draft with AI** in the reply editor and **Draft reply** on the **AI** tab write replies from published articles. The draft lists the articles it used. See [Draft a reply with AI](#draft-reply-ai).",
+                "**Draft article** on the **AI** tab turns a resolved ticket into a new article draft. See [Draft an article from a ticket](#kb-draft-from-ticket)."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "kb-draft-from-ticket",
+          "title": "Draft an article from a ticket",
+          "type": "task",
+          "intro": "When you solve a problem that others may have, turn the ticket into an article.",
+          "prerequisites": [
+            "You have the **Write and edit article drafts** permission.",
+            "You have the **Use AI assistance (summaries, suggestions, classification)** permission."
+          ],
+          "steps": [
+            "Open the resolved ticket and its **AI** tab.",
+            "Under **Knowledge article**, select **Draft article**.",
+            "Select **Open draft** and the title to open the new article.",
+            "Check the text. Remove customer names and other private details.",
+            "Save the article and select **Submit for review**."
+          ],
+          "result": "The draft goes to reviewers. The article's **...** menu has **Open source ticket** to go back to the ticket.",
+          "blocks": [
+            {
+              "note": "If the draft cannot be saved, the AI tab shows the text instead. Select **Copy HTML** and paste it into a new article."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    {
+      "problem": "Saving an article shows **Check the highlighted fields**.",
+      "cause": "A required field is empty or a value is not allowed.",
+      "fix": "Read the red message under each field. For example, give the article a title, write a body, or add an access rule."
+    },
+    {
+      "problem": "The message **The expiry date is before the review date** appears.",
+      "cause": "**Expires** is earlier than **Review due**.",
+      "fix": "Choose an expiry date after the review date, or clear one of them."
+    },
+    {
+      "problem": "The dialog **Someone else changed this article** appears when you save.",
+      "cause": "Another person saved a newer version after you opened the article.",
+      "fix": "Copy your changes, then select **Reload latest** and add them again. Or select **Keep editing**."
+    },
+    {
+      "problem": "A note says **You can read this article but not edit it in its current state**.",
+      "cause": "Your role cannot edit articles in this status, such as articles in review.",
+      "fix": "Ask a reviewer or publisher, or wait until the article is a draft again."
+    },
+    {
+      "problem": "**Article not found** appears.",
+      "cause": "The article was deleted, or you cannot see internal articles.",
+      "fix": "Select **Back to articles**. Ask an administrator if you need access to internal articles."
+    },
+    {
+      "problem": "**Image upload failed** appears in the editor.",
+      "cause": "The image could not be uploaded, for example because it is too large.",
+      "fix": "Make the image smaller and try again."
+    },
+    {
+      "problem": "A category cannot be deleted.",
+      "cause": "It still contains articles or sub-categories.",
+      "fix": "Move its articles and sub-categories to another category first."
+    },
+    {
+      "problem": "**Publish** is missing on a flow.",
+      "cause": "Only people who can publish articles can publish flows.",
+      "fix": "Ask a publisher to publish the flow."
+    },
+    {
+      "problem": "**Import failed** appears.",
+      "cause": "The file type or its content could not be read.",
+      "fix": "Use a file exported from SupportDesk, or a ZIP, Markdown or HTML file. Check the **Issues** list after a partial import."
+    }
+  ],
+  "faq": [
+    {
+      "q": "Can I schedule an article to publish later?",
+      "a": "No. Publish it when it is ready. You can set an **Expires** date so it is unpublished automatically."
+    },
+    {
+      "q": "Do readers see my changes to a live article at once?",
+      "a": "No. Your saves create a new version. Readers keep seeing the published version until you publish again."
+    },
+    {
+      "q": "Does SupportDesk translate articles automatically?",
+      "a": "No. A person writes each translation. Tick **Machine translated (flag for human review)** if a tool helped."
+    },
+    {
+      "q": "Can agents run a troubleshooting flow for a customer on a ticket?",
+      "a": "No. Customers run flows in the portal. An **Escalate** step lets them open a ticket with their answers attached."
+    }
+  ],
+  "glossary": [
+    {
+      "term": "Article",
+      "definition": "A help page in the knowledge base. It can be public, for signed-in customers, internal or restricted."
+    },
+    {
+      "term": "Live",
+      "definition": "Said of an article whose published version readers can see."
+    },
+    {
+      "term": "Access rule",
+      "definition": "A condition on customer, customer group, tier or product that decides who can read a restricted article."
+    },
+    {
+      "term": "Content gap",
+      "definition": "A search that found no article. It shows a topic you may need to write about."
+    },
+    {
+      "term": "Troubleshooting flow",
+      "definition": "A decision tree of questions that leads customers to a solution, an article or an agent."
+    },
+    {
+      "term": "Community topic",
+      "definition": "A question, idea or tip that a customer posts in the portal's community forums."
+    },
+    {
+      "term": "Outdated translation",
+      "definition": "A translation made before the original article was last published. It needs updating."
+    }
+  ]
+}

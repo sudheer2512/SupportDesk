@@ -1,0 +1,137 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "admin@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Two-step verification"
+    },
+    {
+      "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "28-subscription",
+      "file": "28-subscription.png",
+      "steps": [
+        {
+          "goto": "/subscription"
+        },
+        {
+          "eval": "(async () => { const sleep = (ms) => new Promise((r) => setTimeout(r, ms)); const until = async (f) => { const end = Date.now() + 20000; while (Date.now() < end) { const v = f(); if (v) return v; await sleep(200); } return null; }; await sleep(1200); if (!location.pathname.startsWith('/login')) return 'signed in'; const set = (n, v) => { const el = document.querySelector('input[name=' + n + ']'); el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); }; await until(() => document.querySelector('input[name=tenant]')); set('tenant', 'wings'); set('email', 'admin@wings.demo'); set('password', '${env:SD_DESK_PASSWORD}'); document.querySelector('form button[type=submit]').click(); const code = await until(() => [...document.querySelectorAll('code')].map((c) => c.textContent.trim()).find((t) => /^\\d{6}$/.test(t))); set('code', code); [...document.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Verify').click(); await until(() => !location.pathname.startsWith('/login')); await sleep(800); location.assign('/subscription'); await sleep(2500); return 'signed in again'; })()"
+        }
+      ],
+      "waitFor": "text=Usage vs limits",
+      "fullPage": true,
+      "highlight": [
+        "text=Compare & change plan",
+        ".grid sd-card:nth-of-type(1)",
+        ".grid sd-card:nth-of-type(2)",
+        "sd-card.block:not(.grid sd-card)",
+        ".grid.wide sd-card:nth-of-type(1)",
+        ".grid.wide sd-card:nth-of-type(2)"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "28-compare-plans",
+      "file": "28-compare-plans.png",
+      "steps": [
+        {
+          "click": "text=Compare & change plan"
+        },
+        {
+          "waitForText": "Price / agent"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "eval": "(() => { const d = document.querySelector('.drawer[role=dialog]'); const b = d && d.querySelector('.body'); if (!b) return 0; const extra = b.scrollHeight - b.clientHeight; if (extra > 0) { d.style.height = Math.ceil(d.getBoundingClientRect().height + extra + 4) + 'px'; d.style.maxHeight = 'none'; } return extra; })()"
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "clip": ".drawer[role=dialog]"
+    },
+    {
+      "id": "28-plan-preview",
+      "file": "28-plan-preview.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = [...document.querySelectorAll('desk-plan-picker table button')].filter((x) => x.textContent.trim() === 'Select' && !x.disabled).pop(); if (b) b.click(); return !!b; })()"
+        },
+        {
+          "waitFor": "[aria-label=\"Plan change preview\"]"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": "[aria-label=\"Plan change preview\"]"
+    },
+    {
+      "id": "28-invoice",
+      "file": "28-invoice.png",
+      "steps": [
+        {
+          "goto": "/subscription"
+        },
+        {
+          "eval": "(async () => { const sleep = (ms) => new Promise((r) => setTimeout(r, ms)); const until = async (f) => { const end = Date.now() + 20000; while (Date.now() < end) { const v = f(); if (v) return v; await sleep(200); } return null; }; await sleep(1200); if (!location.pathname.startsWith('/login')) return 'signed in'; const set = (n, v) => { const el = document.querySelector('input[name=' + n + ']'); el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); }; await until(() => document.querySelector('input[name=tenant]')); set('tenant', 'wings'); set('email', 'admin@wings.demo'); set('password', '${env:SD_DESK_PASSWORD}'); document.querySelector('form button[type=submit]').click(); const code = await until(() => [...document.querySelectorAll('code')].map((c) => c.textContent.trim()).find((t) => /^\\d{6}$/.test(t))); set('code', code); [...document.querySelectorAll('button')].find((b) => b.textContent.trim() === 'Verify').click(); await until(() => !location.pathname.startsWith('/login')); await sleep(800); location.assign('/subscription'); await sleep(2500); return 'signed in again'; })()"
+        },
+        {
+          "waitFor": "text=Usage vs limits"
+        },
+        {
+          "click": ".grid.wide table.data tbody tr:nth-child(1)"
+        },
+        {
+          "waitForText": "Download PDF"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "eval": "(() => { const d = document.querySelector('.drawer[role=dialog]'); const b = d && d.querySelector('.body'); if (!b) return 0; const extra = b.scrollHeight - b.clientHeight; if (extra > 0) { d.style.height = Math.ceil(d.getBoundingClientRect().height + extra + 4) + 'px'; d.style.maxHeight = 'none'; } return extra; })()"
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "clip": ".drawer[role=dialog]"
+    }
+  ]
+}

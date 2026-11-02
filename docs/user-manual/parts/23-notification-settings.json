@@ -1,0 +1,288 @@
+{
+  "chapters": [
+    {
+      "id": "notification-settings",
+      "title": "Notification settings and e-mail templates",
+      "intro": [
+        "This chapter is for administrators. It explains how agents are notified by default: in the app, by e-mail, by push or in a digest.",
+        "It also shows how to change the wording of the automatic e-mails that SupportDesk sends to customers and agents."
+      ],
+      "sections": [
+        {
+          "id": "ns-delivery-defaults",
+          "title": "The delivery defaults page",
+          "type": "concept",
+          "intro": [
+            "To open it, select **Administration** > **Notifications & e-mail templates**. The **Delivery defaults** tab opens first.",
+            "You need the **Manage departments, teams, brands and calendars** or the **Manage email accounts and messaging channels** permission."
+          ],
+          "blocks": [
+            {
+              "image": "shots/23-delivery-defaults.png",
+              "caption": "The **Delivery defaults** tab with the channel for each event.",
+              "alt": "Delivery defaults tab with numbered highlights on the tabs, the information note, the column headings, the first event row, the quiet hours card and the save bar",
+              "width": 560
+            },
+            {
+              "callouts": [
+                "The tabs: **Delivery defaults** and **E-mail templates**.",
+                "A reminder of how the rules work together.",
+                "The four delivery channels. The box in each heading ticks or clears the whole column.",
+                "One row per event. Tick the channels that agents get by default.",
+                "**Quiet hours & digests**: when e-mail and push wait, and when digests go out.",
+                "The save bar with **Discard** and **Save defaults**."
+              ]
+            },
+            { "heading": "Delivery channels" },
+            {
+              "table": {
+                "columns": ["Channel", "What the agent gets"],
+                "widths": [24, 76],
+                "rows": [
+                  ["**In-app**", "A notification under the bell icon in the desk."],
+                  ["**E-mail**", "An e-mail right away, or after quiet hours end."],
+                  ["**Push**", "A notification on the mobile app."],
+                  ["**Digest**", "The event is bundled into the hourly or daily digest e-mail."]
+                ]
+              }
+            },
+            { "note": "When both **E-mail** and **Digest** are ticked, the event goes into the digest. It does not come as a separate e-mail." }
+          ]
+        },
+        {
+          "id": "ns-events",
+          "title": "Notification events",
+          "type": "reference",
+          "intro": "These are the events on the **Delivery defaults** tab.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Event", "When it happens"],
+                "widths": [30, 70],
+                "rows": [
+                  ["**Ticket assigned to me**", "A ticket is assigned to the agent."],
+                  ["**Mentioned in a note**", "Someone mentions the agent with @ in a ticket."],
+                  ["**Customer replied**", "A customer replies on a ticket the agent owns or watches."],
+                  ["**Ticket escalated**", "A ticket the agent is involved in is escalated."],
+                  ["**SLA at risk**", "An SLA target is about to be missed."],
+                  ["**SLA breached**", "An SLA target was missed."],
+                  ["**Approval requested**", "The agent is asked to approve something."],
+                  ["**Approval decided**", "A request the agent raised was approved or rejected."],
+                  ["**Follow-up due**", "A scheduled follow-up is due."],
+                  ["**AI proposal**", "The AI proposes an action that needs a decision."],
+                  ["**Anomaly detected**", "Unusual ticket volume or sentiment is found."],
+                  ["**Chat waiting**", "A visitor is waiting in live chat."],
+                  ["**chat.transferred**", "A live chat is transferred to the agent or to their department."],
+                  ["**System messages**", "Administrative and system notices."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "ns-set-defaults",
+          "title": "Set the default channels per event",
+          "type": "task",
+          "intro": "Decide how agents hear about each event, unless they choose otherwise.",
+          "prerequisites": ["You have the **Manage departments, teams, brands and calendars** or **Manage email accounts and messaging channels** permission."],
+          "steps": [
+            "Select **Administration** > **Notifications & e-mail templates**.",
+            "On the **Delivery defaults** tab, tick or clear the boxes for each event.",
+            "To change a whole column, tick or clear the box in its heading.",
+            "Select **Save defaults**."
+          ],
+          "result": "The app shows **Notification defaults saved**. The save bar shows **All changes saved** and the version number.",
+          "blocks": [
+            "To undo your changes before you save, select **Discard**.",
+            { "note": "The page says agents can override these defaults. In this release, the desk has no page for agents to do that yet." }
+          ]
+        },
+        {
+          "id": "ns-quiet-hours",
+          "title": "Set quiet hours and digests",
+          "type": "task",
+          "intro": "Quiet hours hold back e-mail and push notifications at night. Digests bundle notifications into one e-mail.",
+          "steps": [
+            "On the **Delivery defaults** tab, find the **Quiet hours & digests** card.",
+            "Turn on **Quiet hours**.",
+            {
+              "text": "Enter the times in **From** and **Until**, such as `22:00` and `07:00`.",
+              "image": "shots/23-quiet-hours.png",
+              "caption": "Quiet hours switched on, with the time zone and the digest settings.",
+              "alt": "Quiet hours and digests card with Quiet hours on, From, Until, Time zone, Digest frequency and Daily digest at",
+              "width": 460
+            },
+            "Choose the **Time zone**.",
+            "Choose the **Digest frequency**: **Hourly** or **Daily**.",
+            "For a daily digest, enter the time in **Daily digest at**. The default is `08:00`.",
+            "Select **Save defaults**."
+          ],
+          "result": "E-mail and push notifications wait until quiet hours end. In-app notifications still appear at once.",
+          "blocks": [
+            { "note": "Critical alerts ignore quiet hours. Quiet hours must end at a different time than they start." }
+          ]
+        },
+        {
+          "id": "ns-email-templates",
+          "title": "E-mail templates",
+          "type": "concept",
+          "intro": [
+            "SupportDesk sends four automatic e-mails. Each one has a built-in wording that you can replace with your own.",
+            "Select the **E-mail templates** tab to see them."
+          ],
+          "blocks": [
+            {
+              "image": "shots/23-templates.png",
+              "caption": "The **E-mail templates** tab, grouped by who receives the e-mail.",
+              "alt": "E-mail templates tab with numbered highlights on the tabs, the To customers heading, a template name with its badge, its subject line and Edit",
+              "width": 560
+            },
+            {
+              "callouts": [
+                "The tabs.",
+                "The groups: **To customers** and **To agents**.",
+                "The template name and its badge.",
+                "The current subject line, and when someone last changed it.",
+                "**Edit** opens the template editor."
+              ]
+            },
+            {
+              "table": {
+                "columns": ["Template", "Sent to", "When"],
+                "widths": [30, 16, 54],
+                "rows": [
+                  ["**New ticket acknowledgement**", "Customers", "A customer's e-mail creates a ticket, and the mailbox sends acknowledgements."],
+                  ["**Satisfaction survey**", "Customers", "A ticket is resolved, and satisfaction surveys are on."],
+                  ["**Agent notification e-mail**", "Agents", "An agent gets an e-mail for a notification, such as an assignment or a mention."],
+                  ["**Agent digest e-mail**", "Agents", "The hourly or daily digest goes out."]
+                ]
+              }
+            },
+            { "heading": "Template badges" },
+            {
+              "table": {
+                "columns": ["Badge", "What it means"],
+                "widths": [30, 70],
+                "rows": [
+                  ["**Default**", "The built-in wording is used."],
+                  ["**Customised**", "Your own wording is used."],
+                  ["**Custom (inactive)**", "You saved your own wording but switched it off, so the built-in wording is used."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "ns-edit-template",
+          "title": "Customise an e-mail template",
+          "type": "task",
+          "intro": "Change the subject and text of an automatic e-mail. The preview shows the result with sample values.",
+          "steps": [
+            "On the **E-mail templates** tab, select **Edit** on a template.",
+            "Change the **Subject**.",
+            "Change the **Body (HTML)**.",
+            "To add a value such as the ticket number, place the cursor and select a placeholder chip next to **Insert:**.",
+            "Turn on **Use this custom template (off = built-in default)**.",
+            "Check the **Preview**. For customer e-mails, choose a brand to see its footer.",
+            "Select **Save template**."
+          ],
+          "result": "The app shows **Template saved**. The template's badge changes to **Customised**.",
+          "blocks": [
+            {
+              "image": "shots/23-template-editor.png",
+              "caption": "The editor of the **New ticket acknowledgement** template.",
+              "alt": "Template editor with numbered highlights on the title and badges, Subject, Body (HTML), the placeholder chips, the custom template switch, the preview and the save bar",
+              "width": 560
+            },
+            {
+              "callouts": [
+                "The template name, who receives it and its badge.",
+                "**Subject**: the subject line, up to 500 characters.",
+                "**Body (HTML)**: the text of the e-mail.",
+                "The placeholder chips. Point to a chip to see what it means.",
+                "The switch that turns your wording on or off.",
+                "**Preview**: the e-mail with sample values and the brand's footer.",
+                "The save bar with **Reset to default**, **Discard** and **Save template**."
+              ]
+            },
+            { "note": "SupportDesk removes unsafe code from the e-mail. It inserts values as plain text." },
+            { "warning": "There is no test send. Check the **Preview** carefully before you save." }
+          ]
+        },
+        {
+          "id": "ns-placeholders",
+          "title": "E-mail template placeholders",
+          "type": "reference",
+          "intro": "A placeholder is a word in double braces. SupportDesk replaces it with the real value when it sends the e-mail. Only the placeholders of each template are allowed.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Template", "Placeholders"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**New ticket acknowledgement**", "`{{contact.name}}` customer's name, `{{brand.name}}` brand or mailbox name, `{{ticket.number}}` ticket reference, `{{ticket.subject}}` ticket subject, `{{portal.url}}` help center address."],
+                  ["**Satisfaction survey**", "`{{ticket.number}}`, `{{ticket.subject}}`, `{{agent.name}}` agent who resolved the ticket, `{{survey.link}}` survey address, `{{survey.buttons}}` rating buttons 1 to 5, `{{survey.expires}}` expiry date, `{{brand.name}}`."],
+                  ["**Agent notification e-mail**", "`{{user.name}}` agent's name, `{{notification.title}}`, `{{notification.body}}` notification text, `{{notification.link}}` link to the record."],
+                  ["**Agent digest e-mail**", "`{{user.name}}`, `{{digest.count}}` number of items, `{{digest.items}}` list of notifications."]
+                ]
+              }
+            },
+            { "note": "If you type a placeholder that the template does not know, the preview warns you. The app does not save the template until you fix it." }
+          ]
+        },
+        {
+          "id": "ns-reset-template",
+          "title": "Go back to the built-in wording",
+          "type": "task",
+          "intro": "You can switch your wording off for a while, or delete it.",
+          "steps": [
+            "Open the template on the **E-mail templates** tab.",
+            "To pause your wording, turn off **Use this custom template (off = built-in default)**. Then select **Save template**.",
+            "To delete your wording, select **Reset to default**.",
+            "In the confirmation, select **Reset**."
+          ],
+          "result": "The app shows **Template reset to the default**. The badge changes to **Default**.",
+          "blocks": [
+            { "warning": "**Reset to default** deletes your subject and body. You cannot get them back." }
+          ]
+        },
+        {
+          "id": "ns-survey-email",
+          "title": "How the satisfaction survey e-mail works",
+          "type": "concept",
+          "intro": "The survey e-mail asks the customer to rate the help they got.",
+          "blocks": [
+            {
+              "list": [
+                "The rating buttons open the feedback page of the brand's help center, with the chosen star selected.",
+                "The customer confirms the rating and can add a comment.",
+                "The customer does not need to sign in. The link itself proves who they are, and it expires.",
+                "Signed-in customers can also rate a ticket from its page in the help center."
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "The app says the template has unknown placeholders.", "cause": "The subject or body contains a placeholder that this template does not support.", "fix": "Remove it, or insert one of the chips shown next to **Insert:**." },
+    { "problem": "The app asks for a subject or a body.", "cause": "The **Subject** or **Body (HTML)** is empty or too long.", "fix": "Enter a subject of up to 500 characters and a body." },
+    { "problem": "The app says to set both the start and the end of quiet hours.", "cause": "Only one of **From** and **Until** has a time.", "fix": "Enter both times, or turn off **Quiet hours**." },
+    { "problem": "The app says quiet hours must end at a different time.", "cause": "**From** and **Until** are the same.", "fix": "Change one of the times." },
+    { "problem": "A **Discard unsaved changes?** message appears when you leave the page.", "cause": "You changed something and did not save it.", "fix": "Select **Keep editing** and save. Or select **Discard changes** to leave without saving." },
+    { "problem": "Agents get no notification e-mails at night.", "cause": "Quiet hours are on. E-mail and push wait until they end.", "fix": "This is expected. Critical alerts still go out." }
+  ],
+  "faq": [
+    { "q": "Can I send a test e-mail from a template?", "a": "No. Use the **Preview**, which fills in sample values and adds the brand's footer." },
+    { "q": "Can each brand have its own template?", "a": "No. Each template is shared by all brands. Use `{{brand.name}}` for the brand name. SupportDesk adds each brand's e-mail footer to customer e-mails." },
+    { "q": "Why do agents get a digest instead of separate e-mails?", "a": "For events where both **E-mail** and **Digest** are ticked, SupportDesk bundles the event into the digest." }
+  ],
+  "glossary": [
+    { "term": "Delivery defaults", "definition": "The administrator's choice of how agents are notified of each event: in the app, by e-mail, by push or in a digest." },
+    { "term": "Digest", "definition": "One e-mail that bundles several notifications, sent every hour or once a day." },
+    { "term": "Quiet hours", "definition": "Hours when SupportDesk holds back e-mail and push notifications. Critical alerts still go out." },
+    { "term": "E-mail template", "definition": "The subject and text of an automatic e-mail that SupportDesk sends." },
+    { "term": "Placeholder", "definition": "A word in double braces, such as `{{ticket.number}}`, that SupportDesk replaces with a real value." }
+  ]
+}

@@ -1,0 +1,443 @@
+{
+  "chapters": [
+    {
+      "id": "sla-policies-business-hours",
+      "title": "SLA policies and business hours",
+      "intro": [
+        "This chapter is for supervisors and administrators. It explains how SupportDesk measures service commitments, and how you set them up.",
+        "Supervisors use the **SLA** module to watch tickets at risk. Administrators also create policies, business calendars and holidays."
+      ],
+      "sections": [
+        {
+          "id": "sla-basics",
+          "title": "What an SLA measures",
+          "type": "concept",
+          "intro": [
+            "An SLA policy sets time targets for each ticket priority. The clock for each target is called a milestone.",
+            "Open **SLA** in the left rail. Its tabs are **Policies**, **Calendars & holidays** and **Live breaches**."
+          ],
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Milestone", "What it measures"],
+                "widths": [25, 75],
+                "rows": [
+                  ["**First response**", "Time until an agent first replies to the customer. This clock never pauses."],
+                  ["**Next response**", "Time until an agent answers the customer's latest message."],
+                  ["**Resolution**", "Time until the ticket is resolved."]
+                ]
+              }
+            },
+            { "heading": "Milestone states" },
+            {
+              "list": [
+                "**At risk**: the milestone passed its warning point, for example 75% of the target.",
+                "**Breached**: the target time has passed.",
+                "**Paused**: the ticket is in a status that pauses SLA clocks, such as **Waiting on Customer**."
+              ]
+            },
+            { "p": "SupportDesk checks every running milestone every 30 seconds. Warnings and escalations fire from that check." },
+            {
+              "table": {
+                "columns": ["You want to", "Permission"],
+                "widths": [55, 45],
+                "rows": [
+                  ["Open the SLA module and read policies and calendars", "`admin.sla` or `supervisor.monitor`"],
+                  ["Create, change, reorder or delete policies", "`admin.sla`"],
+                  ["Create or change business calendars and holidays", "`admin.sla` or `admin.organisation`"]
+                ]
+              }
+            },
+            { "note": "Without the right permission, the forms show the settings but you cannot change them." }
+          ]
+        },
+        {
+          "id": "how-sla-policy-is-chosen",
+          "title": "How a policy is chosen",
+          "type": "concept",
+          "intro": "Each ticket gets exactly one SLA policy. SupportDesk picks it in this order:",
+          "blocks": [
+            {
+              "list": [
+                "First: the policy of the ticket's active contract.",
+                "Next: the first active policy, in evaluation order, whose conditions match the ticket.",
+                "Last: the default policy."
+              ]
+            },
+            { "p": "The business calendar comes from the contract's support hours first. Next come the policy's calendar and the department's calendar. With none of these, the clock runs 24x7." },
+            { "p": "When you change a policy or the evaluation order, open tickets are checked again. Time already elapsed is kept." },
+            { "note": "The department's **Default SLA policy** field does not take part in this choice in this release." }
+          ]
+        },
+        {
+          "id": "sla-policies-list",
+          "title": "The Policies tab",
+          "type": "concept",
+          "intro": "Open **SLA** > **Policies** to see every policy in evaluation order.",
+          "blocks": [
+            {
+              "image": "shots/16-policies.png",
+              "caption": "The **Policies** tab with a Platinum policy and the default Standard SLA.",
+              "alt": "Policies tab with numbered tabs, New policy button, explanation, table header and order buttons"
+            },
+            {
+              "callouts": [
+                "The SLA tabs.",
+                "**New policy** opens an empty policy.",
+                "A reminder of how a policy is chosen.",
+                "Columns: order number, policy name and version, calendar, conditions, targets, escalations, running milestones and last update.",
+                "The arrows move a policy up or down the evaluation order."
+              ]
+            },
+            { "p": "**Default** marks the fallback policy. It always comes last and shows **Fallback** in the **Conditions** column. **Inactive** marks a policy that is switched off." }
+          ]
+        },
+        {
+          "id": "sla-reorder",
+          "title": "Change the evaluation order",
+          "type": "task",
+          "intro": "Put specific policies above general ones. The first matching policy wins.",
+          "prerequisites": ["Your role includes `admin.sla`."],
+          "steps": [
+            "Open **SLA** > **Policies**.",
+            "Select the up or down arrow on a policy row. Repeat until the order is right.",
+            "Select **Save order**. To undo your moves, select **Discard**."
+          ],
+          "result": "A message says \"Evaluation order saved\". Open tickets are checked again."
+        },
+        {
+          "id": "sla-policy-editor",
+          "title": "The policy editor",
+          "type": "concept",
+          "intro": "Select a policy to open it. The editor has five cards from top to bottom.",
+          "blocks": [
+            {
+              "image": "shots/16-policy-editor.png",
+              "caption": "The policy editor for the Platinum 24x7 policy.",
+              "alt": "Policy editor with numbered Delete and Save policy buttons, and Policy, Applies to, Targets per priority, Escalation levels and Simulate cards"
+            },
+            {
+              "callouts": [
+                "**Delete** and **Save policy**. The header also shows the version and how many tickets run on the policy.",
+                "**Policy**: name, status, business calendar and pause statuses.",
+                "**Applies to**: the conditions a ticket must meet. The default policy has no conditions.",
+                "**Targets per priority**: the time targets and the warning point.",
+                "**Escalation levels**: what happens before or after a breach.",
+                "**Simulate against a ticket**: test the form on a real ticket before you save."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "create-sla-policy",
+          "title": "Create an SLA policy",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.sla`."],
+          "steps": [
+            "Open **SLA** > **Policies** and select **New policy**.",
+            {
+              "text": "In the **Policy** card, enter the **Name** and a **Description**.",
+              "image": "shots/16-policy-settings.png",
+              "caption": "The **Policy** card of the Platinum 24x7 policy.",
+              "alt": "Policy card with name, description, Active, Default policy, business calendar, pause statuses and contract hours option"
+            },
+            "Choose the **Business calendar** and any extra **Pause statuses**.",
+            "If contracts set their own support hours, tick the contract option at the bottom of the card.",
+            {
+              "text": "In **Applies to**, select **Condition** and build the rule, such as **Customer tier** is `Platinum`.",
+              "image": "shots/16-policy-conditions.png",
+              "caption": "The **Applies to** card with one condition on the customer tier.",
+              "alt": "Applies to card with All (AND) and Any (OR), a customer tier condition, and Condition and Group buttons"
+            },
+            "Set the targets. See [Set targets per priority](#sla-targets).",
+            "Add escalation levels if you need them. See [Add escalation levels](#sla-escalations).",
+            "Select **Save policy**."
+          ],
+          "result": "A message says \"SLA policy saved\". The policy joins the list as version 1.",
+          "blocks": [
+            { "p": "The contract option reads **Use the contract's support hours when the ticket is covered by a contract**." },
+            { "p": "Choose **All (AND)** when every condition must match, or **Any (OR)** when one is enough. **Group** adds a nested group. Groups can go three levels deep." },
+            { "p": "Conditions can use the ticket, customer, contact and contract. Examples are tier, contract, priority, department, product, category and channel." },
+            { "tip": "A policy without conditions matches every ticket. Put it near the bottom of the evaluation order." }
+          ]
+        },
+        {
+          "id": "sla-targets",
+          "title": "Set targets per priority",
+          "type": "task",
+          "steps": [
+            "In the policy editor, go to **Targets per priority**.",
+            "Tick each priority that the policy covers: **Critical**, **High**, **Medium** or **Low**.",
+            "For each priority, enter the **First response**, **Next response** and **Resolution** times.",
+            "Choose the unit for each time: **min**, **h** or **d**.",
+            "Tick **Business** to count only the calendar's working time.",
+            "In **Warn at**, enter the warning point as a percentage of the target.",
+            "Select **Save policy**."
+          ],
+          "result": "The policy uses the new targets. Saving creates a new version and recalculates open tickets.",
+          "blocks": [
+            {
+              "image": "shots/16-policy-targets.png",
+              "caption": "Targets for four priorities with 24x7 counting.",
+              "alt": "Targets per priority table with first response, next response and resolution times, business hours boxes and warning percentages"
+            },
+            { "note": "Targets can range from 1 minute to 365 days. **Warn at** takes 1–99%. The default is 75%." }
+          ]
+        },
+        {
+          "id": "sla-escalations",
+          "title": "Add escalation levels",
+          "type": "task",
+          "intro": "An escalation level acts when a milestone gets close to a breach, or after it. A policy can have up to 10 levels.",
+          "steps": [
+            "In the policy editor, go to **Escalation levels** and select **Add level**.",
+            "Choose the **Milestone** and enter the **Level** number.",
+            "In **When**, choose **At % of target** or **Minutes from breach**.",
+            "Enter the **Percent** or the **Minutes**.",
+            "Choose the **Action**.",
+            "For a reassign action, choose **Reassign to agent** or **…or to team**.",
+            "For a notify action, tick **Notify assignee** and **Notify supervisors**, and add people under **Also notify**.",
+            "Select **Save policy**."
+          ],
+          "result": "The level fires when the milestone reaches the point you set.",
+          "blocks": [
+            {
+              "image": "shots/16-policy-escalations.png",
+              "caption": "Three escalation levels: a breach notice, a warning an hour before, and a reassignment.",
+              "alt": "Escalation levels card with milestone, level, when, minutes, action, reassign and notify fields for three levels"
+            },
+            {
+              "table": {
+                "columns": ["Setting", "Meaning"],
+                "widths": [30, 70],
+                "rows": [
+                  ["**At % of target**", "Fires at a share of the target. `80` fires before the breach. `150` fires after it."],
+                  ["**Minutes from breach**", "Fires a number of minutes around the breach. A negative number fires before it."],
+                  ["**Notify**", "Sends a notification."],
+                  ["**Reassign**", "Moves the ticket to the agent or team you choose."],
+                  ["**Raise priority**", "Raises the ticket's priority."],
+                  ["**Notify and reassign**", "Sends a notification and moves the ticket."]
+                ]
+              }
+            },
+            { "p": "To delete a level, select **Remove** on it. Without levels, breaches show on the risk boards only." }
+          ]
+        },
+        {
+          "id": "sla-simulate",
+          "title": "Simulate a policy against a ticket",
+          "type": "task",
+          "intro": "Check which policy a ticket would get, and its due times, before you save. The simulation uses the unsaved form.",
+          "steps": [
+            "Open the policy and make your changes.",
+            "In **Simulate against a ticket**, enter a **Ticket number**.",
+            "Select **Simulate**."
+          ],
+          "result": "The card shows the selected policy and the reason. It lists every policy as **Selected**, **Matches** or **Skipped**, and the new due times.",
+          "blocks": [
+            {
+              "image": "shots/16-policy-simulate.png",
+              "caption": "The simulation for ticket #1010 selects Platinum 24x7.",
+              "alt": "Simulate card with ticket 1010, the selected policy, the evaluated policies and a table of milestones with targets and due times"
+            },
+            { "p": "**Differs from the current SLA** means saving would change the ticket's policy. The **Current** column shows the due time the ticket has now." }
+          ]
+        },
+        {
+          "id": "sla-delete-policy",
+          "title": "Deactivate or delete a policy",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.sla`."],
+          "steps": [
+            "Open the policy.",
+            "To switch it off, clear **Active**, then select **Save policy**.",
+            "To remove it, select **Delete**, then **Delete** in the confirmation."
+          ],
+          "result": "An inactive policy stays in the list but no longer matches tickets. A deleted policy disappears.",
+          "blocks": [
+            { "note": "You cannot delete the default policy. You cannot delete a policy that tickets have used, or that a contract names. Deactivate those instead." }
+          ]
+        },
+        {
+          "id": "business-calendars",
+          "title": "Business calendars",
+          "type": "concept",
+          "intro": [
+            "A business calendar sets the working hours and holidays in a time zone. SLA clocks with **Business** ticked count only this time.",
+            "Open **SLA** > **Calendars & holidays**. Departments, policies and contracts can each use a calendar."
+          ],
+          "blocks": [
+            {
+              "image": "shots/16-calendars.png",
+              "caption": "The **Calendars & holidays** tab with the default business hours calendar open.",
+              "alt": "Calendars tab with numbered New calendar button, calendar list, edit form, weekly hours, Save calendar, holidays and business time preview"
+            },
+            {
+              "callouts": [
+                "**New calendar**.",
+                "The calendars, with hours per week, time zone and holidays. **Default** and **Used** badges show how each is used.",
+                "The name, time zone, description, **Open 24x7** and **Default calendar** settings.",
+                "The weekly hours, with presets such as **Mon–Fri 09–18**.",
+                "**Save calendar**. Below it, **Used by** lists what uses the calendar.",
+                "**Holidays** for this calendar.",
+                "**Business time preview**."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "create-calendar",
+          "title": "Create or edit a business calendar",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.sla` or `admin.organisation`."],
+          "steps": [
+            "Open **SLA** > **Calendars & holidays**.",
+            "Select **New calendar**, or select a calendar in the list.",
+            "Enter the **Name** and choose the **Time zone**.",
+            "Turn on **Open 24x7 (no business hours)**, or set the weekly hours.",
+            "For weekly hours, select a preset, then adjust each day. Select **Split** to add a break.",
+            "Turn on **Default calendar** if this calendar should be the default.",
+            "Select **Save calendar**."
+          ],
+          "result": "A message says \"Calendar saved\". The list shows the new hours per week.",
+          "blocks": [
+            { "p": "To delete a calendar, select it and select **Delete**. You cannot delete the default calendar, or a calendar that departments, policies or contracts use." }
+          ]
+        },
+        {
+          "id": "add-holiday",
+          "title": "Add a holiday",
+          "type": "task",
+          "intro": "Holidays are whole local days that SLA business time skips.",
+          "prerequisites": ["Your role includes `admin.sla` or `admin.organisation`.", "The calendar is saved."],
+          "steps": [
+            "Open **SLA** > **Calendars & holidays** and select the calendar.",
+            "In **Holidays**, enter the **Date** and the **Name**.",
+            "Tick **Every year** for a holiday on the same date each year.",
+            "Select **Add**."
+          ],
+          "result": "The holiday appears in the table. **Repeats** shows **Every year** or **Once**.",
+          "blocks": [
+            {
+              "image": "shots/16-holidays.png",
+              "caption": "The **Holidays** card with five holidays.",
+              "alt": "Holidays card with Import CSV, the add form and a table of dates, names and repeats"
+            },
+            { "p": "To remove a holiday, select the remove button on its row." }
+          ]
+        },
+        {
+          "id": "import-holidays",
+          "title": "Import holidays from a CSV file",
+          "type": "task",
+          "intro": "Load a year of holidays at once from a spreadsheet.",
+          "prerequisites": ["Your role includes `admin.sla` or `admin.organisation`."],
+          "steps": [
+            "Open **SLA** > **Calendars & holidays** and select the calendar.",
+            {
+              "text": "In **Holidays**, select **Import CSV**.",
+              "image": "shots/16-import-holidays-dialog.png",
+              "caption": "The **Import holidays** dialog with three sample lines.",
+              "alt": "Import holidays dialog with a CSV text box, Choose File button and Replace all existing holidays option",
+              "width": 560
+            },
+            "Paste the lines into **CSV**. Or use the file button below the box to load a CSV file.",
+            "Turn on **Replace all existing holidays** only if the file is the full new list.",
+            "Select **Import**.",
+            "Read the result, then select **Done**."
+          ],
+          "result": "A message says how many holidays were added, updated and skipped. Up to 50 line errors are listed.",
+          "blocks": [
+            { "warning": "**Replace all existing holidays** deletes the current holidays, even if every imported line fails." },
+            {
+              "table": {
+                "columns": ["Rule", "Detail"],
+                "widths": [30, 70],
+                "rows": [
+                  ["Line format", "`date,name` or `date,name,recurring`. One holiday per line."],
+                  ["Separators", "Comma, semicolon or tab."],
+                  ["Dates", "For example `2026-01-26`, `26-01-2026`, `26/01/2026` or `26 Jan 2026`."],
+                  ["Every year", "`yes`, `y`, `true`, `1` or `recurring`."],
+                  ["Skipped lines", "Blank lines, lines starting with `#`, and a first line starting with `date`."],
+                  ["Limits", "Up to 2000 lines and 512 KB."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "business-time-preview",
+          "title": "Check business time with the preview",
+          "type": "task",
+          "intro": "See how much business time lies between two moments, and when a target would fall due. Nothing is saved.",
+          "steps": [
+            "Open **SLA** > **Calendars & holidays** and select the calendar.",
+            "In **Business time preview**, enter **From** and **To**.",
+            "Optionally, enter **Add business minutes**, such as the target of a milestone.",
+            "Select **Calculate**."
+          ],
+          "result": "The card shows the business time against the total time, the holidays in range, and each working interval. With minutes added, it shows when the target falls due.",
+          "blocks": [
+            {
+              "image": "shots/16-business-time-preview.png",
+              "caption": "The preview counts 20 hours of business time across four working days.",
+              "alt": "Business time preview with from and to dates, 120 business minutes and the result with working intervals"
+            }
+          ]
+        },
+        {
+          "id": "live-breaches",
+          "title": "Live breaches",
+          "type": "concept",
+          "intro": [
+            "Open **SLA** > **Live breaches** to see every running milestone that is at risk or breached. The soonest due come first.",
+            "Each ticket can appear more than once, once for each milestone."
+          ],
+          "blocks": [
+            {
+              "image": "shots/16-live-breaches.png",
+              "caption": "The **Live breaches** tab with 23 open breaches.",
+              "alt": "Live breaches tab with numbered Refresh button, KPI tiles, state, milestone and department filters, and table header"
+            },
+            {
+              "callouts": [
+                "**Refresh** reloads the list.",
+                "Tiles for **At risk**, **Breached (open)**, **Breached today**, **Due in the next hour** and **Paused**. Select **At risk** or **Breached (open)** to filter the list.",
+                "The state filter: **At risk and breached**, **At risk** or **Breached**.",
+                "The milestone filter.",
+                "The department filter.",
+                "Columns: ticket, milestone with priority and escalation level, due time, elapsed time against the target, owner, department and policy."
+              ]
+            },
+            { "p": "**L1** and **L2** show the escalation level a milestone reached. The **Elapsed** bar turns amber at 75% and red at 100% of the target." },
+            { "tip": "Select a ticket number to open the ticket. Select **Load more** at the bottom for older items." }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "\"The default policy cannot be deleted.\"", "cause": "Every workspace needs a fallback policy.", "fix": "Make another policy the default first. Then delete the old one." },
+    { "problem": "\"Tickets have used this policy, so it is kept for reproducibility.\"", "cause": "Past tickets refer to the policy.", "fix": "Clear **Active** and save the policy instead of deleting it." },
+    { "problem": "\"Contracts reference this policy.\"", "cause": "One or more contracts name this policy.", "fix": "Change those contracts first, then delete the policy." },
+    { "problem": "\"Departments, SLA policies or contracts use this calendar.\"", "cause": "You try to delete a calendar that is in use.", "fix": "Check **Used by** under the calendar. Change those items first." },
+    { "problem": "\"The default calendar cannot be deleted.\"", "cause": "The default calendar is the fallback for new items.", "fix": "Make another calendar the default first." },
+    { "problem": "A ticket gets the wrong policy.", "cause": "A policy higher in the evaluation order also matches, or a contract sets the policy.", "fix": "Open a policy and use **Simulate against a ticket**. The list shows why each policy was selected or skipped." },
+    { "problem": "Due times ignore weekends.", "cause": "**Business** is not ticked for that target, or the calendar is open 24x7.", "fix": "Tick **Business** for the target and choose a calendar with weekly hours." },
+    { "problem": "The policy form fields are greyed out.", "cause": "Your role does not include `admin.sla`.", "fix": "Ask an administrator to change the policy, or to give you the permission." }
+  ],
+  "faq": [
+    { "q": "Does the first response clock pause when the ticket waits on the customer?", "a": "No. The first response clock never pauses. Pause statuses stop only the next response and resolution clocks." },
+    { "q": "What happens to open tickets when I change a policy?", "a": "Saving creates a new version of the policy. Open tickets are recalculated, and time already elapsed is kept." },
+    { "q": "Why does a ticket appear twice on Live breaches?", "a": "The list shows milestones, not tickets. A ticket shows once for each milestone that is at risk or breached." }
+  ],
+  "glossary": [
+    { "term": "Business calendar", "definition": "Working hours and holidays in a time zone. SLA clocks with business hours count only this time." },
+    { "term": "Escalation level", "definition": "An action, such as a notification or reassignment, that fires at a set point before or after an SLA breach." },
+    { "term": "Evaluation order", "definition": "The order in which SLA policies are checked. The first active policy whose conditions match a ticket wins." },
+    { "term": "Milestone", "definition": "One SLA clock on a ticket: first response, next response or resolution." },
+    { "term": "Pause status", "definition": "A ticket status during which SLA response and resolution clocks stop counting." },
+    { "term": "SLA breach", "definition": "A milestone whose target time has passed before the agent met it." },
+    { "term": "SLA policy", "definition": "A set of time targets per priority, with conditions and escalation levels, that applies to matching tickets." }
+  ]
+}

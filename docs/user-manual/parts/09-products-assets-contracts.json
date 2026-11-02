@@ -1,0 +1,781 @@
+{
+  "chapters": [
+    {
+      "id": "products-assets-contracts",
+      "title": "Products, assets and contracts",
+      "intro": [
+        "This chapter is for agents, account managers and supervisors. It shows what a customer runs and what support they paid for. Administrators who keep the product catalog use it too.",
+        "**Products & Assets** holds your product catalog, the customer installations and assets, and the support contracts. Contracts decide whether a ticket is covered."
+      ],
+      "sections": [
+        {
+          "id": "products-at-a-glance",
+          "title": "Products & Assets at a glance",
+          "type": "concept",
+          "intro": [
+            "Open it from **Products & Assets** in the menu on the left. You can also press [[G]] and then [[P]].",
+            "The **Catalog** tab opens first. It lists your products by family, with their modules, versions and releases."
+          ],
+          "blocks": [
+            {
+              "image": "shots/09-catalog-tour.png",
+              "caption": "The **Catalog** tab with the Wings ERP product selected.",
+              "alt": "Products and Assets catalog with the New product button, the tabs, the product list, the product card, the modules and the versions table, each numbered"
+            },
+            {
+              "callouts": [
+                "**New product** adds a product. Only people who can manage products see it.",
+                "The tabs of the module.",
+                "The products, grouped by family. Each shows its code and how many installations and customers it has.",
+                "The selected product: code, family, routing and install base. **Edit** and the delete button are at the top right.",
+                "**Modules**: the parts of the product, such as Finance or Payroll.",
+                "**Versions & releases**: each version with its status, dates and releases."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "products-tabs",
+          "title": "Products & Assets tabs",
+          "type": "reference",
+          "intro": "You see only the tabs your role allows.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Tab", "What it holds", "Who sees it"],
+                "widths": [20, 50, 30],
+                "rows": [
+                  ["**Catalog**", "Products, modules, versions and releases.", "People who can view products."],
+                  ["**Families**", "Groups of related products.", "People who can view products."],
+                  ["**Installations**", "Customer sites that run a product, with version, environment and deployment.", "People who can view products."],
+                  ["**Licences**", "Licence keys (masked), edition, seats and expiry.", "People who can view products."],
+                  ["**Assets**", "Hardware and other items with serial numbers and warranties.", "People who can view products."],
+                  ["**Install base**", "How many installations run each version.", "People who can view products."],
+                  ["**Contracts**", "Support contracts and their entitlements.", "People who can view contracts."],
+                  ["**Renewals**", "Contracts that end soon or ended recently.", "People who can view contracts."],
+                  ["**ERP integration**", "The connection to Wings ERP. Chapter 25 explains it.", "Administrators."]
+                ]
+              }
+            },
+            {
+              "note": "By default, only administrators can change the catalog, installations, licences and assets. Supervisors and administrators can manage contracts."
+            }
+          ]
+        },
+        {
+          "id": "add-a-product",
+          "title": "Add a product",
+          "type": "task",
+          "intro": "Add a product that you support, so agents can choose it on tickets.",
+          "prerequisites": ["You can manage products."],
+          "steps": [
+            "In **Products & Assets** > **Catalog**, select **New product**.",
+            {
+              "text": "Enter the **Name** and a short unique **Code**, such as `WERP`.",
+              "image": "shots/09-product-form.png",
+              "caption": "The **New product** form.",
+              "alt": "New product form with name, code, family, default department, default team, description and an Active check box",
+              "width": 420
+            },
+            "Choose the **Family**, if the product belongs to one.",
+            {
+              "text": "Choose the **Default department** and **Default team**.",
+              "note": "New tickets for this product go to them."
+            },
+            "Enter a **Description**.",
+            "Keep **Active (selectable on tickets)** ticked.",
+            "Select **Save**."
+          ],
+          "result": "A message says **Product saved**. The product appears in the list on the left."
+        },
+        {
+          "id": "edit-or-retire-a-product",
+          "title": "Edit, retire or delete a product",
+          "type": "task",
+          "intro": "Change a product's details, or remove a product you no longer support.",
+          "prerequisites": ["You can manage products."],
+          "steps": [
+            "In the **Catalog**, select the product in the list.",
+            "To change it, select **Edit**, change the fields, and select **Save**.",
+            "To remove it, select the delete button next to **Edit**.",
+            "Type the product's code to confirm.",
+            "Select **Delete product**, or **Retire product** if the product is in use."
+          ],
+          "result": "An unused product is deleted. A product with installations, tickets or contracts is retired instead. It stays on old records but agents can no longer choose it.",
+          "blocks": [
+            { "tip": "To retire a product without the delete button, edit it and clear **Active (selectable on tickets)**." }
+          ]
+        },
+        {
+          "id": "manage-modules",
+          "title": "Add or remove a module",
+          "type": "task",
+          "intro": "Modules are the parts of a product, such as Finance, Inventory or Payroll. Agents choose a module on a ticket to say which part has the problem.",
+          "prerequisites": ["You can manage products."],
+          "steps": [
+            "In the **Catalog**, select the product.",
+            "Under **Modules**, select **Add module**.",
+            "Enter the **Module name**.",
+            "Select **Save**."
+          ],
+          "result": "The module appears as a chip under **Modules**.",
+          "blocks": [
+            { "note": "To remove a module, select the cross on its chip, then select **Remove**. A module that tickets use is made inactive instead of removed." }
+          ]
+        },
+        {
+          "id": "add-a-version",
+          "title": "Add a version",
+          "type": "task",
+          "intro": "Record each version you ship, and when its support ends. Installations and tickets refer to versions.",
+          "prerequisites": ["You can manage products."],
+          "steps": [
+            "In the **Catalog**, select the product.",
+            "Under **Versions & releases**, select **Add version**. The **New version** form opens.",
+            {
+              "text": "Enter the **Version**, for example `8.1`.",
+              "image": "shots/09-version-form.png",
+              "caption": "The **New version** form.",
+              "alt": "New version form with version, status, release date, end of support and notes fields",
+              "width": 420
+            },
+            "Choose the **Status**.",
+            "Enter the **Release date** and the **End of support** date, if you know them.",
+            "Select **Save**."
+          ],
+          "result": "The version appears in the **Versions & releases** table.",
+          "blocks": [
+            {
+              "list": [
+                "Use the pencil button on a version's row to edit it.",
+                "Use the bin button to delete it. If installations run the version, it is marked **End of life** instead.",
+                "A **Past end of support** badge appears when the end-of-support date has passed."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "add-a-release",
+          "title": "Add a release to a version",
+          "type": "task",
+          "intro": "A release is a build of a version, such as a patch or a hotfix.",
+          "prerequisites": ["You can manage products."],
+          "steps": [
+            "In the **Catalog**, select the product.",
+            "On the version's row, select the plus button. The **New release** form opens.",
+            {
+              "text": "Enter the **Release** name, for example `8.0.2`, and the **Build** number.",
+              "image": "shots/09-release-form.png",
+              "caption": "The **New release** form.",
+              "alt": "New release form with release, build, type, release date, engineering release and release notes fields",
+              "width": 420
+            },
+            "Choose the **Type** and enter the **Release date**.",
+            "In **Engineering release**, enter the matching release or tag of your engineering team, if any.",
+            "Enter the **Release notes**.",
+            "Select **Save**."
+          ],
+          "result": "The release appears in the **Releases** column of the version. Select its name to edit it.",
+          "blocks": [
+            { "note": "You cannot delete a release that installations run. Its bin button is greyed out." }
+          ]
+        },
+        {
+          "id": "catalog-statuses",
+          "title": "Version statuses and release types",
+          "type": "reference",
+          "intro": "These values appear in the **Versions & releases** table.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Version status", "Meaning"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**Planned**", "Not shipped yet."],
+                  ["**Released**", "The current version that customers can install."],
+                  ["**Supported**", "An older version that you still support."],
+                  ["**End of life**", "No longer supported. Install base reports count installations on it."]
+                ]
+              }
+            },
+            { "p": "Release types are **Major**, **Minor**, **Patch** and **Hotfix**." }
+          ]
+        },
+        {
+          "id": "product-families",
+          "title": "Manage product families",
+          "type": "task",
+          "intro": "Families group related products, for example by product line. They are used in reports, routing and the portal.",
+          "prerequisites": ["You can manage products."],
+          "steps": [
+            "In **Products & Assets**, select the **Families** tab.",
+            "Select **New family**. The **New product family** dialog opens.",
+            "Enter the **Family name** and a **Description**.",
+            "Select **Create family**.",
+            "To put a product in the family, edit the product and choose the family."
+          ],
+          "result": "A message says **Family created**. The table lists each family with its products.",
+          "blocks": [
+            { "note": "You can delete a family only when it has no products. Move its products to another family first." }
+          ]
+        },
+        {
+          "id": "installations",
+          "title": "Installations",
+          "type": "concept",
+          "intro": [
+            "An installation is one place where a customer runs one of your products. For example, a customer can have a production system and a test system.",
+            "Tickets can name the installation. That tells agents the exact version, environment and setup."
+          ],
+          "blocks": [
+            {
+              "image": "shots/09-installations-tour.png",
+              "caption": "The **Installations** tab.",
+              "alt": "Installations page with the New installation button, the search and filter bar and the installations table, each numbered"
+            },
+            {
+              "callouts": [
+                "**New installation** adds an installation. Only people who can manage products see it.",
+                "Search and filters: product, version, environment, deployment and **End of support only**.",
+                "The installations. An **EOS** badge marks a version past its end of support. Select a row to see the details."
+              ]
+            },
+            {
+              "tip": "Select **Choose columns** at the right of the table header to show **Go-live** and **Location**."
+            }
+          ]
+        },
+        {
+          "id": "view-an-installation",
+          "title": "View an installation",
+          "type": "task",
+          "intro": "See everything about one installation in a side panel.",
+          "steps": [
+            "In **Products & Assets**, select the **Installations** tab.",
+            "Search or filter the list.",
+            {
+              "text": "Select the installation.",
+              "image": "shots/09-installation-drawer.png",
+              "caption": "The details of a production installation.",
+              "alt": "Side panel with the installation's badges, customer, product, code, operating system, database, server, users, dates, tickets, modules, integrations and licences",
+              "width": 340
+            },
+            "Read the details. Select **Customer 360** to open the customer.",
+            "Select the close button to close the panel."
+          ],
+          "result": "The panel shows the customer, the product and release, the technical setup, users, dates and tickets. It also lists the enabled modules, integrations, licences and assets."
+        },
+        {
+          "id": "add-an-installation",
+          "title": "Add an installation",
+          "type": "task",
+          "intro": "Record a new customer site, for example after a go-live.",
+          "prerequisites": ["You can manage products."],
+          "steps": [
+            "In the **Installations** tab, select **New installation**.",
+            {
+              "text": "Choose the **Customer**.",
+              "image": "shots/09-installation-form.png",
+              "caption": "The **New installation** form.",
+              "alt": "New installation form with customer, name, code, product, version, release, environment, deployment, status, location, users, go-live, operating system, database, server configuration and modules fields",
+              "width": 520
+            },
+            "Enter the **Name**, for example `ABC ERP – Production`.",
+            "Choose the **Product**, **Version** and **Release**.",
+            "Choose the **Environment**, **Deployment** and **Status**.",
+            "Fill in the site details you know, such as **Users**, **Go-live** and **Operating system**.",
+            "Choose the **Enabled modules**.",
+            "Under **Integrations**, select **Add integration** for each system it connects to.",
+            "Select **Save**."
+          ],
+          "result": "A message says **Installation saved**.",
+          "blocks": [
+            {
+              "note": "To change an installation, open it and select **Edit**. To remove it, select **Delete**. If tickets or contracts refer to it, SupportDesk marks it **Decommissioned** instead."
+            }
+          ]
+        },
+        {
+          "id": "installation-fields",
+          "title": "Installation fields",
+          "type": "reference",
+          "intro": "The fields of the installation form.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Field", "What to enter"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**Customer**, **Name**, **Product**", "Required. The customer, a name for the site and the product it runs."],
+                  ["**Installation code**", "Your own code for the site, such as `INS-1001-01`."],
+                  ["**Version**, **Release**", "The version and build the site runs."],
+                  ["**Environment**", "**Production**, **Staging**, **Test** or **Training**."],
+                  ["**Deployment**", "**On-premise**, **Cloud**, **Hybrid** or **Hosted**."],
+                  ["**Status**", "**Active**, **Suspended** or **Decommissioned**."],
+                  ["**Location**", "The customer's site where it runs."],
+                  ["**Users**, **Go-live**", "The number of users and the go-live date."],
+                  ["**Operating system**, **Database**, **Server configuration**", "The technical setup, for agents who troubleshoot."],
+                  ["**Enabled modules**", "The product modules the customer uses."],
+                  ["**Integrations**", "Other systems it connects to, each with a **Direction**: **Inbound**, **Outbound** or **Two-way**."],
+                  ["**Notes**", "Anything else agents should know."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "manage-licences",
+          "title": "Manage licences",
+          "type": "task",
+          "intro": "Record the licence keys of each installation, with seats and expiry.",
+          "prerequisites": ["You can manage products."],
+          "steps": [
+            {
+              "text": "In **Products & Assets**, select the **Licences** tab.",
+              "image": "shots/09-licences.png",
+              "caption": "The **Licences** tab. Keys are always shown masked.",
+              "alt": "Licences page with status and expiry filters and a table of masked licence keys with customer, installation, edition, seats, expiry and status",
+              "width": 560
+            },
+            "To find licences that end soon, choose a value in **Any expiry**, such as **Expiring within 90 days**.",
+            "To add a licence, select **New licence**.",
+            "Choose the **Customer** and the **Installation**.",
+            {
+              "text": "Paste the **Licence key**.",
+              "note": "SupportDesk masks the key before it saves it."
+            },
+            "Enter the **Edition**, **Seats**, **Issued on** and **Expires on** values, and choose the **Status**.",
+            "Select **Save**."
+          ],
+          "result": "A message says **Licence saved**. An active licence that ends within 90 days shows the number of days left.",
+          "blocks": [
+            { "p": "Licence statuses are **Active**, **Expired**, **Suspended** and **Revoked**. Use the pencil and bin buttons on a row to edit or delete a licence." }
+          ]
+        },
+        {
+          "id": "manage-assets",
+          "title": "Manage assets",
+          "type": "task",
+          "intro": "Assets are hardware and other items with a serial number at a customer site, such as POS terminals and printers.",
+          "prerequisites": ["You can manage products."],
+          "steps": [
+            {
+              "text": "In **Products & Assets**, select the **Assets** tab.",
+              "image": "shots/09-assets.png",
+              "caption": "The **Assets** tab with warranty badges.",
+              "alt": "Assets page with a search box, a warranty filter and a table of assets with serial numbers, customers, installations, purchase dates, warranty end dates and status",
+              "width": 560
+            },
+            "To find an asset, enter its name, serial number or tag in the search box.",
+            "To check warranties, choose **Under warranty** or **Warranty expired**.",
+            "To add an asset, select **New asset**.",
+            "Choose the **Customer** and enter the **Name**.",
+            "Enter the **Serial number**, **Asset tag**, **Product** and **Installation**.",
+            "Enter the **Purchased** and **Warranty ends** dates, and choose the **Status**.",
+            "Select **Save**."
+          ],
+          "result": "A message says **Asset saved**. A green badge shows a warranty that is still valid. A red badge shows the date it ended.",
+          "blocks": [
+            { "note": "Asset statuses are **In service**, **In repair** and **Retired**. Deleting an asset that tickets or entitlements use retires it instead." }
+          ]
+        },
+        {
+          "id": "install-base",
+          "title": "Install base",
+          "type": "concept",
+          "intro": "The **Install base** tab shows which versions your customers run. Use it to plan upgrade campaigns and to spot versions with many tickets.",
+          "blocks": [
+            {
+              "image": "shots/09-install-base.png",
+              "caption": "The **Install base** of Wings ERP by version.",
+              "alt": "Install base page with four key figures, a product list, a bar chart of installations per version with open tickets and a version table",
+              "width": 560
+            },
+            {
+              "list": [
+                "The key figures count installations, installations on end-of-support versions, products and customers.",
+                "Choose a **Product** to see its versions.",
+                "The chart shows production and other installations per version. The line shows open tickets.",
+                "The table adds users, open tickets and tickets per installation in the last 90 days.",
+                "Select a bar or a table row to open the installations that run that version."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "contracts-and-entitlements",
+          "title": "Contracts and entitlements",
+          "type": "concept",
+          "intro": [
+            "A contract is what a customer bought: a warranty, an AMC or another kind of support. It has a period, a value and the channels it covers.",
+            "A contract can choose the SLA policy and the support hours for the customer's tickets. Entitlements limit the cover to a product, installation or asset. They can also allow a set number of incidents or hours."
+          ],
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Contract type", "Typical use"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**Warranty**", "Free cover for hardware or software for a fixed time after purchase."],
+                  ["**AMC**", "An annual maintenance contract."],
+                  ["**Annual support**", "A yearly support subscription, often with an incident allowance."],
+                  ["**Prepaid hours**", "A block of hours that the customer bought in advance."],
+                  ["**Time and material**", "Work that is charged by the hour."],
+                  ["**Subscription**", "Support included in a software subscription."]
+                ]
+              }
+            },
+            {
+              "p": "Contract statuses are **Draft**, **Active**, **Expired**, **Suspended** and **Cancelled**. Entitlement types are **Support**, **Warranty**, **Hours**, **Incidents** and **Onsite**."
+            },
+            {
+              "note": "A contract with no entitlements covers the customer for every product. This is called customer-wide cover."
+            }
+          ]
+        },
+        {
+          "id": "find-a-contract",
+          "title": "Find a contract",
+          "type": "task",
+          "intro": "Look up a customer's contracts, or list contracts by type, status or end date.",
+          "prerequisites": ["You can view contracts."],
+          "steps": [
+            {
+              "text": "In **Products & Assets**, select the **Contracts** tab.",
+              "image": "shots/09-contracts-tour.png",
+              "caption": "The **Contracts** list.",
+              "alt": "Contracts page with the New contract button, the search and filter bar, and the contracts table, each numbered"
+            },
+            "In the search box, enter a contract number, name, customer or ERP reference.",
+            "To narrow the list, choose a **Type**, a **Status** or an expiry, such as **Expiring in 30 days**.",
+            "Select the contract to open it."
+          ],
+          "result": "The contract page opens.",
+          "blocks": [
+            {
+              "callouts": [
+                "**New contract** adds a contract. Only people who can manage contracts see it.",
+                "Search and filters.",
+                "The contracts. A badge after the end date shows the days left when 60 or fewer remain."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "add-a-contract",
+          "title": "Add a contract",
+          "type": "task",
+          "intro": "Record a contract the customer signed. SupportDesk then checks the customer's open tickets against it again.",
+          "prerequisites": ["You can manage contracts."],
+          "steps": [
+            {
+              "text": "In the **Contracts** tab, select **New contract**.",
+              "image": "shots/09-contract-form.png",
+              "caption": "The **New contract** form.",
+              "alt": "New contract form with customer, name, number, type, status, SLA policy, dates, support hours, value, currency, prepaid hours, hourly rate, renewal date, ERP reference, check boxes, covered channels and covered products",
+              "width": 520
+            },
+            "Choose the **Customer** and enter the **Name**.",
+            "Leave **Number** empty to get one by itself, such as `AMC-2026-0007`.",
+            "Choose the **Type** and **Status**, and set the **Start date** and **End date**.",
+            "Choose an **SLA policy** and **Support hours**, if the contract sets them.",
+            "Enter the money and hours fields that apply. The table below explains them.",
+            "Tick **Billable**, **Auto-renew** or **On-site visits covered** if they apply.",
+            "Choose the **Covered channels** and **Covered products**.",
+            "Select **Create contract**."
+          ],
+          "result": "A message says **Contract created**. The customer's open tickets are checked again.",
+          "blocks": [
+            { "tip": "You can also add a contract from the **Contracts** tab of a Customer 360 page. The customer is then filled in for you." }
+          ]
+        },
+        {
+          "id": "contract-fields",
+          "title": "Contract fields",
+          "type": "reference",
+          "intro": "The fields of the contract form that need some explanation.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Field", "What it does"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**SLA policy**", "The SLA policy for the customer's covered tickets. **Default selection** uses the normal rules."],
+                  ["**Support hours**", "The working-hours calendar for SLA timers. **Policy / department hours** uses the normal hours."],
+                  ["**Contract value**, **Currency**", "The price of the contract."],
+                  ["**Prepaid hours**", "The hours the customer bought. Time that agents log on covered tickets uses them up."],
+                  ["**Hourly rate**", "The rate for billable time."],
+                  ["**Renewal date**", "When the contract is due for renewal."],
+                  ["**ERP reference**", "The order or contract number in Wings ERP."],
+                  ["**Billable (time is charged)**", "Marks covered tickets as billable."],
+                  ["**Auto-renew**", "Shows that the contract renews by itself."],
+                  ["**On-site visits covered**", "Shows that visits to the customer's site are included."],
+                  ["**Covered channels**", "**Email**, **Phone**, **Portal**, **WhatsApp** or **Chat**. Empty means all channels."],
+                  ["**Covered products**", "Creates a support entitlement for each product. Empty means customer-wide cover."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "contract-page",
+          "title": "The contract page",
+          "type": "concept",
+          "intro": "Select a contract to see its terms, how much of it the customer has used and its entitlements.",
+          "blocks": [
+            {
+              "image": "shots/09-contract-tour.png",
+              "caption": "The page of an AMC contract that came from Wings ERP.",
+              "alt": "Contract page with the header, badges, four key figures, the terms card, the consumption chart, and the entitlements table, each numbered"
+            },
+            {
+              "callouts": [
+                "The contract number, name and customer, with **Edit** and the remove button.",
+                "Badges for the status, type, days left, **Auto-renews**, **Billable** and **From ERP**.",
+                "Key figures: contract value, hours consumed, billable hours and tickets covered.",
+                "**Terms**: period, renewal, SLA policy, support hours, hourly rate, coverage, ERP reference and account manager.",
+                "**Consumption by month**: hours logged on covered tickets, billable and not billable.",
+                "**Entitlements** with the **Add entitlement** button.",
+                "Each entitlement with what it covers, its dates and how much is used."
+              ]
+            },
+            {
+              "p": "Lower on the page, **Time by agent** and **Time entries** list the time logged against the contract. The billable amount shows only to people who can see costs."
+            }
+          ]
+        },
+        {
+          "id": "edit-or-remove-a-contract",
+          "title": "Edit or remove a contract",
+          "type": "task",
+          "intro": "Change a contract's terms, or remove a contract that was added by mistake.",
+          "prerequisites": ["You can manage contracts."],
+          "steps": [
+            "Open the contract.",
+            "To change it, select **Edit**, change the fields, and select **Save changes**.",
+            "To remove it, select the remove button next to **Edit**.",
+            "Read the message, then select **Remove**."
+          ],
+          "result": "After an edit, a message says **Contract saved**, and the customer's open tickets are checked again. After a removal, a message says **Contract removed**.",
+          "blocks": [
+            { "note": "A contract that tickets or time entries refer to is cancelled, not deleted, so its history stays." }
+          ]
+        },
+        {
+          "id": "add-an-entitlement",
+          "title": "Add an entitlement",
+          "type": "task",
+          "intro": "Limit a contract to a product, installation or asset, or give it an allowance of incidents or hours.",
+          "prerequisites": ["You can manage contracts."],
+          "steps": [
+            "Open the contract.",
+            "Under **Entitlements**, select **Add entitlement**.",
+            {
+              "text": "Enter the **Name** and choose the **Type**.",
+              "image": "shots/09-entitlement-form.png",
+              "caption": "The **New entitlement** form for an AMC contract.",
+              "alt": "New entitlement form with name, type, product, installation, asset, incidents allowed, hours allowed, from and until dates and an Active check box",
+              "width": 420
+            },
+            "Choose the **Product**, **Installation** or **Asset** it covers. Leave them on **Any** to cover everything.",
+            {
+              "text": "Enter **Incidents allowed** or **Hours allowed**.",
+              "note": "Leave them empty for unlimited support. For the **Incidents** or **Hours** type, the matching field is required."
+            },
+            "Set **From** and **Until**, if they differ from the contract's dates.",
+            "Select **Save**."
+          ],
+          "result": "The entitlement appears in the table. A bar shows how much of the allowance is used. It turns red when the allowance runs out.",
+          "blocks": [
+            { "note": "To remove an entitlement, select its bin button and then **Remove**. An entitlement that tickets have used is made inactive instead." }
+          ]
+        },
+        {
+          "id": "renewals",
+          "title": "Renewals",
+          "type": "concept",
+          "intro": [
+            "The **Renewals** tab lists contracts that end soon or ended in the last 60 days. Account managers use it to plan renewals.",
+            "Each customer's account manager gets a reminder 30 days and 7 days before a contract ends."
+          ],
+          "blocks": [
+            {
+              "image": "shots/09-renewals.png",
+              "caption": "The **Renewals** tab with a 12-month horizon.",
+              "alt": "Renewals page with a horizon list, four key figures and a table of contracts with urgency, customer, type, end date, value, account manager and open tickets",
+              "width": 560
+            },
+            {
+              "table": {
+                "columns": ["Urgency", "Meaning"],
+                "widths": [25, 75],
+                "rows": [
+                  ["**Expired**", "Ended in the last 60 days."],
+                  ["**Critical**", "Ends in 7 days or fewer."],
+                  ["**Soon**", "Ends in 30 days or fewer."],
+                  ["**Upcoming**", "Ends later, within the horizon you chose."]
+                ]
+              }
+            },
+            {
+              "list": [
+                "Choose the **Horizon**: **30 days**, **90 days**, **6 months** or **12 months**.",
+                "**Value up for renewal** adds up the value of the listed contracts.",
+                "An **Auto-renew** badge marks contracts that renew by themselves.",
+                "The **Open tickets** column helps you see unhappy customers before you talk about renewal."
+              ]
+            },
+            {
+              "note": "SupportDesk has no renew button. To record the new term, add a new contract for the next period."
+            }
+          ]
+        },
+        {
+          "id": "support-eligibility",
+          "title": "Support eligibility",
+          "type": "concept",
+          "intro": [
+            "SupportDesk checks every ticket against the customer's active contracts. It checks when a ticket is created. It checks again when the ticket's customer, product, installation or asset changes.",
+            "The result shows as a badge in the ticket header, in the ticket's details and in the side panel. The check never blocks work. The covering contract's SLA policy and support hours do apply to the ticket."
+          ],
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Result", "Meaning"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**Entitled**", "An active contract covers the ticket. The note names the contract and what is left of the allowance."],
+                  ["**Not entitled**", "No contract covers the ticket, or the allowance is used up."],
+                  ["**Expired**", "The customer has only contracts that have ended."],
+                  ["**Entitlement unknown**", "The ticket has no customer."],
+                  ["**Overridden**", "Someone overrode the result with a reason."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "check-eligibility",
+          "title": "Check support eligibility before you create a ticket",
+          "type": "task",
+          "intro": "Find out what support a customer would get, for example while they are on the phone.",
+          "prerequisites": ["You can view contracts."],
+          "steps": [
+            "Open the customer's Customer 360 page.",
+            "Select the **Contracts** tab.",
+            "In **Check support eligibility**, choose the installation, or **No specific product (ticket without product)**.",
+            {
+              "text": "Select **Check**.",
+              "image": "shots/09-eligibility-check.png",
+              "caption": "The eligibility check for a customer whose AMC has expired.",
+              "alt": "Contracts tab of a customer with the eligibility check showing Expired, two expired AMC contracts and their entitlements",
+              "width": 600
+            }
+          ],
+          "result": "A badge shows the result, such as **Entitled** or **Expired**, with a note. It also shows the SLA policy that would apply and a **Billable** badge if time is charged."
+        },
+        {
+          "id": "override-eligibility",
+          "title": "Override support eligibility",
+          "type": "task",
+          "intro": "Let your team work on a ticket that no contract covers. For example, do this while a renewal is in progress.",
+          "prerequisites": [
+            "You have permission to override eligibility. Agents who can edit tickets can also override while the workspace allows it. It allows it by default."
+          ],
+          "steps": [
+            "Open the ticket.",
+            "In the ticket header, select **More actions**.",
+            "Select **Override entitlement…**. The **Override entitlement** dialog opens.",
+            "In **Bill against contract**, choose a contract if the work should count against one.",
+            {
+              "text": "Enter the **Reason**.",
+              "image": "shots/09-override-dialog.png",
+              "caption": "The **Override entitlement** dialog with a reason filled in.",
+              "alt": "Override entitlement dialog with a Bill against contract list, a Reason box and the Override button",
+              "width": 380
+            },
+            "Select **Override**."
+          ],
+          "result": "A message says **Entitlement overridden**. The ticket's badge changes to **Overridden**. The override and its reason go into the audit log.",
+          "blocks": [
+            { "note": "The reason is required. An override stays in place even if the ticket's customer or product changes later." }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    {
+      "problem": "You cannot see **New product**, **Edit** or the delete buttons in the catalog.",
+      "cause": "By default, only administrators can manage products.",
+      "fix": "Ask an administrator to make the change."
+    },
+    {
+      "problem": "Deleting a product, version, installation or asset did not remove it.",
+      "cause": "Tickets, installations or contracts refer to it. SupportDesk retires it, marks it **End of life** or **Decommissioned**, and keeps it for history.",
+      "fix": "No action is needed. It can no longer be chosen for new records."
+    },
+    {
+      "problem": "A message says a family still has products.",
+      "cause": "You tried to delete a family that has products.",
+      "fix": "Edit each product and choose another family. Then delete the family."
+    },
+    {
+      "problem": "The bin button of a release is greyed out.",
+      "cause": "Installations run this release.",
+      "fix": "Move those installations to another release first, or keep the release."
+    },
+    {
+      "problem": "A ticket shows **Not entitled** although the customer has an active contract.",
+      "cause": "The contract's entitlements do not cover the ticket's product, installation or asset, or the allowance is used up.",
+      "fix": "Check the contract's entitlements. If the work should go ahead, override the eligibility with a reason."
+    },
+    {
+      "problem": "**Override entitlement…** is greyed out in the **More actions** menu.",
+      "cause": "You do not have permission to override eligibility.",
+      "fix": "Ask a supervisor to override it."
+    },
+    {
+      "problem": "The **Override entitlement** dialog says **A reason is required for the audit trail.**",
+      "cause": "The **Reason** box is empty.",
+      "fix": "Enter why you are overriding, then select **Override**."
+    },
+    {
+      "problem": "A message says **Eligibility check failed**.",
+      "cause": "SupportDesk could not check the contracts at that moment.",
+      "fix": "Select **Check** again. If it keeps failing, tell your administrator."
+    }
+  ],
+  "faq": [
+    {
+      "q": "Does an expired contract stop agents from working on a ticket?",
+      "a": "No. The eligibility check never blocks work. It shows the result so that your team can decide, for example to override it or to bill the time."
+    },
+    {
+      "q": "How do I renew a contract?",
+      "a": "SupportDesk has no renew button. Add a new contract for the next period. The account manager gets reminders 30 and 7 days before the old one ends."
+    },
+    {
+      "q": "Why can I not see the full licence key?",
+      "a": "SupportDesk masks licence keys when they are saved, so nobody can copy them from the desk. Keep the full key in your licensing system."
+    },
+    {
+      "q": "What happens to tickets when I add a contract?",
+      "a": "SupportDesk checks the customer's open tickets again. Tickets that the new contract covers become **Entitled**."
+    }
+  ],
+  "glossary": [
+    { "term": "Product", "definition": "Software or hardware that you support. It has modules, versions and releases." },
+    { "term": "Module", "definition": "A part of a product, such as Finance or Payroll. Agents choose it on a ticket." },
+    { "term": "Release", "definition": "A build of a product version, such as a patch or a hotfix." },
+    { "term": "End of support", "definition": "The date after which you no longer support a product version." },
+    { "term": "Installation", "definition": "One place where a customer runs one of your products, with its version, environment and setup." },
+    { "term": "Asset", "definition": "A serialised item at a customer site, such as a POS terminal, with its warranty." },
+    { "term": "Install base", "definition": "All the installations of your products, counted by version." },
+    { "term": "Contract", "definition": "What a customer bought: a warranty, an AMC or another kind of support for a period." },
+    { "term": "AMC", "definition": "Annual maintenance contract: a yearly support contract." },
+    { "term": "Entitlement", "definition": "A part of a contract that limits cover to a product, installation or asset, or sets an allowance of incidents or hours." },
+    { "term": "Support eligibility", "definition": "Whether a ticket is covered by an active contract: Entitled, Not entitled, Expired, Entitlement unknown or Overridden." },
+    { "term": "Override", "definition": "A recorded decision to work on a ticket that a contract does not cover. It needs a reason." }
+  ]
+}

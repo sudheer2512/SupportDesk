@@ -1,0 +1,48 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [],
+  "shots": [
+    {
+      "id": "28-signup",
+      "file": "28-signup.png",
+      "steps": [
+        {
+          "goto": "/signup"
+        },
+        {
+          "waitForText": "Start your free trial"
+        },
+        {
+          "fill": "input[name=company]",
+          "value": "Northwind Traders"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "fill": "input[name=adminName]",
+          "value": "Anita Rao"
+        },
+        {
+          "fill": "input[name=adminEmail]",
+          "value": "anita@northwind.example"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": "main.card"
+    }
+  ]
+}

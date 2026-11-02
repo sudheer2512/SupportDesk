@@ -1,0 +1,264 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "admin@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Two-step verification"
+    },
+    {
+      "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "20-rules-list",
+      "file": "20-rules-list.png",
+      "url": "/automation/rules",
+      "waitFor": "li.rule a.name",
+      "highlight": [
+        "nav.sections",
+        ".toolbar input.search",
+        ".toolbar select.trigger",
+        ".toolbar a[href$='/automation/rules/new']",
+        "li.rule .main",
+        "li.rule .stats",
+        "li.rule sd-toggle",
+        "li.rule .move"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "20-rule-designer",
+      "file": "20-rule-designer.png",
+      "steps": [
+        {
+          "click": "li.rule a.name"
+        },
+        {
+          "waitFor": "text=Save draft"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; window.scrollTo(0, 0); if (document.getElementById('um-flow2')) return; const s = document.createElement('style'); s.id = 'um-flow2'; s.textContent = 'html,body{overflow:clip!important} #desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "highlight": [
+        ".bar:has(sd-toggle)",
+        ".main > sd-card:nth-of-type(1)",
+        ".main > sd-card:nth-of-type(2)",
+        "aside.side"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "20-rule-conditions",
+      "file": "20-rule-conditions.png",
+      "waitFor": "text=Save draft",
+      "clip": ".main > sd-card:nth-of-type(3)",
+      "steps": [
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ]
+    },
+    {
+      "id": "20-rule-actions",
+      "file": "20-rule-actions.png",
+      "waitFor": "text=Save draft",
+      "clip": ".main > sd-card:nth-of-type(4)",
+      "steps": [
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ]
+    },
+    {
+      "id": "20-rule-simulate",
+      "file": "20-rule-simulate.png",
+      "waitFor": "text=Run simulation",
+      "steps": [
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": "aside.side"
+    },
+    {
+      "id": "20-rule-versions",
+      "file": "20-rule-versions.png",
+      "steps": [
+        {
+          "click": "aside.side [role=tab][id$='-tab-versions']"
+        },
+        {
+          "waitFor": "text=Diff"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": "aside.side"
+    },
+    {
+      "id": "20-new-rule-scheduled",
+      "file": "20-new-rule-scheduled.png",
+      "url": "/automation/rules/new",
+      "steps": [
+        {
+          "waitFor": "button.trigger"
+        },
+        {
+          "click": "button.trigger:nth-of-type(11)"
+        },
+        {
+          "waitFor": "text=Run every (minutes)"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": ".main > sd-card:nth-of-type(2)"
+    },
+    {
+      "id": "20-executions",
+      "file": "20-executions.png",
+      "url": "/automation/executions",
+      "waitFor": "text=Details",
+      "highlight": [
+        "form.filters select[name=rule]",
+        "form.filters select[name=status]",
+        "form.filters select[name=trigger]",
+        "form.filters input[name=ticket]",
+        "form.filters button[type=submit]",
+        "table.table tbody tr:first-child sd-badge",
+        "table.table tbody tr:first-child td:last-child button"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "20-execution-details",
+      "file": "20-execution-details.png",
+      "steps": [
+        {
+          "select": "form.filters select[name=status]",
+          "option": "Succeeded"
+        },
+        {
+          "click": "form.filters button[type=submit]"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "click": "table.table tbody tr:first-child td:last-child button"
+        },
+        {
+          "waitFor": "text=Execution details"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": ".drawer[role=dialog]"
+    },
+    {
+      "id": "20-blueprints-list",
+      "file": "20-blueprints-list.png",
+      "url": "/automation/blueprints",
+      "waitFor": "li.card a.name",
+      "highlight": [
+        ".toolbar form.open-ticket",
+        ".toolbar a[href$='/automation/blueprints/new']",
+        "li.card .head",
+        "li.card .meta",
+        "li.card .foot"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "20-blueprint-designer",
+      "file": "20-blueprint-designer.png",
+      "steps": [
+        {
+          "click": "li.card a.name"
+        },
+        {
+          "waitFor": "text=Add state"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; window.scrollTo(0, 0); if (document.getElementById('um-flow2')) return; const s = document.createElement('style'); s.id = 'um-flow2'; s.textContent = 'html,body{overflow:clip!important} #desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "highlight": [
+        ".bar:has(sd-toggle)",
+        "sd-card.settings",
+        ".tools",
+        "desk-blueprint-canvas",
+        "aside.side"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "20-blueprint-state",
+      "file": "20-blueprint-state.png",
+      "steps": [
+        {
+          "click": "desk-blueprint-canvas .node"
+        },
+        {
+          "waitFor": "text=Initial state (new tickets start here)"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": "aside.side"
+    },
+    {
+      "id": "20-blueprint-transition",
+      "file": "20-blueprint-transition.png",
+      "steps": [
+        {
+          "click": "desk-blueprint-canvas .edge-label"
+        },
+        {
+          "waitFor": "text=Delete transition"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": "aside.side"
+    }
+  ]
+}

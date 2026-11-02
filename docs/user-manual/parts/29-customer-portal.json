@@ -1,0 +1,739 @@
+{
+  "chapters": [
+    {
+      "id": "customer-portal",
+      "title": "Customer portal",
+      "intro": [
+        "This chapter is for customers who use the support portal. Agents who help customers can read it to see what customers see.",
+        "In the portal you raise tickets and follow them up. You also read help articles, ask the community, use step-by-step guides and chat with support.",
+        "Your support team decides which parts of the portal you see. If this chapter names a page you cannot find, your support team has switched it off."
+      ],
+      "sections": [
+        {
+          "id": "portal-at-a-glance",
+          "title": "The portal at a glance",
+          "type": "concept",
+          "intro": [
+            "Your support team gives you the portal address. It ends with your portal name, for example `/portal/wings/`.",
+            "Each portal has its own name, colours and welcome text. You can read articles and the community without signing in. Sign in to raise tickets and follow them up."
+          ],
+          "blocks": [
+            { "image": "shots/29-home-public.png", "caption": "The portal home page before you sign in.", "alt": "Wings Help Center home page with the menu, the search box, Submit a ticket, Sign in and Ask highlighted and numbered" },
+            { "callouts": [
+              "The menu opens **Home**, **Knowledge Base**, **Community**, **Help** and **My tickets**.",
+              "The search box finds help articles and community topics.",
+              "**Submit a ticket** opens the ticket form.",
+              "**Sign in** opens the sign-in page. After you sign in, your name appears here instead.",
+              "**Ask** opens the assistant, which answers questions from the help articles."
+            ] },
+            { "tip": "The moon icon next to **Sign in** switches the portal between light and dark colours." },
+            { "note": "On a phone, the menu is behind the menu icon at the top right." }
+          ]
+        },
+        {
+          "id": "portal-find",
+          "title": "Open your portal",
+          "type": "task",
+          "intro": "Use this task if you know the portal name but not the full address.",
+          "steps": [
+            "Open the support portal address without a portal name, such as `/portal/`.",
+            { "text": "In **Portal name**, enter the name your support team gave you, such as `wings`.", "note": "Use letters, numbers and dashes only." },
+            "Select **Continue**."
+          ],
+          "result": "Your portal home page opens. Bookmark it for next time."
+        },
+        {
+          "id": "portal-sign-in-password",
+          "title": "Sign in with your password",
+          "type": "task",
+          "intro": "Sign in to see your tickets, raise new ones and join the community.",
+          "prerequisites": ["Your support team has given you portal access."],
+          "steps": [
+            "Select **Sign in** at the top right.",
+            {
+              "text": "On the **Password** tab, enter your **E-mail** and **Password**.",
+              "image": "shots/29-sign-in.png",
+              "caption": "The sign-in page with the **Password** tab open.",
+              "alt": "Sign in to Wings Help Center card with the Password and E-mail code tabs, the e-mail field and the Sign in button",
+              "width": 340
+            },
+            "Select **Sign in**."
+          ],
+          "result": "The home page opens and greets you by your first name.",
+          "blocks": [
+            { "note": "After five wrong passwords, your account locks for 15 minutes. You can still sign in with an e-mail code during that time." }
+          ]
+        },
+        {
+          "id": "portal-sign-in-code",
+          "title": "Sign in with an e-mail code",
+          "type": "task",
+          "intro": "You do not need a password. The portal e-mails you a one-time code instead. Use this method if you forgot your password.",
+          "steps": [
+            "Select **Sign in** at the top right.",
+            {
+              "text": "Select the **E-mail code** tab.",
+              "image": "shots/29-sign-in-code.png",
+              "caption": "The **E-mail code** tab, ready to send a code.",
+              "alt": "Sign-in card with the E-mail code tab selected, an e-mail field and the Send code button",
+              "width": 340,
+              "tip": "On the **Password** tab, **Forgot your password? Sign in with an e-mail code** opens the same tab."
+            },
+            "Enter your **E-mail**, and then select **Send code**.",
+            { "text": "Open the e-mail, and enter the 6-digit code in **Code**.", "note": "The code works for 10 minutes. If it does not arrive, select **Send a new code**." },
+            "Select **Sign in**."
+          ],
+          "result": "The home page opens and greets you by your first name.",
+          "blocks": [
+            { "p": "To use another address, select **Use a different e-mail**. Some portals use your organisation's account. Their sign-in page shows a note, and you always sign in with an e-mail code." }
+          ]
+        },
+        {
+          "id": "portal-register",
+          "title": "Create an account",
+          "type": "task",
+          "intro": "Some portals let you create your own account. If yours does not, ask your support team for access.",
+          "steps": [
+            "Select **Sign in**.",
+            "Under **New here?**, select **Create an account**.",
+            {
+              "text": "Fill in the form.",
+              "substeps": [
+                "Enter your **Full name** and **Work e-mail**.",
+                "Optionally, enter your **Company** and **Phone**.",
+                "Enter a **Password** of at least 8 characters. The eye icon shows what you typed."
+              ],
+              "image": "shots/29-register.png",
+              "caption": "The **Create your account** form with sample details.",
+              "alt": "Create your account form with Full name, Work e-mail, Company, Phone and Password fields and the Create account button",
+              "width": 400
+            },
+            "Select **Create account**."
+          ],
+          "result": "You are signed in, and a welcome message appears. If your e-mail domain belongs to a customer of your support team, your account joins that company.",
+          "blocks": [
+            { "note": "If an account already exists for your e-mail, the form says so. Select **Sign in with an e-mail code** to get in." }
+          ]
+        },
+        {
+          "id": "portal-signed-in-home",
+          "title": "Your home page after you sign in",
+          "type": "concept",
+          "intro": "After you sign in, the home page adds a summary of your tickets. Your name at the top right opens the account menu.",
+          "blocks": [
+            { "image": "shots/29-home-signed-in.png", "caption": "The home page for a signed-in customer.", "alt": "Home page greeting Ramesh, with the Your tickets panel and the account menu button highlighted and numbered" },
+            { "callouts": [
+              "**Your tickets** counts your **Open** tickets and the ones **Awaiting your reply** or **Awaiting your confirmation**. Select a count to open the matching list.",
+              "Your name opens the account menu: **My tickets**, **Account**, **Contracts & products** and **Sign out**."
+            ] },
+            { "p": "Below the summary, the home page shows announcements, help topics, popular and recent articles, step-by-step guides and recent community topics." }
+          ]
+        },
+        {
+          "id": "portal-ticket-scopes",
+          "title": "Ticket scopes",
+          "type": "reference",
+          "intro": [
+            "Your support team decides how many tickets you can see. This is your ticket scope. To change it, ask your support team.",
+            "Your scope also appears on the **Account** page as **Ticket access**."
+          ],
+          "blocks": [
+            { "table": {
+              "columns": ["Scope", "Ticket access shows", "You see"],
+              "widths": [18, 30, 52],
+              "rows": [
+                ["Own", "**Your own tickets**", "Only the tickets you raised."],
+                ["Location", "**Your location**", "Your tickets and the tickets of colleagues at your branch or site."],
+                ["Organisation", "**Your whole organisation**", "All tickets of your company."]
+              ]
+            } },
+            { "p": "If you can see more than your own tickets, a switcher appears above the list. It offers **Mine**, **My location** and **My organisation**. Location and organisation users also see contracts, licences, installations and planned maintenance on the **Account** page." }
+          ]
+        },
+        {
+          "id": "portal-my-tickets",
+          "title": "Find a ticket",
+          "type": "task",
+          "intro": "**My tickets** lists your tickets. Tickets that need you are marked, so you can act on them first.",
+          "steps": [
+            "Select **My tickets** in the menu.",
+            "If you see the scope switcher, choose **Mine**, **My location** or **My organisation**.",
+            "Choose a status filter: **Open**, **Awaiting you**, **Closed** or **All**.",
+            { "text": "To find one ticket, enter its number or part of the subject in **Search by number or subject**.", "tip": "Select **Load more** at the end of the list to see older tickets." },
+            "Select the ticket subject to open it."
+          ],
+          "result": "The ticket page opens.",
+          "blocks": [
+            { "image": "shots/29-my-tickets.png", "caption": "**My tickets** showing the whole organisation's open tickets.", "alt": "Organisation tickets list with the scope switcher, status filters, search box, column headings and Submit a ticket button highlighted and numbered" },
+            { "callouts": [
+              "The scope switcher. It appears only if you may see more than your own tickets.",
+              "Status filters. **Awaiting you** lists tickets where support replied or asked you to confirm.",
+              "Search by ticket number or subject.",
+              "The list shows the status, who raised the ticket, the priority, the last update and the creation date.",
+              "**Submit a ticket** opens a new ticket form."
+            ] },
+            { "p": "Two badges point out tickets that need you. **Awaiting your reply** means support asked you something. A second badge asks you to confirm the resolution. It means support thinks the problem is solved." },
+            { "note": "The list updates while you have it open. When something changes, **Some of your tickets have been updated** appears. Select **Refresh list** to see the changes." }
+          ]
+        },
+        {
+          "id": "portal-ticket-page",
+          "title": "The ticket page",
+          "type": "concept",
+          "intro": "The ticket page shows your request, the conversation with support and the ticket details. It updates by itself while it is open.",
+          "blocks": [
+            { "image": "shots/29-ticket-detail.png", "caption": "A ticket that is waiting for the customer's reply.", "alt": "Ticket 1200 page with the header, Original request, Conversation, Add a reply and Details card highlighted and numbered" },
+            { "callouts": [
+              "The ticket number, status and priority. **Live** means the page updates by itself.",
+              "**Original request** shows what was first written, with any attachments.",
+              "**Conversation** shows every public message. Replies from the team carry a **Support** badge. New messages carry a **New** badge.",
+              "**Add a reply** sends a message to the support team.",
+              "**Details** shows who raised the ticket, the organisation, location, department, product, channel and dates. **Additional information** shows any extra fields."
+            ] },
+            { "note": "You never see the team's internal notes. You see only the messages written for you." }
+          ]
+        },
+        {
+          "id": "portal-submit-ticket",
+          "title": "Submit a ticket",
+          "type": "task",
+          "intro": "Raise a ticket when you need help from the support team. While you type, the portal suggests articles that may already answer your question.",
+          "prerequisites": ["You are signed in. To submit without an account, see [Submit a ticket without an account](#portal-anonymous)."],
+          "steps": [
+            "Select **Submit a ticket**.",
+            { "text": "Enter a **Subject** of at least 5 characters.", "note": "Articles that match appear under **These articles might help**." },
+            "Describe the problem in **Description**. Say what happened, what you expected and any error message.",
+            {
+              "text": "Optionally, select a suggested article to read it in a side panel.",
+              "image": "shots/29-deflection-drawer.png",
+              "caption": "A suggested article open in the side panel.",
+              "alt": "Side panel showing the article Fix GST rounding differences with This solved my problem, Back to my request and New tab buttons",
+              "substeps": [
+                "If it solves the problem, select **This solved my problem**. No ticket is created.",
+                "If not, select **Back to my request**."
+              ]
+            },
+            {
+              "text": "Under **About your request**, choose the **Department**, **Category**, **Product**, **Installation / site** and **Priority**.",
+              "note": "Leave **Priority** as **Normal (let support decide)** if you are unsure. Choosing an installation fills in its product."
+            },
+            "Fill in any fields under **Additional information**. Your support team decides which fields appear.",
+            { "text": "To attach files, drag them onto **Attachments** or select **choose files**.", "note": "The box shows the size limit for each file." },
+            {
+              "text": "Select **Submit ticket**.",
+              "image": "shots/29-submit-form.png",
+              "caption": "The ticket form filled in, with suggested articles.",
+              "alt": "Submit a ticket form with Subject, Description, suggested articles, About your request, Additional information, Attachments and the Submit ticket button",
+              "width": 460
+            }
+          ],
+          "result": "A page says **Ticket … submitted**. Select **View your ticket** to open it, or **Submit another**. Replies also reach you by e-mail.",
+          "blocks": [
+            { "tip": "An article page has a **Submit a ticket** button under **Still need help?**. It notes the article you read in the description." }
+          ]
+        },
+        {
+          "id": "portal-reply",
+          "title": "Reply to a ticket",
+          "type": "task",
+          "intro": "Answer a question from support, or add new information to your ticket.",
+          "steps": [
+            "Open the ticket from **My tickets**.",
+            "Write your message in **Add a reply**. Use the toolbar for bold text, lists and links.",
+            "To attach files, drag them onto the box below the editor, or select **choose files**.",
+            {
+              "text": "Select **Send reply**, or press [[Ctrl+Enter]].",
+              "image": "shots/29-reply.png",
+              "caption": "A reply ready to send.",
+              "alt": "Add a reply box with sample text, the formatting toolbar, the attachment box and the Send reply button",
+              "width": 460
+            }
+          ],
+          "result": "Your message appears in the conversation, and **Reply sent** confirms it.",
+          "blocks": [
+            { "note": "A reply to a resolved ticket reopens it. A reply to a closed ticket reopens it too, but only until the reopen date. After that, the page says the ticket is closed. Submit a new ticket instead." }
+          ]
+        },
+        {
+          "id": "portal-confirm",
+          "title": "Confirm a resolution",
+          "type": "task",
+          "intro": "When support thinks your problem is solved, they may ask you to confirm. The ticket then shows **Is your issue resolved?**, and the list asks you to confirm the resolution.",
+          "steps": [
+            "Open the ticket.",
+            {
+              "text": "Under **Is your issue resolved?**, choose an answer.",
+              "substeps": [
+                "If the problem is solved, select **Yes, it's resolved**.",
+                "If it is not, select **No, I still need help**."
+              ]
+            },
+            "If you selected **No, I still need help**, describe what is still wrong in **What is still not working?**.",
+            "Select **Send and keep it open**."
+          ],
+          "result": "**Yes, it's resolved** closes the ticket. **Send and keep it open** keeps the ticket open, and the team gets your comment."
+        },
+        {
+          "id": "portal-reopen",
+          "title": "Reopen a ticket",
+          "type": "task",
+          "intro": "If a problem comes back after the ticket is resolved or closed, reopen the ticket. You can do this until the date shown on the ticket.",
+          "steps": [
+            {
+              "text": "Open the resolved or closed ticket.",
+              "image": "shots/29-closed-ticket.png",
+              "caption": "A closed ticket that you can still reopen and rate.",
+              "alt": "Closed ticket 1202 with the reopen banner and the How did we do? rating card highlighted and numbered"
+            },
+            "In the banner, select **Reopen ticket**.",
+            {
+              "text": "In **Why are you reopening it?**, say what is wrong.",
+              "image": "shots/29-reopen-form.png",
+              "caption": "The reason for reopening, ready to send.",
+              "alt": "This ticket is closed banner with the reason box filled in and the Reopen ticket and Cancel buttons",
+              "width": 460
+            },
+            "Select **Reopen ticket**."
+          ],
+          "result": "**Ticket reopened** appears, and the team picks the ticket up again.",
+          "blocks": [
+            { "callouts": [
+              "The reopen banner shows the last date you can reopen the ticket.",
+              "**How did we do?** lets you rate the support you received."
+            ] },
+            { "note": "Your support team sets how long you can reopen tickets. They can also switch reopening off. If you see no **Reopen ticket** button, submit a new ticket." }
+          ]
+        },
+        {
+          "id": "portal-rate",
+          "title": "Rate the support you received",
+          "type": "task",
+          "intro": "Tell the team how they did on a resolved or closed ticket. You can rate each ticket once.",
+          "steps": [
+            "Open the resolved or closed ticket.",
+            "Under **How did we do?**, select from 1 to 5 stars. The label shows what each star means, from **Very poor** to **Excellent**.",
+            {
+              "text": "Optionally, enter a **Comment**.",
+              "image": "shots/29-rate.png",
+              "caption": "A four-star rating with a comment.",
+              "alt": "How did we do? card with four stars selected, the label Good, a comment and the Submit rating button",
+              "width": 260
+            },
+            "Select **Submit rating**."
+          ],
+          "result": "The card changes to **Your rating** and shows your stars and comment."
+        },
+        {
+          "id": "portal-survey",
+          "title": "Answer a satisfaction survey from an e-mail",
+          "type": "task",
+          "intro": "After a ticket is resolved, your support team may e-mail you a short survey. You do not need to sign in to answer it.",
+          "steps": [
+            "In the survey e-mail, select the link.",
+            "On the **How did we do?** page, select from 1 to 5 stars.",
+            "Optionally, write in **Anything you'd like to tell us?**.",
+            "Select **Send feedback**."
+          ],
+          "result": "**Thank you for your feedback** appears with your rating.",
+          "blocks": [
+            { "note": "The page shows the last date you can answer. After that date, it says the survey has closed." }
+          ]
+        },
+        {
+          "id": "portal-anonymous",
+          "title": "Submit a ticket without an account",
+          "type": "task",
+          "intro": "Some portals accept tickets from people who are not signed in. You get a ticket number, and replies come by e-mail.",
+          "prerequisites": ["Your support team allows tickets without an account. Otherwise, the form asks you to sign in."],
+          "steps": [
+            "Select **Submit a ticket** without signing in.",
+            "Enter **Your name** and **E-mail**. Optionally, enter your **Phone**.",
+            "Optionally, choose a **Department**, **Category** and **Product**. Leave **Not sure** if you do not know.",
+            "Enter a **Subject** of at least 5 characters.",
+            "Describe the problem in **Description**, in at least 10 characters.",
+            "Check the suggested articles under **These articles might help**.",
+            {
+              "text": "Select **Submit ticket**.",
+              "image": "shots/29-submit-anonymous.png",
+              "caption": "The ticket form for visitors who are not signed in.",
+              "alt": "Submit a ticket form for visitors with Your name, E-mail, Phone, Department, Category, Product, Subject and Description, and suggested articles",
+              "width": 460
+            }
+          ],
+          "result": "A page says **Request … received**. The team replies to the e-mail address you entered.",
+          "blocks": [
+            { "note": "You cannot attach files without an account. Sign in to attach files and follow your tickets online." }
+          ]
+        },
+        {
+          "id": "portal-search",
+          "title": "Search the help center",
+          "type": "task",
+          "intro": "Search finds help articles and community topics in one go.",
+          "steps": [
+            { "text": "Type a few words in the search box on the home page or the **Knowledge Base** page.", "note": "After three characters, matching articles appear below the box. Select one to open it." },
+            "Press [[Enter]], or select **Search**.",
+            "On the results page, select an article or a topic."
+          ],
+          "result": "The results page lists **Articles** and **Community** topics that match your words.",
+          "blocks": [
+            { "image": "shots/29-search.png", "caption": "Search results for the word password.", "alt": "Search results page with matching articles and community topics, and the Didn't find what you need? bar" },
+            { "p": "Under **Didn't find what you need?**, select **Submit a ticket** or **Ask the community**." }
+          ]
+        },
+        {
+          "id": "portal-kb",
+          "title": "Read a help article",
+          "type": "task",
+          "intro": "The **Knowledge Base** holds answers, how-to guides and FAQs from the support team.",
+          "steps": [
+            {
+              "text": "Select **Knowledge Base** in the menu.",
+              "image": "shots/29-kb-home.png",
+              "caption": "The **Knowledge Base** page.",
+              "alt": "Knowledge Base page with the search box, the first topic card and the Popular articles panel highlighted and numbered"
+            },
+            "Select a topic or a section to see its articles. You can also pick one from **Popular articles** or **Recently updated**.",
+            "Select an article to open it.",
+            "If the article exists in other languages, choose one in the **Language** list."
+          ],
+          "result": "The article opens with related articles beside it.",
+          "blocks": [
+            { "callouts": [
+              "Search the articles.",
+              "A topic card. Its sections are listed below the description.",
+              "**Popular articles** and **Recently updated** list articles to start with."
+            ] },
+            { "image": "shots/29-kb-article.png", "caption": "A help article.", "alt": "Article How to reset your Wings ERP password with the details line, the feedback box and Still need help? highlighted and numbered" },
+            { "callouts": [
+              "The article type, product, last update, number of views and how many readers found it helpful.",
+              "**Was this article helpful?** asks for your feedback.",
+              "**Still need help?** opens a ticket form or the community."
+            ] },
+            { "p": "Select a tag under the article to find other articles with that tag. If a translation is missing or out of date, a note at the top says so." },
+            { "note": "Some articles are only for signed-in customers. If an article is not found, sign in and try again." }
+          ]
+        },
+        {
+          "id": "portal-article-feedback",
+          "title": "Tell us whether an article helped",
+          "type": "task",
+          "intro": "Your answer helps the team improve its articles.",
+          "steps": [
+            "At the end of the article, under **Was this article helpful?**, select **Yes** or **No**.",
+            {
+              "text": "Optionally, select stars under **Rate this article (optional)**, and add a comment.",
+              "image": "shots/29-kb-feedback.png",
+              "caption": "The feedback box after **Yes**, with five stars.",
+              "alt": "Glad it helped! Anything to add? box with five stars, a comment field and the Send feedback and Skip buttons",
+              "width": 460
+            },
+            "Select **Send feedback**, or select **Skip** to send only your answer."
+          ],
+          "result": "**Thanks for your feedback!** appears. After **No**, a link lets you submit a ticket.",
+          "blocks": [
+            { "warning": "Do not include personal information in your comment." }
+          ]
+        },
+        {
+          "id": "portal-community",
+          "title": "The community",
+          "type": "concept",
+          "intro": [
+            "The community is a forum where customers and the support team share questions, ideas and tips.",
+            "Anyone can read it. Sign in to post, reply and vote."
+          ],
+          "blocks": [
+            { "image": "shots/29-community.png", "caption": "The **Community** page.", "alt": "Community page with Start a topic, the search and sort bar, status filters, the first topic and the Join the conversation card highlighted and numbered" },
+            { "callouts": [
+              "**Start a topic** asks a question or starts a discussion.",
+              "Search the topics. **Sort** orders them by **Recent activity**, **Newest**, **Most votes** or **Unanswered first**. **Tag** shows one tag only.",
+              "Filter by **All**, **Unanswered**, **Answered**, **Open** or **Closed**.",
+              "Each topic shows its votes, replies, type, tags, author and last activity. A green tick on the replies means the question has an accepted answer.",
+              "**Sign in** appears when you are not signed in. **Before you post** gives tips, and **Tags** filters by a tag."
+            ] }
+          ]
+        },
+        {
+          "id": "portal-new-topic",
+          "title": "Start a topic",
+          "type": "task",
+          "intro": "Ask other customers and the support team a question, or share an idea.",
+          "prerequisites": ["You are signed in."],
+          "steps": [
+            "Select **Community**, and then select **Start a topic**.",
+            "Under **What kind of topic is it?**, choose **Question** or **Discussion**.",
+            { "text": "Enter a **Title** of at least 5 characters.", "note": "Matching articles appear. If one answers you, select **This solved my problem** in the article panel. Your topic is not posted." },
+            "Write at least 10 characters in **Details**.",
+            { "text": "Optionally, add **Tags**. Press [[Enter]] after each tag.", "note": "A topic keeps up to five tags." },
+            {
+              "text": "Select **Post topic**.",
+              "image": "shots/29-new-topic.png",
+              "caption": "A new question with suggested articles.",
+              "alt": "Start a topic form with Question selected, a title, suggested articles, Details, Tags, Cancel and Post topic",
+              "width": 440
+            }
+          ],
+          "result": "**Topic posted** appears, and your topic opens. You hear when someone replies."
+        },
+        {
+          "id": "portal-topic",
+          "title": "Reply, vote and accept an answer",
+          "type": "task",
+          "intro": "Help others with your knowledge, and mark the reply that answered your question.",
+          "prerequisites": ["You are signed in. If not, **Sign in to reply** takes you to the sign-in page and back."],
+          "steps": [
+            "Open a topic from the **Community** page.",
+            "To vote for a topic or a reply, select its arrow.",
+            "To reply, write in **Your reply**, and then select **Post reply**.",
+            "If you asked the question, select **Accept as answer** under the reply that solved it."
+          ],
+          "result": "Your reply appears in the list. An accepted answer moves to the top, and **Accepted answer** links to it.",
+          "blocks": [
+            { "image": "shots/29-topic.png", "caption": "A question with an accepted answer from the support team.", "alt": "Community topic with the vote button, the Accepted answer summary, the Accept as answer button and the Your reply box highlighted and numbered" },
+            { "callouts": [
+              "Vote for the topic. Select the arrow again to remove your vote.",
+              "**Accepted answer** shows who answered and jumps to the answer.",
+              "**Accept as answer** appears on replies to your own question.",
+              "**Your reply** posts an answer or a comment."
+            ] },
+            { "list": [
+              "You cannot vote for your own topic or reply.",
+              "Replies from the support team carry a **Support team** badge.",
+              "A closed topic takes no new replies.",
+              "If the team turned a topic into a ticket, the topic shows the ticket number."
+            ] }
+          ]
+        },
+        {
+          "id": "portal-assistant",
+          "title": "Ask the assistant",
+          "type": "task",
+          "intro": "The assistant answers your questions from the help articles. It shows the articles it used as numbered sources.",
+          "steps": [
+            "Select **Ask** at the bottom right of any page.",
+            { "text": "Type your question in **Ask a question…**.", "image": "shots/29-assistant.png", "caption": "The assistant panel with a question typed.", "alt": "Ask Wings Help Center side panel with the assistant greeting, a typed question and the send button" },
+            "Press [[Enter]], or select the send button.",
+            "Read the answer. Select a source to open the article.",
+            "If the assistant suggests it, select **Create a ticket**. The portal copies your question into the ticket form."
+          ],
+          "result": "The answer appears in the panel, with its sources.",
+          "blocks": [
+            { "list": [
+              "Press [[Shift+Enter]] to start a new line without sending.",
+              "Select **Clear conversation** to start again.",
+              "The conversation is lost when you reload the page."
+            ] },
+            { "note": "Answers come from the help articles and may not be perfect. If something is important, check the article or ask the team." }
+          ]
+        },
+        {
+          "id": "portal-troubleshoot",
+          "title": "Use a troubleshooting guide",
+          "type": "task",
+          "intro": "A troubleshooting guide asks a few questions and walks you to a fix. If the guide cannot help, it hands your answers to the support team.",
+          "steps": [
+            {
+              "text": "Select **Help** in the menu. On the home page, you can also select **Troubleshoot a problem**.",
+              "image": "shots/29-help.png",
+              "caption": "The **Help & contact** page.",
+              "alt": "Help and contact page with Guided troubleshooting guides, Other ways to get help and Contact us with the support team and departments",
+              "width": 460
+            },
+            "Under **Guided troubleshooting**, select a guide.",
+            { "text": "Answer each question.", "image": "shots/29-flow.png", "caption": "The first question of a guide.", "alt": "Invoice GST total doesn't match guide at step 1 with Yes and No answers and the Back and Start over buttons", "width": 460 },
+            "When the guide suggests a fix, try it. Then answer **Did this solve your problem?** with **Yes, it's fixed** or **No**.",
+            "If the guide reaches **Let's get our team on it**, select **Create a ticket**."
+          ],
+          "result": "After **Yes, it's fixed**, the guide closes with a thank-you. After **Create a ticket**, the ticket form opens with the guide name and your answers filled in.",
+          "blocks": [
+            { "p": "Select **Back** to change your last answer. Select **Start over** to begin again." },
+            { "p": "The **Help & contact** page also lists other ways to get help. **Contact us** shows the support team's e-mail and phone and each department. After you sign in, it also shows your account manager." }
+          ]
+        },
+        {
+          "id": "portal-live-chat",
+          "title": "Chat with support on a website",
+          "type": "task",
+          "intro": "Your support team can add a chat button to its website. The assistant may answer first, and you can ask for a person at any time.",
+          "steps": [
+            "On the website, select the round chat button at the bottom right.",
+            {
+              "text": "Enter your **Name**, **E-mail** and **Message**.",
+              "image": "shots/29-widget.png",
+              "caption": "The chat window open on a website, before the chat starts.",
+              "alt": "Website page with the Chat with Wings Support window open, showing Name, E-mail and Message fields and the Start chat button",
+              "note": "Some websites need your e-mail before you can chat."
+            },
+            "Select **Start chat**.",
+            "Type your messages in **Type your message…**, and select **Send**.",
+            "To reach a person, select **Talk to a person**. The window shows **Connecting you to an agent…** until someone answers."
+          ],
+          "result": "The window shows the name of the agent you are chatting with.",
+          "blocks": [
+            { "list": [
+              "**Verify my e-mail** sends you a 6-digit code. Enter it to link the chat to your customer record.",
+              "**–** minimises the window. The chat goes on, and a number on the button counts new messages.",
+              "**✕** ends the chat after you confirm. You can then rate the chat from 1 to 5 stars, or select **Start a new chat**."
+            ] },
+            { "note": "When no agent is online, the window says so. Leave a message, and the team replies later." },
+            { "tip": "Administrators add the chat button to a website as described in [Set up the chat widget](#ch-chat-widget)." }
+          ]
+        },
+        {
+          "id": "portal-account",
+          "title": "Your account",
+          "type": "concept",
+          "intro": "The **Account** page holds your profile and preferences. For location and organisation users, it also shows your company's contracts and products.",
+          "blocks": [
+            { "image": "shots/29-account-profile.png", "caption": "The **Account** page with the **Profile** tab open.", "alt": "Account page for Ramesh Kumar with the header, the tabs, the profile form and the account summary highlighted and numbered" },
+            { "callouts": [
+              "Your name, e-mail, company, location and ticket access.",
+              "The tabs of the account page.",
+              "The **Profile** form.",
+              "Your organisation, location, ticket access and last sign-in."
+            ] },
+            { "table": {
+              "columns": ["Tab", "What it shows"],
+              "widths": [28, 72],
+              "rows": [
+                ["**Profile**", "Your name, phone numbers, job title, language and time zone."],
+                ["**Notifications**", "How and in which language the team contacts you, and which messages you agree to receive."],
+                ["**Password**", "Change your password."],
+                ["**Contracts**", "Your company's support contracts and what each one covers. Location and organisation users only."],
+                ["**Products & licences**", "Licensed products, seats, masked licence keys and expiry dates. Location and organisation users only."],
+                ["**Installations**", "Each installation with its product, version, environment, location and users. Location and organisation users only."],
+                ["**Maintenance**", "Planned and past maintenance, upgrades, training and visits. Location and organisation users only."],
+                ["**Support contacts**", "The support team's e-mail and phone, your account manager and the departments."]
+              ]
+            } }
+          ]
+        },
+        {
+          "id": "portal-profile",
+          "title": "Update your profile",
+          "type": "task",
+          "intro": "Keep your contact details up to date so the team can reach you.",
+          "steps": [
+            "Select your name at the top right, and then select **Account**.",
+            "On the **Profile** tab, change **Full name**, **Phone**, **Mobile** or **Job title**.",
+            "Choose your **Language**. The team uses it for e-mails and articles when it can.",
+            "Choose your **Time zone**, or keep **Use my browser's time zone**.",
+            "Select **Save profile**."
+          ],
+          "result": "**Profile saved** appears.",
+          "blocks": [
+            { "p": "To undo your changes before saving, select **Discard changes**." },
+            { "note": "You cannot change your sign-in e-mail here. Ask the support team to change it." }
+          ]
+        },
+        {
+          "id": "portal-notifications",
+          "title": "Choose how we contact you",
+          "type": "task",
+          "intro": "Choose your preferred channel, and which kinds of messages you agree to receive.",
+          "steps": [
+            "Open **Account**, and select the **Notifications** tab.",
+            "Under **Preferred channel**, choose **No preference**, **E-mail**, **WhatsApp** or **SMS**.",
+            "Choose a **Language**.",
+            {
+              "text": "Under **What we may send you**, turn each message type on or off for each channel.",
+              "image": "shots/29-account-notifications.png",
+              "caption": "The **Notifications** tab.",
+              "alt": "Notifications tab with Preferred channel options, Language and a table of Ticket updates, News and offers and Surveys switches for e-mail, WhatsApp and SMS",
+              "width": 460
+            },
+            "Select **Save preferences**."
+          ],
+          "result": "**Preferences saved** appears.",
+          "blocks": [
+            { "table": {
+              "columns": ["Message type", "What it covers"],
+              "widths": [30, 70],
+              "rows": [
+                ["**Ticket updates**", "Replies, status changes and confirmations about your requests."],
+                ["**News and offers**", "Product news, events and promotions."],
+                ["**Surveys**", "Short feedback requests after the team helps you."]
+              ]
+            } },
+            { "note": "Replies to a ticket arrive through the channel the ticket came in on. Replies to portal tickets arrive by e-mail." }
+          ]
+        },
+        {
+          "id": "portal-password",
+          "title": "Change your password",
+          "type": "task",
+          "intro": "Change your portal password. You need your current password to do this.",
+          "steps": [
+            "Open **Account**, and select the **Password** tab.",
+            "Enter your **Current password**.",
+            "Enter a **New password** of at least 8 characters.",
+            {
+              "text": "Enter it again in **Confirm new password**.",
+              "image": "shots/29-account-password.png",
+              "caption": "The **Password** tab.",
+              "alt": "Password tab with a note, Current password, New password and Confirm new password fields and the Change password button",
+              "width": 460
+            },
+            "Select **Change password**."
+          ],
+          "result": "**Password changed** appears. Use the new password next time you sign in.",
+          "blocks": [
+            { "note": "If you forgot your password, you cannot replace it here. Sign in with an e-mail code instead. If you have no password yet, ask the team through **Help & contact**." }
+          ]
+        },
+        {
+          "id": "portal-contracts",
+          "title": "Check your contracts and products",
+          "type": "task",
+          "intro": "See what your company's support covers, and for how long.",
+          "prerequisites": ["Your ticket access is **Your location** or **Your whole organisation**."],
+          "steps": [
+            "Select your name at the top right, and then select **Contracts & products**.",
+            "On the **Contracts** tab, check each contract's status, period, time left, renewal and on-site support.",
+            "Check the **Entitlements** under each contract. They show the products covered and the incidents and hours used.",
+            "Select **Products & licences**, **Installations** or **Maintenance** for more details."
+          ],
+          "result": "You see what your company has and what its support covers.",
+          "blocks": [
+            { "image": "shots/29-account-contracts.png", "caption": "The **Contracts** tab with two active contracts and an expired one.", "alt": "Contracts tab listing a POS hardware warranty, a Premium AMC and an expired annual maintenance contract with periods, renewal and entitlements" },
+            { "p": "A contract with prepaid hours also shows how many hours are used. **Covered channels** lists the ways you may contact support under the contract." }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "The portal says **Support portal not found**.", "cause": "The portal name in the address is wrong, or the portal is no longer available.", "fix": "Check the address with your support team. Open `/portal/` and enter the portal name they give you." },
+    { "problem": "Sign-in says **The e-mail, password or code is not correct.**", "cause": "The e-mail, password or code has a typing error, or the code has expired.", "fix": "Check your typing. Codes work for 10 minutes. Select **Send a new code** to get another one." },
+    { "problem": "You cannot sign in with your password after several tries.", "cause": "After five wrong passwords, the account locks for 15 minutes.", "fix": "Wait 15 minutes, or sign in with an e-mail code." },
+    { "problem": "The ticket form asks you to sign in.", "cause": "Your portal does not accept tickets from people who are not signed in.", "fix": "Sign in, or create an account if the portal offers it." },
+    { "problem": "A form asks you to check the highlighted fields.", "cause": "A required field is empty or too short. For example, a subject needs at least 5 characters.", "fix": "Read the message under each red field, correct it and submit again." },
+    { "problem": "A file shows **Larger than the … MB limit** and is not attached.", "cause": "The file is bigger than your support team allows.", "fix": "Make the file smaller, for example by compressing it or taking a smaller screenshot. Then attach it again." },
+    { "problem": "**Wait for the attachments to finish uploading.** appears when you send a reply.", "cause": "A file is still uploading.", "fix": "Wait until each file shows **Attached**, and then send again." },
+    { "problem": "The ticket says **This ticket is closed** and has no reply box.", "cause": "The reopen period for the ticket has ended.", "fix": "Select **Submit a new ticket**, and mention the old ticket number." },
+    { "problem": "A ticket opens with **Ticket not found**.", "cause": "The ticket does not exist, or it is not shared with your account.", "fix": "Check the link, or look for the ticket in **My tickets**. Ask the team if you need wider ticket access." },
+    { "problem": "**Your current password is not correct.** appears when you change your password.", "cause": "The current password you entered is wrong.", "fix": "Enter the password you sign in with now. If you forgot it, sign in with an e-mail code." },
+    { "problem": "A satisfaction survey link says **This survey has closed**.", "cause": "The time to answer the survey has passed.", "fix": "Rate the ticket from the ticket page instead, if the **How did we do?** card is still there." }
+  ],
+  "faq": [
+    { "q": "Do I need an account to use the portal?", "a": "No. You can read articles, search and read the community without signing in. Some portals also accept tickets without an account. You need an account to follow tickets online, attach files and post in the community." },
+    { "q": "Why can I see tickets that I did not raise?", "a": "Your support team gave you location or organisation access. You then see your colleagues' tickets too. The **Raised by** column shows who raised each ticket." },
+    { "q": "I forgot my portal password. What do I do?", "a": "Sign in with an e-mail code. The portal cannot replace a forgotten password, so keep using codes or ask the support team for help." },
+    { "q": "How long can I reopen a closed ticket?", "a": "Your support team decides. The ticket shows the last date you can reopen it. After that, submit a new ticket." },
+    { "q": "Does the assistant create tickets by itself?", "a": "No. It only answers from the help articles. If it cannot help, select **Create a ticket**, check the form and submit it yourself." }
+  ],
+  "glossary": [
+    { "term": "Ticket scope", "definition": "How many tickets a portal user sees: only their own, their location's, or their whole organisation's." },
+    { "term": "Awaiting you", "definition": "A portal filter for tickets where support replied to you or asked you to confirm a resolution." },
+    { "term": "Reopen period", "definition": "The time after a ticket closes during which the customer can still reopen it. Each ticket shows its last reopen date." },
+    { "term": "E-mail code", "definition": "A one-time 6-digit code sent by e-mail. It signs you in without a password and works for 10 minutes." },
+    { "term": "Suggested articles", "definition": "Help articles the portal shows while you type a ticket or topic, in case one already answers your question." },
+    { "term": "Community topic", "definition": "A question or discussion that a customer or agent posts in the portal community." },
+    { "term": "Accepted answer", "definition": "The reply that the person who asked a community question marked as the one that solved it." },
+    { "term": "Troubleshooting guide", "definition": "A step-by-step set of questions in the portal that leads to a fix or to a ticket for the support team." },
+    { "term": "Satisfaction rating", "definition": "The 1 to 5 star score a customer gives a resolved or closed ticket, with an optional comment." },
+    { "term": "Installation", "definition": "One copy of a product your company runs at a site, such as a production or test system." },
+    { "term": "Entitlement", "definition": "A part of a contract that covers a product or installation, with limits on incidents or hours." }
+  ]
+}

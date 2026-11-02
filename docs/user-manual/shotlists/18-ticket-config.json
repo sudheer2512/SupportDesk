@@ -1,0 +1,388 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "admin@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Two-step verification"
+    },
+    {
+      "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "18-statuses",
+      "file": "18-statuses.png",
+      "steps": [
+        {
+          "click": "a[href='/admin']"
+        },
+        {
+          "waitFor": "a.area[href='/admin/ticket-config']"
+        },
+        {
+          "click": "a.area[href='/admin/ticket-config']"
+        },
+        {
+          "waitFor": "ol.rows li"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "fullPage": true,
+      "highlight": [
+        "desk-admin-sections",
+        "text=New status",
+        "ol.rows li:nth-child(4) .grip",
+        "ol.rows li:nth-child(4) .title",
+        "ol.rows li:nth-child(4) .count",
+        "ol.rows li:nth-child(4) .moves",
+        "ol.rows li:nth-child(4) button[aria-label^='Edit']"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "18-status-drawer",
+      "file": "18-status-drawer.png",
+      "steps": [
+        {
+          "click": "button[aria-label='Edit Waiting on Customer']"
+        },
+        {
+          "waitFor": "text=Allowed next statuses"
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "clip": ".drawer",
+      "hide": [
+        "desk-top-bar"
+      ]
+    },
+    {
+      "id": "18-categories",
+      "file": "18-categories.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "a[href='/admin']"
+        },
+        {
+          "waitFor": "a.area[href='/admin/ticket-config']"
+        },
+        {
+          "click": "a.area[href='/admin/ticket-config']"
+        },
+        {
+          "waitFor": "desk-admin-sections"
+        },
+        {
+          "click": "desk-admin-sections a[href='/admin/ticket-config/categories']"
+        },
+        {
+          "waitFor": "text=Issue types"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "fullPage": true,
+      "highlight": [
+        "text=Category",
+        "ul.rows > li:first-child",
+        "ul.rows > li:first-child button[aria-label^='Add a subcategory']",
+        "ul.rows > li.sub",
+        "text=Issue type",
+        "section[aria-labelledby=it-h] ul.rows"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "18-category-drawer",
+      "file": "18-category-drawer.png",
+      "steps": [
+        {
+          "click": "text=Category"
+        },
+        {
+          "waitFor": "text=Parent category"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "fill": "label=Name",
+          "value": "Mobile app"
+        }
+      ],
+      "clip": ".drawer",
+      "hide": [
+        "desk-top-bar"
+      ]
+    },
+    {
+      "id": "18-fields",
+      "file": "18-custom-fields.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "a[href='/admin']"
+        },
+        {
+          "waitFor": "a.area[href='/admin/ticket-config']"
+        },
+        {
+          "click": "a.area[href='/admin/ticket-config']"
+        },
+        {
+          "waitFor": "desk-admin-sections"
+        },
+        {
+          "click": "desk-admin-sections a[href='/admin/ticket-config/fields']"
+        },
+        {
+          "waitFor": "text=New field"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "fullPage": true,
+      "highlight": [
+        ".seg",
+        "text=New field",
+        "ul.rows > li:first-child .title",
+        "ul.rows > li:first-child button[aria-label^='Move'][aria-label$='up']",
+        "ul.rows > li:first-child button[aria-label^='Edit']"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "18-field-drawer",
+      "file": "18-field-drawer.png",
+      "steps": [
+        {
+          "click": "text=New field"
+        },
+        {
+          "waitFor": "text=Visibility"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "select": "select[name=type]",
+          "option": "Picklist"
+        },
+        {
+          "wait": 300
+        },
+        {
+          "fill": "input[name=label]",
+          "value": "ERP module"
+        },
+        {
+          "fill": "[aria-label='Option 1 value']",
+          "value": "finance"
+        },
+        {
+          "fill": "[aria-label='Option 1 label']",
+          "value": "Finance"
+        },
+        {
+          "click": "text=Add option"
+        },
+        {
+          "fill": "[aria-label='Option 2 value']",
+          "value": "inventory"
+        },
+        {
+          "fill": "[aria-label='Option 2 label']",
+          "value": "Inventory"
+        },
+        {
+          "fill": "label=Help text (optional)",
+          "value": "The Wings ERP module the issue is about"
+        },
+        {
+          "wait": 400
+        },
+        {
+          "eval": "(() => { const b = document.querySelector('.drawer .body'); if (b) b.scrollTop = 0; })()"
+        },
+        {
+          "wait": 300
+        }
+      ],
+      "clip": ".drawer",
+      "hide": [
+        "desk-top-bar"
+      ]
+    },
+    {
+      "id": "18-settings",
+      "file": "18-numbering-lifecycle.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "a[href='/admin']"
+        },
+        {
+          "waitFor": "a.area[href='/admin/ticket-config']"
+        },
+        {
+          "click": "a.area[href='/admin/ticket-config']"
+        },
+        {
+          "waitFor": "desk-admin-sections"
+        },
+        {
+          "click": "desk-admin-sections a[href='/admin/ticket-config/settings']"
+        },
+        {
+          "waitFor": "text=Ticket numbering"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "fullPage": true,
+      "highlight": [
+        "section[aria-labelledby=num-h]",
+        "section[aria-labelledby=life-h]",
+        "section[aria-labelledby=merge-h]",
+        "section[aria-labelledby=csat-h]",
+        "section[aria-labelledby=disp-h]",
+        ".savebar"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "18-layouts",
+      "file": "18-form-layouts.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "a[href='/admin']"
+        },
+        {
+          "waitFor": "a.area[href='/admin/ticket-config']"
+        },
+        {
+          "click": "a.area[href='/admin/ticket-config']"
+        },
+        {
+          "waitFor": "desk-admin-sections"
+        },
+        {
+          "click": "desk-admin-sections a[href='/admin/ticket-config/layouts']"
+        },
+        {
+          "waitFor": "text=New layout"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": ".desk-page__body",
+      "highlight": [
+        "text=New layout"
+      ]
+    },
+    {
+      "id": "18-layout-builder",
+      "file": "18-layout-builder.png",
+      "steps": [
+        {
+          "click": "text=New layout"
+        },
+        {
+          "waitFor": "text=Available fields"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "fullPage": true,
+      "highlight": [
+        "section.settings",
+        ".head .seg",
+        "aside.palette",
+        ".sections section.section:first-child .shead",
+        ".sections section.section:first-child .ffield:first-child .req",
+        "text=Add section",
+        ".savebar"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "18-layout-preview",
+      "file": "18-layout-preview.png",
+      "steps": [
+        {
+          "click": ".head .seg button:nth-child(2)"
+        },
+        {
+          "waitFor": "section.preview"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": "section.preview"
+    }
+  ]
+}

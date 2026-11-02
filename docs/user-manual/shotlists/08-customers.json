@@ -1,0 +1,509 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "timeoutMs": 30000,
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "priya@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitFor": "desk-nav-list"
+    }
+  ],
+  "shots": [
+    {
+      "id": "08-customers-list",
+      "file": "08-customers-list.png",
+      "steps": [
+        {
+          "click": "desk-nav-list a[href='/customers']"
+        },
+        {
+          "waitForText": "Organisations, their hierarchy"
+        },
+        {
+          "waitForText": "Zenith Motors"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "highlight": [
+        "text=New customer",
+        "desk-module-tabs",
+        ".toolbar",
+        "sd-data-table"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "08-customer-form",
+      "file": "08-customer-form.png",
+      "steps": [
+        {
+          "click": "desk-nav-list a[href='/customers']"
+        },
+        {
+          "waitForText": "Zenith Motors"
+        },
+        {
+          "click": "text=New customer"
+        },
+        {
+          "waitFor": "sd-dialog"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "08-c360-tour",
+      "file": "08-c360-tour.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "click": "desk-nav-list a[href='/customers']"
+        },
+        {
+          "waitForText": "Zenith Motors"
+        },
+        {
+          "click": "text=ABC Retail Pvt Ltd"
+        },
+        {
+          "waitForText": "Satisfaction trend"
+        },
+        {
+          "wait": 2500
+        },
+        {
+          "eval": "(() => { document.querySelectorAll('*').forEach((e) => { if (e.scrollTop > 0) e.scrollTop = 0; }); window.scrollTo(0, 0); return true; })()"
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "highlight": [
+        "sd-page-header",
+        ".badges",
+        "[role=tablist]",
+        ".kpis"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "08-c360-profile",
+      "file": "08-c360-profile.png",
+      "steps": [
+        {
+          "wait": 300
+        }
+      ],
+      "clip": "sd-card[title='Profile']"
+    },
+    {
+      "id": "08-c360-contacts",
+      "file": "08-c360-contacts.png",
+      "steps": [
+        {
+          "click": "[role=tab][id$=contacts]"
+        },
+        {
+          "waitForText": "Possible duplicates"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": "[role=tabpanel]"
+    },
+    {
+      "id": "08-c360-locations",
+      "file": "08-c360-locations.png",
+      "steps": [
+        {
+          "click": "[role=tab][id$=locations]"
+        },
+        {
+          "waitForText": "Customer departments"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": "[role=tabpanel]"
+    },
+    {
+      "id": "08-erp-record",
+      "file": "08-erp-record.png",
+      "steps": [
+        {
+          "click": "[role=tab][id$=erp]"
+        },
+        {
+          "waitForText": "Credit limit"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "click": "text=SI/26-27/36054"
+        },
+        {
+          "waitFor": ".drawer"
+        },
+        {
+          "waitForText": "Taxable value"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "08-c360-erp",
+      "file": "08-c360-erp.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"button[aria-label='Close panel']\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "[role=tab][id$=amc]"
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "eval": "(() => { document.querySelectorAll('*').forEach((e) => { if (e.scrollTop > 0) e.scrollTop = 0; }); window.scrollTo(0, 0); return true; })()"
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "clip": "[role=tabpanel]"
+    },
+    {
+      "id": "08-merge-customers-compare",
+      "file": "08-merge-customers-compare.png",
+      "steps": [
+        {
+          "wait": 500
+        },
+        {
+          "click": "text=Merge…"
+        },
+        {
+          "waitFor": "sd-dialog"
+        },
+        {
+          "fill": "sd-dialog input[type=search]",
+          "value": "Kerala"
+        },
+        {
+          "waitFor": "sd-dialog .result"
+        },
+        {
+          "click": "sd-dialog .result"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "click": "text=Next"
+        },
+        {
+          "waitForText": "Use merged value"
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "08-merge-customers-review",
+      "file": "08-merge-customers-review.png",
+      "steps": [
+        {
+          "click": "text=Review"
+        },
+        {
+          "waitForText": "is then marked as merged"
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "08-contact-tour",
+      "file": "08-contact-tour.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "[role=tab][id$=contacts]"
+        },
+        {
+          "waitForText": "Possible duplicates"
+        },
+        {
+          "click": "text=Ramesh Kumar"
+        },
+        {
+          "waitForText": "Channel identities"
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "eval": "(() => { document.querySelectorAll('*').forEach((e) => { if (e.scrollTop > 0) e.scrollTop = 0; }); window.scrollTo(0, 0); return true; })()"
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "highlight": [
+        "sd-page-header",
+        ".grid > .stack:first-child > sd-card:first-child",
+        "sd-card[title='Channel identities']",
+        "sd-card[title='Consent']",
+        "sd-card[title='Customer portal']",
+        ".grid ~ .section-head",
+        "desk-c360-tickets"
+      ],
+      "numbered": true,
+      "fullPage": true
+    },
+    {
+      "id": "08-contact-form",
+      "file": "08-contact-form.png",
+      "steps": [
+        {
+          "click": "desk-nav-list a[href='/customers']"
+        },
+        {
+          "waitForText": "Zenith Motors"
+        },
+        {
+          "click": "desk-module-tabs a[href='/customers/contacts']"
+        },
+        {
+          "waitForText": "People at your customers"
+        },
+        {
+          "click": "text=New contact"
+        },
+        {
+          "waitFor": "sd-dialog"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "08-duplicates",
+      "file": "08-duplicates.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "eval": "(() => { const b = document.querySelector(\"button[aria-label='Collapse navigation']\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "desk-nav-list a[href='/customers']"
+        },
+        {
+          "waitForText": "Zenith Motors"
+        },
+        {
+          "click": "desk-module-tabs a[href='/customers/duplicates']"
+        },
+        {
+          "waitForText": "Minimum match"
+        },
+        {
+          "waitFor": "text=Review & merge"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "eval": "(() => { for (const s of ['.desk-page', '.desk-page__body']) { const e = document.querySelector(s); if (e) { e.style.flex = 'none'; e.style.minHeight = '0'; e.style.height = 'auto'; } } return true; })()"
+        },
+        {
+          "wait": 300
+        }
+      ],
+      "clip": ".desk-page"
+    },
+    {
+      "id": "08-contact-merge",
+      "file": "08-contact-merge.png",
+      "steps": [
+        {
+          "click": "text=Review & merge"
+        },
+        {
+          "waitForText": "Step 1 of 2"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "click": "text=Next"
+        },
+        {
+          "waitForText": "Step 2 of 2"
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "08-activities",
+      "file": "08-activities.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "eval": "(() => { const b = document.querySelector(\"button[aria-label='Expand navigation']\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "desk-nav-list a[href='/customers']"
+        },
+        {
+          "waitForText": "Zenith Motors"
+        },
+        {
+          "click": "desk-module-tabs a[href='/customers/activities']"
+        },
+        {
+          "waitForText": "On-site visits, remote sessions"
+        },
+        {
+          "waitForText": "in view"
+        },
+        {
+          "wait": 1000
+        }
+      ],
+      "fullPage": true,
+      "highlight": [
+        ".legend",
+        "text=Schedule activity",
+        "sd-calendar .bar",
+        "sd-calendar .month",
+        "desk-activities-calendar .section-head"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "08-activity-form",
+      "file": "08-activity-form.png",
+      "steps": [
+        {
+          "click": "text=Schedule activity"
+        },
+        {
+          "waitFor": "sd-dialog"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "08-groups",
+      "file": "08-groups.png",
+      "steps": [
+        {
+          "eval": "(() => { const b = document.querySelector(\"sd-dialog button.close\"); if (b) b.click(); return true; })()"
+        },
+        {
+          "wait": 500
+        },
+        {
+          "click": "desk-nav-list a[href='/customers']"
+        },
+        {
+          "waitForText": "Zenith Motors"
+        },
+        {
+          "click": "desk-module-tabs a[href='/customers/groups']"
+        },
+        {
+          "waitForText": "Key Accounts"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "eval": "(() => { for (const s of ['.desk-page', '.desk-page__body']) { const e = document.querySelector(s); if (e) { e.style.flex = 'none'; e.style.minHeight = '0'; e.style.height = 'auto'; } } return true; })()"
+        },
+        {
+          "wait": 300
+        }
+      ],
+      "clip": ".desk-page"
+    }
+  ]
+}

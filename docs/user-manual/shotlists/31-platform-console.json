@@ -1,0 +1,576 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/platform/login"
+    },
+    {
+      "fill": "label=Operator e-mail",
+      "value": "platform@supportdesk.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_PLATFORM_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Tenants, revenue and what needs attention."
+    }
+  ],
+  "shots": [
+    {
+      "id": "31-overview",
+      "file": "31-overview.png",
+      "waitFor": "text=Recent platform activity",
+      "highlight": [
+        "nav[aria-label='Platform console']",
+        ".me",
+        "sd-page-header button",
+        ".kpis",
+        ".grid > sd-card:first-child",
+        ".grid > sd-card:last-child"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "31-tenants",
+      "file": "31-tenants.png",
+      "steps": [
+        {
+          "click": "nav[aria-label='Platform console'] a[href$='/platform/tenants']"
+        },
+        {
+          "waitFor": "table.data"
+        }
+      ],
+      "highlight": [
+        "form.toolbar sd-form-field:nth-of-type(1)",
+        "form.toolbar sd-form-field:nth-of-type(2)",
+        "form.toolbar button[type=submit]",
+        "table.data tbody tr:nth-child(2)"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "31-tenant-page",
+      "file": "31-tenant-page.png",
+      "steps": [
+        {
+          "click": "text=Wings Software"
+        },
+        {
+          "waitForText": "Usage vs limits"
+        }
+      ],
+      "highlight": [
+        "nav.crumbs",
+        "button[aria-label='Actions']",
+        ".grid > sd-card:first-child",
+        ".grid > sd-card:last-child",
+        "sd-card.block",
+        "h2.section-title:nth-of-type(1) + .table-wrap",
+        "h2.section-title:nth-of-type(2) + .table-wrap",
+        "ul.timeline"
+      ],
+      "numbered": true,
+      "fullPage": true
+    },
+    {
+      "id": "31-actions-menu",
+      "file": "31-actions-menu.png",
+      "steps": [
+        {
+          "click": "button[aria-label='Actions']"
+        },
+        {
+          "waitFor": ".sd-menu"
+        }
+      ],
+      "clip": ".sd-menu",
+      "clipPadding": 12
+    },
+    {
+      "id": "31-suspend",
+      "file": "31-suspend.png",
+      "steps": [
+        {
+          "click": "text=Suspend…"
+        },
+        {
+          "waitForText": "Suspend tenant"
+        },
+        {
+          "fill": "label=Reason",
+          "value": "Customer asked us to pause the workspace during an internal audit."
+        },
+        {
+          "eval": "document.querySelectorAll('.drawer').forEach(d => { d.style.height = 'auto'; d.style.alignSelf = 'flex-start'; for (let p = d.parentElement; p && !p.classList.contains('cdk-overlay-container'); p = p.parentElement) { if (p.classList.contains('cdk-global-overlay-wrapper')) break; p.style.height = 'auto'; } })"
+        },
+        {
+          "hover": ".drawer h2"
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "31-reactivate",
+      "file": "31-reactivate.png",
+      "steps": [
+        {
+          "click": ".drawer button[aria-label='Close panel']"
+        },
+        {
+          "wait": 400
+        },
+        {
+          "click": "button[aria-label='Actions']"
+        },
+        {
+          "click": "text=Reactivate"
+        },
+        {
+          "waitForText": "Reactivate tenant"
+        },
+        {
+          "eval": "document.querySelectorAll('.drawer').forEach(d => { d.style.height = 'auto'; d.style.alignSelf = 'flex-start'; for (let p = d.parentElement; p && !p.classList.contains('cdk-overlay-container'); p = p.parentElement) { if (p.classList.contains('cdk-global-overlay-wrapper')) break; p.style.height = 'auto'; } })"
+        },
+        {
+          "hover": ".drawer h2"
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "31-change-plan",
+      "file": "31-change-plan.png",
+      "steps": [
+        {
+          "click": ".drawer button[aria-label='Close panel']"
+        },
+        {
+          "wait": 400
+        },
+        {
+          "click": "button[aria-label='Actions']"
+        },
+        {
+          "click": "text=Change plan…"
+        },
+        {
+          "waitForText": "Switches the plan immediately"
+        },
+        {
+          "eval": "document.querySelectorAll('.drawer').forEach(d => { d.style.height = 'auto'; d.style.alignSelf = 'flex-start'; for (let p = d.parentElement; p && !p.classList.contains('cdk-overlay-container'); p = p.parentElement) { if (p.classList.contains('cdk-global-overlay-wrapper')) break; p.style.height = 'auto'; } })"
+        },
+        {
+          "hover": ".drawer h2"
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "31-request-access",
+      "file": "31-request-access.png",
+      "steps": [
+        {
+          "click": ".drawer button[aria-label='Close panel']"
+        },
+        {
+          "wait": 400
+        },
+        {
+          "click": "button[aria-label='Actions']"
+        },
+        {
+          "click": "text=Request support access…"
+        },
+        {
+          "waitForText": "Request support access"
+        },
+        {
+          "fill": "label=Reason",
+          "value": "Case 4821: the customer reports that saved views load slowly."
+        },
+        {
+          "eval": "document.querySelectorAll('.drawer').forEach(d => { d.style.height = 'auto'; d.style.alignSelf = 'flex-start'; for (let p = d.parentElement; p && !p.classList.contains('cdk-overlay-container'); p = p.parentElement) { if (p.classList.contains('cdk-global-overlay-wrapper')) break; p.style.height = 'auto'; } })"
+        },
+        {
+          "hover": ".drawer h2"
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "31-dedicated",
+      "file": "31-dedicated.png",
+      "steps": [
+        {
+          "click": ".drawer button[aria-label='Close panel']"
+        },
+        {
+          "wait": 400
+        },
+        {
+          "click": "button[aria-label='Actions']"
+        },
+        {
+          "click": "text=Move to dedicated database…"
+        },
+        {
+          "waitForText": "Dedicated database"
+        },
+        {
+          "eval": "document.querySelectorAll('.drawer').forEach(d => { d.style.height = 'auto'; d.style.alignSelf = 'flex-start'; for (let p = d.parentElement; p && !p.classList.contains('cdk-overlay-container'); p = p.parentElement) { if (p.classList.contains('cdk-global-overlay-wrapper')) break; p.style.height = 'auto'; } })"
+        },
+        {
+          "hover": ".drawer h2"
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "31-cancel",
+      "file": "31-cancel.png",
+      "steps": [
+        {
+          "click": ".drawer button[aria-label='Close panel']"
+        },
+        {
+          "wait": 400
+        },
+        {
+          "click": "button[aria-label='Actions']"
+        },
+        {
+          "click": "text=Cancel subscription…"
+        },
+        {
+          "waitForText": "Access stops now."
+        },
+        {
+          "fill": "label=Reason",
+          "value": "The customer closed the support team at the end of the contract."
+        },
+        {
+          "eval": "document.querySelectorAll('.drawer').forEach(d => { d.style.height = 'auto'; d.style.alignSelf = 'flex-start'; for (let p = d.parentElement; p && !p.classList.contains('cdk-overlay-container'); p = p.parentElement) { if (p.classList.contains('cdk-global-overlay-wrapper')) break; p.style.height = 'auto'; } })"
+        },
+        {
+          "hover": ".drawer h2"
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "31-extend-trial",
+      "file": "31-extend-trial.png",
+      "steps": [
+        {
+          "click": ".drawer button[aria-label='Close panel']"
+        },
+        {
+          "wait": 400
+        },
+        {
+          "click": "nav.crumbs a"
+        },
+        {
+          "waitFor": "table.data"
+        },
+        {
+          "click": "text=Acme Logistics"
+        },
+        {
+          "waitForText": "Usage vs limits"
+        },
+        {
+          "click": "button[aria-label='Actions']"
+        },
+        {
+          "click": "text=Extend trial…"
+        },
+        {
+          "waitForText": "Extend the trial by (days)"
+        },
+        {
+          "eval": "document.querySelectorAll('.drawer').forEach(d => { d.style.height = 'auto'; d.style.alignSelf = 'flex-start'; for (let p = d.parentElement; p && !p.classList.contains('cdk-overlay-container'); p = p.parentElement) { if (p.classList.contains('cdk-global-overlay-wrapper')) break; p.style.height = 'auto'; } })"
+        },
+        {
+          "hover": ".drawer h2"
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "31-suspended-tenant",
+      "file": "31-suspended-tenant.png",
+      "steps": [
+        {
+          "click": ".drawer button[aria-label='Close panel']"
+        },
+        {
+          "wait": 400
+        },
+        {
+          "click": "nav.crumbs a"
+        },
+        {
+          "waitFor": "table.data"
+        },
+        {
+          "click": "text=Globex Retail"
+        },
+        {
+          "waitFor": ".callout--danger"
+        }
+      ],
+      "highlight": [
+        ".callout--danger"
+      ]
+    },
+    {
+      "id": "31-plans",
+      "file": "31-plans.png",
+      "steps": [
+        {
+          "click": "nav[aria-label='Platform console'] a[href$='/platform/plans']"
+        },
+        {
+          "waitForText": "Prices, limits and features offered to tenants."
+        },
+        {
+          "waitFor": ".cards sd-card"
+        }
+      ],
+      "highlight": [
+        "sd-page-header button",
+        ".cards > sd-card:nth-child(2) .badges",
+        ".cards > sd-card:nth-child(2) .price",
+        ".cards > sd-card:nth-child(2) desk-plan-limits",
+        ".cards > sd-card:nth-child(2) .feats",
+        ".cards > sd-card:nth-child(2) .footer"
+      ],
+      "numbered": true,
+      "fullPage": true
+    },
+    {
+      "id": "31-plan-editor",
+      "file": "31-plan-editor.png",
+      "steps": [
+        {
+          "click": ".cards > sd-card:nth-child(3) .footer button:last-child"
+        },
+        {
+          "waitForText": "Edit plan"
+        },
+        {
+          "eval": "document.querySelectorAll('.drawer').forEach(d => { d.style.height = 'auto'; d.style.alignSelf = 'flex-start'; for (let p = d.parentElement; p && !p.classList.contains('cdk-overlay-container'); p = p.parentElement) { if (p.classList.contains('cdk-global-overlay-wrapper')) break; p.style.height = 'auto'; } })"
+        },
+        {
+          "hover": ".drawer h2"
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "31-delete-plan",
+      "file": "31-delete-plan.png",
+      "steps": [
+        {
+          "click": ".drawer button[aria-label='Close panel']"
+        },
+        {
+          "wait": 400
+        },
+        {
+          "click": ".cards > sd-card:nth-child(3) button[aria-label^='Delete']"
+        },
+        {
+          "waitFor": "sd-confirm-dialog sd-dialog"
+        },
+        {
+          "hover": "sd-confirm-dialog .head"
+        }
+      ],
+      "clip": "sd-confirm-dialog sd-dialog",
+      "clipPadding": 0
+    },
+    {
+      "id": "31-invoices",
+      "file": "31-invoices.png",
+      "steps": [
+        {
+          "click": "sd-confirm-dialog button[aria-label='Close dialog']"
+        },
+        {
+          "wait": 400
+        },
+        {
+          "click": "nav[aria-label='Platform console'] a[href$='/platform/invoices']"
+        },
+        {
+          "waitFor": "table.data"
+        }
+      ],
+      "highlight": [
+        ".toolbar sd-form-field",
+        "table.data tbody tr:first-child button.linkish",
+        "table.data tbody tr:first-child td:nth-child(2) a",
+        "table.data tbody tr:nth-child(2) sd-badge",
+        "table.data tbody tr:first-child td.actions button"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "31-invoice-detail",
+      "file": "31-invoice-detail.png",
+      "steps": [
+        {
+          "click": "table.data tbody tr:first-child button.linkish"
+        },
+        {
+          "waitForText": "Download PDF"
+        },
+        {
+          "eval": "document.querySelectorAll('.drawer').forEach(d => { d.style.height = 'auto'; d.style.alignSelf = 'flex-start'; for (let p = d.parentElement; p && !p.classList.contains('cdk-overlay-container'); p = p.parentElement) { if (p.classList.contains('cdk-global-overlay-wrapper')) break; p.style.height = 'auto'; } })"
+        },
+        {
+          "hover": ".drawer h2"
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "31-void",
+      "file": "31-void.png",
+      "steps": [
+        {
+          "click": "text=Void…"
+        },
+        {
+          "waitFor": ".drawer:has(#inv-action)"
+        },
+        {
+          "fill": ".drawer:has(#inv-action) textarea",
+          "value": "Issued twice by mistake; the correct invoice follows."
+        },
+        {
+          "eval": "document.querySelectorAll('.drawer').forEach(d => { d.style.height = 'auto'; d.style.alignSelf = 'flex-start'; for (let p = d.parentElement; p && !p.classList.contains('cdk-overlay-container'); p = p.parentElement) { if (p.classList.contains('cdk-global-overlay-wrapper')) break; p.style.height = 'auto'; } })"
+        },
+        {
+          "hover": ".drawer:has(#inv-action) h2"
+        }
+      ],
+      "clip": ".drawer:has(#inv-action)",
+      "clipPadding": 0
+    },
+    {
+      "id": "31-mark-paid",
+      "file": "31-mark-paid.png",
+      "steps": [
+        {
+          "click": ".drawer:has(#inv-action) button[aria-label='Close panel']"
+        },
+        {
+          "wait": 400
+        },
+        {
+          "click": ".drawer button[aria-label='Close panel']"
+        },
+        {
+          "wait": 400
+        },
+        {
+          "click": "table.data tbody tr:first-child td.actions button"
+        },
+        {
+          "waitFor": ".drawer:has(#inv-action)"
+        },
+        {
+          "fill": "input[name=ref]",
+          "value": "NEFT-2026-11-0042"
+        },
+        {
+          "eval": "document.querySelectorAll('.drawer').forEach(d => { d.style.height = 'auto'; d.style.alignSelf = 'flex-start'; for (let p = d.parentElement; p && !p.classList.contains('cdk-overlay-container'); p = p.parentElement) { if (p.classList.contains('cdk-global-overlay-wrapper')) break; p.style.height = 'auto'; } })"
+        },
+        {
+          "hover": ".drawer:has(#inv-action) h2"
+        }
+      ],
+      "clip": ".drawer:has(#inv-action)",
+      "clipPadding": 0
+    },
+    {
+      "id": "31-support-access",
+      "file": "31-support-access.png",
+      "steps": [
+        {
+          "click": ".drawer button[aria-label='Close panel']"
+        },
+        {
+          "wait": 400
+        },
+        {
+          "click": "nav[aria-label='Platform console'] a[href$='/platform/support']"
+        },
+        {
+          "waitFor": "table.data"
+        }
+      ],
+      "highlight": [
+        "sd-page-header button",
+        "table.data tbody tr:first-child td:first-child a",
+        "table.data tbody tr:first-child td:nth-child(3)",
+        "table.data tbody tr:first-child sd-badge"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "31-audit",
+      "file": "31-audit.png",
+      "steps": [
+        {
+          "click": "nav[aria-label='Platform console'] a[href$='/platform/audit']"
+        },
+        {
+          "waitFor": "table.data"
+        },
+        {
+          "click": "sd-page-header button"
+        },
+        {
+          "waitFor": ".callout"
+        }
+      ],
+      "highlight": [
+        "sd-page-header button",
+        ".desk-page__body > .callout",
+        "form.toolbar sd-form-field:nth-of-type(1)",
+        "form.toolbar sd-form-field:nth-of-type(2)",
+        "table.data"
+      ],
+      "numbered": true
+    }
+  ]
+}

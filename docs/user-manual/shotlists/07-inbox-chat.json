@@ -1,0 +1,84 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": { "width": 1280, "height": 800, "scale": 1.5 },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": ["sd-toast-outlet"],
+  "timeoutMs": 30000,
+  "setup": [
+    { "goto": "/login" },
+    { "fill": "label=Workspace", "value": "wings" },
+    { "fill": "label=Work e-mail", "value": "priya@wings.demo" },
+    { "fill": "label=Password", "value": "${env:SD_DESK_PASSWORD}" },
+    { "click": "form button[type=submit]" },
+    { "waitFor": "desk-nav-list" }
+  ],
+  "shots": [
+    {
+      "id": "07-inbox-tour",
+      "file": "07-inbox-tour.png",
+      "steps": [
+        { "click": "desk-nav-list a[href='/inbox']" },
+        { "waitForText": "Select a conversation" },
+        { "click": "text=WhatsApp message conversation with Joseph Thomas" },
+        { "waitForText": "24-hour service window" },
+        { "wait": 800 }
+      ],
+      "highlight": [".list-head", ".filters", ".list", "desk-conversation-view .head", "desk-conversation-view .banner", "desk-conversation-view .scroll", "desk-conversation-context"],
+      "numbered": true
+    },
+    {
+      "id": "07-conversation-context",
+      "file": "07-conversation-context.png",
+      "clip": "desk-conversation-context"
+    },
+    {
+      "id": "07-email-conversation",
+      "file": "07-email-conversation.png",
+      "steps": [
+        { "click": "text=Batch expiry report shows wrong dates after upgrade" },
+        { "waitForText": "Quoted history" },
+        { "wait": 800 }
+      ],
+      "clip": "desk-conversation-view",
+      "clipPadding": 0
+    },
+    {
+      "id": "07-delivery-details",
+      "file": "07-delivery-details.png",
+      "steps": [
+        { "click": "article.mail.out button.status" },
+        { "waitFor": "desk-delivery-timeline .history" },
+        { "wait": 500 }
+      ],
+      "clip": "article.mail.out"
+    },
+    {
+      "id": "07-call-record",
+      "file": "07-call-record.png",
+      "steps": [
+        { "select": "#inbox-status", "option": "All statuses" },
+        { "wait": 1000 },
+        { "click": "text=Call from Suresh Patil" },
+        { "waitFor": "article.call" },
+        { "wait": 800 }
+      ],
+      "clip": "desk-conversation-view",
+      "clipPadding": 0
+    },
+    {
+      "id": "07-chat-console",
+      "file": "07-chat-console.png",
+      "steps": [
+        { "click": "desk-nav-list a[href='/inbox']" },
+        { "click": ".list-head a[href='/inbox/chat']" },
+        { "waitForText": "No one is waiting." },
+        { "hover": "section[aria-label='Chat'] sd-empty-state" },
+        { "wait": 800 }
+      ],
+      "highlight": ["text=Back to the inbox", ".queue .head button[aria-label$='sound'], .queue .head button[aria-label='Play a sound for new chats']", "text=Enable desktop alerts", ".capacity", "ul[aria-label='Waiting for an agent']", "ul[aria-label='My active chats']", "ul[aria-label='Chats handled by the bot']", "section[aria-label='Chat']"],
+      "numbered": true
+    }
+  ]
+}

@@ -1,0 +1,469 @@
+{
+  "chapters": [
+    {
+      "id": "ticket-configuration",
+      "title": "Ticket configuration",
+      "intro": [
+        "This chapter is for administrators. It explains how to shape the tickets everyone works with.",
+        "You set the statuses and their transitions, the categories and issue types, and the extra fields. You also design ticket forms and set numbering and lifecycle rules."
+      ],
+      "sections": [
+        {
+          "id": "ticket-config-overview",
+          "title": "Ticket configuration at a glance",
+          "type": "concept",
+          "intro": [
+            "Open **Administration** > **Ticket configuration**. You need `admin.ticket_config`.",
+            "Changes apply to the next request. Open desks refresh by themselves."
+          ],
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Section", "What you set"],
+                "widths": [30, 70],
+                "rows": [
+                  ["**Statuses**", "The statuses agents move tickets through, and which moves are allowed."],
+                  ["**Categories & issue types**", "Two levels of categories, and the nature of each request."],
+                  ["**Custom fields**", "Extra fields for tickets, contacts and customers."],
+                  ["**Form layouts**", "How fields are arranged on the agent and portal ticket forms."],
+                  ["**Numbering & lifecycle**", "The ticket number prefix, reopen and auto-close rules, merge and split, surveys, and priority labels."]
+                ]
+              }
+            },
+            { "tip": "The **Fields & form layouts** card on the **Administration** home opens **Custom fields** directly." }
+          ]
+        },
+        {
+          "id": "statuses",
+          "title": "Statuses",
+          "type": "concept",
+          "intro": [
+            "Every status belongs to one fixed category: **Open**, **Assigned**, **In progress**, **Waiting**, **Resolved** or **Closed**. Reports, SLAs and the portal rely on the categories.",
+            "Built-in statuses have a lock badge. You can rename them, but you cannot delete them."
+          ],
+          "blocks": [
+            {
+              "image": "shots/18-statuses.png",
+              "caption": "The **Statuses** section with eight statuses in display order.",
+              "alt": "Statuses list with numbered section tabs, New status button, drag handle, status badges, ticket count, order arrows and Edit button"
+            },
+            {
+              "callouts": [
+                "The ticket configuration sections.",
+                "**New status**.",
+                "The drag handle. Drag a row to change the display order.",
+                "The status name with badges for category, **Default**, **Pauses SLA**, **Inactive** and **Built-in**. The line below shows the allowed next statuses, the customer label and substatuses.",
+                "How many tickets have the status now.",
+                "The arrows also move the status up or down.",
+                "**Edit** opens the status."
+              ]
+            },
+            { "note": "A new order is saved as soon as you drag a row or select an arrow." }
+          ]
+        },
+        {
+          "id": "edit-status",
+          "title": "Create or edit a status",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.ticket_config`."],
+          "steps": [
+            "Open **Ticket configuration** > **Statuses**.",
+            {
+              "text": "Select **New status**, or **Edit** on a status.",
+              "image": "shots/18-status-drawer.png",
+              "caption": "The **Edit status** panel for Waiting on Customer.",
+              "alt": "Edit status panel with name, category, colour, customer label, switches, allowed next statuses and substatuses",
+              "width": 340
+            },
+            "Enter the **Name**, and choose the **Category** and **Colour**.",
+            "Enter a **Label shown to customers** to keep the internal name private in the portal.",
+            "Turn on **Default status of its category** or **Pause SLA resolution clocks while in this status** if needed.",
+            "Under **Allowed next statuses**, leave **Any status (no restriction)** on, or turn it off and tick the allowed statuses.",
+            "In **Substatuses**, type a finer reason and press [[Enter]]. Repeat for each one.",
+            "Select **Create status** or **Save status**."
+          ],
+          "result": "A message says \"Status created\" or \"Status saved\". The list shows the new settings.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Field", "Rule"],
+                "widths": [35, 65],
+                "rows": [
+                  ["**Name**", "1–100 characters. Must be unique."],
+                  ["**Category**", "Fixed for built-in statuses and for statuses in use."],
+                  ["**Colour**", "A colour code such as `#d97706`, or pick one."],
+                  ["**Default status of its category**", "One default per category."],
+                  ["**Pause SLA resolution clocks while in this status**", "Stops the next response and resolution clocks."],
+                  ["**Allowed next statuses**", "With restrictions on, tick at least one status."],
+                  ["**Substatuses**", "Up to 20."],
+                  ["**Active**", "Built-in statuses cannot be turned off."]
+                ]
+              }
+            },
+            { "note": "Every category must keep at least one active status. Tickets that follow a blueprint ignore the allowed next statuses. The blueprint decides." }
+          ]
+        },
+        {
+          "id": "delete-status",
+          "title": "Delete a status",
+          "type": "task",
+          "prerequisites": ["The status is not built-in.", "No tickets have the status."],
+          "steps": [
+            "Open **Ticket configuration** > **Statuses** and select **Edit** on the status.",
+            "Select **Delete**.",
+            "In the confirmation, select **Delete**."
+          ],
+          "result": "A message says \"Status deleted\". Transitions that pointed to it are removed too.",
+          "blocks": [{ "tip": "If tickets still use the status, turn off **Active** instead." }]
+        },
+        {
+          "id": "categories-issue-types",
+          "title": "Categories and issue types",
+          "type": "concept",
+          "intro": [
+            "Categories classify what a ticket is about. They have two levels: a category and its subcategories. A category can be limited to one department.",
+            "Issue types describe the nature of the request, such as a question, an incident or a change request."
+          ],
+          "blocks": [
+            {
+              "image": "shots/18-categories.png",
+              "caption": "The **Categories & issue types** section.",
+              "alt": "Categories and issue types with numbered Category button, a category row, Sub button, a subcategory, Issue type button and issue type list"
+            },
+            {
+              "callouts": [
+                "**Category** adds a top-level category.",
+                "A category with its department badge and ticket count.",
+                "**Sub** adds a subcategory to that category.",
+                "A subcategory. **Agents only** marks items hidden from the portal.",
+                "**Issue type** adds an issue type.",
+                "The issue types with their ticket counts."
+              ]
+            },
+            { "p": "Use the arrows on a row to change the order. The new order is saved at once." },
+            { "p": "Priorities and severities have fixed values. You can change only their labels and colours. See [Change numbering and lifecycle settings](#ticket-settings-task)." }
+          ]
+        },
+        {
+          "id": "add-category",
+          "title": "Add or edit a category",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.ticket_config`."],
+          "steps": [
+            "Open **Ticket configuration** > **Categories & issue types**.",
+            {
+              "text": "Select **Category**, or **Sub** on a category. To edit, select the category's name.",
+              "image": "shots/18-category-drawer.png",
+              "caption": "The **New category** panel.",
+              "alt": "New category panel with name, parent category, department and two switches",
+              "width": 320
+            },
+            "Enter the **Name**.",
+            "Choose a **Parent category**, or keep **None — top-level category**.",
+            "Choose a **Department**, or keep **All departments**.",
+            "Turn **Customers can choose it in the portal** on or off.",
+            "Select **Save**."
+          ],
+          "result": "A message says \"Category saved\".",
+          "blocks": [{ "note": "To delete a category, open it and select **Delete**. Delete or move its subcategories first. A category that tickets use cannot be deleted. Turn off **Active** instead." }]
+        },
+        {
+          "id": "add-issue-type",
+          "title": "Add or edit an issue type",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.ticket_config`."],
+          "steps": [
+            "Open **Ticket configuration** > **Categories & issue types**.",
+            "Select **Issue type**, or select the name of an issue type.",
+            "Enter the **Name** and a **Description**.",
+            "Select **Save**."
+          ],
+          "result": "A message says \"Issue type saved\".",
+          "blocks": [{ "note": "An issue type that tickets use cannot be deleted. Turn off **Active** instead." }]
+        },
+        {
+          "id": "custom-fields",
+          "title": "Custom fields",
+          "type": "concept",
+          "intro": "Custom fields capture information your process needs, such as an ERP module or a vendor reference. They exist for tickets, contacts and customers.",
+          "blocks": [
+            {
+              "image": "shots/18-custom-fields.png",
+              "caption": "The **Custom fields** section with six ticket fields.",
+              "alt": "Custom fields list with numbered record type tabs, New field button, field name and badges, order arrows and Edit button"
+            },
+            {
+              "callouts": [
+                "Tabs for **Ticket fields**, **Contact fields** and **Customer fields**.",
+                "**New field**.",
+                "The field label, key and type, with badges such as **Required** and **Portal: editable**.",
+                "The arrows change the order of the fields.",
+                "**Edit** opens the field."
+              ]
+            },
+            { "p": "The line under each field shows its departments, the layouts that use it and its help text." }
+          ]
+        },
+        {
+          "id": "create-custom-field",
+          "title": "Create a custom field",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.ticket_config`."],
+          "steps": [
+            "Open **Ticket configuration** > **Custom fields**.",
+            {
+              "text": "Select **New field**.",
+              "image": "shots/18-field-drawer.png",
+              "caption": "A new picklist field with two options.",
+              "alt": "New field panel with record type, type, label, key, options, default value, help text, visibility and required settings",
+              "width": 380
+            },
+            "Choose the **Record type** and the **Type**.",
+            "Enter the **Label**. The **Key** fills in by itself, and you can change it before you save.",
+            "For a picklist, add the **Options**. For a record lookup, choose what it **Looks up**.",
+            "Optionally, enter a **Default value**, **Help text** and validation limits.",
+            "Under **Visibility** and **Required**, turn on the settings you need.",
+            "For a ticket field, optionally choose **Departments**.",
+            "Select **Create field**."
+          ],
+          "result": "A message says \"Field created\". Agents see the field on the matching records.",
+          "blocks": [
+            { "warning": "You cannot change the **Key** or the **Type** after you create the field." },
+            {
+              "table": {
+                "columns": ["Setting", "Rule"],
+                "widths": [32, 68],
+                "rows": [
+                  ["**Key**", "2–63 lower-case letters, digits or underscores, starting with a letter. Unique for the record type."],
+                  ["**Options**", "1–500 options, each with a value and a label."],
+                  ["**Validation pattern** and **Maximum length**", "For text fields only. The length can be 1–10000."],
+                  ["**Minimum** and **Maximum**", "For number fields only."],
+                  ["**Customers see it in the portal**", "Shows the field in the customer portal."],
+                  ["**Customers can fill it in when raising a ticket**", "Needs the field to be visible in the portal."],
+                  ["**Always required when the record is created or edited**", "Agents must fill it in every time."],
+                  ["Statuses under **Required**", "Ticket fields only. The field must be filled in before a ticket may enter those statuses."],
+                  ["**Departments**", "Ticket fields only. Leave empty to use the field everywhere."]
+                ]
+              }
+            },
+            { "note": "Agents always see every active field." }
+          ]
+        },
+        {
+          "id": "field-types",
+          "title": "Custom field types",
+          "type": "reference",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Type", "Holds"],
+                "widths": [30, 70],
+                "rows": [
+                  ["**Single line text**", "A short text."],
+                  ["**Multi-line text**", "A longer text over several lines."],
+                  ["**Whole number**", "A number without decimals."],
+                  ["**Decimal number**", "A number with decimals."],
+                  ["**Currency**", "An amount of money."],
+                  ["**Date**", "A date."],
+                  ["**Date and time**", "A date with a time."],
+                  ["**Checkbox**", "Yes or no."],
+                  ["**Picklist**", "One value from a list of options."],
+                  ["**Multi-select picklist**", "Several values from a list of options."],
+                  ["**Web address**", "A link to a web page."],
+                  ["**E-mail address**", "An e-mail address."],
+                  ["**Phone number**", "A phone number."],
+                  ["**Record lookup**", "A link to a product, customer, contact, user or installation."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "delete-custom-field",
+          "title": "Delete a custom field",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.ticket_config`."],
+          "steps": [
+            "Open **Ticket configuration** > **Custom fields** and select **Edit** on the field.",
+            "Select **Delete**.",
+            "In the confirmation, type the field's key.",
+            "Select **Delete field**."
+          ],
+          "result": "A message says \"Field deleted\". The field disappears from every form layout.",
+          "blocks": [{ "note": "Values already stored on records are kept, but they are no longer shown. To hide a field for now, turn off **Active** instead." }]
+        },
+        {
+          "id": "form-layouts",
+          "title": "Form layouts",
+          "type": "concept",
+          "intro": [
+            "A form layout arranges ticket fields in sections and columns. It is either an **Agent ticket form** or a **Portal (customer) form**.",
+            "Without a layout, forms show every field that applies, in the default order."
+          ],
+          "blocks": [
+            {
+              "image": "shots/18-form-layouts.png",
+              "caption": "The **Form layouts** section before any layout exists.",
+              "alt": "Form layouts section with an explanation, the New layout button and an empty state with Design a form"
+            },
+            { "heading": "Which layout a form uses" },
+            {
+              "list": [
+                "The most specific active layout wins. A layout for the ticket's department, and its brand or channel, comes first.",
+                "Otherwise, the default layout of the form applies.",
+                "Only one active layout can cover the same form, department, brand and channel."
+              ]
+            },
+            { "p": "Portal forms take only fields customers may fill in. These are department, priority, category, product, installation and custom fields set as editable in the portal. Layouts are for tickets only." }
+          ]
+        },
+        {
+          "id": "design-form-layout",
+          "title": "Design a form layout",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.ticket_config`."],
+          "steps": [
+            "Open **Ticket configuration** > **Form layouts** and select **New layout**.",
+            "Enter a **Name** and choose the **Form**.",
+            "Choose a **Department**, and a **Brand** for portal forms or a **Channel** for agent forms.",
+            "Turn on **Default agent form** or **Default portal form** if this is the default.",
+            "Select **Add section**. Give it a title and choose 1, 2 or 3 columns.",
+            "Drag fields from **Available fields** into a section, or select the plus button on a field.",
+            "Tick **Required** on fields that agents or customers must fill in.",
+            "Select **Preview** to check the form, then **Design** to go back.",
+            "Select **Create layout**."
+          ],
+          "result": "A message says \"Layout created\". The layout appears under **Agent forms** or **Portal forms**.",
+          "blocks": [
+            {
+              "image": "shots/18-layout-builder.png",
+              "caption": "The layout builder for a new agent form.",
+              "alt": "Layout builder with numbered settings card, Design and Preview tabs, Available fields, a section header, a Required box, Add section and the save bar"
+            },
+            {
+              "callouts": [
+                "The layout settings: name, form, department, channel or brand, **Default** and **Active**.",
+                "**Design** and **Preview**.",
+                "**Available fields**. **custom** marks custom fields. **Filter fields** finds one.",
+                "A section: title, number of columns, order arrows and the delete button.",
+                "**Required**. **Subject** and **Department** are always required.",
+                "**Add section**. A layout can have up to 20 sections.",
+                "The save bar with **Discard** and **Create layout** or **Save layout**."
+              ]
+            },
+            {
+              "image": "shots/18-layout-preview.png",
+              "caption": "The **Preview** of the new agent form. Controls are inactive.",
+              "alt": "Form preview with the Request and Classification sections"
+            }
+          ]
+        },
+        {
+          "id": "edit-form-layout",
+          "title": "Edit or delete a form layout",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.ticket_config`."],
+          "steps": [
+            "Open **Ticket configuration** > **Form layouts**.",
+            "To change a layout, select **Edit** on it, make your changes, then select **Save layout**.",
+            "To remove a layout, select its delete button, then **Delete** in the confirmation."
+          ],
+          "result": "A saved layout applies to the next form that opens. After a delete, forms fall back to the next matching layout."
+        },
+        {
+          "id": "numbering-lifecycle",
+          "title": "Numbering and lifecycle",
+          "type": "concept",
+          "intro": "The **Numbering & lifecycle** section holds workspace-wide ticket rules on one page.",
+          "blocks": [
+            {
+              "image": "shots/18-numbering-lifecycle.png",
+              "caption": "The **Numbering & lifecycle** section.",
+              "alt": "Numbering and lifecycle page with numbered cards for numbering, lifecycle, merge and split, surveys, priorities and severities, and the save bar"
+            },
+            {
+              "callouts": [
+                "**Ticket numbering**: the prefix and a sample of the next number.",
+                "**Lifecycle**: reopening, automatic closure and resolution rules.",
+                "**Merge & split**: limits for merging duplicates and splitting messages.",
+                "**Satisfaction surveys**: the survey sent when a ticket is resolved.",
+                "**Priorities & severities**: labels and colours of the fixed values.",
+                "The save bar with **Discard** and **Save settings**."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ticket-settings-reference",
+          "title": "Numbering and lifecycle settings",
+          "type": "reference",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Setting", "Range", "Meaning"],
+                "widths": [38, 14, 48],
+                "rows": [
+                  ["**Prefix**", "Up to 10 characters", "Shown before every ticket number, such as `#`, `SD-` or `WS/`."],
+                  ["**Next ticket number**", "Read-only", "Numbers have no gaps within your workspace."],
+                  ["**Reopen window (days)**", "0–365", "A customer reply inside the window reopens the ticket. A later reply creates a follow-up ticket."],
+                  ["**Auto-close resolved tickets after (days)**", "0–365", "Resolved tickets close by themselves after this time. 0 means never."],
+                  ["**Soft lock (minutes)**", "1–240", "How long an agent's edit lock lasts without activity."],
+                  ["**Customers may reopen resolved tickets (within the window)**", "On or off", "Lets customers reopen from the portal."],
+                  ["**Ask customers to confirm a resolution**", "On or off", "Agents must use the confirm option when they resolve."],
+                  ["**Require a resolution code when resolving**", "On or off", "Agents must pick a resolution code."],
+                  ["**Acknowledge new e-mail tickets automatically (where the mailbox allows it)**", "On or off", "Sends an automatic reply to new e-mail tickets."],
+                  ["**Most tickets per merge**", "1–50", "The most tickets one merge can combine."],
+                  ["**Allow merging tickets of different customers**", "On or off", "Allows merges across customers."],
+                  ["**Allow merging tickets of different departments**", "On or off", "Allows merges across departments."],
+                  ["**Allow splitting messages into a new ticket**", "On or off", "Agents can move a message into a new ticket."],
+                  ["**Send a survey when a ticket is resolved**", "On or off", "Sends the satisfaction survey."],
+                  ["**Survey link valid for (days)**", "1–90", "How long the survey link works."]
+                ]
+              }
+            },
+            { "note": "Resolution codes, root causes and close reasons have no screen yet. To change them, import them with **Configuration transfer**." }
+          ]
+        },
+        {
+          "id": "ticket-settings-task",
+          "title": "Change numbering and lifecycle settings",
+          "type": "task",
+          "prerequisites": ["Your role includes `admin.ticket_config`."],
+          "steps": [
+            "Open **Ticket configuration** > **Numbering & lifecycle**.",
+            "Change the **Prefix**, the day and minute limits, and the switches you need.",
+            "Under **Priorities & severities**, change a label or pick a new colour. The pill beside it shows the result.",
+            "Select **Save settings**."
+          ],
+          "result": "A message says \"Ticket settings saved\". The save bar shows the new version number.",
+          "blocks": [{ "warning": "A new prefix changes how every ticket number is shown, including old tickets. Tell your team before you change it." }]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "\"Every category needs at least one active status.\"", "cause": "You turned off the last active status of a category.", "fix": "Keep at least one active status in each category, or create another one first." },
+    { "problem": "\"Built-in statuses cannot be deleted.\"", "cause": "The status has the **Built-in** badge.", "fix": "Rename it, or turn off **Active** if the category has another active status." },
+    { "problem": "A message says tickets use the status you want to delete.", "cause": "Tickets still have this status.", "fix": "Move those tickets to another status, or turn off **Active**." },
+    { "problem": "A message says tickets use the category or issue type you want to delete.", "cause": "Tickets refer to the category or issue type.", "fix": "Turn off **Active**. The item disappears from forms but stays on old tickets." },
+    { "problem": "\"Delete or move the subcategories first.\"", "cause": "The category still has subcategories.", "fix": "Delete the subcategories, or give them another parent category." },
+    { "problem": "\"Another field already uses this key.\"", "cause": "Keys must be unique for each record type.", "fix": "Enter a different **Key**." },
+    { "problem": "\"A field must be visible in the portal to be editable there.\"", "cause": "**Customers can fill it in when raising a ticket** is on, but **Customers see it in the portal** is off.", "fix": "Turn on **Customers see it in the portal** too." },
+    { "problem": "\"Another active layout already covers this department, brand and channel.\"", "cause": "Two active layouts would apply to the same form.", "fix": "Change the department, brand or channel, or turn off **Active** on one layout." },
+    { "problem": "A message says a field cannot be placed on a portal form.", "cause": "The field is not one customers may fill in.", "fix": "Use it on an agent form, or set the custom field as editable in the portal." }
+  ],
+  "faq": [
+    { "q": "Can I rename the built-in statuses?", "a": "Yes. You can rename them and change their colour and customer label. You cannot delete them or change their category." },
+    { "q": "Why can a ticket not move to a status I expect?", "a": "The current status may restrict the allowed next statuses. Tickets that follow a blueprint use the blueprint's moves instead." },
+    { "q": "What happens to stored values when I delete a custom field?", "a": "They are kept but hidden. The field is removed from every form layout." },
+    { "q": "Do I need a form layout?", "a": "No. Without a layout, forms show every field that applies in the default order. Layouts let you group, order and require fields." }
+  ],
+  "glossary": [
+    { "term": "Custom field", "definition": "An extra field that an administrator adds to tickets, contacts or customers." },
+    { "term": "Form layout", "definition": "An arrangement of ticket fields in sections and columns for the agent form or the portal form." },
+    { "term": "Issue type", "definition": "The nature of a request, such as a question, an incident or a change request." },
+    { "term": "Reopen window", "definition": "The number of days after resolution during which a customer reply reopens a ticket." },
+    { "term": "Status category", "definition": "One of six fixed groups that every status belongs to: Open, Assigned, In progress, Waiting, Resolved or Closed." },
+    { "term": "Substatus", "definition": "A finer reason within a status, such as Vendor within Waiting on Third Party." }
+  ]
+}

@@ -1,0 +1,439 @@
+{
+  "chapters": [
+    {
+      "id": "mobile-app",
+      "title": "Mobile app",
+      "intro": [
+        "This chapter is for agents and customers who use SupportDesk on a phone.",
+        "The SupportDesk app has two modes. In agent mode, you work on tickets, alerts and approvals. In customer mode, you follow your own requests and read help articles.",
+        "The app keeps working with a weak connection. It shows saved copies of the screens you opened and sends your messages when the connection returns."
+      ],
+      "sections": [
+        {
+          "id": "mobile-install",
+          "title": "Get the app",
+          "type": "concept",
+          "intro": [
+            "Your administrator tells you how to install the app on your phone.",
+            "The app follows your phone's light or dark setting. You can change this on the **Me** tab."
+          ]
+        },
+        {
+          "id": "mobile-sign-in-agent",
+          "title": "Sign in as an agent",
+          "type": "task",
+          "intro": "Agents sign in with the same details they use on the desk.",
+          "prerequisites": ["You have a SupportDesk agent account and a connection to the internet."],
+          "steps": [
+            "Open the app.",
+            "At the top of the sign-in screen, select **Agent**.",
+            {
+              "text": "Enter your **Workspace**, **Work e-mail** and **Password**.",
+              "image": "shots/30-sign-in-agent.png",
+              "caption": "The sign-in screen in agent mode.",
+              "alt": "SupportDesk mobile sign-in screen with the Agent and Customer choice, the Workspace, Work e-mail and Password fields and the Sign in button, numbered",
+              "width": 260
+            },
+            "Select **Sign in**.",
+            {
+              "text": "If the app asks for a verification code, enter it in **Code**, and then select **Verify**.",
+              "note": "The code comes from your authenticator app or by e-mail. Select **Back** to return to the first screen."
+            }
+          ],
+          "result": "The **Home** tab opens. The app keeps you signed in on this phone."
+        },
+        {
+          "id": "mobile-sign-in-customer",
+          "title": "Sign in as a customer",
+          "type": "task",
+          "intro": "Customers use the same e-mail as on the support portal. You can sign in with a password or with a code sent by e-mail.",
+          "prerequisites": ["You have access to your support team's portal."],
+          "steps": [
+            "Open the app, and select **Customer**.",
+            { "text": "In **Help center**, enter your portal name, such as `wings`.", "note": "The portal name is the part of the portal address after `/portal/`." },
+            "Enter your **E-mail**.",
+            {
+              "text": "Choose **Password** or **E-mail me a code**.",
+              "image": "shots/30-sign-in-customer.png",
+              "caption": "The sign-in screen in customer mode.",
+              "alt": "Mobile sign-in screen in customer mode with Help center and E-mail fields, the Password and E-mail me a code choice and the Sign in button, numbered",
+              "width": 260
+            },
+            {
+              "text": "Finish signing in.",
+              "substeps": [
+                "With **Password**, enter your **Password**, and then select **Sign in**.",
+                "With **E-mail me a code**, select **Send me a code**. Enter the code in **Code from the e-mail**, and then select **Verify code**."
+              ]
+            }
+          ],
+          "result": "The **My tickets** tab opens. The app keeps you signed in on this phone.",
+          "blocks": [
+            { "tip": "If the code does not arrive, select **Send a new code**." },
+            { "note": "The app has no single sign-on, no account creation and no password change. Use the web portal for those." }
+          ]
+        },
+        {
+          "id": "mobile-agent-home",
+          "title": "The Home tab for agents",
+          "type": "concept",
+          "intro": "**Home** gives you a quick view of your work. Pull the screen down to refresh it.",
+          "blocks": [
+            { "image": "shots/30-agent-home.png", "caption": "The **Home** tab in agent mode.", "alt": "Agent Home tab with the availability button, the Mine queue tile, an SLA chip in My next deadlines and the Tickets tab highlighted and numbered", "width": 260 },
+            { "callouts": [
+              "Your availability. Select it to change it.",
+              "**My queues** shows how many tickets wait in each queue. Select a tile to open that list.",
+              "**My next deadlines** lists your open tickets with the nearest SLA deadlines. The chip shows the time left, or how long ago the deadline passed.",
+              "The tab bar opens **Home**, **Tickets**, **Alerts**, **Approvals** and **Me**. A number on a tab counts your tickets or unread alerts."
+            ] },
+            { "p": "If approvals wait for your decision, **Approvals waiting for you** appears below the tiles." }
+          ]
+        },
+        {
+          "id": "mobile-availability",
+          "title": "Change your availability",
+          "type": "task",
+          "intro": "Routing only assigns new tickets to you while you are **Online**. Set yourself to **Away** or **Busy** when you step out.",
+          "steps": [
+            "On **Home**, select your availability at the top right.",
+            "Choose **Online**, **Away**, **Busy** or **Offline**. Your current choice says **(current)**."
+          ],
+          "result": "A message confirms your new availability, such as **You are Away.**",
+          "blocks": [
+            { "tip": "You can also change it on the **Me** tab, under **Availability**." }
+          ]
+        },
+        {
+          "id": "mobile-agent-tickets",
+          "title": "Find and act on tickets",
+          "type": "task",
+          "intro": "The **Tickets** tab lists tickets by queue. You can search, assign tickets to yourself and close them from the list.",
+          "steps": [
+            "Select the **Tickets** tab.",
+            "Choose a queue: **Mine**, **Unassigned**, **Overdue**, **At risk**, **Escalated**, **Waiting**, **Watching** or **All open**. Swipe the row of queues to see them all.",
+            "To find a ticket, enter its number, subject or customer in **Search number, subject, customer**.",
+            {
+              "text": "To act on a ticket, select the three dots at the end of its row.",
+              "image": "shots/30-ticket-actions.png",
+              "caption": "The actions for an unassigned ticket.",
+              "alt": "Tickets list in the Unassigned queue with an action sheet offering Assign to me, Close ticket and Cancel",
+              "width": 260
+            },
+            "Choose **Assign to me** or **Close ticket**. Choose **Cancel** to do nothing.",
+            "To open a ticket, select it in the list."
+          ],
+          "result": "The ticket opens, or the list shows the change you made.",
+          "blocks": [
+            { "image": "shots/30-agent-tickets.png", "caption": "The **Tickets** tab with the **Mine** queue.", "alt": "Tickets tab with the search box, the Mine queue, the priority and SLA chips of the first ticket and its actions button highlighted and numbered", "width": 260 },
+            { "callouts": [
+              "Search by number, subject or customer.",
+              "The queues. The selected one is underlined.",
+              "Each ticket shows its priority, **Escalated** when escalated, and its SLA chip.",
+              "The three dots open the ticket's actions."
+            ] },
+            { "list": [
+              "Swipe a ticket to the right for **Assign to me**. Swipe it to the left for **Close**.",
+              "A blue dot next to the status means the customer replied.",
+              "**Close ticket** asks you to confirm. The customer is not asked to confirm, and you can reopen the ticket later.",
+              "When tickets change, **New activity — refresh** appears at the top. Select it to reload the list.",
+              "Pull the list down, or select the refresh button, to reload it. Scroll down to load more tickets."
+            ] },
+            { "note": "You see **Assign to me** and **Close** only if your role allows them." }
+          ]
+        },
+        {
+          "id": "mobile-agent-ticket",
+          "title": "Work on a ticket",
+          "type": "task",
+          "intro": "The ticket screen shows the SLA timers and the conversation. You can change the status, priority and assignee from the top of the screen.",
+          "steps": [
+            "Open the ticket from **Tickets**, **Home** or **Alerts**.",
+            {
+              "text": "To change the status, select the status chip, and choose the new status.",
+              "image": "shots/30-status-sheet.png",
+              "caption": "The **Change status** list.",
+              "alt": "Change status action sheet listing Open, Assigned, Waiting on Customer, Waiting on Third Party, Escalated to Engineering, Resolved, Closed and Cancel",
+              "width": 260
+            },
+            "To change the priority, select the priority chip, and choose the new priority.",
+            {
+              "text": "To change the assignee, select the person chip, and choose an option.",
+              "note": "The list offers **Assign to me**, other agents with their availability and load, and **Unassign**."
+            },
+            "Select **Customer** to see the contact, the customer, contracts and previous tickets. Select **Conversation** to go back."
+          ],
+          "result": "**Ticket updated** appears, and the timeline shows the change.",
+          "blocks": [
+            { "image": "shots/30-agent-ticket.png", "caption": "A ticket in agent mode.", "alt": "Ticket 1195 with the status, priority and assignee chips, the SLA chips, the Conversation and Customer choice and the reply box highlighted and numbered", "width": 260 },
+            { "callouts": [
+              "The status, priority and assignee chips. A grey chip means you cannot change it.",
+              "The SLA chips show the time left for the first response, the next response and the resolution. **Escalated** shows the escalation level.",
+              "**Conversation** shows the messages and events. **Customer** shows who the customer is.",
+              "The reply box. See [Reply or add a note](#mobile-reply)."
+            ] },
+            { "image": "shots/30-customer-tab.png", "caption": "The **Customer** section of a ticket.", "alt": "Customer section with the contact's name, job, e-mail and phone, the customer with its tier and account manager, and ticket statistics", "width": 260 },
+            { "p": "When colleagues open the same ticket, a line under the details says who is viewing or replying." },
+            { "note": "If someone else changed the ticket first, the app shows the latest version. Make your change again." }
+          ]
+        },
+        {
+          "id": "mobile-reply",
+          "title": "Reply or add a note",
+          "type": "task",
+          "intro": "Reply to the customer, or write an internal note for other agents. You can add photos, files and templates.",
+          "steps": [
+            "Open the ticket, and stay on **Conversation**.",
+            "Choose **Reply** or **Internal note** above the text box.",
+            "Type your message.",
+            {
+              "text": "Optionally, add attachments or a template.",
+              "substeps": [
+                "The camera button takes a photo.",
+                "The paper clip button attaches files from your phone.",
+                "The page button inserts a reply template."
+              ]
+            },
+            {
+              "text": "Select **Send**. For a note, select **Add note**.",
+              "image": "shots/30-composer.png",
+              "caption": "A reply ready to send, with the camera, file and template buttons.",
+              "alt": "Mobile reply box with Reply and Internal note, a typed message, camera, attach and template buttons and the Send button",
+              "width": 300
+            }
+          ],
+          "result": "**Reply sent.** or **Note added.** appears, and your message joins the conversation.",
+          "blocks": [
+            { "list": [
+              "You can attach up to 10 files to a message.",
+              "The app saves what you type on the phone. If you leave the ticket, your text is still there when you come back.",
+              "Without a connection, the button says **Queue**. See [Work offline](#mobile-offline)."
+            ] },
+            { "note": "If new messages arrived while you were writing, the app holds your reply. Read the new messages, and then choose **Send anyway**, **Edit** or **Discard**." }
+          ]
+        },
+        {
+          "id": "mobile-alerts",
+          "title": "Read and acknowledge alerts",
+          "type": "task",
+          "intro": "The **Alerts** tab shows your notifications, such as assignments, mentions and SLA warnings. Critical alerts need an acknowledgement.",
+          "steps": [
+            "Select the **Alerts** tab. The number on the tab counts unread alerts.",
+            "Select an alert to open its ticket. The app marks the alert read.",
+            "For a critical alert, select **Acknowledge**.",
+            "To mark every alert read, select **Mark all read**."
+          ],
+          "result": "**Acknowledged** replaces the button, and the unread count goes down.",
+          "blocks": [
+            { "image": "shots/30-alerts.png", "caption": "The **Notifications** screen with SLA alerts.", "alt": "Notifications screen listing SLA breach and escalation alerts, some with an Acknowledge button, and Mark all read at the top", "width": 260 },
+            { "note": "Some alerts open in the desktop desk only. The app then says **This item opens in the desktop workbench.**" }
+          ]
+        },
+        {
+          "id": "mobile-approvals",
+          "title": "Approve or reject a request",
+          "type": "task",
+          "intro": "Approvers decide on transfer and workflow requests from the **Approvals** tab.",
+          "prerequisites": ["Your role lets you decide approvals."],
+          "steps": [
+            "Select the **Approvals** tab.",
+            "On **To decide**, read the request. Select the ticket line to open the ticket.",
+            "Select **Approve** or **Reject**.",
+            "Enter a note. For a rejection, explain why, because the requester sees your note.",
+            "Select **Approve** or **Reject** in the dialog."
+          ],
+          "result": "**Approved.** or **Rejected.** appears, and the request shows who decided.",
+          "blocks": [
+            { "p": "**Raised by me** lists the approvals you asked for, with their status." }
+          ]
+        },
+        {
+          "id": "mobile-me",
+          "title": "The Me tab",
+          "type": "reference",
+          "intro": "**Me** shows who you are signed in as and holds your settings.",
+          "blocks": [
+            { "image": "shots/30-me-agent.png", "caption": "The **Me** tab in agent mode.", "alt": "Me tab with the agent's name, Availability, Appearance, Notifications, Unsent messages and the Sign out button", "width": 260 },
+            { "table": {
+              "columns": ["Part", "What it does"],
+              "widths": [28, 72],
+              "rows": [
+                ["**Availability**", "Agents only. Choose **Online**, **Away**, **Busy** or **Offline**."],
+                ["**Appearance**", "Choose **System**, **Light** or **Dark** colours."],
+                ["**Notifications**", "Shows whether push notifications work on this phone. See [Push notifications](#mobile-push)."],
+                ["**Unsent messages**", "Lists messages that wait for a connection, with **Retry** and **Discard**."],
+                ["**Sign out**", "Signs you out of this mode on this phone."]
+              ]
+            } },
+            { "warning": "Signing out deletes unsent messages from this phone. The app warns you first. Send or discard them before you sign out." }
+          ]
+        },
+        {
+          "id": "mobile-customer-tickets",
+          "title": "Follow your requests",
+          "type": "task",
+          "intro": "In customer mode, **My tickets** lists your requests. If your support team allows it, you also see your location's or organisation's tickets.",
+          "steps": [
+            "Select the **My tickets** tab.",
+            "If you see **Mine**, **Location** and **Organisation**, choose whose tickets to show.",
+            "Choose **Open**, **Needs me**, **Closed** or **All**.",
+            "To find a request, type in **Search your tickets**.",
+            "Select a request to open it."
+          ],
+          "result": "The request opens with its conversation.",
+          "blocks": [
+            { "image": "shots/30-customer-tickets.png", "caption": "**My tickets** in customer mode.", "alt": "My tickets tab with the Mine scope, the Open filter, the search box and the new request button highlighted and numbered", "width": 260 },
+            { "callouts": [
+              "Whose tickets to show. It appears only if you may see more than your own.",
+              "The status filter. **Needs me** lists requests that wait for your reply or confirmation.",
+              "Search your tickets.",
+              "The plus button starts a new request."
+            ] },
+            { "p": "The **Waiting for your reply** badge marks requests where support asked you something. Another badge asks you to confirm the fix." }
+          ]
+        },
+        {
+          "id": "mobile-customer-request",
+          "title": "Reply, confirm, reopen or rate a request",
+          "type": "task",
+          "intro": "Open a request to reply to support. You can also confirm a fix, reopen a request and rate the support you received.",
+          "steps": [
+            "Open the request from **My tickets**.",
+            "To reply, type in **Write a reply…**, add photos or files if needed, and select **Send**.",
+            {
+              "text": "If you see **Did this solve your problem?**, answer it.",
+              "substeps": [
+                "Select **Yes, close it** if the problem is solved.",
+                "Select **No, still a problem**, and say what is still not working. Then select **Reopen**."
+              ]
+            },
+            {
+              "text": "To reopen a closed request, select **Reopen request**. Enter the reason, and then select **Reopen**.",
+              "image": "shots/30-reopen-prompt.png",
+              "caption": "The **Reopen this request?** dialog.",
+              "alt": "Reopen this request? dialog with a reason typed and the Cancel and Reopen buttons",
+              "width": 260
+            },
+            "To rate the support, select from 1 to 5 stars under **How did we do?**. Add a comment if you like, and then select **Send rating**."
+          ],
+          "result": "A message confirms each action, such as **Reply sent.** or **Thank you for your feedback!**",
+          "blocks": [
+            { "image": "shots/30-customer-request.png", "caption": "A closed request that you can rate and reopen.", "alt": "Request 1202 with the How did we do? rating card, the Reopen request button and the reply box highlighted and numbered", "width": 260 },
+            { "callouts": [
+              "Rate the support. **Send rating** appears after you select the stars.",
+              "**Reopen request** and the last date you can reopen.",
+              "The reply box. Without a connection, the button says **Queue**."
+            ] },
+            { "warning": "**Yes, close it** closes the request at once. It does not ask you to confirm." }
+          ]
+        },
+        {
+          "id": "mobile-new-request",
+          "title": "Start a new request",
+          "type": "task",
+          "intro": "The **New request** form matches the portal's ticket form. It suggests articles that may already answer your question.",
+          "steps": [
+            "Select the **New request** tab, or the plus button on **My tickets**.",
+            {
+              "text": "Enter a **Subject** of at least 5 characters.",
+              "image": "shots/30-new-request.png",
+              "caption": "The **New request** form with suggested articles.",
+              "alt": "New request form with a subject, suggested articles, Description and the About your request fields Department, Category, Product, Installation and Priority",
+              "width": 260,
+              "note": "If a suggested article answers your question, select it to read it."
+            },
+            "Describe the problem in **Description**.",
+            "Choose the **Department**, **Category**, **Product**, **Installation** and **Priority**.",
+            "Fill in any extra fields. You must fill in the fields that have an asterisk.",
+            "To attach files, select **Camera** or **Files**.",
+            "Select **Submit request**."
+          ],
+          "result": "A message gives the new request number, such as **Request #1206 created — we will be in touch.**",
+          "blocks": [
+            { "p": "The app saves the form on your phone as you type. Select **Clear form** to start again." },
+            { "note": "Without a connection, the button says **Save — submit when online**. The app submits the request when the connection returns." }
+          ]
+        },
+        {
+          "id": "mobile-help",
+          "title": "Read help articles",
+          "type": "task",
+          "intro": "The **Help** tab has the same articles as the portal's knowledge base.",
+          "steps": [
+            "Select the **Help** tab.",
+            "Choose a category chip, or keep **All** to see **Popular articles** and **Recently updated**.",
+            "To search, type in **Search the help center**.",
+            "Select an article to read it.",
+            "At the end, answer **Was this article helpful?** with **Yes** or **No**."
+          ],
+          "result": "**Thanks for the feedback!** appears. After **No**, you can select **New request**.",
+          "blocks": [
+            { "image": "shots/30-help.png", "caption": "The **Help** tab with categories and popular articles.", "alt": "Help tab with a search box, category chips and a list of popular articles", "width": 260 },
+            { "note": "**Yes** and **No** send your answer at once. Search needs a connection, but articles you opened before stay readable offline." },
+            { "p": "Customer mode does not include the community, the assistant, troubleshooting guides, profile changes or contracts. Use the web portal for those." }
+          ]
+        },
+        {
+          "id": "mobile-offline",
+          "title": "Work offline",
+          "type": "concept",
+          "intro": [
+            "The app keeps a copy of the screens you opened. When the connection drops, you can still read them.",
+            "A banner under the title says you are offline. It also says how many messages wait to be sent."
+          ],
+          "blocks": [
+            { "image": "shots/30-offline.png", "caption": "A ticket while the phone is offline, with a reply ready to queue.", "alt": "Ticket screen with the banner You are offline — showing saved data, read-only, grey chips, and a reply with the Queue button", "width": 260 },
+            { "table": {
+              "columns": ["What", "What happens offline"],
+              "widths": [30, 70],
+              "rows": [
+                ["Screens you opened", "Show the saved copy, with the time it was saved. They refresh when the connection returns."],
+                ["Drafts", "Saved on the phone as you type."],
+                ["Replies, notes and new requests", "Wait in a queue. The button says **Queue**. The app sends them, with their attachments, when the connection returns."],
+                ["Status, priority, assignee, approvals and ratings", "Need a connection. Their buttons are grey while you are offline."],
+                ["Signing in", "Needs a connection. If you were already signed in, the app opens your saved data."]
+              ]
+            } },
+            { "p": "A queued message is never sent twice, even if the app retries. If the team rejects a queued message, for example because the ticket closed, it shows **Not sent**. Choose **Retry**, **Edit** or **Discard**." },
+            { "p": "If a colleague replied first, a queued agent reply shows **Not sent — new messages arrived**. Read the new messages, and then choose **Send anyway**, **Edit** or **Discard**." },
+            { "warning": "Signing out deletes unsent messages from this phone. Check **Unsent messages** on the **Me** tab first." }
+          ]
+        },
+        {
+          "id": "mobile-push",
+          "title": "Push notifications",
+          "type": "concept",
+          "intro": [
+            "The standard app does not send push notifications yet. The **Me** tab shows **Not available in this build**.",
+            "While the app is open, updates still arrive live. Agents see new alerts on the **Alerts** tab at once.",
+            "Your organisation can build a version of the app with push notifications. Then the **Me** tab has a **Push notifications on this device** switch."
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "The app says **You are offline. Signing in needs a connection.**", "cause": "The phone has no connection, so the app cannot check your details.", "fix": "Connect to Wi-Fi or mobile data, and then sign in again." },
+    { "problem": "Sign-in says **The details you entered are not correct.**", "cause": "The e-mail, password or code is wrong.", "fix": "Check your typing. Customers can choose **E-mail me a code** instead of a password." },
+    { "problem": "Sign-in says **That help center or workspace does not exist.**", "cause": "The **Workspace** or **Help center** name is wrong.", "fix": "Check the name with your administrator or support team. For customers, it is the part of the portal address after `/portal/`." },
+    { "problem": "Sign-in says **Your password has expired. Ask an administrator to reset it.**", "cause": "Your agent password is too old.", "fix": "Ask your administrator to reset your password, and then sign in again." },
+    { "problem": "A message shows **Not sent** on a ticket or on the **Me** tab.", "cause": "The team rejected the message, for example because the ticket is now closed.", "fix": "Read the reason under the message. Choose **Retry**, **Edit** or **Discard**." },
+    { "problem": "A file is not attached, and the app says it is larger than the limit.", "cause": "The file is too big, or the message already has 10 attachments.", "fix": "Attach a smaller file, or send the extra files in another message." },
+    { "problem": "A screen says **This list has not been saved on this device yet.**", "cause": "You are offline and never opened this screen while online.", "fix": "Reconnect, and open the screen once. After that, it is available offline." },
+    { "problem": "A change says **Someone else changed this ticket — showing the latest version. Try again.**", "cause": "A colleague changed the ticket while you were looking at it.", "fix": "Check the latest version, and make your change again if it is still needed." }
+  ],
+  "faq": [
+    { "q": "Can I use agent mode and customer mode on the same phone?", "a": "Yes. Choose the mode on the sign-in screen. The app keeps a separate sign-in for each mode." },
+    { "q": "Will a reply I queued offline be sent twice?", "a": "No. Each queued message has its own marker, so a retry never creates a duplicate." },
+    { "q": "Why don't I get push notifications?", "a": "The standard app does not include push notifications. Keep the app open to get live updates, or ask your organisation about a build with push notifications." },
+    { "q": "What happens to my unsent messages if I sign out?", "a": "They are deleted from the phone. The app warns you first, so send or discard them before you sign out." }
+  ],
+  "glossary": [
+    { "term": "Agent mode", "definition": "The mobile app mode for agents. It shows queues, tickets, alerts and approvals." },
+    { "term": "Customer mode", "definition": "The mobile app mode for customers. It shows their requests, a new request form and help articles." },
+    { "term": "Help center name", "definition": "The portal name a customer enters in the mobile app, such as `wings`. It is the part of the portal address after `/portal/`." },
+    { "term": "Unsent messages", "definition": "Replies, notes and new requests that the mobile app holds until it has a connection." },
+    { "term": "Queued message", "definition": "A message written offline in the mobile app. The app sends it when the connection returns." },
+    { "term": "Push notification", "definition": "A message that appears on a phone even when the app is closed. The standard SupportDesk app does not send them yet." },
+    { "term": "Read-only", "definition": "A state of the mobile app while offline. You can read saved screens, but changes wait for a connection." }
+  ]
+}

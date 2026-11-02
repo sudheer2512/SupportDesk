@@ -1,0 +1,301 @@
+{
+  "chapters": [
+    {
+      "id": "brands-portals",
+      "title": "Brands and portals",
+      "intro": [
+        "This chapter is for administrators. It explains how to set up a brand and its customer help center, also called the portal.",
+        "It also covers logos, footers, the default brand and using your own domain name for the help center."
+      ],
+      "sections": [
+        {
+          "id": "br-how-brands-work",
+          "title": "How brands work",
+          "type": "concept",
+          "intro": [
+            "A brand is a name your customers know you by. Each brand has its own help center, colours, logo, e-mail footer and sender name.",
+            "Channels, knowledge base categories and tickets belong to a brand. Customers see only the help center of their brand."
+          ],
+          "blocks": [
+            "To open the list, select **Administration** > **Brands & portals**. You need the **Manage departments, teams, brands and calendars** permission.",
+            {
+              "image": "shots/22-brands-list.png",
+              "caption": "The **Brands & portals** page with one brand.",
+              "alt": "Brands and portals page with numbered highlights on New brand, the brand banner, the brand title with its badges, the portal address and the Edit and menu buttons",
+              "width": 560
+            },
+            {
+              "callouts": [
+                "**New brand** adds a brand.",
+                "The banner in the brand's colours, with its logo or first letter.",
+                "The brand name. **Default** marks the main brand. **Portal on** or **Portal off** shows whether the help center is online.",
+                "The portal address. Select it to open the help center in a new tab.",
+                "**Edit** opens the brand. The menu button has more actions."
+              ]
+            },
+            { "heading": "How many brands you can have" },
+            "A second brand needs the multi-brand feature of your plan. The Trial plan allows 2 brands, Starter 1, Professional 3 and Enterprise any number."
+          ]
+        },
+        {
+          "id": "br-brand-page",
+          "title": "The brand page",
+          "type": "concept",
+          "intro": "Select **Edit** on a brand to open its page. The page has five cards and a live preview of the help center.",
+          "blocks": [
+            {
+              "image": "shots/22-brand-editor.png",
+              "caption": "The brand page of the default brand.",
+              "alt": "Brand page with numbered highlights on the Identity, Logo and favicon, Custom domain, Portal and Contact and footers cards, the preview and the save bar",
+              "width": 560
+            },
+            {
+              "callouts": [
+                "**Identity**: name, portal address and colours.",
+                "**Logo & favicon**: the images of the brand.",
+                "**Custom domain**: your own address for the help center.",
+                "**Portal**: the help center's title, languages, sign-in and features.",
+                "**Contact & footers**: support contacts and the footers of the portal and e-mails.",
+                "The preview shows the colours, title and welcome message as you type.",
+                "The save bar with **Discard** and **Save brand**."
+              ]
+            },
+            "The save bar shows **Unsaved changes** until you save. **Open portal** at the top right opens the help center."
+          ]
+        },
+        {
+          "id": "br-create-brand",
+          "title": "Create a brand",
+          "type": "task",
+          "intro": "Create a brand for a new company name or product line with its own help center.",
+          "prerequisites": [
+            "You have the **Manage departments, teams, brands and calendars** permission.",
+            "Your plan allows another brand."
+          ],
+          "steps": [
+            "Select **Administration** > **Brands & portals**, then select **New brand**.",
+            {
+              "text": "Enter the **Brand name**. SupportDesk fills in the **Portal address** from the name.",
+              "image": "shots/22-new-brand.png",
+              "caption": "The **Identity** card of a new brand.",
+              "alt": "Identity card with Brand name Wings Retail, Portal address wings-retail, Primary colour and Accent colour",
+              "width": 460
+            },
+            "Change the **Portal address** if you want a different one. The hint shows the full address.",
+            "Choose the **Primary colour** and the **Accent colour**. Use the colour picker or type a code such as `#2563eb`.",
+            "In the **Portal** card, enter the **Portal title** and the **Default language**.",
+            "Fill in the other cards as needed. See the sections below.",
+            "Select **Create brand**."
+          ],
+          "result": "The app shows **Brand created**. You can now upload the logo and favicon."
+        },
+        {
+          "id": "br-identity-fields",
+          "title": "Identity fields",
+          "type": "reference",
+          "intro": "These fields are in the **Identity** card.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Field", "Rules"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**Brand name**", "2 to 100 characters. Required."],
+                  ["**Portal address**", "The short name in the help center address. Use 2 to 64 lower-case letters, digits and hyphens. It must be unique across SupportDesk."],
+                  ["**Primary colour**", "The main colour of the help center, such as the header. Use a colour code such as `#2563eb`."],
+                  ["**Accent colour**", "The colour of buttons and links. Use a colour code such as `#0ea5e9`."]
+                ]
+              }
+            },
+            { "note": "Some words are reserved and cannot be portal addresses, such as `admin`, `portal` and `widget`." }
+          ]
+        },
+        {
+          "id": "br-logo",
+          "title": "Add a logo and favicon",
+          "type": "task",
+          "intro": "The logo appears in the help center header and in e-mails. The favicon is the small icon in the browser tab.",
+          "prerequisites": [
+            "The brand is saved. New brands show the upload buttons after you create them.",
+            "You have a PNG, JPEG, GIF or WebP image of 2 MB or less."
+          ],
+          "steps": [
+            "Open the brand.",
+            "In the **Logo & favicon** card, select **Upload** next to **Logo**.",
+            "Choose the image file. A wide image works best for the logo.",
+            "Select **Upload** next to **Favicon** and choose a square image, such as 64 × 64 pixels."
+          ],
+          "result": "The app shows **Logo uploaded** or **Favicon uploaded**. The images appear in the card and in the preview.",
+          "blocks": [
+            "To remove an image, select **Remove** next to it.",
+            { "note": "SupportDesk checks every uploaded image for malware before it uses it." }
+          ]
+        },
+        {
+          "id": "br-portal",
+          "title": "Set up the help center",
+          "type": "task",
+          "intro": "The **Portal** card decides what customers see and can do in the brand's help center.",
+          "steps": [
+            "Open the brand and find the **Portal** card.",
+            "Enter the **Portal title** and an optional **Welcome message**.",
+            "In **Default department for portal tickets**, choose a department. Or keep **Routing decides**.",
+            "Enter the **Default language**, such as `en`, and add other codes in **Languages offered**.",
+            "Choose how customers sign in, in **Customer sign-in**.",
+            "Turn on **Help center is online**.",
+            "Turn on the features you want customers to use.",
+            "Select **Save brand**."
+          ],
+          "result": "The app shows **Brand saved**. Changes, including the colours, apply in the help center at once.",
+          "blocks": [
+            {
+              "image": "shots/22-brand-portal.png",
+              "caption": "The **Portal** card with the help center online.",
+              "alt": "Portal card with Portal title, Default department for portal tickets, Welcome message, Default language, Languages offered, Customer sign-in and the feature switches",
+              "width": 460
+            },
+            { "note": "The feature switches are greyed out while **Help center is online** is off. The default brand's help center cannot be switched off." }
+          ]
+        },
+        {
+          "id": "br-portal-options",
+          "title": "Help center options",
+          "type": "reference",
+          "intro": "These switches and lists are in the **Portal** card.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Option", "What it does"],
+                "widths": [32, 68],
+                "rows": [
+                  ["**Knowledge base**", "Shows public and customer-only articles."],
+                  ["**Community forums**", "Lets customers ask and answer questions."],
+                  ["**Live chat widget**", "Lets customers chat with agents from the help center."],
+                  ["**AI assistant**", "Answers from the knowledge base before a customer raises a ticket."],
+                  ["**Anonymous tickets**", "Lets visitors raise tickets without signing in. It needs the help center to be online."],
+                  ["**Self-registration**", "Lets customers create their own help center account."],
+                  ["**Customer sign-in**", "**E-mail and password / one-time code**, **Single sign-on only** or **Both**."],
+                  ["**Default department for portal tickets**", "Where tickets from the help center go. **Routing decides** uses your routing rules."],
+                  ["**Languages offered**", "Up to 20 language codes, such as `en`, `fr` or `pt-BR`."]
+                ]
+              }
+            },
+            { "note": "Customer single sign-on is not available yet. With **Single sign-on only**, the help center hides the password option, and customers sign in with e-mail codes." }
+          ]
+        },
+        {
+          "id": "br-contact-footers",
+          "title": "Set contact details and footers",
+          "type": "task",
+          "intro": "Add your support contacts and the footers that appear in the help center and in e-mails for this brand.",
+          "steps": [
+            "Open the brand and find the **Contact & footers** card.",
+            "Enter the **Support e-mail** and the **Support phone**.",
+            { "text": "Enter the **Portal footer (HTML)**.", "note": "The help center keeps links, formatting and images in the footer. It removes any other code." },
+            "Enter the **E-mail footer / signature (HTML)**.",
+            "Check the **E-mail footer preview** below the fields.",
+            "Select **Save brand**."
+          ],
+          "result": "The e-mail footer is added to replies, acknowledgements and surveys sent for this brand.",
+          "blocks": [
+            {
+              "image": "shots/22-brand-footers.png",
+              "caption": "The **Contact & footers** card with the e-mail footer preview.",
+              "alt": "Contact and footers card with Support e-mail, Support phone, Portal footer, E-mail footer and its preview",
+              "width": 460
+            },
+            { "tip": "Ask someone who knows HTML to write the footers. Plain text also works." }
+          ]
+        },
+        {
+          "id": "br-custom-domain",
+          "title": "Use your own domain for the help center",
+          "type": "task",
+          "intro": "A custom domain shows the help center under your own address, such as `support.example.com`.",
+          "prerequisites": ["Someone in your company can change your domain's DNS settings, the address book of your web addresses."],
+          "steps": [
+            "Open the brand and find the **Custom domain** card.",
+            {
+              "text": "In **Domain**, enter the address without `https://`, such as `support.example.com`.",
+              "image": "shots/22-brand-domain.png",
+              "caption": "The **Custom domain** card with a domain typed in but not yet saved.",
+              "alt": "Custom domain card with the Domain field filled in",
+              "width": 460
+            },
+            "Select **Save brand**. The card now shows the **DNS record to create**.",
+            "Give the **Type**, **Name** and **Points to** values to your IT team. They create the record.",
+            "After they finish, select **Check DNS**."
+          ],
+          "result": "The badge shows **Connected** when the domain points to SupportDesk. **Points elsewhere** or **Not found** means the record is wrong or not active yet.",
+          "blocks": [
+            { "warning": "In this release, the help center does not yet open on custom domains. Keep sharing the standard portal address. E-mail links for a brand with a custom domain use that domain, so they do not work yet." },
+            { "note": "**Check DNS** only compares addresses. It does not prove that you own the domain. Your IT team must also set up a security certificate for the domain." }
+          ]
+        },
+        {
+          "id": "br-default-brand",
+          "title": "Open a help center or change the default brand",
+          "type": "task",
+          "intro": "The default brand is your main brand. New channels use it unless you choose another brand.",
+          "steps": [
+            "Select **Administration** > **Brands & portals**.",
+            {
+              "text": "Select the menu button on the brand's card.",
+              "image": "shots/22-brand-menu.png",
+              "caption": "The brand menu.",
+              "alt": "Menu with Open the portal, Make default brand and Delete",
+              "width": 240
+            },
+            "Choose **Open the portal** to see the help center in a new tab.",
+            "Choose **Make default brand** to make this brand the main brand."
+          ],
+          "result": "The app shows **Default brand changed**. The **Default** badge moves to this brand.",
+          "blocks": [
+            { "note": "**Make default brand** is greyed out while the brand's help center is offline. Turn on **Help center is online** first." }
+          ]
+        },
+        {
+          "id": "br-delete-brand",
+          "title": "Take a help center offline or delete a brand",
+          "type": "task",
+          "intro": "Switch a help center off when you stop using a brand. Delete a brand only if it has no tickets and no channels.",
+          "steps": [
+            "To take the help center offline, open the brand, turn off **Help center is online** and select **Save brand**.",
+            "To delete a brand, select **Delete** in its menu on the **Brands & portals** page.",
+            "In the confirmation, type the brand's portal address to confirm.",
+            "Select **Delete**."
+          ],
+          "result": "The app shows **Brand deleted**, and its help center stops working.",
+          "blocks": [
+            { "warning": "You cannot undo a delete. You cannot delete the default brand, a brand with tickets or a brand with channels. Move its channels to another brand, or switch its help center off instead." }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "The app says the portal address is already taken.", "cause": "Another workspace or brand uses that address.", "fix": "Choose another **Portal address**, for example by adding your city or product." },
+    { "problem": "The app says the address is reserved.", "cause": "SupportDesk uses that word itself, such as `admin` or `portal`.", "fix": "Choose another **Portal address**." },
+    { "problem": "You cannot create another brand.", "cause": "Your plan allows a set number of brands.", "fix": "Delete or reuse a brand you do not need, or ask for a bigger plan." },
+    { "problem": "**Help center is online** cannot be switched off.", "cause": "It is the default brand. Its help center must stay online.", "fix": "Make another brand the default first." },
+    { "problem": "**Make default brand** is greyed out.", "cause": "The brand's help center is offline.", "fix": "Turn on **Help center is online**, save, and try again." },
+    { "problem": "A brand cannot be deleted.", "cause": "It is the default brand, or tickets or channels belong to it.", "fix": "Move its channels to another brand, or switch its help center off instead." },
+    { "problem": "The logo upload fails.", "cause": "The file is over 2 MB, or it is not a PNG, JPEG, GIF or WebP image.", "fix": "Make the image smaller or save it in a supported format." },
+    { "problem": "The app says the domain is already used.", "cause": "Another help center uses that domain.", "fix": "Use a different domain, or remove it from the other brand first." },
+    { "problem": "**Check DNS** shows **Points elsewhere**.", "cause": "The DNS record points to another address, or the change has not spread yet.", "fix": "Ask your IT team to check the record against the **Points to** value. Wait an hour and check again." }
+  ],
+  "faq": [
+    { "q": "Can customers use our own domain for the help center now?", "a": "Not yet. You can save the domain and check its DNS record, but customers must use the standard portal address for now." },
+    { "q": "Do brands share the knowledge base?", "a": "Yes, unless you limit a category to some brands. A category's **Brands** setting decides which help centers show it." },
+    { "q": "What happens to tickets of a brand whose help center is offline?", "a": "Nothing. Agents keep working on them. Customers of that brand can no longer use the help center." }
+  ],
+  "glossary": [
+    { "term": "Brand", "definition": "A company or product name with its own help center, colours, logo and e-mail identity." },
+    { "term": "Help center", "definition": "The customer portal of a brand, where customers read articles, raise tickets and follow them." },
+    { "term": "Portal address", "definition": "The short name in a help center's web address, such as `wings`." },
+    { "term": "Default brand", "definition": "The main brand of the workspace. Its help center must stay online." },
+    { "term": "Custom domain", "definition": "Your own web address for a help center, such as `support.example.com`." },
+    { "term": "DNS record", "definition": "An entry in your domain's settings that tells browsers where an address points." },
+    { "term": "Favicon", "definition": "The small icon that browsers show in the tab of a web page." }
+  ]
+}

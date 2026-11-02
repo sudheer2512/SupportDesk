@@ -1,0 +1,26 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": { "width": 1280, "height": 800, "scale": 1.5 },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": ["sd-toast-outlet"],
+  "setup": [
+    { "goto": "/login" },
+    { "fill": "label=Workspace", "value": "wings" },
+    { "fill": "label=Work e-mail", "value": "admin@wings.demo" },
+    { "fill": "label=Password", "value": "${env:SD_DESK_PASSWORD}" },
+    { "click": "form button[type=submit]" },
+    { "waitForText": "Two-step verification" },
+    { "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()" },
+    { "waitForText": "SLA risk board" }
+  ],
+  "shots": [
+    {
+      "id": "intro-tour",
+      "file": "01-desk-at-a-glance.png",
+      "highlight": ["desk-nav-list.rail-list", "button.search", "a.new-ticket", "button.bell", "button[aria-label^='Availability']", "button[aria-label^='Account menu']", "sd-page-header"],
+      "numbered": true
+    }
+  ]
+}

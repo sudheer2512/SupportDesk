@@ -1,0 +1,275 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "admin@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Two-step verification"
+    },
+    {
+      "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "17-admin-home",
+      "file": "17-admin-home.png",
+      "steps": [
+        {
+          "click": "a[href='/admin']"
+        },
+        {
+          "waitFor": "a.area[href='/admin/roles']"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "highlight": [
+        "[role=search]",
+        "section.group h2",
+        "a.area[href='/admin/roles']"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "17-roles",
+      "file": "17-roles.png",
+      "steps": [
+        {
+          "click": "a.area[href='/admin/roles']"
+        },
+        {
+          "waitFor": "ul.rows li"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "highlight": [
+        "text=New role",
+        "label=Filter roles",
+        "ul.rows li:first-child .title",
+        "ul.rows li:first-child .meta",
+        "ul.rows li:first-child sd-dropdown-menu"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "17-role-menu",
+      "file": "17-role-menu.png",
+      "steps": [
+        {
+          "click": "button[aria-label='Actions for Account Manager']"
+        },
+        {
+          "waitFor": "text=Clone"
+        },
+        {
+          "wait": 400
+        },
+        {
+          "wait": 300
+        }
+      ],
+      "highlight": [
+        "[role=menu]"
+      ]
+    },
+    {
+      "id": "17-clone-drawer",
+      "file": "17-clone-drawer.png",
+      "steps": [
+        {
+          "click": "text=Clone"
+        },
+        {
+          "waitFor": "text=Name of the new role"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": ".drawer"
+    },
+    {
+      "id": "17-delete-drawer",
+      "file": "17-delete-drawer.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "button[aria-label='Actions for Account Manager']"
+        },
+        {
+          "waitFor": "text=Delete"
+        },
+        {
+          "click": "text=Delete"
+        },
+        {
+          "waitFor": "text=Move members to"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": ".drawer"
+    },
+    {
+      "id": "17-role-system",
+      "file": "17-role-system.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "text=Administrator"
+        },
+        {
+          "waitFor": "text=Clone to customise"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "eval": "(() => { window.scrollTo(0,0); document.querySelectorAll('*').forEach(e => { if (e.scrollTop) e.scrollTop = 0; }); })()"
+        },
+        {
+          "wait": 300
+        }
+      ],
+      "highlight": [
+        "text=Clone to customise",
+        ".callout",
+        "section[aria-labelledby=role-general]"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "17-custom-role",
+      "file": "17-custom-role.png",
+      "steps": [
+        {
+          "click": "a[href='/admin/roles']"
+        },
+        {
+          "waitFor": "ul.rows li"
+        },
+        {
+          "click": "text=Account Manager"
+        },
+        {
+          "waitFor": "section[aria-labelledby=role-members]"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": "section[aria-labelledby=role-scope]"
+    },
+    {
+      "id": "17-role-members",
+      "file": "17-role-members.png",
+      "clip": "section[aria-labelledby=role-members]",
+      "highlight": [
+        "sd-combobox",
+        "section[aria-labelledby=role-members] li button"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "17-new-role",
+      "file": "17-new-role.png",
+      "steps": [
+        {
+          "click": "a[href='/admin/roles']"
+        },
+        {
+          "waitFor": "ul.rows li"
+        },
+        {
+          "click": "text=New role"
+        },
+        {
+          "waitFor": "text=Data scope"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "fill": "label=Name",
+          "value": "Billing desk"
+        },
+        {
+          "fill": "label=Description (optional)",
+          "value": "Billing agents who also see support costs"
+        }
+      ],
+      "clip": "section[aria-labelledby=role-general]"
+    },
+    {
+      "id": "17-permissions",
+      "file": "17-permission-matrix.png",
+      "steps": [
+        {
+          "fill": "label=Filter permissions",
+          "value": "merge"
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "clip": "section[aria-labelledby=role-perms]",
+      "highlight": [
+        ".perm-filter",
+        "fieldset.group legend",
+        "fieldset.group .perm .code",
+        "fieldset.group .perm sd-badge"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "17-savebar",
+      "file": "17-role-savebar.png",
+      "clip": ".savebar"
+    }
+  ]
+}

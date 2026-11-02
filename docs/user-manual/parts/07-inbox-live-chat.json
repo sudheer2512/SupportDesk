@@ -1,0 +1,510 @@
+{
+  "chapters": [
+    {
+      "id": "inbox-and-live-chat",
+      "title": "Inbox and live chat",
+      "intro": [
+        "This chapter is for agents who answer customers on live chat, WhatsApp, SMS, Messenger, Instagram, e-mail and phone.",
+        "The **Inbox** shows every conversation from every channel in one list. The **Live chat** console is where you take and answer website chats in real time."
+      ],
+      "sections": [
+        {
+          "id": "inbox-at-a-glance",
+          "title": "The Inbox at a glance",
+          "type": "concept",
+          "intro": [
+            "Open the Inbox from **Inbox** in the menu on the left. You can also press [[G]] and then [[I]].",
+            "The Inbox has three panels. The list of conversations is on the left. The selected conversation is in the middle. Facts about the customer and the ticket are on the right."
+          ],
+          "blocks": [
+            {
+              "image": "shots/07-inbox-tour.png",
+              "caption": "The **Inbox** with a WhatsApp conversation open.",
+              "alt": "Inbox with the conversation list, an open WhatsApp conversation and the context panel, each part numbered"
+            },
+            {
+              "callouts": [
+                "The **Inbox** title and the **Live chat** button, which opens the chat console. Administrators also see a settings button for the channels.",
+                "Search and filters. Search by name, subject or address. Filter by channel, status and assignee.",
+                "The conversation list. Each row shows the customer, the subject, the last message, the status and the ticket number.",
+                "The conversation header. It shows the channel, the channel account, when the conversation started and its status. **Ticket #** opens the linked ticket.",
+                "A banner about the channel. For WhatsApp it shows the 24-hour service window. For a chat it shows whether the visitor is verified.",
+                "The messages, oldest at the top. Your replies are on the right.",
+                "The context panel. It shows the contact, the linked ticket and facts about the conversation."
+              ]
+            },
+            {
+              "note": "The list updates by itself when a new message arrives. It shows 40 conversations at a time. Select **Load more** at the end of the list to see more."
+            }
+          ]
+        },
+        {
+          "id": "find-a-conversation",
+          "title": "Find a conversation",
+          "type": "task",
+          "intro": "Use the filters to find a customer's conversation or to see only the ones that need you.",
+          "steps": [
+            "In the menu on the left, select **Inbox**.",
+            "To search, enter part of a name, subject or address in **Search name, subject, address…**.",
+            "To see one channel, choose it in the **All channels** list.",
+            "To change the status, choose it in the status list. The default is **Active**.",
+            "To see one person's conversations, choose **Me**, **Unassigned** or an agent in the **Anyone** list.",
+            {
+              "text": "Select a conversation in the list.",
+              "note": "If chats are waiting, a pill shows how many, for example **2 waiting for an agent**. Select it to see only those chats."
+            }
+          ],
+          "result": "The conversation opens in the middle panel. The Inbox remembers your filters the next time you open it."
+        },
+        {
+          "id": "inbox-filters",
+          "title": "Inbox filters",
+          "type": "reference",
+          "intro": "The three lists under the search box narrow the conversation list.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Filter", "Options", "What it does"],
+                "widths": [18, 37, 45],
+                "rows": [
+                  ["Channel", "**All channels**, **E-mail**, **WhatsApp**, **SMS**, **Live chat**, **Phone**, **Messenger**, **Instagram**", "Shows only conversations from that channel."],
+                  ["Status", "**Active**, **Waiting for agent**, **With agent**, **Bot**, **Open**, **Closed**, **All statuses**", "**Active** hides closed conversations. The other options show one status, or all of them."],
+                  ["Assignee", "**Anyone**, **Me**, **Unassigned**, or an agent's name", "Shows conversations handled by that person, or by nobody yet."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "conversation-statuses",
+          "title": "Conversation statuses",
+          "type": "reference",
+          "intro": "Each conversation has a status. It shows as a coloured badge in the list and in the header.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Status", "Meaning"],
+                "widths": [25, 75],
+                "rows": [
+                  ["**Bot**", "The chat bot is talking to a website visitor. No agent has joined yet."],
+                  ["**Waiting for agent**", "The visitor asked for a person. The chat waits in the **Waiting** list of the Live chat console."],
+                  ["**With agent**", "An agent accepted the chat and is talking to the visitor."],
+                  ["**Open**", "An e-mail, messaging or call conversation that is still in progress."],
+                  ["**Closed**", "The conversation has ended. For a chat, the transcript is on the ticket."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "conversations-and-tickets",
+          "title": "How conversations become tickets",
+          "type": "concept",
+          "intro": [
+            "SupportDesk creates tickets from conversations by itself. You cannot turn a conversation into a ticket by hand, or link it to another ticket.",
+            "Only live chats have a reply box in the Inbox. For every other channel, you reply on the ticket. The reply goes back on the channel the customer used."
+          ],
+          "blocks": [
+            {
+              "list": [
+                "A WhatsApp, SMS, Messenger or Instagram message joins the customer's open ticket. If there is no open ticket, SupportDesk creates one.",
+                "A missed call or a voicemail creates a ticket.",
+                "A live chat becomes a ticket when it is handed to a person.",
+                "An e-mail joins the ticket whose number is in the subject. Otherwise it creates a new ticket."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "reply-on-the-ticket",
+          "title": "Reply to a message from another channel",
+          "type": "task",
+          "intro": "Answer an e-mail, WhatsApp, SMS, Messenger or Instagram message from its ticket.",
+          "steps": [
+            "In the **Inbox**, select the conversation.",
+            "Read the banner under the header, if there is one.",
+            {
+              "text": "At the bottom of the conversation, select **Reply on ticket #** followed by the number.",
+              "note": "You can also select **Ticket #** in the header."
+            },
+            "Write and send your reply on the ticket. Chapter 6 explains the reply box."
+          ],
+          "result": "The customer gets your reply on the channel they wrote from. The reply also appears in the conversation.",
+          "blocks": [
+            {
+              "note": "WhatsApp allows free replies for 24 hours after the customer's last message. The banner shows when this service window ends. When it is closed, SupportDesk sends your reply as a pre-approved template. You can also wait for the customer to write again."
+            }
+          ]
+        },
+        {
+          "id": "read-conversations",
+          "title": "Read e-mail, messaging and call conversations",
+          "type": "concept",
+          "intro": "Each channel looks a little different in the middle panel.",
+          "blocks": [
+            { "heading": "E-mail" },
+            {
+              "image": "shots/07-email-conversation.png",
+              "caption": "An e-mail conversation. The customer's reply has an attachment and quoted history.",
+              "alt": "E-mail message card with sender, To and Subject lines, the message, a Quoted history link, an attachment and the Original download button",
+              "width": 340
+            },
+            {
+              "list": [
+                "Each e-mail shows the sender, the date, **To** and **Subject**.",
+                "Badges mark automatic messages: **Auto-reply**, **Acknowledgement** and **CSAT survey**.",
+                "Select **Quoted history** to see the earlier mail that the customer quoted.",
+                "Select an attachment to open or download it.",
+                "Select **Original (.eml)** to download the e-mail exactly as it arrived."
+              ]
+            },
+            { "heading": "Messaging apps" },
+            {
+              "list": [
+                "Messages from WhatsApp, SMS, Messenger and Instagram look like chat bubbles.",
+                "A **Template** badge marks a message sent as a pre-approved WhatsApp template.",
+                "Under your messages, a tick and a word show the delivery status."
+              ]
+            },
+            { "heading": "Phone calls" },
+            {
+              "image": "shots/07-call-record.png",
+              "caption": "A phone conversation with a voicemail and a link to play the recording.",
+              "alt": "Phone conversation showing a voicemail card with the caller's number, the time and a Play recording link",
+              "width": 300
+            },
+            {
+              "list": [
+                "Each call shows its type: **Missed call**, **Voicemail**, an inbound or outbound call, **Call in progress** or **Call failed**.",
+                "The card shows the numbers, the time, the duration and the result of the call.",
+                "Select **Play recording** to listen to a recording or a voicemail.",
+                "Select **Ticket** to open the ticket made from the call."
+              ]
+            },
+            { "tip": "Select the refresh button in the header to reload a conversation." }
+          ]
+        },
+        {
+          "id": "conversation-context",
+          "title": "The context panel",
+          "type": "concept",
+          "intro": "The right-hand panel tells you who you are talking to and which ticket the conversation belongs to.",
+          "blocks": [
+            {
+              "image": "shots/07-conversation-context.png",
+              "caption": "The context panel of a WhatsApp conversation.",
+              "alt": "Context panel with the contact card, the linked ticket and a list of conversation facts",
+              "width": 260
+            },
+            {
+              "table": {
+                "columns": ["Card", "What it shows"],
+                "widths": [22, 78],
+                "rows": [
+                  ["Person", "The contact's name. A chat from an unknown person shows **Website visitor**. It also shows the e-mail address or number the message came from."],
+                  ["**Ticket**", "The linked ticket and its status. A new chat shows that a ticket is created when an agent takes over."],
+                  ["**Conversation**", "The status, channel, channel account, assigned agent, start time and last activity. WhatsApp shows the **24h window**. A chat shows the page the visitor is on and their language."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "check-delivery",
+          "title": "Check whether a message was delivered",
+          "type": "task",
+          "intro": "Use this when a customer says they did not get your reply.",
+          "steps": [
+            "In the **Inbox**, open the conversation.",
+            "Find your message in the conversation.",
+            {
+              "text": "Select the delivery status under the message. For an e-mail, select **Delivery details**.",
+              "image": "shots/07-delivery-details.png",
+              "caption": "The delivery details of an e-mail. It was queued and then sent.",
+              "alt": "E-mail card with the delivery details open, showing the recipient, one attempt and the status history",
+              "width": 340
+            },
+            "Read the recipient, the number of attempts and the status history.",
+            "Select the status again to hide the details."
+          ],
+          "result": "You see when the message was queued, sent, delivered or read. If it failed, the reason appears in red.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Delivery status", "Meaning"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**Queued**, **Sending**, **Retrying**", "SupportDesk is still trying to send the message."],
+                  ["**Sent**", "The message left SupportDesk."],
+                  ["**Delivered**", "The customer's mail system or phone received it."],
+                  ["**Read**", "The customer opened the message. Only some channels report this."],
+                  ["**Failed**, **Rejected**, **Bounced**", "The message did not arrive. Check the address or number, then reply again."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "live-chat-console",
+          "title": "The Live chat console",
+          "type": "concept",
+          "intro": [
+            "The Live chat console is where you take website chats. Open it from **Inbox** > **Live chat**.",
+            "New chats play a sound and raise a desktop alert, so you can work on tickets while you wait."
+          ],
+          "blocks": [
+            {
+              "image": "shots/07-chat-console.png",
+              "caption": "The **Live chat** console with no chats waiting.",
+              "alt": "Live chat console with the back button, sound and alert buttons, the chat counter and the Waiting, My chats and With the bot lists",
+              "width": 640
+            },
+            {
+              "callouts": [
+                "Back to the **Inbox**.",
+                "The sound button. It turns the sound for new chats on or off.",
+                "The desktop alert button. It appears until you allow or block alerts in your browser.",
+                "Your chat counter. It shows how many chats you have now and how many you may take, for example **1/3**.",
+                "**Waiting**: chats waiting for an agent, oldest first. Each one has an **Accept** button.",
+                "**My chats**: the chats you are handling now.",
+                "**With the bot**: chats the chat bot is still handling.",
+                "The selected chat. The visitor's details are in the panel on the right."
+              ]
+            },
+            {
+              "note": "The console checks for new chats every 30 seconds, even if the live connection drops."
+            }
+          ]
+        },
+        {
+          "id": "turn-chat-alerts-on",
+          "title": "Turn chat alerts on or off",
+          "type": "task",
+          "intro": "Choose how SupportDesk tells you that a new chat is waiting.",
+          "steps": [
+            "In the **Inbox**, select **Live chat**.",
+            "To mute the chime, select the sound button. Select it again to turn the sound back on.",
+            "To get desktop alerts, select the bell button.",
+            "When your browser asks, allow notifications."
+          ],
+          "result": "A new waiting chat now plays a chime and shows a desktop alert. A pop-up message also says that the visitor is waiting. Select the desktop alert to open that chat."
+        },
+        {
+          "id": "accept-a-chat",
+          "title": "Accept a chat",
+          "type": "task",
+          "intro": "Take the next waiting chat. Take the oldest chat first, so that no visitor waits too long.",
+          "prerequisites": [
+            "You can reply to tickets.",
+            "Your chat limit is above 0, and you have a free chat slot."
+          ],
+          "steps": [
+            "In the **Inbox**, select **Live chat**.",
+            "In the **Waiting** list, find the chat at the top.",
+            {
+              "text": "Select **Accept** next to it.",
+              "tip": "You can also select the chat first and then select **Accept chat** in the header."
+            }
+          ],
+          "result": "The chat moves to **My chats** and opens in the middle panel. The visitor sees that you joined the chat. A ticket is created for the chat, if it has none.",
+          "blocks": [
+            {
+              "note": "If another agent was faster, you see the message **Another agent already accepted this chat.** Choose another chat."
+            }
+          ]
+        },
+        {
+          "id": "chat-capacity",
+          "title": "Chat capacity",
+          "type": "concept",
+          "intro": [
+            "Each agent has a chat limit: the most chats they may handle at once. The default is 3. A manager sets it in the agent's routing profile.",
+            "The counter next to **Waiting** shows your load, for example **2/3**. It turns red when you are full."
+          ],
+          "blocks": [
+            {
+              "list": [
+                "When you are full, the **Accept** buttons are greyed out.",
+                "A banner says: **You're at your chat limit (3). End or transfer a chat to accept another.**",
+                "End or transfer one of your chats to free a slot.",
+                "A limit of 0 means you take no chats. Ask your manager if you should take chats."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "chat-with-a-visitor",
+          "title": "Chat with a visitor",
+          "type": "task",
+          "intro": "Answer a chat you accepted.",
+          "prerequisites": ["You accepted the chat. It shows in **My chats**."],
+          "steps": [
+            "In **My chats**, select the chat.",
+            "Read the banner above the messages. It shows whether the visitor proved who they are.",
+            "Type your message in the box at the bottom.",
+            {
+              "text": "Press [[Enter]] to send it.",
+              "tip": "Press [[Shift+Enter]] to start a new line without sending."
+            },
+            "Wait for the visitor's answer. A line shows **is typing…** after their name while they type."
+          ],
+          "result": "Your message appears on the right. The visitor sees it at once. The visitor also sees when you are typing."
+        },
+        {
+          "id": "insert-a-chat-template",
+          "title": "Insert a reply template in a chat",
+          "type": "task",
+          "intro": "Reply templates save typing for common answers. In a chat, the template comes in as plain text.",
+          "prerequisites": ["The chat has a ticket. The menu stays greyed out until it has one."],
+          "steps": [
+            "Open the chat.",
+            "Below the message box, select **Templates**.",
+            "Choose a template. The menu groups templates by category.",
+            "Change the text in the message box if you need to.",
+            "Press [[Enter]] to send it."
+          ],
+          "result": "The template text is added to your message. SupportDesk fills in details such as the customer's name from the ticket."
+        },
+        {
+          "id": "visitor-identity",
+          "title": "Visitor identity",
+          "type": "concept",
+          "intro": [
+            "Anyone can start a chat on your website. The banner above the messages tells you how sure you can be about who they are.",
+            "Agents cannot verify a visitor. Be careful with account details until the visitor is verified."
+          ],
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Banner", "Meaning"],
+                "widths": [40, 60],
+                "rows": [
+                  ["**Visitor verified by e-mail code**", "The visitor proved their e-mail address with a code sent by SupportDesk."],
+                  ["**Visitor not verified**", "The visitor did not prove who they are. If they typed an e-mail address, the banner shows it after **claims**."]
+                ]
+              }
+            },
+            {
+              "p": "The banner also shows the page the visitor is on. The context panel shows the same facts, plus the chat rating when the visitor gives one."
+            }
+          ]
+        },
+        {
+          "id": "transfer-a-chat",
+          "title": "Transfer a chat",
+          "type": "task",
+          "intro": "Hand a chat to a colleague who knows the topic better, or to another department.",
+          "prerequisites": [
+            "You are handling the chat, or it is still waiting. Supervisors can transfer any chat.",
+            "To send a chat to another department, you need permission to transfer tickets."
+          ],
+          "steps": [
+            "Open the chat.",
+            "In the header, select **Transfer**. The **Transfer chat** dialog opens.",
+            "Under **Transfer to**, choose **Another agent** or **Another department**.",
+            {
+              "text": "For an agent, choose the agent in the **Agent** list.",
+              "note": "The list shows agents of the ticket's department who can take chats, with their availability."
+            },
+            {
+              "text": "For a department, choose the **Department**. Then choose an **Agent**, or leave it empty.",
+              "note": "With no agent, the chat waits in that department's queue."
+            },
+            "Optionally, enter a **Note for the next agent**.",
+            "Select **Transfer**."
+          ],
+          "result": "A message says **Chat transferred**. The visitor sees who the chat went to. The new agent gets a notification, and the ticket moves with the chat.",
+          "blocks": [
+            {
+              "note": "Some departments need approval for transfers. Then you see **Transfer sent for approval**, and the chat stays with you until someone approves it."
+            }
+          ]
+        },
+        {
+          "id": "end-a-chat",
+          "title": "End a chat",
+          "type": "task",
+          "intro": "End the chat when the visitor has what they need.",
+          "steps": [
+            "Open the chat.",
+            "In the header, select **End chat**."
+          ],
+          "result": "The chat status changes to **Closed**. The visitor sees **This chat has ended. Thank you for contacting us!** A **Chat transcript** entry is added to the ticket.",
+          "blocks": [
+            {
+              "note": "After a chat ends, you cannot send more chat messages. Reply on the ticket instead. The customer gets that reply by e-mail."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    {
+      "problem": "The **Accept** buttons in the Live chat console are greyed out.",
+      "cause": "You are at your chat limit. The counter next to **Waiting** is red.",
+      "fix": "End or transfer one of your chats. If you need more chats at once, ask your manager to raise your chat limit."
+    },
+    {
+      "problem": "You see **Your routing profile does not allow live chats (chat limit 0).**",
+      "cause": "Your chat limit is 0, so you take no chats.",
+      "fix": "Ask your manager to set a chat limit above 0 in your routing profile."
+    },
+    {
+      "problem": "You see **Another agent already accepted this chat.**",
+      "cause": "A colleague accepted the same chat a moment before you.",
+      "fix": "Choose another chat in the **Waiting** list."
+    },
+    {
+      "problem": "The **Templates** menu in a chat is greyed out.",
+      "cause": "The chat has no ticket yet.",
+      "fix": "Accept the chat first. SupportDesk creates the ticket when an agent takes the chat."
+    },
+    {
+      "problem": "There is no reply box for an e-mail or WhatsApp conversation.",
+      "cause": "Only live chats have a reply box in the Inbox.",
+      "fix": "Select **Reply on ticket #** and reply on the ticket. The reply goes out on the same channel."
+    },
+    {
+      "problem": "A transfer shows **The chat is already with this agent.** or says the agent is not a member of that department.",
+      "cause": "You chose the agent who already has the chat, or an agent outside the chosen department.",
+      "fix": "Choose another agent, or choose **Another department** and pick the right department first."
+    },
+    {
+      "problem": "A message in the Inbox says **Could not load conversations**.",
+      "cause": "The connection to SupportDesk dropped for a moment.",
+      "fix": "Select **Retry**. If it keeps happening, check your network connection."
+    },
+    {
+      "problem": "You do not hear a sound for new chats.",
+      "cause": "The sound is off, or your browser blocks desktop alerts.",
+      "fix": "In the Live chat console, turn the sound button on. Select the bell button and allow notifications in your browser."
+    }
+  ],
+  "faq": [
+    {
+      "q": "Can I turn a WhatsApp conversation into a ticket myself?",
+      "a": "No. SupportDesk does it for you. The message joins the customer's open ticket, or SupportDesk creates a new one."
+    },
+    {
+      "q": "Why did my WhatsApp reply go out as a template?",
+      "a": "WhatsApp allows free replies only for 24 hours after the customer's last message. After that, SupportDesk sends a pre-approved template instead."
+    },
+    {
+      "q": "What does the number next to Waiting mean, such as 1/3?",
+      "a": "It is your chat load. The first number is the chats you have now. The second is the most you may take at once."
+    },
+    {
+      "q": "Where does the chat go when it ends?",
+      "a": "The full chat is saved as a **Chat transcript** entry on the ticket. You and your colleagues can read it there."
+    }
+  ],
+  "glossary": [
+    { "term": "Conversation", "definition": "A thread of messages with one person on one channel, such as an e-mail thread, a WhatsApp chat or a phone call. Conversations appear in the Inbox." },
+    { "term": "Live chat console", "definition": "The screen where agents accept, answer, transfer and end website chats." },
+    { "term": "Chat limit", "definition": "The most live chats an agent may handle at the same time. A manager sets it. The default is 3." },
+    { "term": "Service window", "definition": "The 24 hours after a customer's last WhatsApp message. Inside it you can reply freely. After it, replies go out as pre-approved templates." },
+    { "term": "Chat transcript", "definition": "The full text of a live chat, saved on the ticket when the chat ends." },
+    { "term": "Visitor", "definition": "A person who starts a chat on your website. A visitor may not be a known contact yet." }
+  ]
+}

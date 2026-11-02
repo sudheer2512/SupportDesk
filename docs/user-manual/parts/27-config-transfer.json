@@ -1,0 +1,208 @@
+{
+  "chapters": [
+    {
+      "id": "configuration-transfer",
+      "title": "Configuration transfer",
+      "intro": [
+        "This chapter is for administrators. It explains how to copy configuration from one workspace to another. For example, you can copy it from a test workspace to your live one.",
+        "It also covers snapshots. A snapshot records your whole configuration, so you can roll back after a bad change."
+      ],
+      "sections": [
+        {
+          "id": "cfg-page",
+          "title": "The Configuration transfer page",
+          "type": "concept",
+          "intro": "Open it with **Administration** > **Configuration transfer**. You need the **Export, import, publish and roll back configuration** permission.",
+          "blocks": [
+            { "image": "shots/27-config-transfer.png", "caption": "The **Configuration transfer** page. The number after each section counts its items.", "alt": "Configuration transfer page with the Export and Import cards and the Snapshots table" },
+            { "callouts": [
+              "The **Export** card. Tick sections and save them to a file.",
+              "The **Import** card. Choose a file from this or another workspace. Drafts waiting for review appear here too.",
+              "**Capture snapshot** records the current configuration.",
+              "The **Snapshots** table, with a download button and **Roll back** on each row."
+            ] },
+            { "p": "Every import, publish and rollback is recorded in the audit log." }
+          ]
+        },
+        {
+          "id": "cfg-what",
+          "title": "What a configuration file contains",
+          "type": "concept",
+          "intro": "An export holds the settings that shape how your desk works. It holds no tickets, customers or other business data.",
+          "blocks": [
+            { "list": [
+              "Business calendars, ticket statuses, issue types and pick lists, such as resolution codes and root causes.",
+              "Ticket categories, custom fields and form layouts.",
+              "SLA policies and shared reply templates.",
+              "Knowledge base categories and AI prompt templates.",
+              "Channel definitions, blueprints and automation rules."
+            ] },
+            { "p": "Settings can point to departments, teams, users, roles, brands, products and skills. The file stores these by name. On import, SupportDesk looks for the same names in the target workspace. It never creates them." },
+            { "note": "Passwords and other secrets are never exported. Imported channels start inactive, so you must enter their sign-in details again." }
+          ]
+        },
+        {
+          "id": "cfg-export",
+          "title": "Export configuration",
+          "type": "task",
+          "intro": "Save some or all of your configuration to a file.",
+          "steps": [
+            "Select **Administration** > **Configuration transfer**.",
+            {
+              "text": "In the **Export** card, tick the sections you need.",
+              "image": "shots/27-export.png",
+              "caption": "Two sections ticked. The button now says **Export 2 section(s)**.",
+              "alt": "Export card with Ticket statuses and Ticket categories ticked and the Export 2 sections button",
+              "width": 420
+            },
+            "To export everything, leave all boxes clear. **All sections** clears the ticks.",
+            "Select **Export everything**, or **Export** with the number of sections."
+          ],
+          "result": "Your browser saves a file named `supportdesk-config-` followed by the workspace and the date."
+        },
+        {
+          "id": "cfg-import",
+          "title": "Import a configuration file",
+          "type": "task",
+          "intro": "Bring an exported file into this workspace. Nothing changes until you publish it.",
+          "prerequisites": [
+            "An export file from this or another SupportDesk workspace. It can be up to 20 MB.",
+            "The departments, teams, users and brands that the file names exist in this workspace."
+          ],
+          "steps": [
+            "Sign in to the workspace that should receive the configuration.",
+            "Select **Administration** > **Configuration transfer**.",
+            "In the **Import** card, select **Choose a configuration file (.json)**.",
+            "Choose the file, and select **Open**."
+          ],
+          "result": "SupportDesk turns the file into a draft and opens it for review. The draft also appears under **Drafts** with the status **Draft**.",
+          "blocks": [
+            { "tip": "Capture a snapshot before you publish a large import. Then you can roll back if needed." }
+          ]
+        },
+        {
+          "id": "cfg-review",
+          "title": "Review and publish an import",
+          "type": "task",
+          "intro": "Compare the file with this workspace, choose what to do with each item, and publish.",
+          "steps": [
+            "Under **Drafts**, select **Review** on the draft.",
+            "Read the badges at the top. They count the **new**, **changed** and **unchanged** items.",
+            "Read any yellow warnings, such as names that this workspace does not have.",
+            "For each item, choose what to do in the list on its right. See [Import choices](#cfg-resolutions).",
+            "For **Import as copy (rename)**, enter a **New name**.",
+            "To compare a changed item, open its line of differing fields. It shows **This workspace** and **File** side by side.",
+            "Select **Save choices** to keep your choices for later.",
+            "Select **Publish**. In the dialog, select **Publish**."
+          ],
+          "result": "The app shows a message such as **Published as v3**. It also counts the items created, updated and skipped.",
+          "blocks": [
+            { "p": "Turn off **Hide unchanged** to see every item. The first publish in a workspace also captures a snapshot named **Baseline before the first import**." },
+            { "note": "If the app says some references were not found, the file names things this workspace lacks. Create them, and import the file again." }
+          ]
+        },
+        {
+          "id": "cfg-resolutions",
+          "title": "Import choices",
+          "type": "reference",
+          "intro": "Each item in a draft has a status. The status decides which choices you have.",
+          "blocks": [
+            { "table": {
+              "columns": ["Status", "Meaning", "Choices"],
+              "widths": [16, 40, 44],
+              "rows": [
+                ["**new**", "The item does not exist in this workspace.", "**Create**, **Skip** or **Import as copy (rename)**."],
+                ["**changed**", "The item exists, but some fields differ.", "**Overwrite**, **Skip** or **Import as copy (rename)**."],
+                ["**unchanged**", "The item is the same in both.", "**Skip** or **Import as copy (rename)**."]
+              ]
+            } },
+            { "note": "AI prompt templates cannot be imported as a copy." }
+          ]
+        },
+        {
+          "id": "cfg-discard",
+          "title": "Discard an import draft",
+          "type": "task",
+          "intro": "Throw a draft away when you do not want to publish it.",
+          "steps": [
+            "Under **Drafts**, select **Review** on the draft.",
+            "Select **Discard draft**.",
+            "In the dialog, select **Discard**."
+          ],
+          "result": "The draft closes. Nothing in your configuration changes."
+        },
+        {
+          "id": "cfg-snapshots",
+          "title": "Snapshots",
+          "type": "concept",
+          "intro": [
+            "A snapshot is your complete configuration at one moment. Each one gets a version number, such as **v1**.",
+            "Publishing an import and rolling back create snapshots on their own. You can also capture one by hand."
+          ],
+          "blocks": [
+            { "table": {
+              "columns": ["Kind", "Created when"],
+              "widths": [24, 76],
+              "rows": [
+                ["**Manual**", "You select **Capture snapshot**, or before your first import."],
+                ["**Import**", "SupportDesk records an imported configuration."],
+                ["**Publish**", "You publish an import."],
+                ["**Before rollback**", "You roll back. SupportDesk saves the state from before the rollback."],
+                ["**Rollback**", "A rollback finishes."]
+              ]
+            } },
+            { "p": "The download button on a row saves the snapshot as a configuration file. You can import that file into another workspace." }
+          ]
+        },
+        {
+          "id": "cfg-capture",
+          "title": "Capture a snapshot",
+          "type": "task",
+          "intro": "Capture a snapshot before large changes, so that you can roll back.",
+          "steps": [
+            "Select **Administration** > **Configuration transfer**.",
+            "Under **Snapshots**, select **Capture snapshot**."
+          ],
+          "result": "The app shows a message such as **Snapshot v2 captured**. The new snapshot appears at the top of the table."
+        },
+        {
+          "id": "cfg-rollback",
+          "title": "Roll back to a snapshot",
+          "type": "task",
+          "intro": "Return your configuration to an earlier snapshot after a bad change.",
+          "steps": [
+            "Select **Administration** > **Configuration transfer**.",
+            "In the **Snapshots** table, find the version you want.",
+            {
+              "text": "On its row, select **Roll back**.",
+              "note": "The newest version cannot be rolled back to, because it is the current state."
+            },
+            "In the dialog, type the version, such as `v3`, to confirm.",
+            "Select **Roll back to** and the version."
+          ],
+          "result": "The app shows a message such as **Rolled back — now v4**. It also counts the items restored, reverted and deactivated.",
+          "blocks": [
+            { "warning": "A rollback changes your live configuration at once. Items added after the snapshot are deactivated, not deleted. SupportDesk saves the current state first as a **Before rollback** snapshot." }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "The app says the file is larger than 20 MB.", "cause": "The file is too big to import.", "fix": "Export fewer sections in the source workspace, and import them in parts." },
+    { "problem": "The app says the file is not valid.", "cause": "The file is not a SupportDesk configuration export, or someone edited it.", "fix": "Export the file again from the source workspace. Do not edit it by hand." },
+    { "problem": "After publishing, the app says some references were not found.", "cause": "The file names departments, teams, users or brands that this workspace does not have.", "fix": "Create the missing items with the same names. Then import the file again." },
+    { "problem": "Imported channels do not receive messages.", "cause": "Imported channels start inactive, without passwords or tokens.", "fix": "Open each channel, enter its sign-in details and activate it." },
+    { "problem": "**Roll back** is greyed out on a snapshot.", "cause": "It is the newest snapshot, which matches the current state.", "fix": "Choose an older snapshot." }
+  ],
+  "faq": [
+    { "q": "Does a configuration export include tickets or customers?", "a": "No. It holds only settings, such as statuses, fields, SLA policies and rules." },
+    { "q": "Are passwords and secrets copied to the other workspace?", "a": "No. Secrets are never exported. Enter them again in the target workspace." }
+  ],
+  "glossary": [
+    { "term": "Configuration", "definition": "The settings that shape how your desk works, such as statuses, fields, SLA policies, rules and templates." },
+    { "term": "Import draft", "definition": "An imported configuration file that waits for review. Nothing changes until you publish it." },
+    { "term": "Snapshot", "definition": "A copy of your complete configuration at one moment, with a version number." },
+    { "term": "Rollback", "definition": "Returning your configuration to an earlier snapshot." }
+  ]
+}

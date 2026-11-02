@@ -1,0 +1,249 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "timeoutMs": 30000,
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "priya@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "02-desk-layout",
+      "file": "02-desk-layout.png",
+      "steps": [
+        {
+          "wait": 800
+        }
+      ],
+      "highlight": [
+        "desk-nav-list.rail-list",
+        "button.collapse",
+        "button.search",
+        "a.new-ticket",
+        "button.bell",
+        "button[aria-label^='Availability']",
+        "desk-top-bar button[aria-label$='theme']",
+        "button[aria-label^='Account menu']"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "02-nav-collapsed",
+      "file": "02-nav-collapsed.png",
+      "steps": [
+        {
+          "click": "button.collapse"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": "nav.rail",
+      "clipPadding": 0
+    },
+    {
+      "id": "02-command-palette",
+      "file": "02-command-palette.png",
+      "steps": [
+        {
+          "click": "button.collapse"
+        },
+        {
+          "wait": 400
+        },
+        {
+          "click": "button.search"
+        },
+        {
+          "waitFor": "sd-command-palette .panel"
+        }
+      ],
+      "clip": "sd-command-palette .panel",
+      "clipPadding": 0
+    },
+    {
+      "id": "02-palette-search",
+      "file": "02-palette-search.png",
+      "steps": [
+        {
+          "fill": "sd-command-palette input",
+          "value": "report"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "waitForText": "Tickets"
+        }
+      ],
+      "clip": "sd-command-palette .panel",
+      "clipPadding": 0
+    },
+    {
+      "id": "02-shortcut-help",
+      "file": "02-shortcut-help.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "click": "button[aria-label^='Account menu']"
+        },
+        {
+          "click": "text=Keyboard shortcuts"
+        },
+        {
+          "waitFor": "sd-shortcut-help .panel"
+        }
+      ],
+      "clip": "sd-shortcut-help .panel",
+      "clipPadding": 0
+    },
+    {
+      "id": "02-availability-menu",
+      "file": "02-availability-menu.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 300
+        },
+        {
+          "click": "button[aria-label^='Availability']"
+        },
+        {
+          "waitFor": "div.sd-menu[aria-label='Set availability']"
+        }
+      ],
+      "clip": "div.sd-menu[aria-label='Set availability']",
+      "clipPadding": 0
+    },
+    {
+      "id": "02-account-menu",
+      "file": "02-account-menu.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 300
+        },
+        {
+          "click": "button[aria-label^='Account menu']"
+        },
+        {
+          "waitFor": "div.sd-menu[aria-label='Account']"
+        }
+      ],
+      "clip": "div.sd-menu[aria-label='Account']",
+      "clipPadding": 0
+    },
+    {
+      "id": "02-profile",
+      "file": "02-profile.png",
+      "steps": [
+        {
+          "click": "text=My profile"
+        },
+        {
+          "waitForText": "Your details, sign-in security and preferences."
+        },
+        {
+          "wait": 600
+        },
+        {
+          "select": "label=Time zone",
+          "option": "Asia/Calcutta"
+        }
+      ],
+      "highlight": [
+        "[role=tablist]",
+        ".identity",
+        "label=Display name",
+        "label=Time zone",
+        "label=Language & format",
+        "sd-rich-text-editor",
+        "text=Save profile"
+      ],
+      "numbered": true,
+      "fullPage": true
+    },
+    {
+      "id": "02-password",
+      "file": "02-password.png",
+      "steps": [
+        {
+          "click": "[role=tab]:nth-child(2)"
+        },
+        {
+          "waitForText": "Use at least 12 characters"
+        }
+      ],
+      "clip": "[role=tabpanel] sd-card"
+    },
+    {
+      "id": "02-password-errors",
+      "file": "02-password-errors.png",
+      "steps": [
+        {
+          "fill": "label=New password",
+          "value": "short"
+        },
+        {
+          "fill": "label=Confirm new password",
+          "value": "shorter"
+        },
+        {
+          "click": "form.narrow button[type=submit]"
+        },
+        {
+          "waitForText": "Use at least 12 characters."
+        }
+      ],
+      "clip": "[role=tabpanel] sd-card"
+    },
+    {
+      "id": "02-two-factor-off",
+      "file": "02-two-factor-off.png",
+      "steps": [
+        {
+          "click": "[role=tab]:nth-child(3)"
+        },
+        {
+          "waitForText": "Set up two-factor"
+        }
+      ],
+      "clip": "[role=tabpanel] sd-card"
+    }
+  ]
+}

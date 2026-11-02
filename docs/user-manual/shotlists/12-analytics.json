@@ -1,0 +1,312 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "admin@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Two-step verification"
+    },
+    {
+      "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "12-an-dashboard",
+      "file": "12-an-dashboard.png",
+      "url": "/analytics/dashboards",
+      "steps": [
+        {
+          "waitFor": "#dash-select"
+        },
+        {
+          "select": "#dash-select",
+          "option": "Service performance"
+        },
+        {
+          "waitFor": "desk-analytics-widget"
+        },
+        {
+          "wait": 3000
+        },
+        {
+          "eval": "document.querySelectorAll('body *').forEach((el) => { const s = getComputedStyle(el); if (/(auto|scroll)/.test(s.overflowY + ' ' + s.overflowX) && (el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1)) { el.scrollTop = 0; el.setAttribute('data-um-frozen', '1'); el.style.overflow = 'clip'; } }); window.scrollTo(0, 0)"
+        }
+      ],
+      "highlight": [
+        "nav.tabs",
+        "#dash-select",
+        "desk-analytics-filter-bar",
+        "text=Edit layout",
+        "button[aria-label='Dashboard actions']",
+        ".grid .cell:first-child desk-analytics-widget"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "12-an-filters",
+      "file": "12-an-filters.png",
+      "steps": [
+        {
+          "click": "desk-analytics-filter-bar button[aria-label^='Filters']"
+        },
+        {
+          "waitFor": "text=Apply filters"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "12-an-new-dashboard",
+      "file": "12-an-new-dashboard.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "button[aria-label='Dashboard actions']"
+        },
+        {
+          "waitFor": ".sd-menu"
+        },
+        {
+          "click": "text=New dashboard"
+        },
+        {
+          "waitFor": "sd-dialog"
+        },
+        {
+          "fill": "label=Name",
+          "value": "My weekly review"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "12-an-widget-editor",
+      "file": "12-an-widget-editor.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "text=Edit layout"
+        },
+        {
+          "waitFor": "text=Save layout"
+        },
+        {
+          "click": "text=Add widget"
+        },
+        {
+          "waitFor": "text=Visualisation"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "12-an-drilldown",
+      "file": "12-an-drilldown.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "text=Cancel"
+        },
+        {
+          "waitFor": "text=Edit layout"
+        },
+        {
+          "click": "button.kpi:not([disabled])"
+        },
+        {
+          "waitFor": ".drawer"
+        },
+        {
+          "wait": 2000
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "12-an-reports",
+      "file": "12-an-reports.png",
+      "url": "/analytics/reports",
+      "steps": [
+        {
+          "waitFor": "text=Customer health"
+        },
+        {
+          "wait": 800
+        }
+      ]
+    },
+    {
+      "id": "12-an-report",
+      "file": "12-an-report.png",
+      "steps": [
+        {
+          "click": "text=SLA compliance"
+        },
+        {
+          "waitFor": "section.kpis"
+        },
+        {
+          "wait": 2500
+        },
+        {
+          "eval": "document.querySelectorAll('body *').forEach((el) => { const s = getComputedStyle(el); if (/(auto|scroll)/.test(s.overflowY + ' ' + s.overflowX) && (el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1)) { el.scrollTop = 0; el.setAttribute('data-um-frozen', '1'); el.style.overflow = 'clip'; } }); window.scrollTo(0, 0)"
+        }
+      ],
+      "highlight": [
+        "text=All reports",
+        "desk-analytics-filter-bar",
+        "text=Schedule",
+        "button[aria-label='Export report']",
+        "section.kpis"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "12-an-export-menu",
+      "file": "12-an-export-menu.png",
+      "steps": [
+        {
+          "click": "button[aria-label='Export report']"
+        },
+        {
+          "waitFor": ".sd-menu"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": ".sd-menu",
+      "clipPadding": 10
+    },
+    {
+      "id": "12-an-schedule-dialog",
+      "file": "12-an-schedule-dialog.png",
+      "steps": [
+        {
+          "waitFor": "text=SLA compliance"
+        },
+        {
+          "click": "text=SLA compliance"
+        },
+        {
+          "waitFor": "section.kpis"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "click": "text=Schedule"
+        },
+        {
+          "waitForText": "Schedule a report"
+        },
+        {
+          "wait": 1200
+        }
+      ],
+      "clip": "sd-dialog",
+      "url": "/analytics/reports"
+    },
+    {
+      "id": "12-an-schedules",
+      "file": "12-an-schedules.png",
+      "url": "/analytics/schedules",
+      "steps": [
+        {
+          "waitFor": "text=New schedule"
+        },
+        {
+          "wait": 1200
+        }
+      ],
+      "highlight": [
+        "text=New schedule",
+        "li.item",
+        "text=History",
+        "button[aria-label^='Actions for']"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "12-an-history",
+      "file": "12-an-history.png",
+      "steps": [
+        {
+          "waitFor": "text=New schedule"
+        },
+        {
+          "wait": 1000
+        },
+        {
+          "eval": "[...document.querySelectorAll('li.item')].find((li) => li.textContent.includes('Weekly SLA review')).querySelector('.actions button').click()"
+        },
+        {
+          "waitFor": ".drawer"
+        },
+        {
+          "wait": 1500
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0,
+      "url": "/analytics/schedules"
+    }
+  ]
+}

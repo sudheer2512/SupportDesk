@@ -1,0 +1,900 @@
+{
+  "chapters": [
+    {
+      "id": "platform-console",
+      "title": "Platform console",
+      "intro": [
+        "This chapter is for platform operators. They are the people who run the SupportDesk service for all customer companies.",
+        "Each customer company is a tenant with its own workspace. In the platform console you look after tenants, plans, invoices and support access. You never see a tenant's tickets or customer data."
+      ],
+      "sections": [
+        {
+          "id": "platform-console-purpose",
+          "title": "What the platform console is for",
+          "type": "concept",
+          "intro": [
+            "The platform console is separate from every workspace. You sign in with your own operator account, not with a workspace account.",
+            "Workspace users cannot open the console. Operators cannot open a workspace or act as one of its users. When a tenant needs help, you ask for support access instead.",
+            "The console records every change you make in the platform audit trail."
+          ],
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Page", "What you do there"],
+                "widths": [25, 75],
+                "rows": [
+                  ["**Overview**", "See tenant counts, revenue and what needs your attention."],
+                  ["**Tenants**", "Find a tenant and see its subscription and usage. Suspend, reactivate, extend, change or cancel it."],
+                  ["**Plans**", "Set the prices, limits and features that tenants can buy."],
+                  ["**Invoices**", "Check the invoices of all tenants. Record offline payments and void invoices."],
+                  ["**Support access**", "Follow your requests to view a tenant's diagnostics, and open them once approved."],
+                  ["**Audit**", "Search the record of platform actions and check that nobody changed it."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "platform-sign-in",
+          "title": "Sign in to the platform console",
+          "type": "task",
+          "intro": "Use your operator e-mail address and password. The console has its own sign-in page.",
+          "prerequisites": ["You have a platform operator account."],
+          "steps": [
+            {
+              "text": "On the desk sign-in page, select **Platform console**.",
+              "image": "shots/31-desk-link.png",
+              "caption": "The **Platform console** link at the bottom of the desk sign-in page.",
+              "alt": "Desk sign-in card with the Platform console link highlighted",
+              "width": 330,
+              "tip": "You can also open the console address that your team gave you."
+            },
+            "In **Operator e-mail**, enter the e-mail address of your operator account.",
+            "In **Password**, enter your password.",
+            "Select **Sign in**.",
+            "If the **Authenticator code** box appears, enter the code from your authenticator app. Then select **Sign in** again."
+          ],
+          "result": "The **Overview** page opens. Your name and the time left in your session show at the top right.",
+          "blocks": [
+            { "image": "shots/31-sign-in.png", "caption": "The platform console sign-in page.", "alt": "Platform console sign-in card with numbered e-mail, password and Sign in controls", "width": 360 },
+            {
+              "callouts": [
+                "**Operator e-mail**: the e-mail address of your operator account.",
+                "**Password**: your operator password.",
+                "**Sign in**: checks your details and opens the console."
+              ]
+            },
+            { "note": "The **here** link under the title opens the workspace sign-in page. Use it if you meant to sign in to a workspace." },
+            "If a box is empty or the e-mail address is incomplete, a red message asks for both. Correct the boxes and select **Sign in** again.",
+            { "image": "shots/31-sign-in-error.png", "caption": "The message that asks for your e-mail address and password.", "alt": "Platform console sign-in card with the red message Enter your e-mail address and password.", "width": 360 },
+            { "note": "You cannot set up an authenticator app from the console yet. If your account needs one, ask the team that runs SupportDesk." }
+          ]
+        },
+        {
+          "id": "platform-session",
+          "title": "Your console session",
+          "type": "concept",
+          "intro": [
+            "A console session lasts 30 minutes. The top bar shows the time left, for example **session ends in 12 min**.",
+            "When the time runs out, the sign-in page opens with a message. Sign in again to go on.",
+            "Reloading the page in the browser also ends the session. Move between pages with the console menu instead."
+          ],
+          "blocks": [
+            { "image": "shots/31-session-ended.png", "caption": "The message on the sign-in page after your session ends.", "alt": "Platform console sign-in card with the message Your platform session ended. Sign in again.", "width": 360 },
+            { "heading": "Sign out" },
+            { "steps": ["At the top right, select **Sign out**."] },
+            "The sign-in page opens. Sign out when you finish, especially on a shared computer.",
+            { "tip": "The moon button next to your name switches to the dark theme. The sun button switches back." }
+          ]
+        },
+        {
+          "id": "platform-overview-page",
+          "title": "The Overview page",
+          "type": "concept",
+          "intro": "**Overview** is the first page after you sign in. It shows how the service is doing and what needs your attention.",
+          "blocks": [
+            { "image": "shots/31-overview.png", "caption": "The **Overview** page with the figure tiles, the newest trials and recent platform activity.", "alt": "Platform console Overview page with six numbered areas" },
+            {
+              "callouts": [
+                "The console menu: **Overview**, **Tenants**, **Plans**, **Invoices**, **Support access** and **Audit**.",
+                "Your name, the time left in your session, the theme button and **Sign out**.",
+                "**Refresh** loads the latest figures.",
+                "The figure tiles. Select a tile to open the matching list.",
+                "**Trials**: the newest trial workspaces, with the trial end date and the subscription status.",
+                "**Recent platform activity**: the latest platform actions. **Open audit** opens the full trail."
+              ]
+            },
+            { "heading": "The figure tiles" },
+            {
+              "table": {
+                "columns": ["Tile", "What it counts", "Selecting it opens"],
+                "widths": [26, 44, 30],
+                "rows": [
+                  ["**Tenants**", "All workspaces.", "**Tenants** with all statuses."],
+                  ["**On trial**", "Workspaces still on their free trial.", "**Tenants** filtered to **Trial**."],
+                  ["**Active**", "Workspaces with full access.", "**Tenants** filtered to **Active**."],
+                  ["**Suspended**", "Workspaces that cannot make changes.", "**Tenants** filtered to **Suspended**."],
+                  ["**Monthly recurring revenue**", "The monthly value of all active and past-due subscriptions. Annual plans count as one twelfth.", "Nothing. The tile only shows the figure."],
+                  ["**Open receivables**", "The total of all unpaid invoices.", "**Invoices**."],
+                  ["**Overdue invoices**", "Unpaid invoices past their due date.", "**Invoices**."],
+                  ["**Support requests pending**", "Support access requests that wait for a tenant's decision.", "**Support access**."]
+                ]
+              }
+            },
+            { "note": "If the page cannot load, it says **The overview could not be loaded**. Select **Try again**." }
+          ]
+        },
+        {
+          "id": "platform-find-tenant",
+          "title": "Find a tenant",
+          "type": "task",
+          "intro": "Use **Tenants** to find a workspace and open its page.",
+          "steps": [
+            "In the console menu, select **Tenants**.",
+            "In **Search**, enter part of the company name or the workspace name.",
+            {
+              "text": "In the **Status** list, choose a status, or choose **All**.",
+              "note": "The list updates as soon as you choose a status."
+            },
+            "Select **Search**.",
+            "Select the tenant's row."
+          ],
+          "result": "The tenant's page opens. It shows the workspace, subscription, usage, invoices, support access and recent activity.",
+          "blocks": [
+            { "image": "shots/31-tenants.png", "caption": "The **Tenants** list with the search box and the status filter.", "alt": "Tenants page with numbered Search box, Status list, Search button and a tenant row" },
+            {
+              "callouts": [
+                "**Search**: part of a company name or a workspace name.",
+                "**Status**: show only tenants with one status.",
+                "**Search**: runs the search.",
+                "A tenant row. Select it to open the tenant's page."
+              ]
+            },
+            { "tip": "On **Overview**, select the **On trial**, **Active** or **Suspended** tile. The list opens with that status already chosen." },
+            { "note": "The list shows 50 tenants at a time. To see more, select **Load more** at the bottom." },
+            "If nothing matches, the list says **No tenants match**. Clear the search box or the status filter."
+          ]
+        },
+        {
+          "id": "platform-tenant-statuses",
+          "title": "Tenant list columns and statuses",
+          "type": "reference",
+          "intro": "A tenant has a status of its own. Its subscription has a separate status, shown under the plan name.",
+          "blocks": [
+            { "heading": "Columns" },
+            {
+              "table": {
+                "columns": ["Column", "What it shows"],
+                "widths": [22, 78],
+                "rows": [
+                  ["**Workspace**", "The company name, with the workspace name below. The words **dedicated DB** after it mean that the tenant's data is stored on its own."],
+                  ["**Status**", "The tenant's status. For a trial, the trial end date shows below."],
+                  ["**Plan**", "The plan name, with the subscription status below."],
+                  ["**Agents**", "The number of agents in the workspace."],
+                  ["**Storage**", "The space that the workspace's files use."],
+                  ["**Created**", "The date the workspace was created."],
+                  ["**Last activity**", "How long ago someone last used the workspace. A dash means never."]
+                ]
+              }
+            },
+            { "heading": "Tenant statuses" },
+            {
+              "table": {
+                "columns": ["Status", "What it means"],
+                "widths": [24, 76],
+                "rows": [
+                  ["**Trial**", "The workspace is on its free trial."],
+                  ["**Active**", "The workspace has full access."],
+                  ["**Suspended**", "Users can sign in, read and pay invoices. They cannot make any other change."],
+                  ["**Cancelled**", "Access has stopped. The data is kept until the deletion date."],
+                  ["**Pending deletion**", "The deletion date has passed. The data is waiting to be deleted, and you cannot reactivate the tenant."]
+                ]
+              }
+            },
+            { "heading": "Subscription statuses" },
+            {
+              "table": {
+                "columns": ["Status", "What it means"],
+                "widths": [24, 76],
+                "rows": [
+                  ["**Trialing**", "The free trial is running."],
+                  ["**Active**", "The subscription is paid up."],
+                  ["**PastDue**", "The trial ended or an invoice is overdue. The workspace keeps working until the grace period ends."],
+                  ["**Suspended**", "The grace period ended without payment, or an operator suspended the tenant."],
+                  ["**Cancelled**", "The subscription has ended."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "platform-tenant-page",
+          "title": "A tenant's page",
+          "type": "concept",
+          "intro": "A tenant's page brings together everything you need to look after that tenant. The **Actions** menu at the top right holds the changes you can make.",
+          "blocks": [
+            { "image": "shots/31-tenant-page.png", "caption": "The page of the tenant Wings Software.", "alt": "Tenant page with eight numbered areas from the breadcrumb to the activity list" },
+            {
+              "callouts": [
+                "The breadcrumb. Select **Tenants** to go back to the list.",
+                "**Actions**: the changes you can make to this tenant.",
+                "**Workspace**: status, workspace name, dates, country and time zone, and where the data is stored.",
+                "**Subscription**: plan, seats, billing cycle, status, key dates, amount due and billing contact.",
+                "**Usage vs limits**: what the workspace uses against the limits of its plan.",
+                "**Invoices**: recent invoices. Open invoices have a **Mark paid** button. The download button saves the PDF.",
+                "**Support access**: your requests to view this tenant's diagnostics. **Diagnostics** shows while access is active.",
+                "**Recent platform and billing activity**: the latest operator, billing and system events for this tenant."
+              ]
+            },
+            { "heading": "Usage meters" },
+            "There is one meter for each plan limit, such as agents, portal users, storage and AI tokens. A striped bar means the plan has no limit.",
+            {
+              "list": [
+                "The bar turns amber when the workspace uses 80% of a limit.",
+                "Over a limit, the meter says **Over the plan limit — new items are blocked.**",
+                "Monthly meters, such as AI tokens, start again each month."
+              ]
+            },
+            { "heading": "Banners" },
+            "A red banner shows on a suspended tenant. It gives the date and the reason for the suspension.",
+            "An amber banner shows on a cancelled tenant or one pending deletion. It gives the date when the data is deleted.",
+            { "image": "shots/31-suspended-tenant.png", "caption": "A suspended tenant. The banner gives the date and the reason.", "alt": "Tenant page of Globex Retail with the red Suspended banner highlighted" }
+          ]
+        },
+        {
+          "id": "platform-actions-menu",
+          "title": "The Actions menu",
+          "type": "reference",
+          "intro": "Select **Actions** on a tenant's page to see what you can change. Items you cannot use right now are dimmed.",
+          "blocks": [
+            { "image": "shots/31-actions-menu.png", "caption": "The **Actions** menu of an active tenant. **Extend trial…** is dimmed because the tenant has no trial.", "alt": "Open Actions menu with Reactivate, Suspend, Extend trial, Change plan, Request support access, Move to dedicated database and Cancel subscription", "width": 300 },
+            {
+              "table": {
+                "columns": ["Action", "What it does", "When you can use it"],
+                "widths": [27, 40, 33],
+                "rows": [
+                  ["**Reactivate**", "Restores full access after a suspension or a missed payment.", "The tenant is suspended, or its subscription is **PastDue**. Not when it is pending deletion."],
+                  ["**Suspend…**", "Blocks all changes in the workspace at once. Users can still sign in, read and pay.", "The tenant is not already suspended, cancelled or pending deletion."],
+                  ["**Extend trial…**", "Adds 1 to 90 days to the free trial.", "The subscription has a trial end date."],
+                  ["**Change plan…**", "Moves the tenant to another plan at once.", "The tenant is not cancelled or pending deletion."],
+                  ["**Request support access…**", "Asks the tenant for short, read-only access to diagnostics.", "The tenant is not cancelled or pending deletion."],
+                  ["**Move to dedicated database…**", "Moves the tenant's data to storage of its own.", "The tenant uses shared storage and is not cancelled or pending deletion."],
+                  ["**Cancel subscription…**", "Stops access now and sets a date to delete the data.", "The tenant is not already cancelled or pending deletion."]
+                ]
+              }
+            },
+            { "note": "Each action takes effect as soon as you confirm it. The platform audit records who did it and why." }
+          ]
+        },
+        {
+          "id": "platform-suspend",
+          "title": "Suspend a tenant",
+          "type": "task",
+          "intro": "Suspend a tenant to stop all changes in its workspace at once. For example, do it before a move or when the customer asks for a pause.",
+          "prerequisites": ["The tenant is not already suspended, cancelled or pending deletion."],
+          "steps": [
+            "Open the tenant's page. See [Find a tenant](#platform-find-tenant).",
+            "Select **Actions**.",
+            "Select **Suspend…**.",
+            {
+              "text": "In **Reason**, enter why you are suspending the tenant.",
+              "image": "shots/31-suspend.png",
+              "caption": "The **Suspend tenant** panel with a reason filled in.",
+              "alt": "Suspend tenant panel with the Reason box and the Suspend button",
+              "width": 420,
+              "note": "The tenant's administrators see this reason. Write it for them."
+            },
+            "Select **Suspend**."
+          ],
+          "result": "A message confirms **Tenant suspended**. A red banner on the tenant's page shows the date and your reason. Users can still sign in, read and pay, but they cannot make other changes.",
+          "blocks": [
+            { "note": "Paying invoices does not lift a suspension that an operator set. Use [Reactivate a tenant](#platform-reactivate) to lift it." }
+          ]
+        },
+        {
+          "id": "platform-reactivate",
+          "title": "Reactivate a tenant",
+          "type": "task",
+          "intro": "Reactivate a tenant to give back full access after a suspension or a missed payment.",
+          "prerequisites": ["The tenant is suspended, or its subscription is **PastDue**.", "The tenant is not pending deletion."],
+          "steps": [
+            "Open the tenant's page.",
+            "Select **Actions**.",
+            "Select **Reactivate**.",
+            {
+              "text": "Optionally, in **Note**, enter why you are reactivating the tenant.",
+              "image": "shots/31-reactivate.png",
+              "caption": "The **Reactivate tenant** panel.",
+              "alt": "Reactivate tenant panel with an optional Note box",
+              "width": 420
+            },
+            "Select **Reactivate**."
+          ],
+          "result": "A message confirms **Tenant reactivated**. The workspace can make changes again.",
+          "blocks": [
+            { "note": "A tenant that never moved to a paid plan returns to its trial. If the trial has already ended, extend it as well. See [Extend a trial](#platform-extend-trial)." }
+          ]
+        },
+        {
+          "id": "platform-extend-trial",
+          "title": "Extend a trial",
+          "type": "task",
+          "intro": "Give a trial tenant more time to decide. This also works for a trial that has already ended.",
+          "prerequisites": ["The tenant's subscription has a trial end date."],
+          "steps": [
+            "Open the tenant's page.",
+            "Select **Actions**.",
+            "Select **Extend trial…**.",
+            {
+              "text": "In **Extend the trial by (days)**, enter a number from 1 to 90.",
+              "image": "shots/31-extend-trial.png",
+              "caption": "The **Extend trial** panel. It suggests 14 days.",
+              "alt": "Extend trial panel with the number of days set to 14",
+              "width": 420
+            },
+            "Select **Extend trial**."
+          ],
+          "result": "A message confirms **Trial extended**. The new trial end date shows under **Subscription**.",
+          "blocks": [
+            { "note": "The extra days count from the current trial end or from today, whichever is later. Extending also lifts a past-due state or a suspension." }
+          ]
+        },
+        {
+          "id": "platform-change-plan",
+          "title": "Change a tenant's plan",
+          "type": "task",
+          "intro": "Move a tenant to another plan, or change its seats or billing cycle. Use this when you agree a change with the customer.",
+          "prerequisites": ["The tenant is not cancelled or pending deletion."],
+          "steps": [
+            "Open the tenant's page.",
+            "Select **Actions**.",
+            "Select **Change plan…**.",
+            {
+              "text": "In the **Plan** list, choose the new plan.",
+              "image": "shots/31-change-plan.png",
+              "caption": "The **Change plan** panel with the tenant's current plan, seats and billing cycle.",
+              "alt": "Change plan panel with the Plan list, Seats box and Billing cycle list",
+              "width": 420,
+              "note": "The list shows every plan with its price per agent per month, including hidden plans."
+            },
+            "In **Seats**, enter the number of agent seats.",
+            "In the **Billing cycle** list, choose **Monthly** or **Annual**.",
+            "Select **Change plan**."
+          ],
+          "result": "A message confirms **Plan changed**. The **Subscription** card shows the new plan.",
+          "blocks": [
+            { "warning": "The change applies at once, without an extra invoice for the rest of the period. The console does not check that the tenant's current usage fits the new plan." },
+            "When a tenant administrator changes the plan in the workspace, the usual billing rules apply instead. Chapter 28 describes them."
+          ]
+        },
+        {
+          "id": "platform-request-support",
+          "title": "Request support access",
+          "type": "task",
+          "intro": "Ask a tenant for short, read-only access to its diagnostics. Do this when the tenant asks for help with a problem you must look into.",
+          "prerequisites": [
+            "The tenant is not cancelled or pending deletion.",
+            "You have no other pending or active request for this tenant."
+          ],
+          "steps": [
+            "Open the tenant's page.",
+            "Select **Actions**.",
+            "Select **Request support access…**.",
+            {
+              "text": "In **Reason**, explain why you need access. Name the ticket or case.",
+              "image": "shots/31-request-access.png",
+              "caption": "The **Request support access** panel with a reason and a duration.",
+              "alt": "Request support access panel with Reason box and Duration list",
+              "width": 420,
+              "note": "The reason needs 10 to 1000 characters. The tenant's administrators read it before they decide."
+            },
+            "In the **Duration** list, choose **30 minutes**, **1 hour**, **4 hours** or **24 hours**.",
+            "Select **Send request**."
+          ],
+          "result": "A message confirms **Request sent**. The request shows with the status **Pending** on the tenant's page and on **Support access**.",
+          "blocks": [
+            "The tenant's administrators approve or reject the request in their workspace. Chapter 26 describes their side. Once they approve it, the time you chose starts."
+          ]
+        },
+        {
+          "id": "platform-cancel",
+          "title": "Cancel a tenant's subscription",
+          "type": "task",
+          "intro": "Cancel a subscription when a customer leaves. Tenants cannot cancel by themselves, so they ask you.",
+          "prerequisites": ["The tenant is not already cancelled or pending deletion."],
+          "steps": [
+            "Open the tenant's page.",
+            "Select **Actions**.",
+            "Select **Cancel subscription…**.",
+            {
+              "text": "In **Reason**, enter why the subscription ends.",
+              "image": "shots/31-cancel.png",
+              "caption": "The **Cancel subscription** panel with a reason and the number of days to keep the data.",
+              "alt": "Cancel subscription panel with Reason box and Keep data for (days) box",
+              "width": 420
+            },
+            "In **Keep data for (days)**, enter how long to keep the data, from 0 to 365. The panel suggests 30.",
+            {
+              "text": "Select **Cancel subscription**.",
+              "warning": "Access stops at once. You cannot undo a cancellation in the console."
+            }
+          ],
+          "result": "A message confirms **Subscription cancelled**. An amber banner shows the date when the data is deleted. After that date, the tenant becomes **Pending deletion**."
+        },
+        {
+          "id": "platform-invoices-page",
+          "title": "The Invoices page",
+          "type": "concept",
+          "intro": "**Invoices** lists the invoices of all tenants, newest first. SupportDesk issues them when a subscription period starts or a plan is upgraded. Tenants pay offline, for example by bank transfer.",
+          "blocks": [
+            { "image": "shots/31-invoices.png", "caption": "The **Invoices** page with invoices from several tenants.", "alt": "Invoices page with numbered status filter, invoice number, tenant name, status badge and Mark paid button" },
+            {
+              "callouts": [
+                "**Status**: show only invoices with one status.",
+                "The invoice number. Select it to open the invoice.",
+                "The tenant. Select it to open the tenant's page.",
+                "The invoice status.",
+                "**Mark paid**: records an offline payment. It shows only on unpaid invoices."
+              ]
+            },
+            { "heading": "Invoice statuses" },
+            {
+              "table": {
+                "columns": ["Status", "What it means"],
+                "widths": [22, 78],
+                "rows": [
+                  ["**Open**", "The invoice waits for payment and is not yet due."],
+                  ["**Overdue**", "The invoice is unpaid after its due date."],
+                  ["**Paid**", "An operator recorded the payment."],
+                  ["**Void**", "An operator cancelled the invoice. Nobody needs to pay it."]
+                ]
+              }
+            },
+            { "heading": "Invoice kinds" },
+            "The kind shows under the invoice number. **Subscription** is the regular invoice for a period. **Proration** charges for an upgrade in the middle of a period. **Manual** is a one-off invoice.",
+            { "note": "The list shows 50 invoices at a time. To see more, select **Load more**." }
+          ]
+        },
+        {
+          "id": "platform-invoice-detail",
+          "title": "Open an invoice and download its PDF",
+          "type": "task",
+          "intro": "Open an invoice to check its lines and payment details, or to save it as a PDF.",
+          "steps": [
+            "In the console menu, select **Invoices**.",
+            {
+              "text": "Select the invoice number.",
+              "image": "shots/31-invoice-detail.png",
+              "caption": "An open invoice with its lines, totals and payment instructions.",
+              "alt": "Invoice panel for SD-WINGS-0006 with Download PDF, Void and Mark paid buttons",
+              "width": 460
+            },
+            "To save the invoice, select **Download PDF**."
+          ],
+          "result": "The panel shows the period, the issue and due dates, the customer details, the lines and the totals. **How to pay** repeats the payment instructions printed on the invoice.",
+          "blocks": [
+            { "tip": "On a tenant's page, the download button next to each invoice saves the PDF directly." }
+          ]
+        },
+        {
+          "id": "platform-mark-paid",
+          "title": "Record an offline payment",
+          "type": "task",
+          "intro": "When a tenant's bank transfer or cheque arrives, mark the invoice as paid. SupportDesk never stores card details.",
+          "prerequisites": ["The invoice is **Open** or **Overdue**.", "You have checked that the money arrived."],
+          "steps": [
+            "In the console menu, select **Invoices**.",
+            {
+              "text": "In the invoice's row, select **Mark paid**.",
+              "note": "You can also select **Mark paid…** in the invoice panel, or **Mark paid** on the tenant's page."
+            },
+            {
+              "text": "Optionally, in **Payment reference**, enter the bank transfer number or the cheque number.",
+              "image": "shots/31-mark-paid.png",
+              "caption": "The panel that records an offline payment.",
+              "alt": "Mark SD-WINGS-0006 paid panel with the Payment reference box",
+              "width": 420
+            },
+            {
+              "text": "Select **Mark paid**.",
+              "warning": "You cannot undo this in the console."
+            }
+          ],
+          "result": "A message confirms that the invoice is marked paid. Its status changes to **Paid**.",
+          "blocks": [
+            "If this was the tenant's last overdue invoice, the past-due state ends. A suspension caused by missed payment lifts too.",
+            { "note": "Payment does not lift a suspension that an operator set. Use [Reactivate a tenant](#platform-reactivate) for that." }
+          ]
+        },
+        {
+          "id": "platform-void-invoice",
+          "title": "Void an invoice",
+          "type": "task",
+          "intro": "Void an invoice that nobody should pay, for example one issued by mistake.",
+          "prerequisites": ["The invoice is **Open** or **Overdue**."],
+          "steps": [
+            "In the console menu, select **Invoices**.",
+            "Select the invoice number.",
+            "Select **Void…**.",
+            {
+              "text": "In **Reason**, enter why you are voiding the invoice.",
+              "image": "shots/31-void.png",
+              "caption": "The panel that voids an invoice. A reason is required.",
+              "alt": "Void SD-WINGS-0006 panel with the Reason box and the Void invoice button",
+              "width": 420
+            },
+            {
+              "text": "Select **Void invoice**.",
+              "warning": "You cannot undo this in the console."
+            }
+          ],
+          "result": "A message confirms that the invoice is voided. Its status changes to **Void**, and its notes keep your reason."
+        },
+        {
+          "id": "platform-plans-page",
+          "title": "The Plans page",
+          "type": "concept",
+          "intro": "**Plans** shows every plan as a card. Tenants choose from these plans at sign-up and when they change plan.",
+          "blocks": [
+            { "image": "shots/31-plans.png", "caption": "The **Plans** page with the Trial, Starter, Professional and Enterprise plans.", "alt": "Plans page with numbered areas on the Starter plan card" },
+            {
+              "callouts": [
+                "**New plan**: creates a plan.",
+                "The number of tenants on the plan. A **Hidden** badge shows when new customers cannot choose the plan.",
+                "The price per agent per month, and per agent per year.",
+                "The plan's limits. **Unlimited** means there is no limit.",
+                "The features that the plan includes.",
+                "**Delete** and **Edit**. **Delete** is dimmed while tenants use the plan."
+              ]
+            },
+            { "note": "Large numbers follow your computer's regional format. For example, with Indian English settings, 1L is one lakh (100,000) and 1Cr is one crore (10,000,000)." }
+          ]
+        },
+        {
+          "id": "platform-edit-plan",
+          "title": "Create or edit a plan",
+          "type": "task",
+          "intro": "Create a plan to offer a new package, or edit a plan to change its prices, limits or features.",
+          "steps": [
+            "In the console menu, select **Plans**.",
+            "Select **New plan**, or select **Edit** on a plan's card.",
+            {
+              "text": "Fill in the plan details.",
+              "image": "shots/31-plan-editor.png",
+              "caption": "The **Edit plan** panel for the Professional plan.",
+              "alt": "Edit plan panel with code, name, prices, currency, trial days, limits, features and the sign-up switch",
+              "width": 460,
+              "substeps": [
+                "Enter the **Code** and the **Name**.",
+                "Enter the **Monthly price / agent**, the **Annual price / agent** and the **Currency**.",
+                "Enter the **Trial days** and the **Sort order**."
+              ]
+            },
+            "Under **Limits**, enter the most that each tenant may use. Leave a box empty for no limit.",
+            "Under **Features**, tick the features that the plan includes.",
+            "Turn **Offered at sign-up and in plan comparison** on or off.",
+            "Select **Create plan** for a new plan, or **Save** for an existing one."
+          ],
+          "result": "A message confirms **Plan created** or **Plan saved**. The plan's card shows the new details.",
+          "blocks": [
+            { "warning": "Changes to an existing plan apply to every tenant on it." },
+            { "heading": "Plan fields" },
+            {
+              "table": {
+                "columns": ["Field", "What to enter"],
+                "widths": [32, 68],
+                "rows": [
+                  ["**Code**", "A short lower-case name, such as `growth`. You cannot change it later."],
+                  ["**Name**", "The name that tenants see. Up to 100 characters."],
+                  ["**Description**", "Optional text about the plan."],
+                  ["**Monthly price / agent**", "The price for one agent for one month, from 0 to 1,000,000."],
+                  ["**Annual price / agent**", "The price for one agent for one year, from 0 to 12,000,000."],
+                  ["**Currency**", "A three-letter currency code, such as `USD` or `INR`."],
+                  ["**Trial days**", "The length of the free trial, from 0 to 365."],
+                  ["**Sort order**", "The plan's place in lists. Lower numbers come first."],
+                  ["**Limits**", "**Agents**, **Light agents**, **Portal users**, **Storage (MB)**, **Channels**, **AI tokens / month**, **API calls / month**, **Attachment size (MB)** and **Brands**. Empty means unlimited."],
+                  ["**Features**", "The parts of SupportDesk that tenants on this plan may use, such as **AI assistant** or **Single sign-on**."],
+                  ["**Offered at sign-up and in plan comparison**", "On: new customers can choose the plan. Off: the plan is hidden, but its tenants keep it."]
+                ]
+              }
+            },
+            { "note": "These features are not enforced yet: **Automation rules**, **Blueprint workflows**, **Advanced analytics**, **Community forums**, **Telephony** and **ERP integration**. Turning them off does not block them in the app." }
+          ]
+        },
+        {
+          "id": "platform-delete-plan",
+          "title": "Delete a plan",
+          "type": "task",
+          "intro": "Delete a plan that no tenant uses. To retire a plan that tenants still use, hide it instead.",
+          "prerequisites": ["No tenant uses the plan. Its card says **0 tenants**.", "The plan is not the trial plan, because sign-up needs it."],
+          "steps": [
+            "In the console menu, select **Plans**.",
+            {
+              "text": "On the plan's card, select **Delete**.",
+              "image": "shots/31-delete-plan.png",
+              "caption": "The question that asks you to confirm the deletion.",
+              "alt": "Delete plan Professional dialog with Cancel and Delete buttons",
+              "width": 420
+            },
+            {
+              "text": "Select **Delete**.",
+              "warning": "The plan is removed for good. You cannot undo this."
+            }
+          ],
+          "result": "A message confirms **Plan deleted**. The card disappears from the page.",
+          "blocks": [
+            { "tip": "To hide a plan, edit it and turn off **Offered at sign-up and in plan comparison**. Its card then shows a **Hidden** badge." }
+          ]
+        },
+        {
+          "id": "platform-support-access",
+          "title": "Support access and diagnostics",
+          "type": "concept",
+          "intro": [
+            "Operators never sign in as a tenant's users. When a tenant needs help, you ask for support access instead. The tenant's administrators decide, and the access ends on its own.",
+            "**Support access** lists the requests of all operators for all tenants, newest first."
+          ],
+          "blocks": [
+            { "image": "shots/31-support-access.png", "caption": "The **Support access** page with one request waiting for the tenant.", "alt": "Support access page with numbered Refresh button, tenant name, reason and Pending status" },
+            {
+              "callouts": [
+                "**Refresh** loads the latest decisions.",
+                "The tenant. Select it to open the tenant's page.",
+                "The reason given in the request.",
+                "The status. While access is active, the time left shows below it. After a decision, the name of the person who decided shows below it."
+              ]
+            },
+            { "heading": "Request statuses" },
+            {
+              "table": {
+                "columns": ["Status", "What it means"],
+                "widths": [22, 78],
+                "rows": [
+                  ["**Pending**", "The tenant's administrators have not decided yet."],
+                  ["**Approved**", "You can open the diagnostics until the access ends."],
+                  ["**Rejected**", "The tenant's administrators said no."],
+                  ["**Revoked**", "The tenant's administrators ended the access early."],
+                  ["**Expired**", "The time you asked for has run out."]
+                ]
+              }
+            },
+            { "heading": "What the diagnostics show" },
+            {
+              "list": [
+                "The time when your access ends.",
+                "The usage meters, as on the tenant's page.",
+                "Counts of users, departments, statuses, categories, SLA policies, automation rules, channels and open tickets.",
+                "**Failed jobs**: background tasks that failed.",
+                "**Dead-letter events**: messages that the app gave up delivering after several tries.",
+                "**Recent audit**: the tenant's last 25 audit entries."
+              ]
+            },
+            { "note": "Diagnostics never show tickets, messages or customer details. Each view is recorded in the tenant's audit trail and in the platform audit." }
+          ]
+        },
+        {
+          "id": "platform-diagnostics",
+          "title": "View a tenant's diagnostics",
+          "type": "task",
+          "intro": "Look at a tenant's diagnostics while your approved access lasts.",
+          "prerequisites": [
+            "The tenant's administrators approved your request, and the access has not ended.",
+            "You made the request yourself. Other operators cannot open your access."
+          ],
+          "steps": [
+            "In the console menu, select **Support access**.",
+            "Find the request with the status **Approved**.",
+            "Select **Diagnostics**.",
+            "Read the usage, configuration and recent audit details.",
+            "Select **Close**."
+          ],
+          "result": "The **Diagnostics** panel opens with the details listed in [Support access and diagnostics](#platform-support-access).",
+          "blocks": [
+            { "tip": "The tenant's page has the same **Diagnostics** button in its **Support access** list." }
+          ]
+        },
+        {
+          "id": "platform-audit-page",
+          "title": "Platform audit",
+          "type": "concept",
+          "intro": [
+            "**Audit** is a tamper-evident record of platform operations. Each entry is sealed in a chain, so a changed or missing entry shows up when you check the chain.",
+            "The trail records operator sign-ins and every action an operator takes on tenants, plans, invoices and support access. It also records new sign-ups."
+          ],
+          "blocks": [
+            { "image": "shots/31-audit.png", "caption": "The **Platform audit** page after **Verify chain**.", "alt": "Platform audit page with numbered Verify chain button, result message, search box, action filter and entries" },
+            {
+              "callouts": [
+                "**Verify chain**: checks that no sealed entry was changed or removed.",
+                "The result of the check.",
+                "**Search**: words from the summary, or the name of the person or service that acted.",
+                "**Action**: show only one kind of action.",
+                "The entries, newest first."
+              ]
+            },
+            {
+              "table": {
+                "columns": ["Column", "What it shows"],
+                "widths": [22, 78],
+                "rows": [
+                  ["**When**", "The date and time of the action."],
+                  ["**Actor**", "Who acted, with the kind of actor and the network address below."],
+                  ["**Action**", "A short name for the kind of action."],
+                  ["**Tenant**", "The tenant concerned. Select it to open the tenant's page. A dash means no tenant."],
+                  ["**Summary**", "What happened, in words."],
+                  ["**#**", "The entry's place in the chain. Three dots mean the entry is not sealed yet."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "platform-search-audit",
+          "title": "Search the platform audit",
+          "type": "task",
+          "intro": "Find out who did what, for example who suspended a tenant.",
+          "steps": [
+            "In the console menu, select **Audit**.",
+            "In **Search**, enter words from the summary or the name of the person who acted.",
+            "In the **Action** list, choose a kind of action, or choose **All actions**.",
+            "Select **Search**."
+          ],
+          "result": "The list shows the matching entries, newest first. If nothing matches, it says **No audit entries match**.",
+          "blocks": [
+            { "note": "The list shows 50 entries at a time. To see more, select **Load more**." }
+          ]
+        },
+        {
+          "id": "platform-verify-chain",
+          "title": "Verify the audit chain",
+          "type": "task",
+          "intro": "Check that nobody changed or removed platform audit entries. Do this regularly, and before you hand the trail to an auditor.",
+          "steps": [
+            "In the console menu, select **Audit**.",
+            "Select **Verify chain**.",
+            "Read the message above the search box."
+          ],
+          "result": "**Chain intact** in green means the trail is complete. The message gives the number of sealed entries checked.",
+          "blocks": [
+            { "warning": "**Chain broken** in red means an entry was changed or removed. The message gives the number of the first broken entry. Report it to your security lead at once." },
+            { "note": "This check covers the platform trail only. Each workspace checks its own trail in its audit log." }
+          ]
+        },
+        {
+          "id": "platform-public-signup",
+          "title": "Public sign-up",
+          "type": "concept",
+          "intro": [
+            "New customers can start a free trial on their own from the sign-up page. Chapter 28 shows the steps they follow.",
+            "As an operator, you control which plans they can choose and how long their trial lasts. You do this on the **Plans** page."
+          ],
+          "blocks": [
+            { "heading": "What you control" },
+            {
+              "list": [
+                "The sign-up page offers every plan with **Offered at sign-up and in plan comparison** turned on.",
+                "The trial lasts as many days as the plan's **Trial days**, but never less than 14 days.",
+                "You cannot delete the trial plan, because sign-up needs it."
+              ]
+            },
+            { "heading": "Rules that always apply" },
+            {
+              "list": [
+                "Each new workspace starts with 3 seats. The person who signs up becomes its administrator.",
+                "The new customer confirms their e-mail address with a 6-digit code. The code works for 30 minutes and allows 5 tries.",
+                "Taken and reserved workspace names are refused, for example `admin`, `support` or `demo`.",
+                "The app limits how many sign-ups come from one network or one e-mail address in an hour.",
+                "Each new trial shows on **Overview** under **Trials**, and in the platform audit."
+              ]
+            },
+            { "warning": "For testing, your hosting team can show the e-mail code on the sign-up page. This setting must stay off in the live service." }
+          ]
+        },
+        {
+          "id": "platform-dedicated-about",
+          "title": "Dedicated storage for large tenants",
+          "type": "concept",
+          "intro": [
+            "By default, all tenants share one data store, and each tenant sees only its own data. A large tenant can move to a data store of its own.",
+            "The list of tenants always stays in the shared store."
+          ],
+          "blocks": [
+            { "heading": "Before you start" },
+            {
+              "list": [
+                "The tenant's plan includes the **Dedicated database** feature. Of the standard plans, only Enterprise does.",
+                "Your hosting team has prepared a connection name for the tenant. The console never asks for technical connection details.",
+                "The app copies data only within the same storage system. To place a tenant elsewhere, your hosting team copies its data by hand first.",
+                "You have agreed a time with the tenant. Everyone in the workspace must sign in again after the move."
+              ]
+            },
+            { "heading": "What the move does" },
+            "The app creates the new store and prepares it. It copies all the tenant's data, then switches the tenant over. Background work, such as sending e-mail and checking SLA timers, follows the tenant.",
+            { "note": "The old copy of the data stays in the shared store for safety. The console has no tool to remove it or to move the tenant back. Your hosting team does both by hand." }
+          ]
+        },
+        {
+          "id": "platform-dedicated-move",
+          "title": "Move a tenant to dedicated storage",
+          "type": "task",
+          "intro": "Follow these steps in order. They keep the tenant's data safe during the copy.",
+          "prerequisites": [
+            "You have read [Dedicated storage for large tenants](#platform-dedicated-about).",
+            "The tenant uses shared storage and is not cancelled or pending deletion."
+          ],
+          "steps": [
+            "Suspend the tenant, so that nobody changes data during the copy. See [Suspend a tenant](#platform-suspend).",
+            "On the tenant's page, select **Actions** > **Move to dedicated database…**.",
+            {
+              "text": "Check the **Connection name**. The console suggests `tenant_` followed by the workspace name.",
+              "image": "shots/31-dedicated.png",
+              "caption": "The panel that moves a tenant, with the suggested connection name.",
+              "alt": "Panel with the Connection name box set to tenant_wings and the Provision and move button",
+              "width": 420,
+              "note": "Use 3 to 40 lower-case letters, digits or underscores. No other tenant may use the same name."
+            },
+            {
+              "text": "Select **Provision and move**.",
+              "warning": "The move starts at once. You cannot undo it in the console."
+            },
+            "Wait for the result. It shows the new store's name, how much data was copied, and each step taken.",
+            "Select **Close**.",
+            "Check with the tenant that its users can sign in and see their data.",
+            "Reactivate the tenant. See [Reactivate a tenant](#platform-reactivate).",
+            "Ask your hosting team to remove the old copy from the shared store."
+          ],
+          "result": "On the tenant's page, **Workspace** shows the storage as **Dedicated**, with the connection name. The tenant list shows **dedicated DB** under the tenant's name."
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "The console sign-in page says **Enter your e-mail address and password.**", "cause": "A box is empty, or the e-mail address is not complete.", "fix": "Enter your full operator e-mail address and your password. Then select **Sign in**." },
+    { "problem": "The console sign-in page says **Invalid credentials.**", "cause": "The e-mail address or the password is wrong, or your operator account is switched off.", "fix": "Check both and try again. If it still fails, ask the team that runs SupportDesk." },
+    { "problem": "The console asks **Enter your authenticator code.**", "cause": "Your operator account uses an authenticator app.", "fix": "Enter the current code from the app in **Authenticator code**, then select **Sign in**." },
+    { "problem": "The console says **That code is not correct.**", "cause": "The authenticator code was mistyped or has already changed.", "fix": "Wait for the next code in the app and enter it." },
+    { "problem": "The console says **Your platform session ended. Sign in again.**", "cause": "Your 30-minute session ran out, or you reloaded the page.", "fix": "Sign in again. Move between pages with the console menu, not the browser's reload button." },
+    { "problem": "A tenant action fails with **Give a reason.**", "cause": "**Suspend…**, **Cancel subscription…** and **Void…** need a reason.", "fix": "Enter a reason, then try again." },
+    { "problem": "**Extend trial…** says **This tenant is not on a trial.**", "cause": "The subscription has no trial end date.", "fix": "Use **Reactivate** or **Change plan…** instead." },
+    { "problem": "**Reactivate** says **The tenant is pending deletion and cannot be reactivated.**", "cause": "The keep-data period after cancellation has ended.", "fix": "The tenant cannot come back. The customer must sign up again." },
+    { "problem": "A support access request fails with **You already have a pending or active support-access request for this tenant.**", "cause": "You can have only one open request for each tenant.", "fix": "Wait for the tenant's decision, or for your current access to end." },
+    { "problem": "A support access request fails with **Explain why access is needed (10–1000 characters).**", "cause": "The reason is too short or too long.", "fix": "Name the ticket or case and describe the problem in a sentence or two." },
+    { "problem": "**Diagnostics** says **Support access is not active (pending, rejected, revoked or expired).**", "cause": "The tenant has not approved the request, or the access has ended.", "fix": "Check the status on **Support access**. If you still need access, send a new request." },
+    { "problem": "**Diagnostics** says **This support-access grant belongs to another operator.**", "cause": "Another operator made the request. Only the operator who asked can open the diagnostics.", "fix": "Send your own request from the tenant's page." },
+    { "problem": "Deleting a plan fails with **Tenants are subscribed to this plan.**", "cause": "At least one tenant uses the plan.", "fix": "Edit the plan and turn off **Offered at sign-up and in plan comparison** to hide it instead." },
+    { "problem": "Deleting the trial plan fails with **The trial plan is required for self-service sign-up.**", "cause": "Sign-up always uses the trial plan.", "fix": "Keep the trial plan. Edit its limits or trial days instead." },
+    { "problem": "Saving a plan fails with **A plan with code … already exists.**", "cause": "Each plan code must be unique.", "fix": "Choose another code." },
+    { "problem": "Saving a plan shows **Use a 3-letter ISO currency code.** under **Currency**.", "cause": "The currency is not a three-letter code.", "fix": "Enter a code such as `USD`, `EUR` or `INR`." },
+    { "problem": "Moving a tenant fails with **Use 3–40 lower-case letters, digits or underscores.**", "cause": "The connection name has capital letters, spaces or other characters, or is too short or too long.", "fix": "Correct the **Connection name**, then select **Provision and move** again." },
+    { "problem": "Moving a tenant fails because the plan does not include dedicated storage.", "cause": "The tenant's plan does not include dedicated storage.", "fix": "Change the tenant's plan first, for example to Enterprise." },
+    { "problem": "Moving a tenant fails with **Another tenant already uses this connection name.**", "cause": "Each tenant needs its own connection name.", "fix": "Enter a different connection name." },
+    { "problem": "Moving a tenant fails with a message about the connection or the storage system.", "cause": "Your hosting team has not prepared the connection name, or it points somewhere the app cannot copy to.", "fix": "Send the message to your hosting team. Try again after they fix it." },
+    { "problem": "**Mark paid** or **Void…** fails with a message such as **Invoice SD-WINGS-0006 is Paid.**", "cause": "Someone already paid or voided the invoice.", "fix": "Refresh the list. The invoice no longer needs any action." },
+    { "problem": "**Verify chain** shows **Chain broken**.", "cause": "A platform audit entry was changed or removed.", "fix": "Note the number of the first broken entry. Report it to your security lead at once." }
+  ],
+  "faq": [
+    { "q": "Can I open a tenant's tickets or sign in as one of its users?", "a": "No. Operators never see tickets or customer data, and they cannot act as a tenant's users. Ask for support access to see read-only diagnostics instead." },
+    { "q": "Why does reloading the console page sign me out?", "a": "For safety, the console keeps your session only while the page stays open. Reloading ends it. Move between pages with the console menu." },
+    { "q": "Does marking an invoice paid lift a suspension?", "a": "It lifts a suspension caused by missed payment once no overdue invoice is left. It does not lift a suspension that an operator set. Use **Reactivate** for that." },
+    { "q": "What happens to a tenant's data after I cancel its subscription?", "a": "Access stops at once. The data is kept for the number of days you chose, from 0 to 365. After that date, the tenant becomes **Pending deletion**." },
+    { "q": "How do I stop new customers from choosing a plan?", "a": "Edit the plan and turn off **Offered at sign-up and in plan comparison**. Tenants already on the plan keep it." }
+  ],
+  "glossary": [
+    { "term": "Tenant", "definition": "A customer company that uses SupportDesk. Each tenant has one workspace." },
+    { "term": "Platform console", "definition": "The separate part of SupportDesk where platform operators manage tenants, plans, invoices and support access." },
+    { "term": "Plan", "definition": "A package that tenants buy. It sets the price per agent, the limits and the features." },
+    { "term": "Seat", "definition": "One paid agent place in a subscription." },
+    { "term": "Past due", "definition": "A subscription whose trial ended or whose invoice is overdue. The workspace keeps working until the grace period ends." },
+    { "term": "Grace period", "definition": "The days a past-due workspace keeps working before SupportDesk suspends it." },
+    { "term": "Suspension", "definition": "A state in which a workspace's users can sign in, read and pay, but cannot make other changes." },
+    { "term": "Pending deletion", "definition": "A cancelled tenant whose keep-data period has ended. Its data waits to be deleted." },
+    { "term": "Offline payment", "definition": "A payment made outside SupportDesk, such as a bank transfer. An operator records it with **Mark paid**." },
+    { "term": "Void invoice", "definition": "An invoice that an operator cancelled. Nobody needs to pay it." },
+    { "term": "Monthly recurring revenue", "definition": "The monthly value of all active and past-due subscriptions." },
+    { "term": "Open receivables", "definition": "The total amount of all unpaid invoices." },
+    { "term": "Support access", "definition": "Short, read-only access to a tenant's diagnostics. The tenant's administrators must approve it." },
+    { "term": "Diagnostics", "definition": "Usage, configuration counts, failed background work and recent audit entries of a tenant. They never include tickets or customer data." },
+    { "term": "Audit chain", "definition": "The way SupportDesk links audit entries, so that a changed or missing entry shows up when you verify the chain." },
+    { "term": "Dedicated storage", "definition": "A data store used by one tenant only, instead of the store that tenants share." }
+  ]
+}

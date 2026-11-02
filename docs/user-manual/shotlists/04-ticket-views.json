@@ -1,0 +1,212 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": { "width": 1280, "height": 800, "scale": 1.5 },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": ["sd-toast-outlet"],
+  "setup": [
+    { "goto": "/login" },
+    { "fill": "label=Workspace", "value": "wings" },
+    { "fill": "label=Work e-mail", "value": "priya@wings.demo" },
+    { "fill": "label=Password", "value": "${env:SD_DESK_PASSWORD}" },
+    { "click": "form button[type=submit]" },
+    { "waitForText": "SLA risk board" }
+  ],
+  "shots": [
+    {
+      "id": "04-workspace-tour",
+      "file": "04-workspace-tour.png",
+      "steps": [
+        { "goto": "/tickets?queue=mine" },
+        { "waitForText": "Unable to log in after password change" },
+        { "click": "text=Unable to log in after password change" },
+        { "waitForText": "Conversation" },
+        { "click": "a.tab--list" },
+        { "click": "text=Batch expiry report shows wrong dates after upgrade" },
+        { "waitForText": "Conversation" },
+        { "click": "a.tab--list" },
+        { "waitForText": "Missed call from Nikhil Joshi" }
+      ],
+      "highlight": [
+        "desk-queue-panel ul.list",
+        "button[aria-label='New view']",
+        "nav.strip",
+        "desk-ticket-list label.search",
+        "button[aria-label='Refresh list']",
+        "button[aria-label='Sort by Priority']",
+        "a.new-ticket"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "04-column-chooser",
+      "file": "04-column-chooser.png",
+      "steps": [
+        { "goto": "/tickets?queue=mine" },
+        { "waitForText": "Missed call from Nikhil Joshi" },
+        { "click": "button[aria-label='Choose columns']" },
+        { "waitFor": ".sd-popover.chooser" }
+      ],
+      "clip": ".sd-popover.chooser"
+    },
+    {
+      "id": "04-list-filter",
+      "file": "04-list-filter.png",
+      "steps": [
+        { "goto": "/tickets?queue=open" },
+        { "waitForText": "All open" },
+        { "fill": "label=Filter by #, subject, customer…", "value": "POS" },
+        { "wait": 1200 },
+        { "waitForText": "Pharmacy counter POS freezes during billing" },
+        { "eval": "(() => { const el = document.querySelector('desk-ticket-list'); el.style.flex = 'none'; el.style.height = '470px'; return true; })()" },
+        { "wait": 500 }
+      ],
+      "highlight": ["desk-ticket-list label.search"],
+      "clip": "desk-ticket-list",
+      "clipPadding": 0
+    },
+    {
+      "id": "04-view-editor",
+      "file": "04-view-editor.png",
+      "steps": [
+        { "goto": "/tickets?queue=open" },
+        { "waitForText": "All open" },
+        { "click": "button[aria-label='New view']" },
+        { "waitForText": "Who can use it" },
+        { "fill": "label=Name", "value": "Critical tickets for me" },
+        { "click": "text=Condition" },
+        { "click": "input[aria-label='Field']" },
+        { "eval": "(() => { const o = [...document.querySelectorAll('[role=option]')].filter((e) => e.getBoundingClientRect().height > 0).find((e) => e.innerText.trim().split('\\n')[0] === 'Priority'); if (o) o.click(); return !!o; })()" },
+        { "wait": 400 },
+        { "click": "input[aria-label='Value']" },
+        { "eval": "(() => { const o = [...document.querySelectorAll('[role=option]')].filter((e) => e.getBoundingClientRect().height > 0).find((e) => e.innerText.trim().split('\\n')[0] === 'Critical'); if (o) o.click(); return !!o; })()" },
+        { "wait": 400 },
+        { "click": "text=Condition" },
+        { "click": "sd-filter-condition:nth-of-type(2) input[aria-label='Field']" },
+        { "eval": "(() => { const o = [...document.querySelectorAll('[role=option]')].filter((e) => e.getBoundingClientRect().height > 0).find((e) => e.innerText.trim().split('\\n')[0] === 'Assignee'); if (o) o.click(); return !!o; })()" },
+        { "wait": 400 },
+        { "click": "sd-filter-condition:nth-of-type(2) input[aria-label='Value']" },
+        { "eval": "(() => { const o = [...document.querySelectorAll('[role=option]')].filter((e) => e.getBoundingClientRect().height > 0).find((e) => e.innerText.includes('whoever views it')); if (o) o.click(); return !!o; })()" },
+        { "wait": 600 }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "04-bulk-bar",
+      "file": "04-bulk-bar.png",
+      "steps": [
+        { "goto": "/tickets?queue=open" },
+        { "waitForText": "All open" },
+        { "wait": 800 },
+        { "eval": "(() => { const boxes = [...document.querySelectorAll('desk-ticket-list [aria-label=\"Select row\"]')].slice(0, 3); boxes.forEach((b) => b.click()); return boxes.length; })()" },
+        { "waitForText": "3 selected" },
+        { "eval": "(() => { const el = document.querySelector('desk-ticket-list'); el.style.flex = 'none'; el.style.height = '520px'; return true; })()" },
+        { "wait": 500 }
+      ],
+      "highlight": ["desk-ticket-list .bulk"],
+      "clip": "desk-ticket-list",
+      "clipPadding": 0
+    },
+    {
+      "id": "04-bulk-more",
+      "file": "04-bulk-more.png",
+      "steps": [
+        { "click": ".bulk sd-dropdown-menu button" },
+        { "waitFor": ".sd-menu" }
+      ],
+      "clip": ".sd-menu"
+    },
+    {
+      "id": "04-bulk-assign",
+      "file": "04-bulk-assign.png",
+      "steps": [
+        { "press": "Escape" },
+        { "wait": 300 },
+        { "click": ".bulk button:nth-of-type(2)" },
+        { "waitForText": "Assign tickets" }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "04-bulk-delete",
+      "file": "04-bulk-delete.png",
+      "steps": [
+        { "click": "sd-dialog [sddialogfooter] button" },
+        { "wait": 300 },
+        { "click": ".bulk sd-dropdown-menu button" },
+        { "waitFor": ".sd-menu" },
+        { "click": "text=Delete…" },
+        { "waitForText": "to confirm" }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "04-recycle-bin",
+      "file": "04-recycle-bin.png",
+      "steps": [
+        { "goto": "/tickets?queue=deleted" },
+        { "waitFor": "desk-recycle-bin" },
+        { "wait": 1000 },
+        { "eval": "(() => { const el = document.querySelector('desk-recycle-bin'); el.style.flex = 'none'; el.style.height = '330px'; return true; })()" },
+        { "wait": 400 }
+      ],
+      "clip": "desk-recycle-bin",
+      "clipPadding": 0
+    },
+    {
+      "id": "04-new-ticket-requester",
+      "file": "04-new-ticket-requester.png",
+      "steps": [
+        { "goto": "/tickets/new" },
+        { "waitForText": "Requester" },
+        { "click": "input[placeholder='Search customers…']" },
+        { "eval": "(() => { const i = document.querySelector(\"input[placeholder='Search customers…']\"); i.value = 'Sunrise'; i.dispatchEvent(new Event('input', { bubbles: true })); return true; })()" },
+        { "wait": 1500 },
+        { "eval": "(() => { const o = [...document.querySelectorAll('[role=option]')].filter((e) => e.getBoundingClientRect().height > 0).find((e) => e.innerText.includes('Sunrise Pharma')); if (o) o.click(); return !!o; })()" },
+        { "wait": 800 },
+        { "click": "input[placeholder='Search contacts…']" },
+        { "eval": "(() => { const i = document.querySelector(\"input[placeholder='Search contacts…']\"); i.value = 'Suresh'; i.dispatchEvent(new Event('input', { bubbles: true })); return true; })()" },
+        { "wait": 1500 },
+        { "eval": "(() => { const o = [...document.querySelectorAll('[role=option]')].filter((e) => e.getBoundingClientRect().height > 0).find((e) => e.innerText.includes('Suresh Patil')); if (o) o.click(); return !!o; })()" },
+        { "wait": 800 },
+        { "click": "text=Phone" },
+        { "wait": 400 }
+      ],
+      "clip": "sd-card:nth-of-type(1)"
+    },
+    {
+      "id": "04-new-ticket-request",
+      "file": "04-new-ticket-request.png",
+      "steps": [
+        { "fill": "label=Subject", "value": "Barcode scanner not detected at the main warehouse" },
+        { "click": "sd-card:nth-of-type(2) [contenteditable=true]" },
+        { "eval": "(() => { document.execCommand('insertText', false, 'The customer called. The scanner stopped working after this morning\\'s Windows update. Billing is slow.'); return true; })()" },
+        { "wait": 600 }
+      ],
+      "clip": "sd-card:nth-of-type(2)"
+    },
+    {
+      "id": "04-new-ticket-routing",
+      "file": "04-new-ticket-routing.png",
+      "steps": [
+        { "click": "sd-card:nth-of-type(4) sd-form-field:nth-of-type(3) input[role=combobox]" },
+        { "eval": "(() => { const o = [...document.querySelectorAll('[role=option]')].filter((e) => e.getBoundingClientRect().height > 0).find((e) => e.innerText.includes('Priya Raman')); if (o) o.click(); return !!o; })()" },
+        { "wait": 600 }
+      ],
+      "clip": "sd-card:nth-of-type(4)"
+    },
+    {
+      "id": "04-new-ticket-errors",
+      "file": "04-new-ticket-errors.png",
+      "steps": [
+        { "goto": "/tickets/new" },
+        { "waitForText": "Requester" },
+        { "click": "text=Create ticket" },
+        { "waitForText": "Enter a subject." },
+        { "scroll": "label=Subject" }
+      ],
+      "clip": "sd-card:nth-of-type(2)"
+    }
+  ]
+}

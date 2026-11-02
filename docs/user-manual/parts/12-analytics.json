@@ -1,0 +1,369 @@
+{
+  "chapters": [
+    {
+      "id": "analytics",
+      "title": "Analytics",
+      "intro": [
+        "This chapter is for supervisors and managers who track support performance. Agents can also use it to see their own numbers.",
+        "It covers dashboards, standard reports, drilling down to tickets, exporting and scheduled e-mail reports."
+      ],
+      "sections": [
+        {
+          "id": "about-analytics",
+          "title": "What you see in Analytics",
+          "type": "concept",
+          "intro": "Select **Analytics** in the main menu. The numbers cover only the tickets you may see. The line under the title says which tickets are counted and which time zone is used.",
+          "blocks": [
+            { "table": {
+              "columns": ["Permission", "Lets you"],
+              "widths": [44, 56],
+              "rows": [
+                ["**View personal dashboards and reports**", "See your own tickets only. The page says **Personal analytics**."],
+                ["**View team, department and organisation analytics**", "See every ticket in your data scope, and share dashboards."],
+                ["**Export reports (CSV/Excel/PDF)**", "Export reports and use the **Exports** tab."],
+                ["**Schedule report delivery**", "Schedule e-mailed reports and use the **Scheduled** tab."]
+              ]
+            } },
+            { "table": {
+              "columns": ["Tab", "What it is for"],
+              "widths": [22, 78],
+              "rows": [
+                ["**Dashboards**", "Pages of charts and figures. Four come ready-made, and you can build your own."],
+                ["**Reports**", "Ten standard reports with figures, charts and tables."],
+                ["**Scheduled**", "Reports that are e-mailed on a schedule."],
+                ["**Exports**", "Files you exported, ready to download."]
+              ]
+            } },
+            { "note": "Times are business hours where a figure says (bh). Spam, merged and deleted tickets are never counted." }
+          ]
+        },
+        {
+          "id": "analytics-dashboard-tour",
+          "title": "Dashboards at a glance",
+          "type": "concept",
+          "intro": "The **Dashboards** tab opens the dashboard you used last.",
+          "blocks": [
+            { "image": "shots/12-an-dashboard.png", "caption": "The Service performance dashboard for the last 30 days.", "alt": "Analytics dashboards tab with numbered highlights on the tabs, the dashboard list, the period and filter bar, Edit layout, the dashboard menu and a widget" },
+            { "callouts": [
+              "The **Analytics** tabs.",
+              "The dashboard list. It groups dashboards under **Role defaults**, **Shared** and **Personal**.",
+              "The period, **Compare** and **Filters**. They apply to every widget on the page.",
+              "**Edit layout** lets you add, move and resize widgets.",
+              "The dashboard menu: **New dashboard**, **Duplicate as personal**, **Settings** and **Delete dashboard**.",
+              "A widget. Select its number to see the tickets behind it."
+            ] },
+            { "table": {
+              "columns": ["Built-in dashboard", "Default period", "Focus"],
+              "widths": [28, 20, 52],
+              "rows": [
+                ["**My performance**", "Last 30 days", "Your open and resolved tickets, first response and CSAT."],
+                ["**Team operations**", "Last 7 days", "Backlog, SLA compliance, agent scorecard and channels."],
+                ["**Service performance**", "Last 30 days", "Resolution time, departments, escalations and backlog."],
+                ["**Executive overview**", "Last 90 days", "Demand, CSAT, products, top customers and tiers."]
+              ]
+            } }
+          ]
+        },
+        {
+          "id": "analytics-period-filters",
+          "title": "Choose the period and filters",
+          "type": "task",
+          "intro": "Change what the dashboard or report counts.",
+          "prerequisites": ["You have the **View personal dashboards and reports** permission."],
+          "steps": [
+            "In the period list, choose a period, such as **Last 30 days**. Choose **Custom range** to enter your own dates.",
+            "To compare with an earlier period, turn on **Compare**. Then choose **Previous period** or **Same period last year**.",
+            {
+              "text": "Select **Filters**. The **Filters** panel opens.",
+              "image": "shots/12-an-filters.png",
+              "caption": "The Filters panel with the fields you can filter by.",
+              "alt": "Filters panel with Department, Team, Agent, Channel, Priority, Customer, Product and Tier, and Reset and Apply filters",
+              "width": 300
+            },
+            "Choose one or more values in the fields you need, such as **Department** or **Priority**.",
+            "Select **Apply filters**."
+          ],
+          "result": "Every widget or report figure updates. Each active filter appears as a chip next to **Filters**.",
+          "blocks": [
+            { "tip": "Select the cross on a chip to remove one filter. Select **Clear filters** to remove them all. **Reset** in the panel clears your choices before you apply them." }
+          ]
+        },
+        {
+          "id": "analytics-drill-down",
+          "title": "See the tickets behind a number",
+          "type": "task",
+          "intro": "Find out which tickets make up a figure, a bar or a row.",
+          "prerequisites": ["You have the **View personal dashboards and reports** permission."],
+          "steps": [
+            "Open a dashboard or a report.",
+            "Select a figure, a bar, a point on a line or a table row.",
+            {
+              "text": "Read the list of tickets in the panel that opens.",
+              "image": "shots/12-an-drilldown.png",
+              "caption": "The tickets behind the Tickets created figure.",
+              "alt": "Drill-down panel titled Tickets created with the period, ticket count and a list of tickets with status, assignee, customer, date, priority and SLA breached",
+              "width": 420
+            },
+            "To see more, select **Load more** at the bottom.",
+            "Select a ticket to open it."
+          ],
+          "result": "The ticket opens. The panel shows the period and the number of tickets at the top.",
+          "blocks": [
+            { "note": "**SLA breached** in red means the ticket missed an SLA target." }
+          ]
+        },
+        {
+          "id": "analytics-new-dashboard",
+          "title": "Create your own dashboard",
+          "type": "task",
+          "intro": "Build a dashboard with only the figures you need.",
+          "prerequisites": ["You have the **View personal dashboards and reports** permission."],
+          "steps": [
+            "On the **Dashboards** tab, select the dashboard menu (**...**).",
+            "Select **New dashboard**.",
+            {
+              "text": "Enter a **Name** and, optionally, a **Description**.",
+              "image": "shots/12-an-new-dashboard.png",
+              "caption": "The New dashboard dialog.",
+              "alt": "New dashboard dialog with Name, Description, Default period, the share switch, Cancel and Create dashboard",
+              "width": 420
+            },
+            "Choose the **Default period**.",
+            "To let others see it, turn on **Share with everyone who has analytics access**.",
+            "Select **Create dashboard**.",
+            "Add widgets as described in [Add a widget to a dashboard](#analytics-add-widget)."
+          ],
+          "result": "The new dashboard opens in edit mode. It appears under **Personal**, or under **Shared** when shared.",
+          "blocks": [
+            { "note": "Only people with the **View team, department and organisation analytics** permission can share a dashboard." },
+            { "tip": "To start from a built-in dashboard, open it and select **Duplicate as personal** in the menu." }
+          ]
+        },
+        {
+          "id": "analytics-add-widget",
+          "title": "Add a widget to a dashboard",
+          "type": "task",
+          "intro": "A widget shows one measure as a figure, a chart or a table.",
+          "prerequisites": ["You can edit the dashboard. You can always edit your own personal dashboards."],
+          "steps": [
+            "Open the dashboard and select **Edit layout**.",
+            "Select **Add widget**.",
+            {
+              "text": "Under **Visualisation**, choose **KPI**, **Line**, **Bar**, **Pie** or **Table**.",
+              "image": "shots/12-an-widget-editor.png",
+              "caption": "The Add widget dialog with a KPI widget and its preview.",
+              "alt": "Add widget dialog with Visualisation choices, Metric, Title, Period, the compare switch, widget filters, a preview, Cancel and Add widget",
+              "width": 460
+            },
+            "In **Metric**, choose what to measure. Change the **Title** if you want.",
+            "For a chart or table, choose **Break down by** and **Show top**. For a table, add **More columns** if needed.",
+            "Leave **Period** on **Dashboard period**, or choose a fixed period.",
+            "Optionally, choose **Widget filters**. The app adds them to the page filters.",
+            "Check the preview, then select **Add widget**.",
+            "Select **Save layout**."
+          ],
+          "result": "The message **Dashboard saved** appears. The widget shows on the dashboard.",
+          "blocks": [
+            { "tip": "In edit mode, each widget has arrow buttons to move it. **W−** and **W+** change its width. **H−** and **H+** change its height. The pencil edits it and the bin removes it." },
+            { "note": "Select **Cancel** in the toolbar to leave edit mode without saving your changes." }
+          ]
+        },
+        {
+          "id": "analytics-dashboard-settings",
+          "title": "Rename, share or delete a dashboard",
+          "type": "task",
+          "intro": "Change a dashboard's details, or remove it when nobody needs it.",
+          "prerequisites": ["You can edit the dashboard. Role default dashboards cannot be deleted."],
+          "steps": [
+            "Open the dashboard.",
+            "Select the dashboard menu (**...**), then **Settings**.",
+            "Change the **Name**, **Description**, **Default period** or sharing. Select **Save**.",
+            "To delete it, select **Delete dashboard** in the menu instead. Confirm with **Delete**."
+          ],
+          "result": "The dashboard shows its new details, or it disappears from the list.",
+          "blocks": [
+            { "warning": "Deleting a shared dashboard removes it for everyone who can see it." }
+          ]
+        },
+        {
+          "id": "analytics-reports",
+          "title": "Standard reports",
+          "type": "reference",
+          "intro": "Select the **Reports** tab. Select a report card to open it. There is no free-form report builder.",
+          "blocks": [
+            { "image": "shots/12-an-reports.png", "caption": "The report library, grouped by topic.", "alt": "Reports tab with report cards grouped under Operations, Quality, People, Product and Customers" },
+            { "table": {
+              "columns": ["Group", "Report", "What it covers"],
+              "widths": [16, 30, 54],
+              "rows": [
+                ["Operations", "**Ticket volume, backlog & ageing**", "Created against resolved, the backlog trend and how long open tickets have waited."],
+                ["Operations", "**Response & resolution times**", "Median and 90th percentile first response and resolution times in business hours."],
+                ["Operations", "**SLA compliance**", "Compliance by milestone, breaches by priority and department, and the breach list."],
+                ["Quality", "**FCR, reopens & escalations**", "First contact resolution, reopen and escalation rates by agent and category."],
+                ["Quality", "**Channel performance**", "Volume, speed, first contact resolution, SLA and CSAT by channel."],
+                ["Quality", "**Customer satisfaction**", "CSAT trend, rating spread, CSAT by agent and the lowest-rated tickets."],
+                ["People", "**Agent productivity & workload**", "Resolved tickets, replies, handle time, use of time and current workload per agent."],
+                ["Product", "**Recurring issues & Pareto**", "The categories and root causes behind most tickets, and repeated issues."],
+                ["Product", "**Product quality**", "Tickets, breaches and reopens per product, module and version."],
+                ["Customers", "**Customer health**", "Tickets, open backlog, breaches, reopens and CSAT per customer, with a health score."]
+              ]
+            } }
+          ]
+        },
+        {
+          "id": "analytics-run-report",
+          "title": "Run a report",
+          "type": "task",
+          "intro": "Open a standard report and set the period and filters you need.",
+          "prerequisites": ["You have the **View personal dashboards and reports** permission."],
+          "steps": [
+            "Select **Analytics**, then the **Reports** tab.",
+            "Select a report, such as **SLA compliance**.",
+            "Choose the period, **Compare** and **Filters** as in [Choose the period and filters](#analytics-period-filters).",
+            "Read the line under the filter bar. It shows the dates, the comparison, the filters and the time zone.",
+            "Read the key figures, charts and tables."
+          ],
+          "result": "The report shows figures for the chosen period and filters.",
+          "blocks": [
+            { "image": "shots/12-an-report.png", "caption": "The SLA compliance report with its key figures and charts.", "alt": "SLA compliance report with numbered highlights on All reports, the filter bar, Schedule, Export and the key figures" },
+            { "callouts": [
+              "**All reports** returns to the report library.",
+              "The period, **Compare** and **Filters**.",
+              "**Schedule** e-mails this report regularly.",
+              "**Export** saves the report as a file.",
+              "The key figures. With **Compare** on, each shows the change against the comparison period."
+            ] }
+          ]
+        },
+        {
+          "id": "analytics-export",
+          "title": "Export a report",
+          "type": "task",
+          "intro": "Save a report as a file to share it or work on it in a spreadsheet.",
+          "prerequisites": ["You have the **Export reports (CSV/Excel/PDF)** permission."],
+          "steps": [
+            "Open the report and set the period and filters.",
+            "Select **Export**.",
+            {
+              "text": "Choose **Excel workbook (.xlsx)**, **CSV (.csv)** or **PDF document (.pdf)**.",
+              "image": "shots/12-an-export-menu.png",
+              "caption": "The Export menu with the three file formats.",
+              "alt": "Export menu with Excel workbook, CSV and PDF document",
+              "width": 260
+            },
+            "Wait for the message **Export ready**. The file downloads."
+          ],
+          "result": "The file is saved on your computer. It also appears on the **Exports** tab.",
+          "blocks": [
+            { "note": "Large exports run in the background. The message **Export still running** appears. Download the file later from the **Exports** tab." }
+          ]
+        },
+        {
+          "id": "analytics-download-export",
+          "title": "Download an earlier export",
+          "type": "task",
+          "intro": "Get a file that you exported before.",
+          "prerequisites": ["You have the **Export reports (CSV/Excel/PDF)** permission."],
+          "steps": [
+            "Select **Analytics**, then the **Exports** tab.",
+            "Find the export. The list shows the **Report**, **Format**, **Status**, **Requested** time, **Rows** and **Size**.",
+            "When the status shows **Succeeded**, select **Download**.",
+            "When the status shows **Queued** or **Running**, wait. Then select **Refresh**."
+          ],
+          "result": "The file downloads to your computer."
+        },
+        {
+          "id": "analytics-schedule-report",
+          "title": "Schedule a report",
+          "type": "task",
+          "intro": "Have a report e-mailed as an attachment every day, week or month.",
+          "prerequisites": ["You have the **Schedule report delivery** permission."],
+          "steps": [
+            "Open the report and select **Schedule**. Or select **New schedule** on the **Scheduled** tab.",
+            {
+              "text": "Check the **Name** and the **Report**.",
+              "image": "shots/12-an-schedule-dialog.png",
+              "caption": "The Schedule a report dialog for the SLA compliance report.",
+              "alt": "Schedule a report dialog with Name, Report, Period covered, Compare with, Format, Department, Priority, Channel, Frequency, Day, Time, Time zone, Recipients, Active, Cancel and Create schedule",
+              "width": 460
+            },
+            "Choose the **Period covered**, **Compare with** and **Format**.",
+            "Optionally, choose a **Department**, **Priority** or **Channel**.",
+            "Choose the **Frequency**: **Daily**, **Weekly** or **Monthly**. Then choose the **Day** or **Day of month**, and the **Time**.",
+            "Check the **Time zone**, such as `Asia/Kolkata`.",
+            "In **Recipients**, enter an e-mail address and press [[Enter]]. Repeat for up to 20 people.",
+            "Leave **Active** on, and select **Create schedule**."
+          ],
+          "result": "The message **Report scheduled** shows the next run. The schedule appears on the **Scheduled** tab.",
+          "blocks": [
+            { "note": "The period is rolling. For example, **Last 7 days** always means the seven days before each run. The report uses your data scope." },
+            { "note": "**Day of month** can be 1 to 28, so the report runs in every month." }
+          ]
+        },
+        {
+          "id": "analytics-manage-schedules",
+          "title": "Manage scheduled reports",
+          "type": "task",
+          "intro": "Test, change, pause or delete a scheduled report, and see past deliveries.",
+          "prerequisites": ["You have the **Schedule report delivery** permission."],
+          "steps": [
+            "Select **Analytics**, then the **Scheduled** tab.",
+            "To see past deliveries, select **History** on the schedule.",
+            "Select the schedule's menu (**...**).",
+            "Select **Run now** to send the report at once. Use it to test a new schedule.",
+            "Select **Edit** to change the schedule. Select **Save** in the dialog.",
+            "Select **Pause** to stop deliveries for a while. Select **Resume** to start them again."
+          ],
+          "result": "The schedule shows **Active** or **Paused**, its next run and its last run.",
+          "blocks": [
+            { "image": "shots/12-an-schedules.png", "caption": "The Scheduled tab with two scheduled reports.", "alt": "Scheduled tab with numbered highlights on New schedule, a schedule, History and the schedule menu" },
+            { "callouts": [
+              "**New schedule** creates another schedule.",
+              "A schedule with its status, format, report, frequency, period, recipients, owner and next run.",
+              "**History** shows past deliveries.",
+              "The schedule menu: **Run now**, **Edit**, **Pause** or **Resume**, and **Delete**."
+            ] },
+            { "image": "shots/12-an-history.png", "caption": "The delivery history of a schedule.", "alt": "Delivery history panel with a succeeded delivery, its time, recipients and file", "width": 420 },
+            { "warning": "**Delete** stops the deliveries and removes the delivery history." }
+          ]
+        },
+        {
+          "id": "analytics-rebuild",
+          "title": "Rebuild the figures",
+          "type": "task",
+          "intro": "If figures look out of date, ask the app to rebuild them from the tickets.",
+          "prerequisites": ["You have the **View team, department and organisation analytics** permission."],
+          "steps": [
+            "On any **Analytics** tab, select the **...** button at the top right.",
+            "Select **Rebuild metrics from tickets**."
+          ],
+          "result": "A message says **Rebuild queued** or **Metrics are current**. It shows how many tickets have figures and how many are missing or out of date."
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "The page says **Personal analytics** and shows only your tickets.", "cause": "You do not have team analytics.", "fix": "Ask an administrator for the **View team, department and organisation analytics** permission." },
+    { "problem": "A widget or report says **No data**.", "cause": "Nothing matches the period and filters.", "fix": "Choose a longer period or remove some filters." },
+    { "problem": "The **Scheduled** or **Exports** tab is missing, or says it is not available.", "cause": "Your role lacks the schedule or export permission.", "fix": "Ask an administrator for **Schedule report delivery** or **Export reports (CSV/Excel/PDF)**." },
+    { "problem": "**Export failed** or **Download failed** appears.", "cause": "The file could not be built or fetched.", "fix": "Try again. If it keeps failing, export a shorter period." },
+    { "problem": "The message **Export still running** appears.", "cause": "The report is large.", "fix": "Open the **Exports** tab later and select **Download**." },
+    { "problem": "Saving a schedule shows a red message under a field.", "cause": "A value is missing or not allowed, such as a wrong e-mail address or time zone.", "fix": "Correct the field. Use a time zone name such as `Asia/Kolkata`." },
+    { "problem": "Figures look out of date.", "cause": "Some ticket figures have not been calculated yet.", "fix": "Select **...** > **Rebuild metrics from tickets**, or ask a supervisor to do it." }
+  ],
+  "faq": [
+    { "q": "Why do my numbers differ from a colleague's?", "a": "Each person sees only the tickets in their data scope. A team lead may see one team, and a manager the whole organisation." },
+    { "q": "Can I build my own report?", "a": "No. Use the ten standard reports with filters, or build a dashboard with your own widgets." },
+    { "q": "Whose data does a scheduled report contain?", "a": "It uses the data scope of the person who owns the schedule. Recipients see what the owner would see." },
+    { "q": "What does (bh) mean next to a time?", "a": "Business hours. Nights, weekends and holidays outside business hours are not counted." }
+  ],
+  "glossary": [
+    { "term": "Dashboard", "definition": "A page of widgets that show support figures, charts and tables." },
+    { "term": "Widget", "definition": "One figure, chart or table on a dashboard." },
+    { "term": "Drill down", "definition": "Selecting a figure, bar or row to see the tickets behind it." },
+    { "term": "Data scope", "definition": "The tickets your role lets you see: your own, your team's, your department's or the whole organisation's." },
+    { "term": "First contact resolution (FCR)", "definition": "The share of tickets solved with the first reply, without further back and forth." },
+    { "term": "Business hours (bh)", "definition": "Working hours set by your administrator. Times marked (bh) count only these hours." },
+    { "term": "Scheduled report", "definition": "A standard report that is e-mailed as an attachment on a regular day and time." }
+  ]
+}

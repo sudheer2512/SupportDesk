@@ -1,0 +1,177 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "admin@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Two-step verification"
+    },
+    {
+      "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "22-brands-list",
+      "file": "22-brands-list.png",
+      "url": "/admin/brands",
+      "waitFor": "article.brand a.name",
+      "highlight": [
+        "sd-page-header a[href$='/admin/brands/new']",
+        "article.brand .banner",
+        "article.brand .title",
+        "article.brand .url",
+        "article.brand .actions"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "22-brand-menu",
+      "file": "22-brand-menu.png",
+      "steps": [
+        {
+          "click": "article.brand sd-dropdown-menu button"
+        },
+        {
+          "waitFor": ".sd-menu"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": ".sd-menu"
+    },
+    {
+      "id": "22-brand-editor",
+      "file": "22-brand-editor.png",
+      "url": "/admin/brands",
+      "steps": [
+        {
+          "click": "article.brand a.name"
+        },
+        {
+          "waitFor": "text=Help center is online"
+        }
+      ],
+      "fullPage": true,
+      "highlight": [
+        ".main > section.card:nth-of-type(1)",
+        ".main > section.card:nth-of-type(2)",
+        ".main > section.card:nth-of-type(3)",
+        ".main > section.card:nth-of-type(4)",
+        ".main > section.card:nth-of-type(5)",
+        "aside.side",
+        ".savebar"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "22-brand-portal",
+      "file": "22-brand-portal.png",
+      "waitFor": "text=Help center is online",
+      "clip": ".main > section.card:nth-of-type(4)",
+      "steps": [
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "hide": [
+        ".savebar"
+      ]
+    },
+    {
+      "id": "22-brand-footers",
+      "file": "22-brand-footers.png",
+      "waitFor": "text=Help center is online",
+      "clip": ".main > section.card:nth-of-type(5)",
+      "steps": [
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "hide": [
+        ".savebar"
+      ]
+    },
+    {
+      "id": "22-new-brand",
+      "file": "22-new-brand.png",
+      "url": "/admin/brands/new",
+      "steps": [
+        {
+          "waitFor": "input[name=name]"
+        },
+        {
+          "fill": "input[name=name]",
+          "value": "Wings Retail"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": ".main > section.card:nth-of-type(1)",
+      "hide": [
+        ".savebar"
+      ]
+    },
+    {
+      "id": "22-brand-domain",
+      "file": "22-brand-domain.png",
+      "steps": [
+        {
+          "click": "text=Discard"
+        },
+        {
+          "goto": "/admin/brands"
+        },
+        {
+          "click": "article.brand a.name"
+        },
+        {
+          "waitFor": "text=Help center is online"
+        },
+        {
+          "fill": "input[name=domain]",
+          "value": "support.wings.demo"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": ".main > section.card:nth-of-type(3)",
+      "hide": [
+        ".savebar"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,591 @@
+{
+  "chapters": [
+    {
+      "id": "getting-started",
+      "title": "Getting started",
+      "intro": [
+        "This chapter is for everyone who uses the SupportDesk desk: agents, supervisors and administrators.",
+        "It shows how to join your team, sign in and find your way around. It also covers your profile, your password, two-step verification and signing out."
+      ],
+      "sections": [
+        {
+          "id": "gs-what-you-need",
+          "title": "What you need to sign in",
+          "type": "concept",
+          "intro": [
+            "You sign in to the desk with three details. Your administrator gives them to you.",
+            "Customers do not use the desk. They use the customer portal, which has its own sign-in."
+          ],
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Detail", "What it is"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**Workspace**", "Your company's SupportDesk name, for example `acme`. Every company has its own workspace."],
+                  ["**Work e-mail**", "The e-mail address your administrator used when they added you."],
+                  ["**Password**", "The password you chose when you accepted your invitation."]
+                ]
+              }
+            },
+            { "note": "If you are new, you first get an invitation e-mail. Accept it to choose your password. See [Accept an invitation](#gs-accept-invitation)." }
+          ]
+        },
+        {
+          "id": "gs-accept-invitation",
+          "title": "Accept an invitation",
+          "type": "task",
+          "intro": "When an administrator adds you as an agent, SupportDesk sends you an invitation e-mail. Use it to choose your password.",
+          "prerequisites": ["You have the invitation e-mail. It contains a link and an invitation code."],
+          "steps": [
+            {
+              "text": "Open the link in the invitation e-mail.",
+              "note": "The **Join your team** page opens. **Workspace** and **Work e-mail** are often filled in for you."
+            },
+            "Check the **Workspace** and **Work e-mail** fields.",
+            "In **Invitation code**, enter the code from the e-mail. It looks like `K7QM-4ZP2`.",
+            "If your name is wrong, enter it in **Your name**. Leave it empty to keep the name your administrator entered.",
+            "In **New password**, enter a password. Use at least 10 characters with upper-case and lower-case letters and a digit.",
+            "In **Confirm password**, enter the same password again.",
+            {
+              "text": "Select **Set password**.",
+              "image": "shots/02-accept-invite.png",
+              "caption": "The **Join your team** page with the invitation code filled in.",
+              "alt": "Join your team form with workspace, work e-mail, invitation code, name and password fields",
+              "width": 380
+            }
+          ],
+          "result": "The page says **You're all set**. Select **Go to sign in** to sign in for the first time.",
+          "blocks": [
+            { "note": "Your organisation may ask for longer or stronger passwords. **Set password** stays unavailable until both password fields match." }
+          ]
+        },
+        {
+          "id": "gs-sign-in",
+          "title": "Sign in to the desk",
+          "type": "task",
+          "intro": "Sign in at the start of each working day, or when your session has ended.",
+          "prerequisites": ["You know your workspace name, work e-mail and password."],
+          "steps": [
+            "Open the desk address that your administrator gave you. The **Sign in to SupportDesk** page opens.",
+            "In **Workspace**, enter your workspace name.",
+            "In **Work e-mail**, enter your work e-mail address.",
+            "In **Password**, enter your password.",
+            {
+              "text": "To check what you typed, select the eye button at the end of the **Password** field.",
+              "note": "The button shows or hides your password. Hide it again if someone can see your screen."
+            },
+            "Select **Sign in**."
+          ],
+          "result": "The desk opens on the first module you can use, usually **Command Center**. If two-step verification is on, the **Two-step verification** page opens first.",
+          "blocks": [
+            {
+              "image": "shots/02-sign-in.png",
+              "caption": "The sign-in page with the workspace and work e-mail filled in.",
+              "alt": "Sign in to SupportDesk page with numbered highlights on the fields, the eye button, the Sign in button and the theme button"
+            },
+            {
+              "callouts": [
+                "**Workspace**: your company's SupportDesk name.",
+                "**Work e-mail**: the address you were invited with.",
+                "**Password**: your desk password.",
+                "The eye button shows or hides the password.",
+                "**Sign in** checks your details and opens the desk.",
+                "The moon or sun button switches between light and dark theme."
+              ]
+            },
+            { "note": "The page remembers your workspace and e-mail on this device. It never stores your password." },
+            { "tip": "If you open a desk link while signed out, the desk takes you to that page after you sign in." },
+            {
+              "image": "shots/02-sign-in-errors.png",
+              "caption": "If a field is empty or wrong, a message appears under it.",
+              "alt": "Sign in form with the messages Enter your workspace name, Enter a valid e-mail address and Enter your password",
+              "width": 380
+            }
+          ]
+        },
+        {
+          "id": "gs-two-step",
+          "title": "Enter a two-step verification code",
+          "type": "task",
+          "intro": "Two-step verification adds a code to your password. You need it when you turned it on, or when your workspace requires it.",
+          "prerequisites": ["You entered your workspace, e-mail and password, and selected **Sign in**."],
+          "steps": [
+            "Wait for the **Two-step verification** page to open.",
+            {
+              "text": "If you see two buttons, choose **E-mail code** or **Authenticator app**.",
+              "note": "**Authenticator app** is chosen for you when you have set one up."
+            },
+            "Find the 6-digit code in the e-mail from SupportDesk, or in your authenticator app.",
+            "In **Verification code**, enter the code.",
+            {
+              "text": "Select **Verify**.",
+              "image": "shots/02-two-step.png",
+              "caption": "The **Two-step verification** page for an e-mailed code.",
+              "alt": "Two-step verification page with the verification code field, the Verify button and the Use a different account button",
+              "width": 380
+            }
+          ],
+          "result": "The desk opens.",
+          "blocks": [
+            {
+              "callouts": [
+                "**Verification code**: enter the code from the e-mail or the app.",
+                "**Verify** checks the code and opens the desk.",
+                "**Use a different account** takes you back to the sign-in page."
+              ]
+            },
+            { "note": "In a demo workspace, a box on this page shows the code for you. Real workspaces never show it." },
+            { "tip": "Codes expire after a short time. If a code fails, get a new one and try again." }
+          ]
+        },
+        {
+          "id": "gs-password-help",
+          "title": "Forgotten passwords, expired passwords and ended sessions",
+          "type": "concept",
+          "intro": [
+            "The desk has no self-service password reset. If you forget your password, ask your SupportDesk administrator to reset it.",
+            "Your workspace may make passwords expire. When yours has expired, the **Password expired** page opens after you sign in. Ask your administrator to reset your password. Then select **Back to sign in** and sign in again."
+          ],
+          "blocks": [
+            {
+              "image": "shots/02-session-ended.png",
+              "caption": "The sign-in page after a session has ended.",
+              "alt": "Sign in page with the message Your session ended. Please sign in again.",
+              "width": 380
+            },
+            "Sessions end after a time set by your administrator. They also end when an administrator signs you out. The sign-in page then shows **Your session ended.** and asks you to sign in again.",
+            { "heading": "Single sign-on" },
+            "The desk sign-in page has no single sign-on button yet. Sign in with your workspace, e-mail and password.",
+            { "heading": "Other links on the sign-in page" },
+            {
+              "list": [
+                "**Start a free trial** creates a new workspace. See the chapter about subscription, billing and the free trial.",
+                "**Platform console** is for the people who run the SupportDesk service. See the chapter about the platform console."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gs-desk-screen",
+          "title": "The desk screen",
+          "type": "concept",
+          "intro": "Every desk page has the same frame. The navigation rail is on the left. The top bar is above the page.",
+          "blocks": [
+            {
+              "image": "shots/02-desk-layout.png",
+              "caption": "The desk with the navigation rail and the top bar highlighted.",
+              "alt": "Desk screen with numbered highlights on the navigation rail, Collapse, search box, New ticket, bell, availability, theme button and account menu"
+            },
+            {
+              "callouts": [
+                "The navigation rail lists the modules you can open, grouped under **Work**, **Customers**, **Operations** and **Settings**.",
+                "**Collapse** shrinks the rail to icons only.",
+                "The search box opens the command palette.",
+                "**New ticket** creates a ticket. You see it only if your role lets you create tickets.",
+                "The bell shows your notifications and the number of unread ones.",
+                "Your availability, such as **Online**. Select it to change it.",
+                "The theme button switches between light and dark theme.",
+                "Your avatar opens the account menu."
+              ]
+            },
+            "You see only the modules your role allows. If a module is missing, ask your administrator for access.",
+            "When the connection drops, a bar says **Live updates paused — reconnecting…**. The desk keeps working. Lists catch up when the connection returns.",
+            { "tip": "On a phone, the rail is hidden. Select the menu button at the top left to open it." }
+          ]
+        },
+        {
+          "id": "gs-modules",
+          "title": "Modules in the navigation rail",
+          "type": "reference",
+          "intro": "This table lists every module. The keys are the shortcut that opens the module.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Module", "Section", "What it is for", "Keys"],
+                "widths": [22, 14, 50, 14],
+                "rows": [
+                  ["**Command Center**", "Work", "Your live queue, SLA risk and team activity at a glance.", "[[G]] then [[C]]"],
+                  ["**Tickets**", "Work", "Saved views, the ticket list and the ticket workbench.", "[[G]] then [[T]]"],
+                  ["**Inbox**", "Work", "Live chat, social and messaging conversations.", "[[G]] then [[I]]"],
+                  ["**Customers**", "Customers", "Accounts, contacts, locations and their support history.", "[[G]] then [[U]]"],
+                  ["**Products & Assets**", "Customers", "Products, modules, versions, installations, assets and contracts.", "[[G]] then [[P]]"],
+                  ["**Teams & Agents**", "Operations", "Departments, teams, skills, shifts and agent availability.", "None"],
+                  ["**SLA**", "Operations", "SLA policies, business hours, holidays and live breach risk.", "[[G]] then [[S]]"],
+                  ["**Automation**", "Operations", "Assignment rules, workflows, macros, escalations and schedules.", "None"],
+                  ["**Knowledge Base**", "Operations", "Articles, categories, review and portal publishing.", "[[G]] then [[K]]"],
+                  ["**Analytics**", "Operations", "Dashboards, reports, scheduled exports and drill-downs.", "[[G]] then [[A]]"],
+                  ["**AI Assistant**", "Operations", "Summaries, reply drafts, triage suggestions and approved AI actions.", "None"],
+                  ["**Engineering**", "Operations", "The engineering board: escalated defects, fix versions and releases.", "None"],
+                  ["**Administration**", "Settings", "Users, roles, channels, ticket configuration, security and audit.", "None"],
+                  ["**Subscription**", "Settings", "Plan, usage, limits and invoices.", "None"]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "gs-collapse-rail",
+          "title": "Collapse or expand the navigation rail",
+          "type": "task",
+          "intro": "Collapse the rail to give the page more room.",
+          "steps": [
+            "At the bottom of the navigation rail, select **Collapse**.",
+            {
+              "text": "To see the name of a module, point to its icon.",
+              "image": "shots/02-nav-collapsed.png",
+              "caption": "The collapsed rail shows icons only.",
+              "alt": "Narrow navigation rail with module icons and an expand button at the bottom",
+              "width": 60
+            },
+            "To show the labels again, select the expand button at the bottom of the rail."
+          ],
+          "result": "The rail shows icons only, or icons with labels. The desk remembers your choice on this device."
+        },
+        {
+          "id": "gs-command-palette",
+          "title": "Run a command from the command palette",
+          "type": "task",
+          "intro": "The command palette lets you go anywhere and do common jobs without the mouse.",
+          "steps": [
+            {
+              "text": "Press [[Ctrl+K]], or [[⌘+K]] on a Mac. You can also press [[/]] or select the search box in the top bar.",
+              "image": "shots/02-command-palette.png",
+              "caption": "The command palette before you type.",
+              "alt": "Command palette listing Navigation commands with their shortcut keys",
+              "width": 480
+            },
+            "Type part of what you want, such as `analytics` or `password`.",
+            "Press [[↑]] or [[↓]] to choose a result.",
+            "Press [[Enter]] to run it, or select it with the mouse."
+          ],
+          "result": "The palette closes and runs the command. To close it without running anything, press [[Esc]].",
+          "blocks": [
+            { "heading": "What you can do from the palette" },
+            {
+              "list": [
+                "Go to any module you can open.",
+                "Create a ticket with **New ticket**.",
+                "Open **My profile**, **Change password** or **Two-factor authentication**.",
+                "Set your availability, for example **Set availability: Away**.",
+                "Switch the theme with **Toggle light / dark theme**.",
+                "Show **Keyboard shortcuts** or **Sign out**.",
+                "Find a ticket. See [Find a ticket from the command palette](#gs-find-ticket)."
+              ]
+            },
+            "On the **Tickets** screen, the palette also offers commands for the open ticket. The ticket chapters describe them.",
+            { "note": "When the search box is empty, a **Recent** group lists the last five commands you ran." }
+          ]
+        },
+        {
+          "id": "gs-find-ticket",
+          "title": "Find a ticket from the command palette",
+          "type": "task",
+          "intro": "Open a ticket by its number, or search tickets by text.",
+          "prerequisites": ["You can view tickets."],
+          "steps": [
+            "Press [[Ctrl+K]] to open the command palette.",
+            "Enter the ticket number, such as `#1042` or `1042`. Or enter at least two characters of text.",
+            {
+              "text": "Wait for the **Tickets** group to appear.",
+              "image": "shots/02-palette-search.png",
+              "caption": "Search results for `report` in the command palette.",
+              "alt": "Command palette with a Tickets group listing six tickets and their statuses, and a Commands group below",
+              "width": 480
+            },
+            "Select the ticket you want."
+          ],
+          "result": "The ticket opens.",
+          "blocks": [
+            { "note": "Text search shows up to six tickets, newest activity first. The palette does not search customers yet. Use the **Customers** module instead." }
+          ]
+        },
+        {
+          "id": "gs-shortcuts",
+          "title": "Keyboard shortcuts",
+          "type": "reference",
+          "intro": "Press [[?]] on any page to see the shortcuts that work there. You can also open the account menu and select **Keyboard shortcuts**.",
+          "blocks": [
+            {
+              "image": "shots/02-shortcut-help.png",
+              "caption": "The **Keyboard shortcuts** dialog on the Command Center.",
+              "alt": "Keyboard shortcuts dialog with General, Navigation and Actions groups",
+              "width": 520
+            },
+            {
+              "table": {
+                "columns": ["Keys", "What it does", "Where it works"],
+                "widths": [24, 46, 30],
+                "rows": [
+                  ["[[Ctrl+K]] or [[⌘+K]]", "Open or close the command palette.", "Everywhere, even while you type in a field."],
+                  ["[[/]]", "Open search, that is, the command palette.", "Everywhere."],
+                  ["[[?]]", "Show the keyboard shortcuts.", "Everywhere."],
+                  ["[[Shift+T]]", "Switch between light and dark theme.", "Everywhere."],
+                  ["[[C]]", "Create a ticket.", "If you can create tickets."],
+                  ["[[G]] then a letter", "Go to a module. See [Modules in the navigation rail](#gs-modules).", "If you can open that module."],
+                  ["[[G]] then [[M]]", "Go to your profile.", "Everywhere."]
+                ]
+              }
+            },
+            "For two-key shortcuts, press the second key within about one second.",
+            "Single-key shortcuts do nothing while you type in a field. Press [[Esc]] or select an empty part of the page first.",
+            { "note": "The **Tickets** screen adds its own shortcuts, such as moving through the list and replying. The dialog lists them while you are on that screen." }
+          ]
+        },
+        {
+          "id": "gs-availability",
+          "title": "Set your availability",
+          "type": "task",
+          "intro": "Your availability tells routing and your team whether you can take new work.",
+          "steps": [
+            "In the top bar, select your availability, such as **Online**.",
+            {
+              "text": "Choose **Online**, **Away**, **Busy** or **Offline**.",
+              "image": "shots/02-availability-menu.png",
+              "caption": "The availability menu. A tick marks your current status.",
+              "alt": "Availability menu with Online, Away, Busy and Offline and a short hint under each",
+              "width": 240
+            }
+          ],
+          "result": "The coloured dot and the label in the top bar change. Your avatar shows the same colour.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Availability", "Meaning"],
+                "widths": [25, 75],
+                "rows": [
+                  ["**Online**", "Receive new assignments."],
+                  ["**Away**", "Temporarily away."],
+                  ["**Busy**", "Do not route new work."],
+                  ["**Offline**", "Not working."]
+                ]
+              }
+            },
+            { "note": "Your shifts and idle time do not change your availability. Set it yourself when you start, pause or stop work." },
+            { "tip": "You can also open the command palette and run **Set availability: Away**, or another status." }
+          ]
+        },
+        {
+          "id": "gs-theme",
+          "title": "Switch between light and dark theme",
+          "type": "task",
+          "intro": "The desk follows your computer's light or dark setting at first. You can choose your own.",
+          "steps": [
+            "In the top bar, select the moon button for dark theme, or the sun button for light theme.",
+            "To switch back, select the button again, or press [[Shift+T]]."
+          ],
+          "result": "The desk changes theme at once. After you switch, it no longer follows your computer's setting.",
+          "blocks": [
+            { "tip": "The sign-in page has the same button at the top right." }
+          ]
+        },
+        {
+          "id": "gs-account-menu",
+          "title": "The account menu",
+          "type": "concept",
+          "intro": "Select your avatar at the top right to open the account menu. It shows your name, e-mail and workspace.",
+          "blocks": [
+            {
+              "image": "shots/02-account-menu.png",
+              "caption": "The account menu.",
+              "alt": "Account menu with the user's name, e-mail and workspace, and the items My profile, Change password, Two-factor authentication, Keyboard shortcuts and Sign out",
+              "width": 280
+            },
+            {
+              "table": {
+                "columns": ["Item", "What it does"],
+                "widths": [34, 66],
+                "rows": [
+                  ["**My profile**", "Opens your profile. See [Update your profile](#gs-profile)."],
+                  ["**Change password**", "Opens the **Password** tab. See [Change your password](#gs-change-password)."],
+                  ["**Two-factor authentication**", "Opens the **Two-factor** tab. The hint shows **On** or **Off**."],
+                  ["**Keyboard shortcuts**", "Shows the shortcut list."],
+                  ["**Sign out**", "Ends your session. See [Sign out](#gs-sign-out)."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "gs-profile",
+          "title": "Update your profile",
+          "type": "task",
+          "intro": "Your profile holds your name, time zone, language and e-mail signature.",
+          "steps": [
+            "Select your avatar, then select **My profile**. You can also press [[G]] then [[M]].",
+            "On the **Profile** tab, check or change **Display name**.",
+            "In **Time zone**, choose your time zone. Dates and SLA times use this zone.",
+            "In **Language & format**, choose how dates and numbers look.",
+            "In **E-mail signature**, write the text that ends your e-mail replies.",
+            "Select **Save profile**."
+          ],
+          "result": "A **Profile saved** message appears.",
+          "blocks": [
+            {
+              "image": "shots/02-profile.png",
+              "caption": "The **Profile** tab of **My profile**.",
+              "alt": "My profile page with numbered highlights on the tabs, identity card, display name, time zone, language, e-mail signature and Save profile"
+            },
+            {
+              "callouts": [
+                "The tabs: **Profile**, **Password** and **Two-factor**.",
+                "Your name, e-mail and workspace, your user type and your departments. A **Light agent** badge shows if you are one.",
+                "**Display name**: the name colleagues and customers see.",
+                "**Time zone**: used for dates and SLA times.",
+                "**Language & format**: how dates and numbers look.",
+                "**E-mail signature**: added to your outgoing e-mail replies.",
+                "**Save profile** saves your changes."
+              ]
+            },
+            { "note": "SupportDesk adds the signature when it sends an e-mail reply. You do not see it in the reply editor." }
+          ]
+        },
+        {
+          "id": "gs-change-password",
+          "title": "Change your password",
+          "type": "task",
+          "intro": "Change your password at any time, for example if you think someone else knows it.",
+          "steps": [
+            "Select your avatar, then select **Change password**. The **Password** tab opens.",
+            "In **Current password**, enter the password you use now.",
+            "In **New password**, enter a new password of at least 12 characters.",
+            "In **Confirm new password**, enter the new password again.",
+            {
+              "text": "Select **Change password**.",
+              "image": "shots/02-password.png",
+              "caption": "The **Change password** form.",
+              "alt": "Change password form with current, new and confirm password fields",
+              "width": 520
+            }
+          ],
+          "result": "A **Password changed** message appears. Use the new password the next time you sign in.",
+          "blocks": [
+            { "tip": "A passphrase of several words is easy to remember and hard to guess." },
+            {
+              "image": "shots/02-password-errors.png",
+              "caption": "The form shows a message under each field that needs a fix.",
+              "alt": "Change password form with the messages Enter your current password, Use at least 12 characters and The passwords do not match",
+              "width": 520
+            }
+          ]
+        },
+        {
+          "id": "gs-turn-on-two-factor",
+          "title": "Turn on two-factor authentication",
+          "type": "task",
+          "intro": "Two-factor authentication protects your account with a code from an authenticator app. You need the app on your phone first.",
+          "prerequisites": ["An authenticator app on your phone, such as Microsoft Authenticator, Google Authenticator or 1Password."],
+          "steps": [
+            "Select your avatar, then select **Two-factor authentication**.",
+            {
+              "text": "Select **Set up two-factor**.",
+              "image": "shots/02-two-factor-off.png",
+              "caption": "The **Two-factor** tab while two-factor authentication is off.",
+              "alt": "Two-factor authentication card with status Off and the Set up two-factor button",
+              "width": 520
+            },
+            "In your authenticator app, scan the QR code that appears.",
+            "If you cannot scan it, enter the key shown under **Can't scan? Enter this key manually** in the app instead.",
+            "In **Verification code**, enter the 6-digit code the app shows.",
+            "Select **Turn on**."
+          ],
+          "result": "A **Two-factor authentication is on** message appears. **Status** shows **On**. From now on, the sign-in asks for a code from the app.",
+          "blocks": [
+            { "note": "Finish the setup within 15 minutes. After that, select **Set up two-factor** again to get a new QR code." },
+            { "tip": "To stop without turning it on, select **Cancel**." }
+          ]
+        },
+        {
+          "id": "gs-turn-off-two-factor",
+          "title": "Turn off two-factor authentication",
+          "type": "task",
+          "intro": "Turn it off only if you lose your phone or move to another app. You can set it up again at once.",
+          "prerequisites": ["Two-factor authentication is on for your account."],
+          "steps": [
+            {
+              "text": "Select your avatar, then select **Two-factor authentication**.",
+              "image": "shots/02-two-factor-on.png",
+              "caption": "The **Two-factor** tab while two-factor authentication is on.",
+              "alt": "Two-factor authentication card with status On and the Turn off two-factor button",
+              "width": 520
+            },
+            "Select **Turn off two-factor**. The **Turn off two-factor authentication?** dialog opens.",
+            "Select **Turn off**."
+          ],
+          "result": "A **Two-factor authentication is off** message appears. Your password alone now protects your account.",
+          "blocks": [
+            { "warning": "Without two-factor authentication, anyone who learns your password can sign in as you." },
+            { "note": "If your workspace requires two-step verification, the sign-in still asks for a code. The code then comes by e-mail." }
+          ]
+        },
+        {
+          "id": "gs-sign-out",
+          "title": "Sign out",
+          "type": "task",
+          "intro": "Sign out when you finish work, and always on a shared computer.",
+          "steps": [
+            "Select your avatar at the top right.",
+            "Select **Sign out**."
+          ],
+          "result": "The sign-in page opens. Your session on this device has ended.",
+          "blocks": [
+            { "tip": "You can also open the command palette and run **Sign out**." }
+          ]
+        },
+        {
+          "id": "gs-no-access",
+          "title": "When a page is missing or closed to you",
+          "type": "concept",
+          "intro": "What you can see depends on your role. Your administrator sets it.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["You see", "What it means", "What to do"],
+                "widths": [32, 36, 32],
+                "rows": [
+                  ["**You don't have access to this area**", "Your role lacks the permission for that page.", "Select **Go to my workspace**. Ask an administrator if you need the page for your work."],
+                  ["**Page not found**", "The page does not exist or has moved.", "Select **Go to my workspace**, or select **Search** to use the command palette."],
+                  ["**No modules are enabled for your role yet.**", "Your role does not open any module.", "Ask an administrator for access. You can still open your profile."]
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "The sign-in page says **The workspace, e-mail or password is incorrect.**", "cause": "One of the three details is wrong.", "fix": "Check the workspace name, your e-mail and your password. Use the eye button to see what you typed." },
+    { "problem": "The sign-in page says **Enter your workspace name.**, **Enter a valid e-mail address.** or **Enter your password.**", "cause": "A field is empty, or the e-mail address is not complete.", "fix": "Fill in every field, then select **Sign in** again." },
+    { "problem": "The sign-in page says your account is locked and gives a time to try again.", "cause": "There were too many failed sign-ins in a row.", "fix": "Wait until the time shown, then sign in again. Ask an administrator if you have forgotten your password." },
+    { "problem": "The sign-in page says **Too many attempts. Wait a minute and try again.**", "cause": "Too many sign-in attempts came in a short time.", "fix": "Wait one minute, then try again." },
+    { "problem": "The sign-in page says **This workspace is suspended. Contact your administrator.**", "cause": "Your company's subscription is suspended.", "fix": "Contact your administrator." },
+    { "problem": "The sign-in page says **Cannot reach SupportDesk. Check your connection and try again.**", "cause": "Your device cannot reach SupportDesk.", "fix": "Check your network connection, then try again." },
+    { "problem": "The sign-in page refuses your network or asks for single sign-on.", "cause": "Your workspace allows sign-in only from certain networks, or requires single sign-on.", "fix": "Connect from your office network or company VPN. Otherwise, ask your administrator." },
+    { "problem": "**Two-step verification** says **That code is not valid or has expired.**", "cause": "The code is wrong or too old.", "fix": "Get a new code from the e-mail or the app, and enter it at once." },
+    { "problem": "**Two-step verification** says **Enter the code (digits only).**", "cause": "The code contains letters or spaces.", "fix": "Enter only the digits of the code." },
+    { "problem": "The **Password expired** page opens after you sign in.", "cause": "Your workspace makes passwords expire after a set time.", "fix": "Ask your administrator to reset your password. Then select **Back to sign in**." },
+    { "problem": "The sign-in page shows **Your session ended.**", "cause": "Your session timed out, or an administrator signed you out.", "fix": "Sign in again." },
+    { "problem": "**Change password** says **Use at least 12 characters.** or **The passwords do not match.**", "cause": "The new password is too short, or the two new passwords differ.", "fix": "Enter a new password of 12 characters or more in both fields." },
+    { "problem": "**Turn on** says **That code did not match. Try the current code.**", "cause": "The code from the app was old or mistyped.", "fix": "Wait for the app to show a new code, and enter it at once. Check that your phone's clock is correct." },
+    { "problem": "The **Time zone** field on **My profile** is empty.", "cause": "Your browser lists your time zone under another name, for example **Asia/Calcutta** for India.", "fix": "Choose your time zone from the list, then select **Save profile**." },
+    { "problem": "A **Could not change availability** message appears.", "cause": "The change did not reach SupportDesk.", "fix": "Check your connection, then choose your availability again." },
+    { "problem": "A bar says **Live updates paused — reconnecting…**", "cause": "The live connection to SupportDesk dropped.", "fix": "Wait. The bar disappears when the connection returns. Reload the page if it stays for long." }
+  ],
+  "faq": [
+    { "q": "Can I reset my own password if I forget it?", "a": "Not yet. Ask your SupportDesk administrator to reset it. When you are signed in, you can change your password on **My profile**." },
+    { "q": "Why does a colleague see modules that I do not?", "a": "Each person sees only the modules their role allows. Ask your administrator if you need another module for your work." },
+    { "q": "Does the desk remember my password?", "a": "No. The sign-in page remembers only your workspace and e-mail on that device. Your browser may offer to save the password. Do not let it on a shared computer." },
+    { "q": "Can I sign in with my company's single sign-on?", "a": "Not from the desk sign-in page yet. Sign in with your workspace, e-mail and password." }
+  ],
+  "glossary": [
+    { "term": "Workspace", "definition": "Your company's own area in SupportDesk, with its own name, users and data. You enter its name when you sign in." },
+    { "term": "Two-step verification", "definition": "A sign-in check that asks for a short code after your password. The code comes by e-mail or from an authenticator app. On your profile it is called two-factor authentication." },
+    { "term": "Authenticator app", "definition": "A phone app, such as Microsoft Authenticator, that shows a new 6-digit sign-in code every few seconds." },
+    { "term": "Command palette", "definition": "A search box that opens with Ctrl+K. It lets you find tickets and run commands from the keyboard." },
+    { "term": "Availability", "definition": "Your working status: Online, Away, Busy or Offline. Routing uses it to decide who gets new work." },
+    { "term": "Navigation rail", "definition": "The column on the left of the desk that lists the modules you can open." },
+    { "term": "Session", "definition": "The time between signing in and signing out. A session also ends after a set time, or when an administrator ends it." },
+    { "term": "E-mail signature", "definition": "Text that SupportDesk adds to the end of each e-mail reply you send. You set it on your profile." }
+  ]
+}

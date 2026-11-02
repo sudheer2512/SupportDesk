@@ -1,0 +1,356 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "admin@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Two-step verification"
+    },
+    {
+      "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "10-kb-articles",
+      "file": "10-kb-articles.png",
+      "url": "/kb",
+      "highlight": [
+        "nav.sections",
+        "button[aria-label='Import / export']",
+        "a[href='/kb/articles/new']",
+        ".kb-toolbar",
+        "sd-data-table"
+      ],
+      "numbered": true,
+      "steps": [
+        {
+          "waitFor": "text=Wings ERP 8.0.1 release notes"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "eval": "document.querySelectorAll('body *').forEach((el) => { const s = getComputedStyle(el); if (/(auto|scroll)/.test(s.overflowY + ' ' + s.overflowX) && (el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1)) { el.scrollTop = 0; el.setAttribute('data-um-frozen', '1'); el.style.overflow = 'clip'; } }); window.scrollTo(0, 0)"
+        }
+      ]
+    },
+    {
+      "id": "10-kb-new-article",
+      "file": "10-kb-new-article.png",
+      "url": "/kb/articles/new",
+      "steps": [
+        {
+          "waitFor": "text=Create draft"
+        },
+        {
+          "fill": "label=Title",
+          "value": "Export the Sales Register month by month"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "eval": "document.querySelectorAll('body *').forEach((el) => { const s = getComputedStyle(el); if (/(auto|scroll)/.test(s.overflowY + ' ' + s.overflowX) && (el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1)) { el.scrollTop = 0; el.setAttribute('data-um-frozen', '1'); el.style.overflow = 'clip'; } }); window.scrollTo(0, 0)"
+        }
+      ],
+      "highlight": [
+        "label=Title",
+        "sd-rich-text-editor",
+        "aside.side",
+        "text=Create draft"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "10-kb-review-actions",
+      "file": "10-kb-review-actions.png",
+      "steps": [
+        {
+          "click": "text=All articles"
+        },
+        {
+          "waitForText": "Discard unsaved changes?"
+        },
+        {
+          "click": "text=Discard changes"
+        },
+        {
+          "waitFor": "text=Opening stock migration"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "eval": "[...document.querySelectorAll('a.title')].find((a) => a.textContent.includes('Opening stock migration')).click()"
+        },
+        {
+          "waitFor": "text=Approve"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": "header.head",
+      "clipPadding": 12,
+      "highlight": [
+        "text=Approve",
+        "text=Reject",
+        "text=Publish"
+      ]
+    },
+    {
+      "id": "10-kb-reject-dialog",
+      "file": "10-kb-reject-dialog.png",
+      "steps": [
+        {
+          "click": "text=Reject"
+        },
+        {
+          "waitFor": "text=What needs to change?"
+        },
+        {
+          "fill": "label=What needs to change?",
+          "value": "Add the column names from the opening stock template."
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "10-kb-versions",
+      "file": "10-kb-versions.png",
+      "steps": [
+        {
+          "press": "Escape"
+        },
+        {
+          "wait": 400
+        },
+        {
+          "goto": "/kb"
+        },
+        {
+          "waitFor": "text=Fix GST rounding differences"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "eval": "[...document.querySelectorAll('a.title')].find((a) => a.textContent.includes('Fix GST rounding differences')).click()"
+        },
+        {
+          "waitFor": "text=Classification"
+        },
+        {
+          "click": "button[role=tab][id$='-tab-versions']"
+        },
+        {
+          "waitFor": "text=Change note"
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "clip": ".grid > .main"
+    },
+    {
+      "id": "10-kb-translations",
+      "file": "10-kb-translations.png",
+      "steps": [
+        {
+          "click": "button[role=tab][id$='-tab-translations']"
+        },
+        {
+          "waitFor": "text=Add a translation"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "clip": ".grid > .main"
+    },
+    {
+      "id": "10-kb-feedback",
+      "file": "10-kb-feedback.png",
+      "url": "/kb/feedback",
+      "highlight": [
+        "[aria-label='Filter feedback']",
+        ".selection-bar",
+        "li.item:first-child",
+        "li.item:first-child button"
+      ],
+      "numbered": true,
+      "steps": [
+        {
+          "waitFor": "text=Select all on page"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "eval": "document.querySelectorAll('body *').forEach((el) => { const s = getComputedStyle(el); if (/(auto|scroll)/.test(s.overflowY + ' ' + s.overflowX) && (el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1)) { el.scrollTop = 0; el.setAttribute('data-um-frozen', '1'); el.style.overflow = 'clip'; } }); window.scrollTo(0, 0)"
+        }
+      ]
+    },
+    {
+      "id": "10-kb-topic",
+      "file": "10-kb-topic.png",
+      "url": "/kb/community",
+      "steps": [
+        {
+          "waitFor": "text=Sort by"
+        },
+        {
+          "eval": "[...document.querySelectorAll('a.title')].find((a) => a.textContent.includes('Sales Register export')).click()"
+        },
+        {
+          "waitFor": "text=Reply as an agent"
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "fullPage": true,
+      "highlight": [
+        "[aria-label='Topic actions']",
+        "[aria-label='Original post']",
+        ".post-actions",
+        "section.reply"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "10-kb-flow-designer",
+      "file": "10-kb-flow-designer.png",
+      "url": "/kb/flows",
+      "steps": [
+        {
+          "click": "text=Invoice GST total doesn't match"
+        },
+        {
+          "waitFor": "text=Go to step"
+        },
+        {
+          "wait": 1200
+        }
+      ],
+      "fullPage": true,
+      "highlight": [
+        "[role=group][aria-label='View']",
+        "section.details",
+        "section.problems",
+        "desk-kb-flow-graph",
+        "desk-kb-flow-node-editor"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "10-kb-flow-preview",
+      "file": "10-kb-flow-preview.png",
+      "steps": [
+        {
+          "click": "text=Preview"
+        },
+        {
+          "waitFor": "text=Restart"
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "clip": "desk-kb-flow-preview"
+    },
+    {
+      "id": "10-kb-category-dialog",
+      "file": "10-kb-category-dialog.png",
+      "url": "/kb/categories",
+      "steps": [
+        {
+          "click": "text=New category"
+        },
+        {
+          "waitFor": "text=Sort order"
+        },
+        {
+          "fill": "label=Name",
+          "value": "Inventory"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "10-kb-content-gaps",
+      "file": "10-kb-content-gaps.png",
+      "url": "/kb/analytics",
+      "steps": [
+        {
+          "waitFor": "section[aria-labelledby='kb-an-gaps']"
+        },
+        {
+          "wait": 2500
+        },
+        {
+          "eval": "document.querySelectorAll('*').forEach((el) => { if (el.scrollTop > 0) el.scrollTop -= 90; }); window.scrollTo(0, 0)"
+        },
+        {
+          "wait": 300
+        }
+      ]
+    },
+    {
+      "id": "10-kb-analytics",
+      "file": "10-kb-analytics.png",
+      "url": "/kb/analytics",
+      "steps": [
+        {
+          "waitForText": "Searches with no results"
+        },
+        {
+          "wait": 2500
+        },
+        {
+          "eval": "document.querySelectorAll('*').forEach((el) => { if (el.scrollTop) el.scrollTop = 0; }); window.scrollTo(0, 0)"
+        },
+        {
+          "wait": 300
+        }
+      ]
+    }
+  ]
+}

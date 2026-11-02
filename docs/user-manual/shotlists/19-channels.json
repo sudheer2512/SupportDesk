@@ -1,0 +1,252 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "admin@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "Two-step verification"
+    },
+    {
+      "eval": "(async () => { const code = [...document.querySelectorAll('code')].map(c => c.textContent.trim()).find(t => /^\\d{6}$/.test(t)); const input = document.querySelector('input[name=code]'); input.value = code; input.dispatchEvent(new Event('input', { bubbles: true })); [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Verify').click(); })()"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "19-channels-list",
+      "file": "19-channels-list.png",
+      "url": "/admin/channels",
+      "waitFor": "text=Billing mailbox",
+      "highlight": [
+        "sd-page-header a[href$='/admin/channels/simulator']",
+        "sd-page-header a[href$='/admin/channels/new']",
+        "section.group h2",
+        ".channel .top sd-badge",
+        ".channel .actions"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "19-new-channel",
+      "file": "19-new-channel.png",
+      "url": "/admin/channels/new",
+      "steps": [
+        {
+          "waitFor": "select[name=provider]"
+        },
+        {
+          "select": "select[name=provider]",
+          "option": "Imap"
+        },
+        {
+          "fill": "input[name=name]",
+          "value": "Sales mailbox"
+        },
+        {
+          "fill": "input[name=address]",
+          "value": "sales@wings.demo"
+        },
+        {
+          "fill": "input[name=displayName]",
+          "value": "Wings Sales"
+        },
+        {
+          "fill": "label=IMAP host",
+          "value": "imap.wings.demo"
+        },
+        {
+          "fill": "label=SMTP host",
+          "value": "smtp.wings.demo"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "waitFor": "text=Connection settings",
+      "clip": "form.main",
+      "clipPadding": 0
+    },
+    {
+      "id": "19-channel-editor",
+      "file": "19-channel-editor.png",
+      "url": "/admin/channels",
+      "steps": [
+        {
+          "click": "text=Support mailbox"
+        },
+        {
+          "waitFor": "text=Test connection"
+        }
+      ],
+      "fullPage": true,
+      "highlight": [
+        "form.main > sd-card:nth-of-type(1)",
+        "form.main > sd-card:nth-of-type(2)",
+        "form.main > sd-card:nth-of-type(3)",
+        ".form-actions",
+        "aside.side > sd-card:nth-of-type(1)",
+        "aside.side > sd-card:last-of-type"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "19-chat-widget-settings",
+      "file": "19-chat-widget-settings.png",
+      "url": "/admin/channels",
+      "steps": [
+        {
+          "click": "text=Website chat"
+        },
+        {
+          "waitFor": "text=Embed the widget"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": "form.main > sd-card:nth-of-type(2)"
+    },
+    {
+      "id": "19-chat-widget-embed",
+      "file": "19-chat-widget-embed.png",
+      "waitFor": "text=Copy embed code",
+      "clip": "aside.side > sd-card:nth-of-type(2)",
+      "steps": [
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ]
+    },
+    {
+      "id": "19-voice-webhook",
+      "file": "19-voice-webhook.png",
+      "url": "/admin/channels",
+      "steps": [
+        {
+          "click": "text=Support hotline"
+        },
+        {
+          "waitFor": "text=Copy URL"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": "aside.side"
+    },
+    {
+      "id": "19-simulator",
+      "file": "19-simulator.png",
+      "url": "/admin/channels",
+      "steps": [
+        {
+          "click": "section.group:nth-of-type(1) .channel:nth-of-type(2) a[href*='simulator']"
+        },
+        {
+          "waitFor": "text=Deliver e-mail"
+        },
+        {
+          "fill": "input[name=from]",
+          "value": "ramesh@abcretail.demo"
+        },
+        {
+          "fill": "input[name=fromName]",
+          "value": "Ramesh Kumar"
+        },
+        {
+          "fill": "input[name=subject]",
+          "value": "Invoice total is wrong"
+        },
+        {
+          "fill": "textarea[name=text]",
+          "value": "The GST total on invoice 4471 does not match the order."
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "highlight": [
+        "select[name=channel]",
+        "form.form h2",
+        "text=Deliver e-mail",
+        "div.col > sd-card:nth-of-type(2)"
+      ],
+      "numbered": true,
+      "clip": "div.layout > div.col"
+    },
+    {
+      "id": "19-simulator-message",
+      "file": "19-simulator-message.png",
+      "url": "/admin/channels",
+      "steps": [
+        {
+          "click": "section.group:nth-of-type(2) .channel a[href*='simulator']"
+        },
+        {
+          "waitFor": "text=Deliver message"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": "div.col > sd-card:nth-of-type(1)"
+    },
+    {
+      "id": "19-simulator-outbound",
+      "file": "19-simulator-outbound.png",
+      "waitFor": "text=Outbound messages",
+      "clip": "sd-card.col",
+      "steps": [
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ]
+    },
+    {
+      "id": "19-simulator-voice",
+      "file": "19-simulator-voice.png",
+      "url": "/admin/channels",
+      "steps": [
+        {
+          "click": "section.group:nth-of-type(5) .channel a[href*='simulator']"
+        },
+        {
+          "waitFor": "text=Send call event"
+        },
+        {
+          "eval": "(() => { const m = document.getElementById('desk-main'); if (m) m.scrollTop = 0; if (document.getElementById('um-flow')) return; const s = document.createElement('style'); s.id = 'um-flow'; s.textContent = '#desk-main{overflow:clip!important}'; document.head.appendChild(s); })()"
+        }
+      ],
+      "clip": "div.col > sd-card:nth-of-type(1)"
+    }
+  ]
+}

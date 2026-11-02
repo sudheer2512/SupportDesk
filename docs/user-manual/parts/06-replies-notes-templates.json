@@ -1,0 +1,394 @@
+{
+  "chapters": [
+    {
+      "id": "replies-notes-templates",
+      "title": "Replies, notes and templates",
+      "intro": [
+        "This chapter is for agents and supervisors who write to customers and colleagues from a ticket.",
+        "It explains the composer: replies, internal notes, handover notes, templates, attachments and drafts. It also covers the side tabs and composer buttons that other modules add, such as **Blueprint** and **Draft with AI**."
+      ],
+      "sections": [
+        {
+          "id": "rn-composer",
+          "title": "The composer",
+          "type": "concept",
+          "intro": [
+            "The composer sits at the bottom of every ticket. When it is closed, it shows three buttons: **Reply**, **Internal note** and **Handover**.",
+            "Select a button, or press [[R]] for a reply or [[N]] for a note. The composer opens with the editor ready for typing."
+          ],
+          "blocks": [
+            {
+              "image": "shots/06-composer-bar.png",
+              "caption": "The closed composer with its three buttons.",
+              "alt": "Composer bar with Reply, Internal note and Handover buttons",
+              "width": 340
+            },
+            {
+              "image": "shots/06-composer-tour.png",
+              "caption": "The open composer on an e-mail ticket, with a reply typed in.",
+              "alt": "Open composer with numbered highlights on the message type, recipients, editor, attach button, Templates, Draft with AI and Send",
+              "width": 460
+            },
+            {
+              "callouts": [
+                "The message type: **Reply**, **Internal note** or **Handover**. Below it are the draft status and the **Minimise** button.",
+                "Recipients. **To** holds the contact's e-mail address. The **Cc** and **Bcc** links add more rows.",
+                "The editor with its formatting toolbar.",
+                "**Attach files** (the paperclip).",
+                "**Templates**: inserts a reply template.",
+                "**Draft with AI**: writes a draft reply for you to check.",
+                "**Send**, and the arrow next to it for **Send and set status**."
+              ]
+            },
+            { "note": "Some roles may only view a ticket. For them, the bar shows **You can view this ticket but not reply to it.** Light agents can add internal notes but cannot reply to customers." }
+          ]
+        },
+        {
+          "id": "rn-reply",
+          "title": "Reply to a customer",
+          "type": "task",
+          "intro": "Send an answer to the customer on the ticket's channel.",
+          "prerequisites": ["You need the reply permission."],
+          "steps": [
+            "Select **Reply**, or press [[R]].",
+            "For an e-mail ticket, check the address in **To**. Select **Cc** or **Bcc** to add more people.",
+            "Write your reply in the editor. To start from a template, open **Templates** and choose one.",
+            "To add files, select **Attach files** and choose them.",
+            "Select **Send**, or press [[Ctrl+Enter]]."
+          ],
+          "result": "The message **Reply sent** appears, and the reply appears at the end of the conversation. An open or assigned ticket moves to **In Progress**.",
+          "blocks": [
+            {
+              "list": [
+                "On e-mail tickets, **Send** works only when **To** has at least one address.",
+                "Type an address in **To**, **Cc** or **Bcc** and press [[Enter]]. Select **×** on an address to remove it.",
+                "**Bcc** recipients are hidden from the others. Saved drafts do not keep them.",
+                "On other channels, the composer shows **Sent to** with the contact's name and channel, such as WhatsApp. The reply goes out on that channel."
+              ]
+            },
+            { "tip": "Your e-mail signature from **My profile** is added to e-mail replies. It does not show in the composer." }
+          ]
+        },
+        {
+          "id": "rn-send-and-status",
+          "title": "Send a reply and change the status",
+          "type": "task",
+          "intro": "Send your reply and set the next status in one step. For example, send a question and set **Waiting on Customer**.",
+          "prerequisites": ["The reply has text and, on e-mail tickets, a recipient."],
+          "steps": [
+            "Write your reply.",
+            {
+              "text": "Select the arrow next to **Send**.",
+              "image": "shots/06-send-and-status.png",
+              "caption": "The **Send and set status** menu.",
+              "alt": "Send and set status menu listing Open, In Progress, Waiting on Customer, Waiting on Third Party, Escalated to Engineering and Resolved",
+              "width": 240
+            },
+            "Choose the status."
+          ],
+          "result": "The reply is sent, and the ticket gets the new status. The message **Reply sent and status updated** appears.",
+          "blocks": [
+            { "note": "The menu only lists statuses allowed next. Closed statuses are never in the list." }
+          ]
+        },
+        {
+          "id": "rn-internal-note",
+          "title": "Add an internal note",
+          "type": "task",
+          "intro": "Write a note that only agents see, such as what you tried or a question for a colleague.",
+          "prerequisites": ["You need the add notes permission."],
+          "steps": [
+            "Select **Internal note**, or press [[N]].",
+            "Write the note.",
+            {
+              "text": "To bring in a colleague, type `@` and the first letters of their name. Choose the person in the list.",
+              "image": "shots/06-internal-note.png",
+              "caption": "An internal note with the mention list open after typing `@Mee`.",
+              "alt": "Internal note composer with an amber background and a mention list showing Meera Iyer",
+              "width": 460
+            },
+            "Select **Add note**."
+          ],
+          "result": "The message **Note added** appears. The note shows in the conversation with an amber background and an **Internal note** label.",
+          "blocks": [
+            { "note": "Everyone you mention gets a notification. Mentioned colleagues also become collaborators on the ticket." },
+            { "warning": "Never paste information meant for the customer into a note. Customers do not see notes, so the customer never gets it." }
+          ]
+        },
+        {
+          "id": "rn-handover",
+          "title": "Write a handover note",
+          "type": "task",
+          "intro": "Leave a note for the next agent, for example at the end of your shift.",
+          "prerequisites": ["You need the add notes permission."],
+          "steps": [
+            "Select **Handover**.",
+            {
+              "text": "Answer the question in the editor: **What should the next agent know?**",
+              "image": "shots/06-handover.png",
+              "caption": "A handover note before it is added.",
+              "alt": "Handover composer with a note for the next agent and an Add handover button",
+              "width": 460
+            },
+            "Select **Add handover**."
+          ],
+          "result": "The message **Handover note added** appears. The note shows in the conversation with an amber background. Only agents see it.",
+          "blocks": [
+            { "note": "Internal notes and handover notes share one draft. Text you type in one also shows in the other until you add it or discard it." }
+          ]
+        },
+        {
+          "id": "rn-templates",
+          "title": "Use a reply template",
+          "type": "task",
+          "intro": "Templates give you ready-made answers to common questions. SupportDesk fills in names and numbers for you.",
+          "steps": [
+            "Open the composer in **Reply** mode.",
+            "Place the cursor where the template text should go.",
+            {
+              "text": "Open **Templates** and choose a template.",
+              "image": "shots/06-templates-menu.png",
+              "caption": "The **Templates** menu, grouped by category.",
+              "alt": "Templates menu with an Engineering group containing Fix released and a Follow-up group containing Waiting on customer gentle reminder",
+              "width": 300
+            },
+            "Read the inserted text and change it to fit the ticket.",
+            "Send the reply."
+          ],
+          "result": "The template text appears in the editor with the customer's and the ticket's details filled in.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Placeholder", "Replaced with"],
+                "widths": [40, 60],
+                "rows": [
+                  ["`{{contact.name}}`", "The contact's first name, or **there** when there is no contact."],
+                  ["`{{contact.fullName}}`", "The contact's full name."],
+                  ["`{{ticket.number}}` and `{{ticket.subject}}`", "The ticket number and subject."],
+                  ["`{{customer.name}}`", "The customer organisation."],
+                  ["`{{agent.name}}`", "Your name."]
+                ]
+              }
+            },
+            {
+              "list": [
+                "**Templates** only appears in **Reply** mode.",
+                "A template can be personal, or shared with a team, a department or the whole workspace.",
+                "If no template is available to you, the menu shows **No templates available**."
+              ]
+            },
+            { "note": "You cannot create or change templates in the desk. Ask your administrator for new templates. Templates insert text only. They do not change the ticket." }
+          ]
+        },
+        {
+          "id": "rn-attachments",
+          "title": "Attach files",
+          "type": "task",
+          "intro": "Add screenshots, logs or documents to a reply or a note.",
+          "steps": [
+            "In the open composer, select **Attach files** (the paperclip).",
+            "Choose one or more files, then confirm.",
+            "Wait until each file's progress bar disappears.",
+            "To remove a file, select **×** next to its name."
+          ],
+          "result": "The files are listed under the editor. They go out with the reply or note.",
+          "blocks": [
+            {
+              "list": [
+                "The size limit depends on your plan. The standard limit is 25 MB per file.",
+                "Programs and active content are blocked, such as `.exe`, `.js`, `.html`, `.svg` and `.docm` files.",
+                "Every file is scanned for malware. A file that fails shows **Blocked by the virus scanner**.",
+                "**Send** waits until every file has uploaded."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rn-drafts",
+          "title": "Drafts",
+          "type": "concept",
+          "intro": [
+            "The composer saves your text as a draft about a second after you stop typing. The draft status above the editor shows **Saving draft…**, then **Draft saved** and the time.",
+            "Drafts come back when you reopen the ticket, on any device. When the composer is closed, a **Draft saved** badge shows that a draft is waiting."
+          ],
+          "blocks": [
+            {
+              "list": [
+                "Select **Minimise** (the down arrow) to close the composer and keep the draft.",
+                "Select **Discard** to delete the draft and close the composer. You cannot undo this.",
+                "Replies and notes have separate drafts. Internal notes and handover notes share one draft.",
+                "Drafts keep **To** and **Cc**, but not **Bcc**."
+              ]
+            },
+            { "note": "If the status shows **Draft not saved**, keep the composer open and check your connection. Your text stays in the editor." }
+          ]
+        },
+        {
+          "id": "rn-collision",
+          "title": "When someone posts while you write",
+          "type": "concept",
+          "intro": [
+            "A customer or a colleague may post on the ticket while you write your reply. Then SupportDesk does not send your reply straight away.",
+            "A yellow panel opens above the editor. It says how many entries were added while you were writing and shows each of them."
+          ],
+          "blocks": [
+            {
+              "steps": [
+                "Read the new entries in the panel.",
+                "To change your reply first, select **I've reviewed them — keep editing**.",
+                "To send your reply as it is, select **Send anyway**."
+              ]
+            },
+            { "tip": "Always read the new entries. The customer may have answered your question already." }
+          ]
+        },
+        {
+          "id": "rn-ai-draft",
+          "title": "Draft a reply with AI",
+          "type": "task",
+          "intro": "Let the AI assistant write a first draft from the ticket and your knowledge base. You check and send it.",
+          "prerequisites": ["You need the AI permission, and your plan must include AI."],
+          "steps": [
+            "Open the composer in **Reply** mode.",
+            "Select **Draft with AI**.",
+            "Read the message under the editor. It says how many sources the draft used.",
+            "Check and edit the draft.",
+            "Select **Send**."
+          ],
+          "result": "The draft appears in the editor. If the editor already had text, the draft is added at the cursor.",
+          "blocks": [
+            { "warning": "If no matching article or resolved ticket was found, the message says so. Check such a draft with extra care before you send it." }
+          ]
+        },
+        {
+          "id": "rn-share",
+          "title": "Share a ticket to Teams or Slack",
+          "type": "task",
+          "intro": "Post a ticket to a Microsoft Teams or Slack channel to ask colleagues for help.",
+          "prerequisites": ["You need the add notes permission.", "An administrator has added the channel under **Administration** > **Teams & Slack**."],
+          "steps": [
+            "Select **Internal note**.",
+            "Type a comment in the editor if you like. SupportDesk adds it to the post.",
+            {
+              "text": "Select **Share to Teams/Slack**.",
+              "image": "shots/06-share-dialog.png",
+              "caption": "The **Share to Teams / Slack** dialog in a workspace without channels.",
+              "alt": "Share to Teams or Slack dialog showing No channels and a hint for administrators",
+              "width": 420
+            },
+            "In **Channel**, choose the channel.",
+            "In **Message**, enter a short text for the top of the post.",
+            "Select **Share**."
+          ],
+          "result": "The message **Shared to** and the channel name appears under the editor. The post links back to the ticket."
+        },
+        {
+          "id": "rn-side-tabs",
+          "title": "Side tabs from other modules",
+          "type": "reference",
+          "intro": "Other modules add tabs to the **Ticket details** panel. You only see a tab when you have its permission and your plan includes it.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Tab", "Appears when", "What it does"],
+                "widths": [18, 30, 52],
+                "rows": [
+                  ["**Blueprint**", "Your plan includes blueprints.", "Shows the guided process the ticket follows and the next steps you may run. See [Follow a blueprint](#rn-blueprint)."],
+                  ["**AI**", "You may use AI, and your plan includes it.", "Summary, sentiment, expected resolution and classification. It also offers a suggested reply with **Insert into composer**, similar and duplicate tickets, the likely root cause, **Draft article** and **Run agents**."],
+                  ["**Engineering**", "You may link or view engineering work items.", "Lists linked engineering work items with their state, fix version and release. **Escalate to engineering** creates a work item. **Link existing** links one that already exists."]
+                ]
+              }
+            },
+            { "p": "The composer also gets extra buttons from other modules. **Draft with AI** appears in **Reply** mode. **Share to Teams/Slack** appears in **Internal note** mode." }
+          ]
+        },
+        {
+          "id": "rn-blueprint",
+          "title": "Follow a blueprint",
+          "type": "task",
+          "intro": "A blueprint guides a ticket through set steps, such as investigation, review and release. You move the ticket to its next step on the **Blueprint** tab.",
+          "prerequisites": ["The ticket follows a blueprint. Otherwise the tab says **This ticket doesn't follow a blueprint**."],
+          "steps": [
+            "Select **Ticket details**, then the **Blueprint** tab.",
+            "Check the steps of the process and the **Current state**.",
+            {
+              "text": "Select the transition you want to run, such as **Confirm defect**.",
+              "image": "shots/06-blueprint-tab.png",
+              "caption": "The **Blueprint** tab with the **Confirm defect** transition open. It needs approval and two fields.",
+              "alt": "Blueprint tab with the process states, the current state Investigation, and an open transition form with Severity, Version and Comment",
+              "width": 330
+            },
+            "Fill in the required fields that appear.",
+            "Enter a **Comment**. The step may make it mandatory.",
+            "Select **Move to** and the state name, or **Request approval** when the step needs approval."
+          ],
+          "result": "The ticket moves to the next state, and its status changes with it. For an approval step, the tab shows that the step is waiting for approval.",
+          "blocks": [
+            {
+              "list": [
+                "An **approval** badge means a supervisor must approve the step. The request appears on the **Approvals** page.",
+                "A badge such as **2 fields** shows how many required fields are still empty.",
+                "Some steps are greyed out, with the reason below them.",
+                "If no step is open to you, the tab says **No transitions are available to you from this state.**"
+              ]
+            },
+            { "note": "People who manage automation also see **Remove ticket from blueprint**. Removing it lets the ticket change status freely again." }
+          ]
+        },
+        {
+          "id": "rn-composer-buttons",
+          "title": "Composer buttons",
+          "type": "reference",
+          "intro": "Every button and field you can find in the open composer.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Button or field", "What it does"],
+                "widths": [32, 68],
+                "rows": [
+                  ["**Reply**, **Internal note**, **Handover**", "Switch the message type. Notes and handovers have an amber background."],
+                  ["**Minimise** (down arrow)", "Closes the composer and keeps the draft."],
+                  ["**To**, **Cc**, **Bcc**", "E-mail recipients. Only shown on e-mail tickets."],
+                  ["Editor toolbar", "Bold, italic, underline, strike-through, lists, quotes, links and code. Press [[Ctrl+K]] in the editor to add a link."],
+                  ["**Attach files**", "Adds files to the message."],
+                  ["**Templates**", "Inserts a reply template. **Reply** mode only."],
+                  ["**Draft with AI**", "Writes a draft reply. **Reply** mode only, when AI is available."],
+                  ["**Share to Teams/Slack**", "Posts the ticket to a Teams or Slack channel. **Internal note** mode only."],
+                  ["**Discard**", "Deletes the draft and closes the composer."],
+                  ["**Send**, **Add note** or **Add handover**", "Sends the reply or adds the note. [[Ctrl+Enter]] does the same."],
+                  ["Arrow next to **Send**", "Opens **Send and set status**."]
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "**Send** stays greyed out.", "cause": "The editor is empty, a file is still uploading, or an e-mail reply has no address in **To**.", "fix": "Write the message, wait for the uploads, and add a recipient." },
+    { "problem": "The composer shows **You can view this ticket but not reply to it.**", "cause": "Your role may view the ticket but not reply or add notes.", "fix": "Ask your administrator for the reply or note permission, or ask a colleague to reply." },
+    { "problem": "A panel says that new entries were added while you were writing.", "cause": "The customer or a colleague posted on the ticket after you started typing.", "fix": "Read the entries. Select **I've reviewed them — keep editing**, or **Send anyway**." },
+    { "problem": "The reply was not sent, and a message says your text is kept.", "cause": "The connection dropped, or SupportDesk refused the reply.", "fix": "Check your connection and try again. Your text stays in the composer." },
+    { "problem": "The draft status shows **Draft not saved**.", "cause": "SupportDesk could not save the draft, often because of the connection.", "fix": "Keep the composer open. The draft saves again when you type, once the connection is back." },
+    { "problem": "**Templates** shows **No templates available**.", "cause": "No template is shared with you, and you have no personal templates.", "fix": "Ask your administrator to add templates for your team or department." },
+    { "problem": "An attachment shows **Blocked by the virus scanner**.", "cause": "The malware scan found a problem in the file.", "fix": "Remove the file and attach a clean copy." },
+    { "problem": "**Share to Teams/Slack** shows **No channels**.", "cause": "No Teams or Slack channel is set up for the workspace.", "fix": "Ask your administrator to add one under **Administration** > **Teams & Slack**." }
+  ],
+  "faq": [
+    { "q": "Do customers ever see internal notes or handover notes?", "a": "No. Only agents see them. The customer portal never shows them, and replies never include them." },
+    { "q": "I closed the browser while writing. Is my reply lost?", "a": "No. The composer saves a draft as you type. Open the ticket again on any device to carry on." },
+    { "q": "Can I create my own reply templates?", "a": "Not in the desk. Ask your administrator to add the template for you." },
+    { "q": "Why did my colleague become a collaborator?", "a": "You mentioned them with `@` in an internal note. Mentioning someone adds them as a collaborator and notifies them." }
+  ],
+  "glossary": [
+    { "term": "Composer", "definition": "The writing area at the bottom of a ticket, used for replies, internal notes and handover notes." },
+    { "term": "Internal note", "definition": "A note on a ticket that only agents can see. It has an amber background." },
+    { "term": "Handover note", "definition": "An internal note for the next agent who works on the ticket." },
+    { "term": "Reply template", "definition": "Ready-made reply text with placeholders that SupportDesk fills in, such as the contact's name." },
+    { "term": "Placeholder", "definition": "A code in a template, such as {{contact.name}}, that SupportDesk replaces with real details." },
+    { "term": "Draft", "definition": "An unsent reply or note that SupportDesk saves as you type." },
+    { "term": "Mention", "definition": "Typing @ and a colleague's name in a note. It notifies them and makes them a collaborator." },
+    { "term": "Reply collision", "definition": "When someone posts on a ticket while you are writing a reply. SupportDesk shows the new entries before you send." }
+  ]
+}

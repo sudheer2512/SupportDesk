@@ -1,0 +1,538 @@
+{
+  "chapters": [
+    {
+      "id": "ticket-views",
+      "title": "Ticket views and the ticket list",
+      "intro": [
+        "This chapter is for agents and supervisors who work through tickets in the **Tickets** module.",
+        "It explains queues and saved views, the ticket list, and how to update many tickets at once. It also covers the recycle bin and the **New ticket** form."
+      ],
+      "sections": [
+        {
+          "id": "tv-workspace",
+          "title": "The ticket workspace",
+          "type": "concept",
+          "intro": [
+            "Open **Tickets** in the navigation rail, or press [[G]] then [[T]]. The ticket workspace has three panes.",
+            "Queues and saved views are on the left. The ticket list is in the middle. When you open a ticket, the customer's details appear on the right."
+          ],
+          "blocks": [
+            {
+              "image": "shots/04-workspace-tour.png",
+              "caption": "The ticket workspace with the **My open tickets** queue and two tickets open as tabs.",
+              "alt": "Ticket workspace with numbered highlights on the queues, the New view button, the tab strip, the filter box, the refresh button, a sort button and the New ticket button"
+            },
+            {
+              "callouts": [
+                "**Queues**: ready-made ticket lists with live counts. A red count warns you about overdue tickets.",
+                "**New view**: creates your own saved view. Your views appear under **Views**.",
+                "The tab strip. The first tab shows the list. Each ticket you open gets its own tab.",
+                "**Filter by #, subject, customer…**: narrows the list while you type.",
+                "**Refresh**: reloads the list and the queue counts.",
+                "Sort buttons in the column headers, such as **Priority**.",
+                "**New ticket**: logs a new ticket for a customer."
+              ]
+            },
+            { "heading": "Tabs and panels" },
+            {
+              "list": [
+                "Up to 12 tickets stay open as tabs. Each tab keeps its place while you switch.",
+                "Select **×** on a tab to close it. Select the **×** at the right end of the strip to close all tabs.",
+                "Select the panel buttons at either end of the tab strip to hide or show the left and right panels.",
+                "Drag the border between two panes to make a pane wider or narrower."
+              ]
+            },
+            { "tip": "To switch lists from the keyboard, open the command palette and type `Switch view`. See [Run a command from the command palette](#gs-command-palette)." }
+          ]
+        },
+        {
+          "id": "tv-queues",
+          "title": "Queues",
+          "type": "reference",
+          "intro": [
+            "Queues are fixed lists that every agent has. The number next to each queue is the count of tickets in it.",
+            "You only see tickets inside your role's data scope. Two agents can see different counts for the same queue."
+          ],
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Queue", "Shows"],
+                "widths": [28, 72],
+                "rows": [
+                  ["**My open tickets**", "Open tickets assigned to you."],
+                  ["**Unassigned**", "Open tickets that nobody owns yet."],
+                  ["**All open**", "Every open ticket you are allowed to see."],
+                  ["**Overdue**", "Tickets past their due time. The count turns red when there are any."],
+                  ["**SLA at risk**", "Open tickets close to missing a service target. The count turns red when there are any."],
+                  ["**Escalated**", "Open tickets that someone escalated, or that the service clock escalated."],
+                  ["**Watching**", "Open tickets you watch."],
+                  ["**Waiting**", "Tickets in a waiting status, such as **Waiting on Customer**."],
+                  ["**Deleted tickets**", "The recycle bin. Only people who may delete tickets see it."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "tv-open-list",
+          "title": "Open a queue or a saved view",
+          "type": "task",
+          "intro": "Choose which tickets the list shows.",
+          "steps": [
+            "Open **Tickets** in the navigation rail.",
+            "In the left panel, select a queue under **Queues**.",
+            "To use a saved view instead, select it under **Views**."
+          ],
+          "result": "The list shows the tickets. The heading above the list shows the name and the number of tickets.",
+          "blocks": [
+            { "tip": "The address of the page names the list. Bookmark it, or share it with a colleague, to open the same list later." }
+          ]
+        },
+        {
+          "id": "tv-saved-views",
+          "title": "How saved views work",
+          "type": "concept",
+          "intro": [
+            "A saved view is a ticket list that you define with conditions. For example, all critical tickets assigned to you.",
+            "A view always shows every ticket that matches its conditions. It never shows tickets outside what you are allowed to see."
+          ],
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Kind", "Who sees it", "Where it appears"],
+                "widths": [18, 42, 40],
+                "rows": [
+                  ["**Personal**", "Only you.", "Under **Views** > **Mine**, with a bookmark icon."],
+                  ["**Shared**", "Everyone in the help desk. Only supervisors and administrators can share a view.", "Under **Views** > **Shared**, with a people icon."]
+                ]
+              }
+            },
+            {
+              "list": [
+                "Each view shows how many tickets match it.",
+                "A star next to a view means it opens by default.",
+                "A view can keep its own column layout and its own sort order.",
+                "The owner of a view, or a supervisor, can edit or delete it. Anyone can copy it."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tv-create-view",
+          "title": "Create a saved view",
+          "type": "task",
+          "intro": "Build a list you use often, so it is one selection away.",
+          "prerequisites": ["To create a **Shared** view, you need supervisor rights. Without them, the **Shared** option shows **Needs supervisor rights**."],
+          "steps": [
+            {
+              "text": "Under **Views**, select **New view** (the plus button).",
+              "note": "The **New view** dialog opens."
+            },
+            "In **Name**, enter a short name, such as `Critical tickets for me`.",
+            "Under **Who can use it**, choose **Personal** or **Shared**.",
+            {
+              "text": "Under **Conditions**, select **Condition**. Then choose a field, an operator and a value.",
+              "image": "shots/04-view-editor.png",
+              "caption": "A personal view with two conditions: the priority is **Critical** and the assignee is whoever views the list.",
+              "alt": "New view dialog with a name, the Personal option and two conditions",
+              "width": 460
+            },
+            "Repeat the previous step for each extra condition. Select the bin button to remove a condition.",
+            "Choose **All (AND)** if every condition must match. Choose **Any (OR)** if one match is enough.",
+            "In **Sort by**, choose the order of the list. In **Position**, enter a number to place the view in the panel.",
+            "Tick **Open this view by default** if this view should open when you go to **Tickets**.",
+            "Select **Create view**."
+          ],
+          "result": "The view appears under **Views** and opens at once. The message **View created** appears.",
+          "blocks": [
+            { "tip": "In the **Assignee** field, choose the first option, your name followed by **(whoever views it)**. A shared view with this option shows every person their own tickets." },
+            { "note": "Select **Group** to add a group of conditions with its own **All (AND)** or **Any (OR)** choice. **Position** puts lower numbers higher in the panel." },
+            { "heading": "Fields you can filter on" },
+            {
+              "list": [
+                "Ticket: subject, priority, severity, status, status category, channel, language, sentiment, reopen count and satisfaction score.",
+                "Routing: department, team, assignee and brand.",
+                "Product: product, module and version.",
+                "Classification: category, subcategory, issue type and tags.",
+                "Service: SLA state, escalated or not, and entitlement.",
+                "Dates: created, due and last activity."
+              ]
+            },
+            { "p": "**Save the current column layout with this view** keeps the columns you chose for the list you were looking at. The view then opens with the same columns." }
+          ]
+        },
+        {
+          "id": "tv-edit-view",
+          "title": "Edit, copy or delete a saved view",
+          "type": "task",
+          "intro": "Change a view's conditions, make a copy to start a similar view, or remove a view you no longer use.",
+          "prerequisites": ["To edit or delete a view, you must own it or have supervisor rights."],
+          "steps": [
+            "Under **Views**, point to the view.",
+            "Select the **⋯** button that appears at the right of the view.",
+            {
+              "text": "Choose **Edit…**, **Duplicate…** or **Delete**.",
+              "substeps": [
+                "**Edit…** opens the **Edit view** dialog. Change the fields, then select **Save view**.",
+                "**Duplicate…** opens a copy named after the view with **(copy)** at the end. Change it, then select **Create view**.",
+                "**Delete** asks you to confirm. Select **Delete view**."
+              ]
+            }
+          ],
+          "result": "The panel shows the changed view, the copy, or no view.",
+          "blocks": [
+            { "warning": "Deleting a shared view removes it for everyone. Deleting a view never deletes its tickets." }
+          ]
+        },
+        {
+          "id": "tv-default-view",
+          "title": "Which list opens by default",
+          "type": "concept",
+          "intro": [
+            "When you open **Tickets** without choosing a list, SupportDesk picks one. It uses the first rule that applies.",
+            "There is one personal default per person and one shared default for the whole workspace. Departments and teams cannot have their own default."
+          ],
+          "blocks": [
+            {
+              "steps": [
+                "If the page address names a list, that list opens. This happens when you open a bookmark or a shared link.",
+                "On your first visit in a browser tab, your personal default view opens. Without one, the shared default view opens.",
+                "Otherwise, the queue or view you used last in this browser opens.",
+                "If none of these apply, **My open tickets** opens."
+              ]
+            },
+            { "heading": "Choose your default view" },
+            {
+              "steps": [
+                "Under **Views**, point to the view and select the **⋯** button.",
+                "Choose **Edit…**.",
+                "Tick **Open this view by default**.",
+                "Select **Save view**."
+              ]
+            },
+            { "note": "A new personal default replaces your previous one. A shared default applies to everyone without a personal default." }
+          ]
+        },
+        {
+          "id": "tv-ticket-list",
+          "title": "The ticket list",
+          "type": "reference",
+          "intro": [
+            "The list loads 50 tickets at a time. Scroll down, or select **Load more**, to see more.",
+            "When tickets change while you work, the list updates itself. If you have tickets selected, a **New activity** button appears instead. Select it to reload the list."
+          ],
+          "blocks": [
+            { "heading": "Columns" },
+            {
+              "table": {
+                "columns": ["Column", "Shows"],
+                "widths": [24, 76],
+                "rows": [
+                  ["**#**", "The ticket number."],
+                  ["**Subject**", "The subject. This column is always shown."],
+                  ["**Status**", "The current status, in its colour."],
+                  ["**Priority**", "**Low**, **Medium**, **High** or **Critical**."],
+                  ["**Due**", "A countdown to the resolution target, such as **Breached 14d ago**. Resolved tickets show **SLA met** when the target was met."],
+                  ["**Assignee**", "The agent who owns the ticket, or **Unassigned**."],
+                  ["**Customer**", "The customer organisation, with the contact's name below it."],
+                  ["**Updated**", "When the ticket last changed."],
+                  ["Extra columns", "**Channel**, **Department**, **Team**, **Product**, **Category**, **Severity**, **Created**, **Tags** and **Replies**. **Replies** shows agent replies and customer replies, such as `3 / 2`."]
+                ]
+              }
+            },
+            { "heading": "Row markers" },
+            {
+              "table": {
+                "columns": ["Marker", "Meaning"],
+                "widths": [36, 64],
+                "rows": [
+                  ["Bold subject with a blue dot", "The customer replied and nobody has read it yet."],
+                  ["Red arrow before the subject", "The ticket is escalated."],
+                  ["Red bar at the left edge of the row", "The ticket missed its service target."]
+                ]
+              }
+            },
+            { "heading": "Keyboard" },
+            {
+              "table": {
+                "columns": ["Keys", "Action"],
+                "widths": [36, 64],
+                "rows": [
+                  ["[[↑]] and [[↓]], [[PgUp]] and [[PgDn]], [[Home]] and [[End]]", "Move through the rows."],
+                  ["[[Enter]]", "Open the ticket in the current row."],
+                  ["[[Space]]", "Select or clear the current row."],
+                  ["[[J]] and [[K]]", "Open the next or previous ticket in the list."],
+                  ["[[G]] then [[Q]]", "Show the queue panel."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "tv-filter-sort",
+          "title": "Filter and sort the list",
+          "type": "task",
+          "intro": "Find a ticket in a long list without building a view.",
+          "steps": [
+            "Open the queue or view you want to search.",
+            {
+              "text": "In **Filter by #, subject, customer…**, enter part of a ticket number, subject, customer or contact name.",
+              "image": "shots/04-list-filter.png",
+              "caption": "The **All open** queue filtered by the text `POS`.",
+              "alt": "Ticket list with POS in the filter box and five matching tickets",
+              "width": 560
+            },
+            "To clear the filter, select **×** in the box or press [[Esc]].",
+            "To sort, select a column header with arrows, such as **#**, **Priority**, **Due**, **Updated** or **Created**.",
+            "Select the same header again to reverse the order."
+          ],
+          "result": "The list shows only matching tickets, in the order you chose. The count next to the heading shows how many match.",
+          "blocks": [
+            { "note": "**Due** always sorts the soonest due first. **Priority** always sorts the highest priority first. A saved view opens with its own sort order." }
+          ]
+        },
+        {
+          "id": "tv-columns",
+          "title": "Choose the list columns",
+          "type": "task",
+          "intro": "Show the columns you need and hide the rest.",
+          "steps": [
+            "Scroll the list to the right end of the header row.",
+            {
+              "text": "Select **Choose columns** (the columns button in the last header cell).",
+              "image": "shots/04-column-chooser.png",
+              "caption": "The **Columns** list. Ticked columns are shown.",
+              "alt": "Columns popup with check boxes and up and down arrows for each column",
+              "width": 230
+            },
+            "Tick a column to show it. Clear it to hide it.",
+            "Use the arrows, or drag a column by its handle, to change the order.",
+            "Press [[Esc]] to close the list."
+          ],
+          "result": "The list shows the columns in the order you chose.",
+          "blocks": [
+            { "note": "SupportDesk remembers the columns for each queue and view in this browser. Select **Reset** to go back to the standard columns." }
+          ]
+        },
+        {
+          "id": "tv-bulk-update",
+          "title": "Update many tickets at once",
+          "type": "task",
+          "intro": "Assign, close or tag a group of tickets in one step, instead of opening each one.",
+          "prerequisites": [
+            "You need the bulk update permission. Supervisors and administrators have it by default.",
+            "You can update up to 500 tickets at a time."
+          ],
+          "steps": [
+            {
+              "text": "Tick the check box at the start of each ticket row.",
+              "image": "shots/04-bulk-bar.png",
+              "caption": "Three tickets selected. The bulk actions bar appears above the list.",
+              "alt": "Ticket list with three rows ticked and the bulk actions bar highlighted",
+              "width": 560
+            },
+            "To select every loaded ticket, tick the check box in the header row.",
+            {
+              "text": "In the bulk actions bar, select **Assign**, **Status** or **Priority**. For other actions, open **More**.",
+              "image": "shots/04-bulk-more.png",
+              "caption": "The **More** menu of the bulk actions bar.",
+              "alt": "More menu with Change priority, Add tags, Remove tags, Transfer, Watch, Close, Mark as spam and Delete",
+              "width": 220
+            },
+            {
+              "text": "Fill in the dialog that opens.",
+              "image": "shots/04-bulk-assign.png",
+              "caption": "The **Assign tickets** dialog for three tickets.",
+              "alt": "Assign tickets dialog with Team and Agent fields",
+              "width": 420
+            },
+            "Select **Apply**, or the action's own button, such as **Close tickets**.",
+            "Read the result, such as **3 of 3 tickets updated**.",
+            "Select **Done**."
+          ],
+          "result": "The list reloads. Tickets that could not be updated stay selected. The result lists each of them with the reason.",
+          "blocks": [
+            { "tip": "Select **Clear** in the bar to clear the selection." },
+            { "note": "Without the bulk update permission, the bar shows a message instead of the buttons." }
+          ]
+        },
+        {
+          "id": "tv-bulk-actions",
+          "title": "Bulk actions",
+          "type": "reference",
+          "intro": "These actions are in the bulk actions bar and its **More** menu.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Action", "What you choose", "Notes"],
+                "widths": [22, 34, 44],
+                "rows": [
+                  ["**Assign**", "**Team** (optional) and **Agent**.", "Leave **Agent** empty to unassign. The team stays."],
+                  ["**Status**", "**New status**.", "Only active statuses are offered."],
+                  ["**Priority** or **Change priority**", "**New priority**.", ""],
+                  ["**Add tags**", "**Tags to add**.", "Type a tag and press [[Enter]]."],
+                  ["**Remove tags**", "**Tags to remove**.", "Pick from tags that already exist."],
+                  ["**Transfer…**", "**Department** and **Team** (optional).", "Needs the transfer permission."],
+                  ["**Watch**", "Nothing.", "Adds you as a watcher of every selected ticket."],
+                  ["**Close**", "Nothing.", "Needs the resolve permission. Customers are not asked to confirm."],
+                  ["**Mark as spam…**", "Nothing.", "Needs the delete permission. The tickets leave every queue."],
+                  ["**Delete…**", "Type `DELETE` and the number of tickets, such as `DELETE 3`.", "Needs the delete permission. The tickets move to the recycle bin."]
+                ]
+              }
+            },
+            {
+              "image": "shots/04-bulk-delete.png",
+              "caption": "The **Delete tickets** dialog asks you to type **DELETE 3** before **Delete** works.",
+              "alt": "Delete tickets dialog with a box to type the confirmation text",
+              "width": 420
+            },
+            { "warning": "Closing, marking as spam and deleting affect every selected ticket. Check the selection before you confirm." }
+          ]
+        },
+        {
+          "id": "tv-restore",
+          "title": "Restore a deleted ticket",
+          "type": "task",
+          "intro": "Deleted tickets and spam tickets go to the recycle bin. Nothing is lost until someone restores them.",
+          "prerequisites": ["You need the delete permission. Supervisors and administrators have it by default."],
+          "steps": [
+            {
+              "text": "Under **Queues**, select **Deleted tickets**.",
+              "image": "shots/04-recycle-bin.png",
+              "caption": "The **Deleted tickets** list. Here the recycle bin is empty.",
+              "alt": "Deleted tickets page with a filter box and the message The recycle bin is empty",
+              "width": 520
+            },
+            "To find a ticket, enter its number or part of its subject in **Filter by # or subject…**.",
+            "Select **Restore** next to the ticket.",
+            "Select **Restore** in the confirmation dialog."
+          ],
+          "result": "The ticket returns to its queues with its conversation and history. A message offers **Open** to open it.",
+          "blocks": [
+            {
+              "list": [
+                "The list shows the newest deletions first, with who deleted each ticket and when.",
+                "A **Spam** badge marks tickets marked as spam. Restoring them also stops treating them as spam.",
+                "A **Legal hold** badge means a legal hold covers the ticket. SupportDesk keeps it for the hold.",
+                "The recycle bin is never emptied automatically."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tv-new-ticket",
+          "title": "Log a new ticket",
+          "type": "task",
+          "intro": "Log a ticket when a customer calls, walks in or writes to you outside SupportDesk.",
+          "prerequisites": ["You need the create tickets permission. Agents, supervisors and administrators have it by default."],
+          "steps": [
+            "In the top bar, select **New ticket**, or press [[C]].",
+            "In **Customer**, enter part of the customer's name, code or e-mail address. Then choose the customer.",
+            {
+              "text": "In **Contact**, choose the person who asked for help.",
+              "image": "shots/04-new-ticket-requester.png",
+              "caption": "The **Requester** section with a customer, a contact and the **Phone** channel.",
+              "alt": "Requester section with Customer, Contact, a new contact check box and channel buttons"
+            },
+            "Under **Channel**, choose how the customer contacted you, such as **Phone** or **Walk-in**.",
+            {
+              "text": "Enter the **Subject** and the **Description**.",
+              "image": "shots/04-new-ticket-request.png",
+              "caption": "The **Request** section with a subject and a description.",
+              "alt": "Request section with Subject, Description, Attach files, Priority, Severity, Category, Subcategory, Issue type and Tags"
+            },
+            "Choose the **Priority**. Add the classification fields and **Tags** if you know them.",
+            "Under **Product**, choose the product, module, version and installation if the request is about one.",
+            {
+              "text": "Under **Routing**, choose a department, team or assignee. Leave them empty to let routing rules decide.",
+              "image": "shots/04-new-ticket-routing.png",
+              "caption": "The **Routing** section with an assignee chosen.",
+              "alt": "Routing section with Department, Team and Assignee, and the Keep my choice check box ticked"
+            },
+            "Fill in any **Additional fields**, then select **Create ticket**."
+          ],
+          "result": "A card shows **#number created** with the customer's support eligibility. Select **Open ticket** to work on it, or **Create another**.",
+          "blocks": [
+            { "tip": "If the requester is not in SupportDesk yet, tick **The requester is a new contact**. Then enter the **Full name** and an **E-mail** or **Phone**." },
+            { "note": "Select **Attach files** under the description to add files. **Create ticket** waits until every file has uploaded." }
+          ]
+        },
+        {
+          "id": "tv-new-ticket-fields",
+          "title": "New ticket fields and checks",
+          "type": "reference",
+          "intro": "Only **Subject** is always required. Your administrator can make some **Additional fields** required.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Field", "What to enter"],
+                "widths": [30, 70],
+                "rows": [
+                  ["**Customer**", "The customer organisation. Choose it first to see its contacts and installations."],
+                  ["**Contact**", "The person who asked. Choosing a contact also fills in the customer."],
+                  ["**The requester is a new contact**", "Tick it to add a person who is not in SupportDesk. An existing contact with the same e-mail address or phone number is reused."],
+                  ["**Channel**", "**Phone**, **Email**, **Walk-in**, **Chat**, **WhatsApp**, **Portal** or **Internal**."],
+                  ["**Subject**", "A short summary of the request. Required."],
+                  ["**Description**", "What the customer needs: steps, error messages and impact."],
+                  ["**Priority** and **Severity**", "How urgent the request is, and how serious its impact is."],
+                  ["**Category**, **Subcategory** and **Issue type**", "The classification. **Subcategory** needs a **Category** first."],
+                  ["**Tags**", "Keywords. Type a tag and press [[Enter]]."],
+                  ["**Product**, **Module**, **Version** and **Installation**", "What the request is about. **Installation** needs a customer first."],
+                  ["**Department**, **Team** and **Assignee**", "Where the ticket goes. Leave them empty to let routing rules decide."],
+                  ["**Keep my choice (skip automatic assignment rules)**", "Appears when you choose an assignee. Tick it so that rules do not reassign the ticket."],
+                  ["**Additional fields**", "Fields your administrator added for the department."]
+                ]
+              }
+            },
+            { "heading": "Checks before the ticket is created" },
+            {
+              "image": "shots/04-new-ticket-errors.png",
+              "caption": "**Create ticket** without a subject. The **Subject** field shows **Enter a subject.**",
+              "alt": "Request section with the Subject field outlined in red and the message Enter a subject"
+            },
+            { "p": "When a field fails a check, nothing is created. A message next to **Create ticket** asks you to fix the highlighted fields. Fix the fields shown in red, then try again." },
+            { "heading": "Support eligibility" },
+            {
+              "table": {
+                "columns": ["Item", "Meaning"],
+                "widths": [26, 74],
+                "rows": [
+                  ["**Entitlement**", "Whether the customer may get support for this request, such as **Entitled** or **Not entitled**."],
+                  ["**Contract**", "The contract that covers the ticket, or **No covering contract**."],
+                  ["**SLA policy**", "The service targets that apply."],
+                  ["**First response** and **Resolution**", "Countdowns to the service targets."],
+                  ["**Routed to**", "The department, team and agent that received the ticket."]
+                ]
+              }
+            },
+            { "note": "If the customer is not entitled, a warning appears. A supervisor can override the entitlement from the ticket's **More actions** menu." }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "The **Deleted tickets** queue is missing.", "cause": "You do not have the permission to delete tickets.", "fix": "Ask a supervisor to restore the ticket, or ask your administrator for the permission." },
+    { "problem": "The **Shared** option in **New view** shows **Needs supervisor rights**.", "cause": "Only supervisors and administrators can share views.", "fix": "Create a **Personal** view, or ask a supervisor to create the shared view." },
+    { "problem": "**Create view** shows **Give the view a name.**", "cause": "The **Name** field is empty.", "fix": "Enter a name, then select **Create view** again." },
+    { "problem": "The bulk actions bar shows a permission message instead of buttons.", "cause": "You do not have the bulk update permission.", "fix": "Update the tickets one at a time, or ask a supervisor to do it." },
+    { "problem": "A bulk update shows **Not updated** for some tickets.", "cause": "Each listed ticket failed a rule, such as a status that is not allowed next.", "fix": "Read the reason next to each ticket. Fix those tickets one at a time. They stay selected for you." },
+    { "problem": "The list shows **No tickets match your filter**.", "cause": "Nothing in this queue or view matches the text in the filter box.", "fix": "Check the text, or clear the filter with [[Esc]]. Try another queue such as **All open**." },
+    { "problem": "**Create ticket** does nothing, and some fields turn red.", "cause": "A required field is empty or has the wrong format. For example, **Subject** shows **Enter a subject.**", "fix": "Fix each field shown in red, then select **Create ticket** again." },
+    { "problem": "A new contact shows **Give an e-mail address or a phone number.**", "cause": "A new contact needs a way to reach them.", "fix": "Enter an e-mail address, a phone number or both." },
+    { "problem": "An attached file shows **Blocked by the virus scanner**.", "cause": "The malware scan found a problem in the file.", "fix": "Remove the file. Ask the customer for a clean copy." }
+  ],
+  "faq": [
+    { "q": "Why do I see fewer tickets than my colleague in the same queue?", "a": "Each role has a data scope, such as your own departments. Queues and views only show tickets inside your scope." },
+    { "q": "Can a saved view show each agent their own tickets?", "a": "Yes. In the **Assignee** condition, choose the option that ends with **(whoever views it)**. Share the view, and each person sees their own tickets." },
+    { "q": "Does deleting a ticket remove it for good?", "a": "No. Deleted and spam tickets go to the recycle bin. Anyone with the delete permission can restore them." },
+    { "q": "Why did the list not refresh when a ticket changed?", "a": "The list refreshes itself only while nothing is selected. Otherwise it shows **New activity**. Select it to reload." }
+  ],
+  "glossary": [
+    { "term": "Saved view", "definition": "A ticket list defined by conditions, such as all critical tickets assigned to you. It can be personal or shared." },
+    { "term": "Default view", "definition": "The saved view that opens when you go to Tickets without choosing a list. It has a star in the Views panel." },
+    { "term": "Bulk action", "definition": "A change applied to many selected tickets at once, such as assigning or closing them." },
+    { "term": "Recycle bin", "definition": "The Deleted tickets list. It holds deleted and spam tickets until someone restores them." },
+    { "term": "Data scope", "definition": "The part of the help desk a role may see, such as its own departments. Lists never show tickets outside it." }
+  ]
+}

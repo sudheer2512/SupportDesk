@@ -1,0 +1,244 @@
+{
+  "chapters": [
+    {
+      "id": "notifications",
+      "title": "Notifications",
+      "intro": [
+        "This chapter is for everyone who uses the desk. It explains how SupportDesk tells you about new work and urgent events.",
+        "It covers the bell, the **Notifications** page, acknowledging critical alerts and desktop alerts."
+      ],
+      "sections": [
+        {
+          "id": "nt-how",
+          "title": "How notifications reach you",
+          "type": "concept",
+          "intro": "SupportDesk notifies you when something needs you. Examples are a new assignment, a customer reply or an SLA breach.",
+          "blocks": [
+            {
+              "image": "shots/14-bell.png",
+              "caption": "The bell in the top bar with the number of unread notifications.",
+              "alt": "Top bar with the bell highlighted and a red badge showing 20"
+            },
+            {
+              "table": {
+                "columns": ["Where", "What you see"],
+                "widths": [30, 70],
+                "rows": [
+                  ["The bell", "A red badge with the number of unread notifications. The bell shows a ringing icon when an item needs acknowledgement."],
+                  ["Pop-up messages", "Warnings and critical items also appear briefly on the screen."],
+                  ["Desktop alerts", "After you allow them, warnings and critical items also appear on your computer's desktop."],
+                  ["The **Notifications** page", "Your latest 200 notifications, with filters."],
+                  ["The Command Center", "The **Customer replies & mentions** card shows your latest replies and @mentions."],
+                  ["E-mail, mobile push and digests", "Your administrator decides which events also arrive this way."]
+                ]
+              }
+            },
+            { "note": "New notifications arrive live. You do not need to reload the page." }
+          ]
+        },
+        {
+          "id": "nt-bell",
+          "title": "Check your notifications from the bell",
+          "type": "task",
+          "intro": "The bell panel shows your latest notifications without leaving the page you are on.",
+          "steps": [
+            "In the top bar, select the bell.",
+            {
+              "text": "Read the list. The newest notification is at the top.",
+              "image": "shots/14-bell-panel.png",
+              "caption": "The bell panel with critical items that need acknowledgement and unread warnings.",
+              "alt": "Notifications panel with Mark all read, a desktop alerts prompt and a list of notifications with Acknowledge buttons and unread dots",
+              "width": 340
+            },
+            "To open the ticket or page behind a notification, select the notification.",
+            "To close the panel without opening anything, press [[Esc]] or select outside the panel."
+          ],
+          "result": "The notification you selected is marked as read, and its page opens. Links to other websites open in a new browser tab.",
+          "blocks": [
+            {
+              "list": [
+                "The icon colour shows how urgent the item is. See [Notification colours](#nt-colours).",
+                "A blue dot at the right marks an unread item.",
+                "**Acknowledge** appears on critical items that need it.",
+                "When the list is empty, the panel says **You're all caught up.**"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "nt-mark-read",
+          "title": "Mark notifications as read",
+          "type": "task",
+          "intro": "Mark items as read when you have seen them, so that new ones stand out.",
+          "steps": [
+            "Select the bell.",
+            "To mark one item, select the blue dot at its right.",
+            "To mark every item, select **Mark all read** at the top of the panel."
+          ],
+          "result": "The items lose their unread mark. The number on the bell goes down.",
+          "blocks": [
+            { "note": "**Mark all read** skips items that need acknowledgement. They stay unread until you acknowledge them." },
+            { "tip": "On the **Notifications** page, each unread item has a **Mark read** button." }
+          ]
+        },
+        {
+          "id": "nt-acknowledge",
+          "title": "Acknowledge a critical notification",
+          "type": "task",
+          "intro": "Some critical notifications, such as SLA breaches, need you to confirm that you have seen them. While one waits, the bell shows a ringing icon.",
+          "steps": [
+            "Select the bell, or open the **Notifications** page.",
+            "Find the item with the **Acknowledge** button.",
+            "Read the item. To see the ticket, select the item.",
+            "Select **Acknowledge**."
+          ],
+          "result": "The button disappears. On the **Notifications** page, an **Acknowledged** badge takes its place. The item is also marked as read.",
+          "blocks": [
+            { "note": "Acknowledging also stops any copies of the alert that are still waiting to go out, such as e-mail or push." },
+            { "tip": "To see only the items you still need to acknowledge, use the **Needs acknowledgement** filter on the **Notifications** page." }
+          ]
+        },
+        {
+          "id": "nt-page",
+          "title": "The Notifications page",
+          "type": "concept",
+          "intro": "The **Notifications** page shows your latest 200 notifications. To open it, go to the **Command Center**. On the **Customer replies & mentions** card, select **All notifications**.",
+          "blocks": [
+            {
+              "image": "shots/14-notifications-page.png",
+              "caption": "The **Notifications** page.",
+              "alt": "Notifications page with numbered highlights on Enable desktop alerts, Mark all read, the filter buttons, the type list, a notification and its Acknowledge button"
+            },
+            {
+              "callouts": [
+                "**Enable desktop alerts**. After you answer, this place shows whether desktop alerts are on or blocked.",
+                "**Mark all read** marks every unread item as read, except items that need acknowledgement.",
+                "The filters: **All**, **Unread** and **Needs acknowledgement**. Each shows how many items it has.",
+                "The type list. Choose a type, such as **SLA breaches**, to show only that type.",
+                "A notification: title, details, type, time and an **unread** mark. Select it to open its page.",
+                "The actions: **Acknowledge** for critical items, or **Mark read** for unread items."
+              ]
+            },
+            { "note": "When nothing matches your filter, the page says **No notifications here**." }
+          ]
+        },
+        {
+          "id": "nt-filter",
+          "title": "Filter the notifications list",
+          "type": "task",
+          "intro": "Filter the list to find what needs your attention first.",
+          "steps": [
+            "Open the **Notifications** page.",
+            "Select **All**, **Unread** or **Needs acknowledgement**.",
+            {
+              "text": "To show one kind of notification, choose it in the **All types** list.",
+              "image": "shots/14-needs-ack.png",
+              "caption": "The list filtered to items that need acknowledgement.",
+              "alt": "Notifications page with the Needs acknowledgement filter selected and a list of SLA breach items with Acknowledge buttons"
+            },
+            "To show every type again, choose **All types**."
+          ],
+          "result": "The list shows only the matching notifications. Your filter stays while you are on the page."
+        },
+        {
+          "id": "nt-types",
+          "title": "Notification types",
+          "type": "reference",
+          "intro": "The type list on the **Notifications** page offers only the types you have received.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Type", "You get it when"],
+                "widths": [30, 70],
+                "rows": [
+                  ["**Assignments**", "A ticket is assigned to you."],
+                  ["**Mentions**", "Someone @mentions you in a note."],
+                  ["**Customer replies**", "A customer replies on your ticket."],
+                  ["**Escalations**", "A ticket is escalated."],
+                  ["**SLA warnings**", "An SLA target is at risk."],
+                  ["**SLA breaches**", "An SLA target is missed. These often need acknowledgement."],
+                  ["**Approval requests**", "A request waits for your decision."],
+                  ["**Approval decisions**", "Someone approved or rejected your request."],
+                  ["**Follow-ups**", "A follow-up reminder you set is due."],
+                  ["**AI proposals**", "The AI Assistant suggests an action that needs a decision."],
+                  ["**Anomalies**", "SupportDesk finds an unusual spike, such as many tickets about one issue."],
+                  ["**Waiting chats**", "A live chat is waiting for an agent."],
+                  ["**Chat transfers**", "A chat is transferred to you."],
+                  ["**System**", "Something in the workspace needs attention, for example a connection to another system was turned off."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "nt-colours",
+          "title": "Notification colours",
+          "type": "reference",
+          "intro": "The icon colour shows how urgent a notification is.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Colour", "Urgency", "Pop-up and desktop alert"],
+                "widths": [20, 45, 35],
+                "rows": [
+                  ["Red", "Critical or error, such as an SLA breach.", "Yes."],
+                  ["Amber", "Warning, such as an SLA at risk or an escalation.", "Yes."],
+                  ["Green", "Good news, such as a success.", "No."],
+                  ["Grey or blue", "Information.", "No."]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "nt-desktop-alerts",
+          "title": "Turn on desktop alerts",
+          "type": "task",
+          "intro": "Desktop alerts show warnings and critical items even when the desk is in a background tab. Your browser asks for your permission once.",
+          "steps": [
+            "Select the bell.",
+            "In the box that says **Get desktop alerts for urgent notifications.**, select **Enable**.",
+            "When your browser asks, select **Allow**."
+          ],
+          "result": "The box disappears. The **Notifications** page now says **Desktop alerts on for warnings and critical items**.",
+          "blocks": [
+            "You can also select **Enable desktop alerts** on the **Notifications** page or the Command Center.",
+            "Select a desktop alert to bring the desk to the front and open the item.",
+            { "note": "If you select **Block**, the page says **Desktop alerts are blocked in this browser.** To change your answer, open your browser's site settings for SupportDesk." }
+          ]
+        },
+        {
+          "id": "nt-preferences",
+          "title": "Notification preferences",
+          "type": "concept",
+          "intro": [
+            "You cannot change your own notification preferences in the desk yet.",
+            "Your administrator sets the defaults for everyone. For each event, they choose in-app, e-mail, push or a digest. They also set quiet hours, when e-mail and push wait until later."
+          ],
+          "blocks": [
+            { "note": "Critical alerts ignore quiet hours. The chapter about notification settings explains the defaults." }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "The bell panel says **Notifications could not be loaded.**", "cause": "The desk could not fetch your notifications.", "fix": "Select **Retry**. If it fails again, check your connection." },
+    { "problem": "Some notifications stay unread after **Mark all read**.", "cause": "Items that need acknowledgement are not marked by **Mark all read**.", "fix": "Select **Acknowledge** on each of them." },
+    { "problem": "The number on the bell is lower than the **Unread** count on the **Notifications** page.", "cause": "The bell counts only the latest notifications in its panel.", "fix": "Open the **Notifications** page and use the **Unread** filter." },
+    { "problem": "A **Could not acknowledge** or **Could not mark all as read** message appears.", "cause": "The change did not reach SupportDesk.", "fix": "Check your connection, then try again." },
+    { "problem": "You get no desktop alerts.", "cause": "Desktop alerts are not allowed in this browser, or your computer is in a do-not-disturb mode.", "fix": "Allow notifications for SupportDesk in your browser's site settings. Check your computer's notification settings too." }
+  ],
+  "faq": [
+    { "q": "Can I choose which notifications I get?", "a": "Not yet. Your administrator sets which events reach you in the app, by e-mail, by push or in a digest." },
+    { "q": "Why does the bell show fewer notifications than the Notifications page?", "a": "The bell shows only your latest notifications. The **Notifications** page shows the latest 200, with filters." },
+    { "q": "Do I get desktop alerts for every notification?", "a": "No. Desktop alerts and pop-up messages are only for warnings and critical items." }
+  ],
+  "glossary": [
+    { "term": "Notification", "definition": "A message from SupportDesk about something that needs you, such as an assignment, a customer reply or an SLA breach." },
+    { "term": "Acknowledge", "definition": "Confirm that you have seen a critical notification. It also stops further copies of that alert." },
+    { "term": "Desktop alert", "definition": "A notification that your browser shows on your computer's desktop, outside the desk page. You must allow it once." },
+    { "term": "Digest", "definition": "A single e-mail that collects several notifications, sent hourly or daily." },
+    { "term": "Quiet hours", "definition": "Hours when SupportDesk holds back e-mail and push notifications. Critical alerts still go out." }
+  ]
+}

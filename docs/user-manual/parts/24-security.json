@@ -1,0 +1,474 @@
+{
+  "chapters": [
+    {
+      "id": "security-sign-in",
+      "title": "Security, sign-in and API access",
+      "intro": [
+        "This chapter is for administrators. It explains how to protect sign-in to your workspace. That covers multi-factor authentication, password and session rules, the agent IP allow-list and single sign-on.",
+        "It also shows how to see and end signed-in sessions. Last, it explains the keys and OAuth clients that other systems use to work with SupportDesk."
+      ],
+      "sections": [
+        {
+          "id": "sec-page",
+          "title": "The Security & sign-in page",
+          "type": "concept",
+          "intro": [
+            "Open it with **Administration** > **Security & sign-in**. You need the **Manage password, session, MFA and SSO policies** permission.",
+            "The page has three tabs. **Policies** holds the sign-in rules. **Single sign-on** connects your company's sign-in service. **Active sessions** lists who is signed in."
+          ],
+          "blocks": [
+            { "image": "shots/24-security-policies.png", "caption": "The **Policies** tab with the default rules of the demo workspace.", "alt": "Security and sign-in page with the multi-factor, passwords, sessions and IP allow-list cards" },
+            { "callouts": [
+              "The tabs: **Policies**, **Single sign-on** and **Active sessions**.",
+              "**Multi-factor authentication** sets who must use a second sign-in step.",
+              "**Passwords** sets how strong passwords must be, and when an account locks.",
+              "**Sessions** sets how long agents stay signed in.",
+              "**Agent IP allow-list** limits the networks that agents can work from.",
+              "The save bar shows **Unsaved changes**, with **Discard** and **Save policies**."
+            ] },
+            { "note": "Your changes apply from the next action each agent takes. If you leave the tab with unsaved changes, the app asks **Discard unsaved changes?** first." }
+          ]
+        },
+        {
+          "id": "sec-mfa",
+          "title": "Choose who must use multi-factor authentication",
+          "type": "task",
+          "intro": "Multi-factor authentication adds a second step to sign-in, such as a code from an authenticator app. The sign-in page calls it two-step verification.",
+          "prerequisites": ["You have the **Manage password, session, MFA and SSO policies** permission."],
+          "steps": [
+            "Select **Administration** > **Security & sign-in**.",
+            "On the **Policies** tab, under **Multi-factor authentication**, choose an option.",
+            "Select **Save policies**."
+          ],
+          "result": "The app shows **Security policies saved**. The rule applies at each person's next sign-in.",
+          "blocks": [
+            { "table": {
+              "columns": ["Option", "What happens"],
+              "widths": [32, 68],
+              "rows": [
+                ["**Optional**", "Each agent decides whether to use an authenticator app."],
+                ["**Required for administrators**", "People who can manage roles or security cannot switch the second step off. Without an authenticator app, they get a code by e-mail at sign-in."],
+                ["**Required for everyone**", "Every agent signs in with a second step: an authenticator app or a code sent by e-mail."]
+              ]
+            } },
+            { "note": "People who sign in through single sign-on are checked by your identity provider instead." }
+          ]
+        },
+        {
+          "id": "sec-passwords",
+          "title": "Set the password rules",
+          "type": "task",
+          "intro": "Password rules apply to new and changed passwords. The lockout rules protect accounts against guessing.",
+          "steps": [
+            "Select **Administration** > **Security & sign-in**.",
+            "Under **Passwords**, enter the **Minimum length**.",
+            "Enter how many old passwords to block in **Remember previous passwords**.",
+            "In **Expire after (days)**, enter how often passwords must change. Enter `0` to keep them until people change them.",
+            "Turn on the characters every password needs: **Upper-case letter**, **Lower-case letter**, **Digit** and **Symbol**.",
+            "Enter **Lock after failed attempts** and **Lockout duration (minutes)**.",
+            "Select **Save policies**."
+          ],
+          "result": "The app shows **Security policies saved**. People with older, weaker passwords meet the new rules when they next change their password."
+        },
+        {
+          "id": "sec-sessions-policy",
+          "title": "Set how long agents stay signed in",
+          "type": "task",
+          "intro": "Session rules sign agents out after a quiet period or after a fixed time. The first limit reached wins.",
+          "steps": [
+            "Select **Administration** > **Security & sign-in**.",
+            "Under **Sessions**, enter the **Idle timeout (minutes)**.",
+            "Enter the **Absolute session lifetime (hours)**.",
+            "In **Concurrent sessions per user**, enter how many sign-ins one person can have at once.",
+            "If your security team asks for it, change **Access token lifetime (minutes)**.",
+            "Select **Save policies**."
+          ],
+          "result": "The app shows **Security policies saved**.",
+          "blocks": [
+            { "note": "When a person signs in once more than **Concurrent sessions per user** allows, their oldest session ends." }
+          ]
+        },
+        {
+          "id": "sec-policy-fields",
+          "title": "Password and session settings",
+          "type": "reference",
+          "intro": "This table lists each setting on the **Policies** tab, with its default and the values you can enter.",
+          "blocks": [
+            { "table": {
+              "columns": ["Setting", "Default", "Allowed", "What it does"],
+              "widths": [27, 11, 14, 48],
+              "rows": [
+                ["**Minimum length**", "10", "8 to 128", "The shortest password allowed."],
+                ["**Remember previous passwords**", "5", "0 to 24", "Stops people from reusing recent passwords. `0` allows reuse."],
+                ["**Expire after (days)**", "0", "0 to 365", "Days until a password must change. `0` means never."],
+                ["**Lock after failed attempts**", "5", "3 to 20", "Wrong passwords in a row before the account locks."],
+                ["**Lockout duration (minutes)**", "15", "1 to 1440", "How long a locked account stays locked."],
+                ["**Upper-case letter**, **Lower-case letter**, **Digit**, **Symbol**", "First three on", "On or off", "Characters that every new password must contain."],
+                ["**Access token lifetime (minutes)**", "15", "5 to 60", "How long one sign-in token lasts before the app renews it. Short tokens limit the harm of a stolen token."],
+                ["**Idle timeout (minutes)**", "480", "5 to 10080", "Signs an agent out after this much inactivity. It cannot be longer than the absolute lifetime."],
+                ["**Absolute session lifetime (hours)**", "72", "1 to 720", "Signs an agent out after this time, even while they work."],
+                ["**Concurrent sessions per user**", "10", "1 to 50", "Sign-ins one person can have at the same time."]
+              ]
+            } }
+          ]
+        },
+        {
+          "id": "sec-ip-about",
+          "title": "How the agent IP allow-list works",
+          "type": "concept",
+          "intro": [
+            "The allow-list limits where agents can work. When it is on, agents can sign in and use SupportDesk only from the listed networks.",
+            "The app checks the list at sign-in and at every action. Customers, connected systems and the platform operator are not affected."
+          ],
+          "blocks": [
+            { "list": [
+              "Enter single addresses, such as `203.0.113.7`, or ranges, such as `10.0.0.0/8`.",
+              "Put one entry on each line. You can add up to 100 entries.",
+              "The panel on the right shows **Your current address**. **Add my address** adds it to the list.",
+              "The app refuses to save a list that does not include your own address. This stops you from locking yourself out."
+            ] },
+            { "note": "If every agent seems to come from the same address, your network hides their real addresses. Ask the person who installed SupportDesk to set it up for your network." }
+          ]
+        },
+        {
+          "id": "sec-ip-task",
+          "title": "Restrict agents to your office networks",
+          "type": "task",
+          "intro": "Use the allow-list when agents must work only from the office or through your company network.",
+          "prerequisites": ["You know the addresses or ranges of your office networks. Your IT team can give them to you."],
+          "steps": [
+            "Select **Administration** > **Security & sign-in**.",
+            "Under **Agent IP allow-list**, turn on **Restrict agent access to these networks**.",
+            {
+              "text": "In **Addresses and ranges**, enter one address or range on each line.",
+              "image": "shots/24-ip-allow-list.png",
+              "caption": "The allow-list switched on with one office range. The yellow message warns that your own address is missing.",
+              "alt": "Agent IP allow-list card with one range entered, the current address and the Add my address button"
+            },
+            "If the yellow message says your own address is missing, select **Add my address**.",
+            {
+              "text": "Select **Save policies**.",
+              "warning": "Check the list before you save. Agents outside these networks lose access at their next action."
+            }
+          ],
+          "result": "The app shows **Security policies saved**. Agents on other networks see a message that their network is not allowed."
+        },
+        {
+          "id": "sec-sso-about",
+          "title": "Single sign-on",
+          "type": "concept",
+          "intro": [
+            "Single sign-on lets agents sign in with their company account. Your identity provider checks who they are. Examples are Microsoft Entra ID, Okta, Google Workspace and Keycloak.",
+            "Your plan must include single sign-on to switch it on. Without it, the tab says **Single sign-on is not included in your plan.** You can still prepare the settings."
+          ],
+          "blocks": [
+            { "image": "shots/24-sso.png", "caption": "The **Single sign-on** tab before any provider is connected. The badge shows **SSO off**.", "alt": "Single sign-on tab with sign-in addresses, provider fields, Test connection and claims and provisioning settings" },
+            { "callouts": [
+              "The **Redirect (callback) URI** and the **Sign-in start URL**. The copy buttons copy them.",
+              "The provider details: **Authority (issuer)**, **Client id**, **Client secret** and **Scopes**.",
+              "**Test connection** checks that SupportDesk can reach your identity provider.",
+              "**Claims & provisioning** matches people by e-mail and switches single sign-on on.",
+              "The save bar, with **Discard** and **Save SSO settings**."
+            ] },
+            { "warning": "In this release, the desk sign-in page has no single sign-on button yet. Do not turn on **Require SSO** until your SupportDesk provider confirms that single sign-on works end to end." }
+          ]
+        },
+        {
+          "id": "sec-sso-register",
+          "title": "Register SupportDesk with your identity provider",
+          "type": "task",
+          "intro": "Before you connect single sign-on, register SupportDesk as a web application in your identity provider.",
+          "prerequisites": ["You can add applications in your identity provider, or someone in your IT team can."],
+          "steps": [
+            "Select **Administration** > **Security & sign-in** > **Single sign-on**.",
+            "Select the copy button next to **Redirect (callback) URI**.",
+            "In your identity provider, register SupportDesk as a web application.",
+            "Paste the copied address as the application's redirect address.",
+            "Note the issuer address, the client id and the client secret that the provider shows."
+          ],
+          "result": "You have the three details you need to connect single sign-on."
+        },
+        {
+          "id": "sec-sso-connect",
+          "title": "Connect and switch on single sign-on",
+          "type": "task",
+          "intro": "Enter your identity provider's details, test them, and then switch single sign-on on.",
+          "prerequisites": [
+            "Your plan includes **Single sign-on**.",
+            "You have the issuer address, client id and client secret from [Register SupportDesk with your identity provider](#sec-sso-register)."
+          ],
+          "steps": [
+            "On the **Single sign-on** tab, enter the **Authority (issuer)**. It starts with `https://`.",
+            {
+              "text": "Enter the **Client id** and the **Client secret**.",
+              "note": "The secret is never shown again. Later, leave it empty to keep it, or select **Remove** to delete it at the next save."
+            },
+            "Check **Scopes**. The default is `openid profile email`, and it must include `openid`.",
+            "Select **Test connection**. Wait for the **Reachable** badge.",
+            "Under **Claims & provisioning**, check **E-mail claim** and **Display-name claim**.",
+            "To create agents at their first sign-in, turn on **Create agents automatically at their first SSO sign-in**. Then choose the **Role for new agents**.",
+            "Turn on **Single sign-on is on**.",
+            "Select **Save SSO settings**."
+          ],
+          "result": "The app shows **SSO settings saved**. The badge next to **Identity provider** shows **SSO on**."
+        },
+        {
+          "id": "sec-sso-fields",
+          "title": "Single sign-on fields",
+          "type": "reference",
+          "intro": "This table explains each field on the **Single sign-on** tab.",
+          "blocks": [
+            { "table": {
+              "columns": ["Field", "What to enter or choose"],
+              "widths": [32, 68],
+              "rows": [
+                ["**Authority (issuer)**", "Your provider's sign-in address, such as `https://login.microsoftonline.com/{tenant}/v2.0`. Required to switch single sign-on on."],
+                ["**Client id**", "The id your provider gave SupportDesk. Required to switch single sign-on on."],
+                ["**Client secret**", "The secret your provider gave SupportDesk. The app stores it encrypted and never shows it again."],
+                ["**Scopes**", "What SupportDesk asks the provider for. The default is `openid profile email`."],
+                ["**E-mail claim**", "The provider field that holds the person's e-mail. The default is `email`. The app matches agents by e-mail address."],
+                ["**Display-name claim**", "The provider field that holds the person's name. The default is `name`."],
+                ["**Create agents automatically at their first SSO sign-in**", "Creates an agent the first time an unknown person signs in through your provider."],
+                ["**Role for new agents**", "The role that new agents get. You cannot choose a role with more rights than your own."],
+                ["**Single sign-on is on**", "Lets agents sign in through your provider."],
+                ["**Require SSO**", "Agents can no longer sign in with a password. Administrators still can, as a fallback."]
+              ]
+            } },
+            { "p": "After a successful test, a panel appears under **Test connection**. It shows the provider's issuer, its sign-in addresses and its number of signing keys." }
+          ]
+        },
+        {
+          "id": "sec-sessions-about",
+          "title": "Active sessions",
+          "type": "concept",
+          "intro": [
+            "A session is one signed-in browser or phone. The **Active sessions** tab lists every agent session in your workspace, newest first.",
+            "Use it to check unusual sign-ins, or to sign someone out after a lost laptop or phone."
+          ],
+          "blocks": [
+            { "image": "shots/24-sessions.png", "caption": "The **Active sessions** tab for all users. Each row is one signed-in browser.", "alt": "Active sessions list with the user filter, the Refresh button and a Revoke button on each row" },
+            { "callouts": [
+              "The user filter. **All users** shows everyone.",
+              "**Refresh** loads the list again.",
+              "The person, with badges. **This session** marks your own. **MFA** or **Password** shows how they signed in. The last badge shows web or mobile.",
+              "**Revoke** ends that one session."
+            ] },
+            { "p": "Under each name, the row shows the network address and the browser. It also shows when the person signed in, when they were last active and when the session expires. Select **Load more** at the bottom to see older sessions." }
+          ]
+        },
+        {
+          "id": "sec-revoke",
+          "title": "End one session",
+          "type": "task",
+          "intro": "End a session when you do not recognise it, or when a device is lost.",
+          "steps": [
+            "Select **Administration** > **Security & sign-in** > **Active sessions**.",
+            "Find the session. To narrow the list, choose the person in the user filter.",
+            "On the session's row, select **Revoke**.",
+            {
+              "text": "In the dialog, select **Revoke**.",
+              "image": "shots/24-revoke-session.png",
+              "caption": "The dialog asks you to confirm before it ends the session.",
+              "alt": "Revoke session confirmation dialog with Cancel and Revoke buttons",
+              "width": 440,
+              "note": "If you revoke the row marked **This session**, the dialog says **Sign yourself out?** You are signed out at once."
+            }
+          ],
+          "result": "The app shows **Session revoked**. The person is signed out on that device at their next action."
+        },
+        {
+          "id": "sec-revoke-all",
+          "title": "Sign a user out everywhere",
+          "type": "task",
+          "intro": "End all of one person's sessions at once, for example when they leave the company or lose a device.",
+          "steps": [
+            "Select **Administration** > **Security & sign-in** > **Active sessions**.",
+            "In the user filter, choose the person.",
+            {
+              "text": "Select **Sign this user out everywhere**.",
+              "image": "shots/24-sign-out-everywhere.png",
+              "caption": "The button appears after you choose one person in the filter.",
+              "alt": "Session toolbar with Priya Raman chosen and the Sign this user out everywhere button"
+            },
+            "In the dialog, select **Sign out everywhere**."
+          ],
+          "result": "The app shows **Signed out everywhere** with the number of sessions it ended.",
+          "blocks": [
+            { "tip": "To stop the person signing in again, also deactivate them on the **Agents** page." }
+          ]
+        },
+        {
+          "id": "sec-api-about",
+          "title": "Keys and OAuth clients for other systems",
+          "type": "concept",
+          "intro": [
+            "Other systems, such as Wings ERP or a company script, need their own sign-in to work with SupportDesk. You give them a key or an OAuth client.",
+            "A key is one secret that a script sends with every request. An OAuth client has an id and a secret. The other system swaps them for a pass that lasts one hour."
+          ],
+          "blocks": [
+            { "image": "shots/24-api-keys.png", "caption": "The keys and OAuth clients page in the demo workspace, which has no keys yet.", "alt": "API keys and OAuth clients page with the two tabs and the New API key button" },
+            { "callouts": [
+              "The two tabs, one for keys and one for OAuth clients. The number on a tab counts active credentials.",
+              "The button that creates a key. On the **OAuth clients** tab, it creates an OAuth client instead."
+            ] },
+            { "list": [
+              "Each credential works only within the scopes you tick. A scope is one area, such as reading tickets.",
+              "Each row shows the name, the start of the key or the client id, the status and the scopes.",
+              "It also shows who created it, when it was last used and when it expires.",
+              "Each credential has its own limit of requests per minute."
+            ] },
+            { "note": "To issue credentials, you need the **Manage integrations, API keys, OAuth clients and webhooks** permission. Your role must also see the whole organisation's data." }
+          ]
+        },
+        {
+          "id": "sec-new-key",
+          "title": "Create a key",
+          "type": "task",
+          "intro": "Create a key for a script or a simple integration.",
+          "prerequisites": ["You know which areas the integration needs, such as reading and creating tickets."],
+          "steps": [
+            "Select **Administration** > **API keys & OAuth clients**.",
+            "On the **API keys** tab, select **New API key**.",
+            "Enter a **Name** that says where you use the key, such as `Wings ERP sync`.",
+            {
+              "text": "Under **Scopes**, tick only what the integration needs.",
+              "image": "shots/24-new-api-key.png",
+              "caption": "A new key for the ERP that can read and create tickets.",
+              "alt": "New API key panel with a name, two ticked ticket scopes, Act as user and Expires on",
+              "width": 420,
+              "note": "A lock icon marks scopes you cannot grant, because they give rights you do not have."
+            },
+            "Optional: in **Act as user**, choose a person. The key then never does more than that person can.",
+            "In **Expires on**, choose a date up to three years ahead.",
+            {
+              "text": "Select **Create key**.",
+              "warning": "The app shows the key only once. Copy it before you leave the page."
+            },
+            "In the yellow box, select the copy button next to the key. Store the key somewhere safe.",
+            "Select the close button on the yellow box."
+          ],
+          "result": "The key appears in the list with the status **Active**."
+        },
+        {
+          "id": "sec-new-client",
+          "title": "Create an OAuth client",
+          "type": "task",
+          "intro": "Create an OAuth client for a system-to-system integration, such as your ERP or CRM.",
+          "steps": [
+            "Select **Administration** > **API keys & OAuth clients**.",
+            "Select the **OAuth clients** tab, and then **New OAuth client**.",
+            "Enter a **Name**, and tick the **Scopes** the integration needs.",
+            "In **Expires on**, choose a date up to three years ahead.",
+            {
+              "text": "Select **Create client**.",
+              "warning": "The app shows the client secret only once. Copy it before you leave the page."
+            },
+            "In the yellow box, copy the **Client id**, the **Client secret** and the **Token endpoint**.",
+            "Give the three values to the team that sets up the other system."
+          ],
+          "result": "The client appears on the **OAuth clients** tab with the status **Active**."
+        },
+        {
+          "id": "sec-rotate",
+          "title": "Replace an OAuth client secret",
+          "type": "task",
+          "intro": "Replace a client secret when it may have leaked, or as part of regular security checks.",
+          "steps": [
+            "Select **Administration** > **API keys & OAuth clients** > **OAuth clients**.",
+            "On the client's row, select **Rotate secret**.",
+            {
+              "text": "In the dialog, select **Rotate secret**.",
+              "warning": "The old secret stops working at once. The integration fails until it uses the new one."
+            },
+            "Copy the new **Client secret** from the yellow box.",
+            "Update the other system with the new secret."
+          ],
+          "result": "The yellow box shows **New secret for** and the client name. The client stays **Active**."
+        },
+        {
+          "id": "sec-revoke-cred",
+          "title": "Revoke a key or an OAuth client",
+          "type": "task",
+          "intro": "Revoke a credential that is no longer used or that may have leaked.",
+          "steps": [
+            "Select **Administration** > **API keys & OAuth clients**.",
+            "Find the key or client on its tab.",
+            "On its row, select **Revoke**.",
+            "In the dialog, select **Revoke key** or **Revoke client**."
+          ],
+          "result": "The status changes to **Revoked**. Integrations that use it stop working at once.",
+          "blocks": [
+            { "tip": "You cannot replace a key's secret. To change a key, create a new one, update the integration, and then revoke the old key." }
+          ]
+        },
+        {
+          "id": "sec-scopes",
+          "title": "Scopes and credential statuses",
+          "type": "reference",
+          "intro": "This table lists the scopes you can tick for a key or an OAuth client.",
+          "blocks": [
+            { "table": {
+              "columns": ["Scope", "What it allows"],
+              "widths": [28, 72],
+              "rows": [
+                ["`tickets:read`", "Read tickets."],
+                ["`tickets:write`", "Create and change tickets. Wings ERP needs it to create tickets from its screens."],
+                ["`customers:read`", "Read customers and contacts."],
+                ["`customers:write`", "Create and change customers and contacts."],
+                ["`products:read`", "Read products, installations and assets."],
+                ["`products:write`", "Manage products, installations and assets."],
+                ["`contracts:read`", "Read contracts and entitlements."],
+                ["`contracts:write`", "Manage contracts and entitlements."],
+                ["`kb:read`", "Read internal knowledge articles."],
+                ["`kb:write`", "Write and publish knowledge articles."],
+                ["`analytics:read`", "Read team-wide reports."],
+                ["`admin:read`", "Read the audit log. Settings have no read-only scope."],
+                ["`admin:write`", "Change administration settings."],
+                ["`integrations:write`", "Manage integrations and engineering links."],
+                ["`ai:write`", "Use the AI features."],
+                ["`*`", "Everything, including rights added in later releases."]
+              ]
+            } },
+            { "heading": "Statuses" },
+            { "table": {
+              "columns": ["Status", "Meaning"],
+              "widths": [20, 80],
+              "rows": [
+                ["**Active**", "The credential works."],
+                ["**Expired**", "The **Expires on** date has passed. Create a new credential."],
+                ["**Revoked**", "An administrator revoked it. It can never work again."]
+              ]
+            } }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "The app does not save the allow-list. It says saving would lock you out.", "cause": "Your own address is not in **Addresses and ranges**.", "fix": "Select **Add my address**, and then select **Save policies**." },
+    { "problem": "The app says an entry is not an IP address or range.", "cause": "An entry in **Addresses and ranges** has a typing mistake.", "fix": "Put one entry on each line, such as `203.0.113.7` or `10.0.0.0/8`." },
+    { "problem": "An agent sees that access from their network is not allowed by your organisation.", "cause": "The agent works from an address outside the agent IP allow-list.", "fix": "Add their office range to the list, or ask them to connect through the company network." },
+    { "problem": "The app says the idle timeout cannot exceed the absolute lifetime.", "cause": "**Idle timeout (minutes)** is longer than **Absolute session lifetime (hours)**.", "fix": "Lower the idle timeout, or raise the absolute lifetime." },
+    { "problem": "**Test connection** on the **Single sign-on** tab shows **Failed**.", "cause": "SupportDesk cannot reach the issuer address, or the address is wrong.", "fix": "Check **Authority (issuer)**. It must start with `https://` and match the address your provider shows." },
+    { "problem": "The app says the scopes must include openid.", "cause": "The **Scopes** field on the **Single sign-on** tab lacks `openid`.", "fix": "Enter `openid profile email`, or add `openid` to your list." },
+    { "problem": "A scope has a lock icon, or the app says the scopes grant rights you do not have.", "cause": "Your role lacks the rights that the scope gives.", "fix": "Ask an administrator who holds those rights to create the credential." },
+    { "problem": "The app says only administrators who see the whole organisation can issue credentials.", "cause": "Your role sees only some departments or teams.", "fix": "Ask an administrator with organisation-wide data scope." },
+    { "problem": "The app asks you to choose an expiry between now and three years ahead.", "cause": "**Expires on** is too soon or too far away.", "fix": "Choose a date from tomorrow up to three years ahead, or leave it empty." },
+    { "problem": "An integration stopped working after you replaced a secret.", "cause": "The other system still uses the old secret.", "fix": "Update the other system with the new client secret, or create a new key." }
+  ],
+  "faq": [
+    { "q": "Can I see a key or a client secret again later?", "a": "No. The app shows it only once. If you lose it, create a new credential, update the integration and revoke the old one." },
+    { "q": "Does the agent IP allow-list affect customers?", "a": "No. It applies to agents only. Customers, connected systems and the platform operator can still reach SupportDesk." },
+    { "q": "Why does one person have several sessions?", "a": "Each browser, phone or new sign-in is its own session. A person can have up to the **Concurrent sessions per user** limit at once." }
+  ],
+  "glossary": [
+    { "term": "Multi-factor authentication (MFA)", "definition": "A second sign-in step after the password, such as a code from an authenticator app or an e-mailed code. The sign-in page calls it two-step verification." },
+    { "term": "Single sign-on (SSO)", "definition": "Signing in to SupportDesk with your company account, checked by your identity provider." },
+    { "term": "Identity provider", "definition": "The service that checks who your staff are, such as Microsoft Entra ID, Okta or Google Workspace." },
+    { "term": "Session", "definition": "One signed-in browser or phone. It ends at sign-out, after the idle timeout or after the absolute lifetime." },
+    { "term": "IP allow-list", "definition": "The list of network addresses from which agents may use SupportDesk." },
+    { "term": "API key", "definition": "A secret that a script or another system uses to work with SupportDesk, limited to chosen scopes." },
+    { "term": "OAuth client", "definition": "An id and secret that another system swaps for a one-hour pass to work with SupportDesk." },
+    { "term": "Scope", "definition": "One area that a key or OAuth client may use, such as reading tickets." }
+  ]
+}

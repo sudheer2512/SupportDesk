@@ -1,0 +1,679 @@
+{
+  "baseUrl": "http://localhost:5830",
+  "viewport": {
+    "width": 1280,
+    "height": 800,
+    "scale": 1.5
+  },
+  "outDir": "../shots",
+  "colorScheme": "light",
+  "accent": "#8B08AF",
+  "hide": [
+    "sd-toast-outlet"
+  ],
+  "setup": [
+    {
+      "goto": "/login"
+    },
+    {
+      "fill": "label=Workspace",
+      "value": "wings"
+    },
+    {
+      "fill": "label=Work e-mail",
+      "value": "priya@wings.demo"
+    },
+    {
+      "fill": "label=Password",
+      "value": "${env:SD_DESK_PASSWORD}"
+    },
+    {
+      "click": "form button[type=submit]"
+    },
+    {
+      "waitForText": "SLA risk board"
+    }
+  ],
+  "shots": [
+    {
+      "id": "05-ticket-tour",
+      "file": "05-ticket-tour.png",
+      "steps": [
+        {
+          "goto": "/tickets/1002"
+        },
+        {
+          "waitForText": "Report export failure"
+        },
+        {
+          "waitFor": "desk-context-panel details"
+        },
+        {
+          "wait": 1200
+        }
+      ],
+      "highlight": [
+        "desk-ticket-header .num",
+        "desk-ticket-header .facts",
+        "desk-ticket-header .quick",
+        "button[aria-label='Ticket details']",
+        "desk-ticket-header sd-dropdown-menu button",
+        "desk-ticket-timeline .head",
+        "desk-composer .bar",
+        "desk-context-panel details:has(sd-icon[name=building])"
+      ],
+      "numbered": true
+    },
+    {
+      "id": "05-sla-context",
+      "file": "05-sla-context.png",
+      "steps": [
+        {
+          "goto": "/tickets/1002"
+        },
+        {
+          "waitForText": "Report export failure"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "waitFor": "desk-context-panel details:has(sd-icon[name=timer])"
+        }
+      ],
+      "clip": "desk-context-panel details:has(sd-icon[name=timer])"
+    },
+    {
+      "id": "05-more-actions",
+      "file": "05-more-actions.png",
+      "steps": [
+        {
+          "goto": "/tickets/1002"
+        },
+        {
+          "waitForText": "Report export failure"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "desk-ticket-header sd-dropdown-menu button"
+        },
+        {
+          "waitFor": ".sd-menu"
+        }
+      ],
+      "clip": ".sd-menu"
+    },
+    {
+      "id": "05-assign-dialog",
+      "file": "05-assign-dialog.png",
+      "steps": [
+        {
+          "goto": "/tickets/1002"
+        },
+        {
+          "waitForText": "Report export failure"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "desk-ticket-header sd-dropdown-menu button"
+        },
+        {
+          "waitFor": ".sd-menu"
+        },
+        {
+          "click": "text=Assign…"
+        },
+        {
+          "waitForText": "Assign ticket"
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "05-transfer-dialog",
+      "file": "05-transfer-dialog.png",
+      "steps": [
+        {
+          "goto": "/tickets/1002"
+        },
+        {
+          "waitForText": "Report export failure"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "desk-ticket-header sd-dropdown-menu button"
+        },
+        {
+          "waitFor": ".sd-menu"
+        },
+        {
+          "click": "text=Transfer…"
+        },
+        {
+          "waitForText": "Transfer ticket"
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "05-status-dialog",
+      "file": "05-status-dialog.png",
+      "steps": [
+        {
+          "goto": "/tickets/1002"
+        },
+        {
+          "waitForText": "Report export failure"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "desk-ticket-header sd-dropdown-menu button"
+        },
+        {
+          "waitFor": ".sd-menu"
+        },
+        {
+          "click": "text=Change status…"
+        },
+        {
+          "waitForText": "Currently"
+        },
+        {
+          "click": "sd-dialog input[role=combobox]"
+        },
+        {
+          "eval": "(() => { const opts = [...document.querySelectorAll('[role=option]')].filter((e) => e.getBoundingClientRect().height > 0); const o = opts.find((e) => e.innerText.includes('Waiting on Customer')) ?? opts[0]; if (o) o.click(); return o ? o.innerText : null; })()"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "05-resolve-dialog",
+      "file": "05-resolve-dialog.png",
+      "steps": [
+        {
+          "goto": "/tickets/1002"
+        },
+        {
+          "waitForText": "Report export failure"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "desk-ticket-header sd-dropdown-menu button"
+        },
+        {
+          "waitFor": ".sd-menu"
+        },
+        {
+          "click": "text=Resolve…"
+        },
+        {
+          "waitForText": "Resolve ticket"
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "05-escalate-dialog",
+      "file": "05-escalate-dialog.png",
+      "steps": [
+        {
+          "goto": "/tickets/1002"
+        },
+        {
+          "waitForText": "Report export failure"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "desk-ticket-header sd-dropdown-menu button"
+        },
+        {
+          "waitFor": ".sd-menu"
+        },
+        {
+          "click": "text=Escalate further…"
+        },
+        {
+          "waitForText": "Escalate ticket"
+        },
+        {
+          "fill": "label=Reason",
+          "value": "Month-end closing is blocked for the customer."
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "05-merge-dialog",
+      "file": "05-merge-dialog.png",
+      "steps": [
+        {
+          "goto": "/tickets/1002"
+        },
+        {
+          "waitForText": "Report export failure"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "desk-ticket-header sd-dropdown-menu button"
+        },
+        {
+          "waitFor": ".sd-menu"
+        },
+        {
+          "click": "text=Merge tickets into this…"
+        },
+        {
+          "waitForText": "Merge tickets"
+        },
+        {
+          "click": "sd-dialog input[role=combobox]"
+        },
+        {
+          "eval": "(() => { const i = document.querySelector('sd-dialog input[role=combobox]'); i.value = 'Sales Register'; i.dispatchEvent(new Event('input', { bubbles: true })); return true; })()"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "eval": "(() => { const o = [...document.querySelectorAll('[role=option]')].filter((e) => e.getBoundingClientRect().height > 0).find((e) => e.innerText.includes('#1204')); if (o) o.click(); return !!o; })()"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "fill": "sd-dialog input[name=note]",
+          "value": "Same export problem reported twice."
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "05-split-dialog",
+      "file": "05-split-dialog.png",
+      "steps": [
+        {
+          "goto": "/tickets/1002"
+        },
+        {
+          "waitForText": "Report export failure"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "desk-ticket-header sd-dropdown-menu button"
+        },
+        {
+          "waitFor": ".sd-menu"
+        },
+        {
+          "click": "text=Split messages…"
+        },
+        {
+          "waitForText": "Split into a new ticket"
+        },
+        {
+          "click": "sd-dialog .threads li:first-child sd-checkbox"
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "05-link-dialog",
+      "file": "05-link-dialog.png",
+      "steps": [
+        {
+          "goto": "/tickets/1002"
+        },
+        {
+          "waitForText": "Report export failure"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "desk-ticket-header sd-dropdown-menu button"
+        },
+        {
+          "waitFor": ".sd-menu"
+        },
+        {
+          "click": "text=Link to ticket…"
+        },
+        {
+          "waitForText": "Link ticket"
+        },
+        {
+          "select": "label=Relationship",
+          "option": "Duplicate of"
+        },
+        {
+          "click": "sd-dialog input[role=combobox]"
+        },
+        {
+          "eval": "(() => { const i = document.querySelector('sd-dialog input[role=combobox]'); i.value = '1204'; i.dispatchEvent(new Event('input', { bubbles: true })); return true; })()"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "eval": "(() => { const o = [...document.querySelectorAll('[role=option]')].filter((e) => e.getBoundingClientRect().height > 0).find((e) => e.innerText.includes('#1204')); if (o) o.click(); return !!o; })()"
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "05-clone-confirm",
+      "file": "05-clone-confirm.png",
+      "steps": [
+        {
+          "goto": "/tickets/1002"
+        },
+        {
+          "waitForText": "Report export failure"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "desk-ticket-header sd-dropdown-menu button"
+        },
+        {
+          "waitFor": ".sd-menu"
+        },
+        {
+          "click": "text=Clone"
+        },
+        {
+          "waitForText": "Clone #1002?"
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "05-details-tab",
+      "file": "05-details-tab.png",
+      "steps": [
+        {
+          "goto": "/tickets/1002"
+        },
+        {
+          "waitForText": "Report export failure"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "button[aria-label='Ticket details']"
+        },
+        {
+          "waitFor": ".drawer"
+        },
+        {
+          "click": ".drawer [role=tab]:nth-child(1)"
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "05-tasks-tab",
+      "file": "05-tasks-tab.png",
+      "steps": [
+        {
+          "goto": "/tickets/1002"
+        },
+        {
+          "waitForText": "Report export failure"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "button[aria-label='Ticket details']"
+        },
+        {
+          "waitFor": ".drawer"
+        },
+        {
+          "click": ".drawer [role=tab]:nth-child(2)"
+        },
+        {
+          "waitFor": "label=New task title"
+        },
+        {
+          "fill": "label=New task title",
+          "value": "Ask the customer for the export log file"
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "05-time-tab",
+      "file": "05-time-tab.png",
+      "steps": [
+        {
+          "goto": "/tickets/1002"
+        },
+        {
+          "waitForText": "Report export failure"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "button[aria-label='Ticket details']"
+        },
+        {
+          "waitFor": ".drawer"
+        },
+        {
+          "click": ".drawer [role=tab]:nth-child(3)"
+        },
+        {
+          "waitForText": "Log time"
+        },
+        {
+          "eval": "(() => { const i = document.querySelector('.drawer input[name=m]'); i.value = '30'; i.dispatchEvent(new Event('input', { bubbles: true })); return true; })()"
+        },
+        {
+          "fill": ".drawer input[name=activity]",
+          "value": "Remote session"
+        },
+        {
+          "fill": ".drawer input[name=notes]",
+          "value": "Reproduced the time-out with the customer."
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "05-people-tab",
+      "file": "05-people-tab.png",
+      "steps": [
+        {
+          "goto": "/tickets/1002"
+        },
+        {
+          "waitForText": "Report export failure"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "button[aria-label='Ticket details']"
+        },
+        {
+          "waitFor": ".drawer"
+        },
+        {
+          "click": ".drawer [role=tab]:nth-child(4)"
+        },
+        {
+          "waitForText": "Add a person"
+        },
+        {
+          "select": "label=Role",
+          "option": "Temporary specialist"
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "05-followups-tab",
+      "file": "05-followups-tab.png",
+      "steps": [
+        {
+          "goto": "/tickets/1002"
+        },
+        {
+          "waitForText": "Report export failure"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "button[aria-label='Ticket details']"
+        },
+        {
+          "waitFor": ".drawer"
+        },
+        {
+          "click": ".drawer [role=tab]:nth-child(5)"
+        },
+        {
+          "waitForText": "Remind at"
+        },
+        {
+          "fill": ".drawer input[name=note]",
+          "value": "Check whether release 8.0.1 fixed the export."
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "05-related-tab",
+      "file": "05-related-tab.png",
+      "steps": [
+        {
+          "goto": "/tickets/1002"
+        },
+        {
+          "waitForText": "Report export failure"
+        },
+        {
+          "wait": 600
+        },
+        {
+          "click": "button[aria-label='Ticket details']"
+        },
+        {
+          "waitFor": ".drawer"
+        },
+        {
+          "click": ".drawer [role=tab]:nth-child(6)"
+        },
+        {
+          "waitForText": "No external references"
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "clip": ".drawer",
+      "clipPadding": 0
+    },
+    {
+      "id": "05-reopen-dialog",
+      "file": "05-reopen-dialog.png",
+      "steps": [
+        {
+          "goto": "/tickets/1005"
+        },
+        {
+          "waitForText": "E-way bill generation error"
+        },
+        {
+          "click": "desk-ticket-header sd-dropdown-menu button"
+        },
+        {
+          "waitFor": ".sd-menu"
+        },
+        {
+          "click": "text=Reopen…"
+        },
+        {
+          "waitForText": "Reopen ticket"
+        },
+        {
+          "fill": "label=Reason",
+          "value": "The customer reports the same error again."
+        }
+      ],
+      "clip": "sd-dialog"
+    },
+    {
+      "id": "05-automation-timeline",
+      "file": "05-automation-timeline.png",
+      "steps": [
+        {
+          "goto": "/tickets/1004"
+        },
+        {
+          "waitForText": "Pharmacy counter POS freezes"
+        },
+        {
+          "waitForText": "flagged the customer as frustrated"
+        },
+        {
+          "wait": 1200
+        }
+      ],
+      "clip": "desk-ticket-view .conversation",
+      "clipPadding": 0
+    }
+  ]
+}

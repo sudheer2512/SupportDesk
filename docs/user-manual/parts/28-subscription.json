@@ -1,0 +1,271 @@
+{
+  "chapters": [
+    {
+      "id": "subscription-billing",
+      "title": "Subscription, billing and free trial",
+      "intro": [
+        "This chapter is for administrators who look after the SupportDesk subscription. It covers your plan, usage and limits, plan changes, invoices, payment and suspension.",
+        "It also shows how a new company starts a free trial of SupportDesk."
+      ],
+      "sections": [
+        {
+          "id": "sub-page",
+          "title": "The Subscription page",
+          "type": "concept",
+          "intro": [
+            "Open it with **Subscription** in the left rail, or with **Administration** > **Subscription & billing**. You need the **Manage subscription, plan and billing** permission.",
+            "The page keeps working while your workspace is suspended, so that you can always pay."
+          ],
+          "blocks": [
+            { "image": "shots/28-subscription.png", "caption": "The **Subscription** page of the demo workspace. A banner warns that payment is overdue.", "alt": "Subscription page with the plan, usage meters, usage history chart, invoices and billing contact" },
+            { "callouts": [
+              "**Compare & change plan** opens the plan comparison. **Refresh** loads the page again.",
+              "**Current plan**: the plan, the price per agent, seats, billing cycle, period, next invoice, payment method and included features.",
+              "**Usage vs limits**, updated every 15 minutes.",
+              "**Usage history** for one measure over 30 days, 90 days or 12 months.",
+              "**Invoices**, each with a button that downloads its PDF.",
+              "**Billing contact**: where invoices are addressed and sent."
+            ] },
+            { "p": "A banner at the top tells you when something needs action. It shows the days left in a trial, an overdue payment, a suspension, or a plan change booked for later." }
+          ]
+        },
+        {
+          "id": "sub-statuses",
+          "title": "Subscription statuses",
+          "type": "reference",
+          "intro": "The badge on the **Current plan** card shows the state of your subscription.",
+          "blocks": [
+            { "table": {
+              "columns": ["Status", "Meaning"],
+              "widths": [18, 82],
+              "rows": [
+                ["**Trial**", "You are trying SupportDesk. Everything in the chosen plan is available. The banner shows the days left."],
+                ["**Active**", "The subscription is paid and up to date."],
+                ["**Past due**", "A trial ended without a paid plan, or an invoice is overdue. The workspace keeps working until the grace period ends."],
+                ["**Suspended**", "The grace period ended. People can sign in, read and pay, but cannot change anything."],
+                ["**Cancelled**", "The subscription has ended. Contact your SupportDesk provider."]
+              ]
+            } }
+          ]
+        },
+        {
+          "id": "sub-usage",
+          "title": "Usage and limits",
+          "type": "concept",
+          "intro": "Each plan sets limits. The **Usage vs limits** card compares your use with them, and refreshes every 15 minutes.",
+          "blocks": [
+            { "list": [
+              "The measures are agents, light agents, portal users, storage, channels and attachments.",
+              "AI tokens and calls from other systems count for the current month only.",
+              "A bar turns amber at 80 % and shows the percentage used.",
+              "Over the limit, the card says **Over the plan limit — new items are blocked.** You cannot add more until you upgrade or remove some.",
+              "**unlimited** means the plan sets no limit for that measure."
+            ] },
+            { "p": "In **Usage history**, choose a measure and a range to see how use changed. SupportDesk records usage once a day." }
+          ]
+        },
+        {
+          "id": "sub-change",
+          "title": "Compare plans and change your plan",
+          "type": "task",
+          "intro": "Change your plan, your number of seats or your billing cycle. The app shows the cost before anything changes.",
+          "steps": [
+            {
+              "text": "On the **Subscription** page, select **Compare & change plan**.",
+              "image": "shots/28-compare-plans.png",
+              "caption": "The **Compare plans** panel. The current plan is shaded and marked **Current**.",
+              "alt": "Compare plans panel with seats, billing cycle and a table of prices, limits and features for four plans",
+              "width": 470
+            },
+            "In **Seats (agent licences)**, enter the number of agent licences.",
+            "In **Billing cycle**, choose **Monthly** or **Annual (2 months free)**.",
+            "Under the plan you want, select **Select**. For your current plan, select **Change seats**.",
+            {
+              "text": "Read the preview. It shows what you pay now and per period from then on.",
+              "image": "shots/28-plan-preview.png",
+              "caption": "The preview for a move from Enterprise to Professional, which starts at the end of the period.",
+              "alt": "Plan change preview with the effective date, the new price and the Back and Schedule change buttons"
+            },
+            "Select **Upgrade now**, **Apply now** or **Schedule change**. To choose again, select **Back**."
+          ],
+          "result": "The app shows **Subscription updated**. A booked change appears in a banner on the **Subscription** page.",
+          "blocks": [
+            { "note": "You are never billed for fewer seats than you have active agents. Once you pay for a plan, you cannot go back to **Trial**." }
+          ]
+        },
+        {
+          "id": "sub-change-rules",
+          "title": "When a plan change takes effect",
+          "type": "reference",
+          "intro": "This table shows when each kind of change starts and how it is billed.",
+          "blocks": [
+            { "table": {
+              "columns": ["Change", "Takes effect", "Billing"],
+              "widths": [28, 34, 38],
+              "rows": [
+                ["Trial to a paid plan", "At once", "A new period starts, with a new invoice."],
+                ["Upgrade to a higher price", "At once", "An invoice for the rest of the current period, pro rata."],
+                ["Downgrade", "At the end of the current period", "No charge now. You can cancel the booked change."],
+                ["Fewer seats on the same plan", "At once", "No refund."]
+              ]
+            } },
+            { "note": "The app refuses any change that your current usage does not fit. For example, you cannot move to a plan that allows fewer agents than you have. The preview lists each conflict." }
+          ]
+        },
+        {
+          "id": "sub-keep",
+          "title": "Cancel a booked plan change",
+          "type": "task",
+          "intro": "Keep your current plan after you booked a downgrade for the end of the period.",
+          "steps": [
+            "Open the **Subscription** page.",
+            "In the banner that says when your plan changes, select **Keep** and your current plan's name."
+          ],
+          "result": "The app shows **Scheduled change cancelled**. The banner disappears."
+        },
+        {
+          "id": "sub-invoice",
+          "title": "View and download an invoice",
+          "type": "task",
+          "intro": "Open an invoice to check it, or download it as a PDF for your accounts team.",
+          "steps": [
+            "On the **Subscription** page, go to the **Invoices** card.",
+            {
+              "text": "Select the invoice.",
+              "image": "shots/28-invoice.png",
+              "caption": "An open subscription invoice with its lines, totals and payment instructions.",
+              "alt": "Invoice panel with period, dates, bill-to details, invoice lines, totals, how to pay and Download PDF",
+              "width": 420
+            },
+            "Check the period, the dates, the bill-to details and the lines.",
+            "Select **Download PDF**."
+          ],
+          "result": "Your browser saves the invoice as a PDF file.",
+          "blocks": [
+            { "tip": "To download without opening the invoice, select the download button at the end of its row." },
+            { "table": {
+              "columns": ["Status", "Meaning"],
+              "widths": [18, 82],
+              "rows": [
+                ["**Open**", "Issued and waiting for payment."],
+                ["**Overdue**", "Open, and the due date has passed."],
+                ["**Paid**", "Your SupportDesk provider recorded the payment."],
+                ["**Void**", "Cancelled by your SupportDesk provider. Do not pay it."]
+              ]
+            } }
+          ]
+        },
+        {
+          "id": "sub-contact",
+          "title": "Update the billing contact",
+          "type": "task",
+          "intro": "Keep the billing contact current, so that invoices reach the right person.",
+          "steps": [
+            "On the **Subscription** page, go to the **Billing contact** card.",
+            "Enter the **Name** and **E-mail** of the person who receives invoices.",
+            "Enter the **Billing address** and your **Tax id (GSTIN / VAT)** if your invoices need them.",
+            "Select **Save contact**."
+          ],
+          "result": "The app shows **Billing contact saved**. New invoices use these details."
+        },
+        {
+          "id": "sub-payment",
+          "title": "Paying invoices and suspension",
+          "type": "concept",
+          "intro": [
+            "You pay invoices offline by bank transfer. Each invoice shows **How to pay**. Quote the invoice number as the payment reference.",
+            "Your SupportDesk provider marks the invoice paid when the money arrives. SupportDesk never stores card details."
+          ],
+          "blocks": [
+            { "heading": "What happens when a payment is late" },
+            { "table": {
+              "columns": ["Stage", "What happens"],
+              "widths": [20, 80],
+              "rows": [
+                ["**Past due**", "A trial ended, or an invoice is overdue. A grace period starts, usually 7 days. The workspace keeps working."],
+                ["**Suspended**", "The grace period ended. People can still sign in, read and pay. The app refuses other changes with a message that the account is suspended."],
+                ["Paid again", "When you pay all overdue invoices, the workspace works normally again."]
+              ]
+            } },
+            { "note": "During a suspension, the **Subscription** page and the customer portal still work." },
+            { "p": "You cannot cancel the subscription yourself. Contact your SupportDesk provider." }
+          ]
+        },
+        {
+          "id": "sub-trial-about",
+          "title": "The free trial",
+          "type": "concept",
+          "intro": [
+            "A new company can try SupportDesk without a card. The trial gives a new workspace with 3 seats and every feature of the chosen plan.",
+            "The trial lasts at least 14 days. The person who signs up becomes the workspace's administrator."
+          ],
+          "blocks": [
+            { "p": "During the trial, a banner on the **Subscription** page shows the days left. Select **Choose a plan** to move to a paid plan at any time." },
+            { "p": "If the trial ends without a paid plan, the subscription becomes **Past due**. After the grace period, the workspace is suspended." }
+          ]
+        },
+        {
+          "id": "sub-signup",
+          "title": "Start a free trial",
+          "type": "task",
+          "intro": "Create a new SupportDesk workspace for your company. You do not need an account yet.",
+          "prerequisites": ["A work e-mail address that you can open now."],
+          "steps": [
+            "On the SupportDesk sign-in page, select **Start a free trial**.",
+            "Enter your **Company name**. SupportDesk suggests a **Workspace name** from it.",
+            { "text": "Check the **Workspace name**.", "note": "A green tick means the name is free. If someone already uses it, select the suggested name." },
+            "Enter **Your name** and your **Work e-mail**.",
+            "Enter a **Password** of at least 10 characters, with upper-case and lower-case letters and a digit.",
+            "In **Plan to try**, choose a plan.",
+            {
+              "text": "Select **Create workspace**.",
+              "image": "shots/28-signup.png",
+              "caption": "The **Start your free trial** form for a sample company. The green tick shows the workspace name is free.",
+              "alt": "Start your free trial form with company, workspace name, your name, work e-mail, password and plan",
+              "width": 380
+            }
+          ],
+          "result": "The **Check your inbox** page opens. SupportDesk sends a 6-digit code to your e-mail."
+        },
+        {
+          "id": "sub-signup-verify",
+          "title": "Verify your e-mail and open your workspace",
+          "type": "task",
+          "intro": "Finish the sign-up with the code from your e-mail.",
+          "steps": [
+            "Open the e-mail from SupportDesk, and note the 6-digit code.",
+            "On the **Check your inbox** page, enter it in **Verification code**.",
+            "Select **Verify and create workspace**.",
+            "On the **Your workspace is ready** page, select **Sign in to** and your workspace name.",
+            "Sign in with your work e-mail and password."
+          ],
+          "result": "Your new workspace opens, with you as its administrator.",
+          "blocks": [
+            { "note": "The code expires after 30 minutes, and you can try it 5 times. To fix a typing mistake in your details, select **Change details**." }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "A plan change is refused because current usage does not fit the plan.", "cause": "You use more agents, portal users, storage or channels than the new plan allows.", "fix": "Read the conflicts in the preview. Reduce your usage, or choose a larger plan." },
+    { "problem": "A usage meter says **Over the plan limit — new items are blocked.**", "cause": "You reached a hard limit of your plan.", "fix": "Upgrade the plan, or remove items you no longer need." },
+    { "problem": "Every change fails with a message that the account is suspended.", "cause": "Invoices stayed unpaid after the grace period.", "fix": "Pay the overdue invoices by bank transfer. The **Subscription** page lists them. If you already paid, contact your SupportDesk provider." },
+    { "problem": "The sign-up form says the workspace name is not available.", "cause": "Another company uses that name, or it is reserved.", "fix": "Select the suggested name, or enter another one of at least 3 letters or digits." },
+    { "problem": "The sign-up code does not work.", "cause": "The code expired after 30 minutes, or you used all 5 attempts.", "fix": "Select **Change details**, and send the form again for a new code." }
+  ],
+  "faq": [
+    { "q": "How do we pay SupportDesk invoices?", "a": "By bank transfer. Each invoice shows how to pay. Quote the invoice number as the payment reference." },
+    { "q": "What happens when our trial ends?", "a": "The subscription becomes past due, and a grace period starts. Choose a paid plan before it ends to avoid suspension." },
+    { "q": "Can we cancel our subscription ourselves?", "a": "No. Contact your SupportDesk provider to cancel." }
+  ],
+  "glossary": [
+    { "term": "Plan", "definition": "The package you pay for. It sets the price per agent, the limits and the included features." },
+    { "term": "Seat", "definition": "One paid agent licence." },
+    { "term": "Billing cycle", "definition": "How often you pay: monthly, or annually with two months free." },
+    { "term": "Grace period", "definition": "The days after a missed payment or an ended trial when the workspace still works normally." },
+    { "term": "Suspension", "definition": "The state after the grace period. People can sign in, read and pay, but cannot change anything." },
+    { "term": "Pro rata", "definition": "Charged only for the part of the period that remains." },
+    { "term": "Free trial", "definition": "A new workspace you can use free for at least 14 days, with every feature of the chosen plan." }
+  ]
+}

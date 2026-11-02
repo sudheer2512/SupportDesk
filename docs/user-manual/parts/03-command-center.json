@@ -1,0 +1,350 @@
+{
+  "chapters": [
+    {
+      "id": "command-center",
+      "title": "Command Center",
+      "intro": [
+        "This chapter is for agents and supervisors. It explains the Command Center, your live overview of the desk.",
+        "It also covers the **Approvals** page, where supervisors approve or reject requests."
+      ],
+      "sections": [
+        {
+          "id": "cc-overview",
+          "title": "What the Command Center shows",
+          "type": "concept",
+          "intro": [
+            "The Command Center is usually the first page you see after you sign in. To open it from anywhere, select **Command Center** in the rail, or press [[G]] then [[C]].",
+            "Everything on the page is live. Numbers and lists update when tickets change, so you do not need to reload."
+          ],
+          "blocks": [
+            {
+              "image": "shots/03-command-center-agent.png",
+              "caption": "The Command Center for an agent, from top to bottom.",
+              "alt": "Command Center page with numbered highlights on the header buttons, the key number tiles and the six cards",
+              "width": 560
+            },
+            {
+              "callouts": [
+                "**Enable desktop alerts** asks your browser to show SupportDesk alerts on your desktop. It disappears once you have answered.",
+                "**Open workspace** opens the **Tickets** module.",
+                "The key number tiles. Select a tile to open the matching ticket list.",
+                "**SLA risk board**: open tickets that are close to, or past, their SLA target.",
+                "**My open tickets by status**: a chart of your open tickets and the next ones due.",
+                "**My team**: open tickets against capacity for each colleague. Supervisors see **Team workload** here.",
+                "**Customer replies & mentions**: your latest customer replies and @mentions.",
+                "**Pending approvals**: requests that wait for a decision.",
+                "**Escalations**: open tickets that someone has escalated."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cc-tiles",
+          "title": "Key number tiles",
+          "type": "reference",
+          "intro": "The tiles at the top count tickets you can see. Select a tile to open its list.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Tile", "What it counts", "Selecting it opens"],
+                "widths": [26, 44, 30],
+                "rows": [
+                  ["**My open tickets**", "Open tickets assigned to you.", "Your own queue in **Tickets**."],
+                  ["**My overdue**", "Your open tickets whose due time has passed.", "Your own queue in **Tickets**."],
+                  ["**My due today**", "Your open tickets due between now and midnight.", "Your own queue in **Tickets**."],
+                  ["**Unassigned**", "Open tickets with no assignee. Supervisors see **Unassigned (my departments)**.", "The unassigned queue."],
+                  ["**SLA at risk**", "Open tickets close to an SLA target.", "The at-risk queue."],
+                  ["**Overdue (all visible)**", "Every overdue ticket you can see, not only yours.", "The overdue queue."],
+                  ["**Escalated**", "Open tickets that someone has escalated.", "The escalated queue."],
+                  ["**Pending approvals**", "Requests that wait for a decision.", "The **Approvals** page."]
+                ]
+              }
+            },
+            { "note": "**My overdue** and **My due today** count only your open tickets that have a due time." }
+          ]
+        },
+        {
+          "id": "cc-open-queue",
+          "title": "Open a ticket list from a tile",
+          "type": "task",
+          "intro": "Use a tile to jump straight to the tickets behind a number.",
+          "steps": [
+            "Open the **Command Center**.",
+            "Select a tile, such as **SLA at risk**."
+          ],
+          "result": "The **Tickets** module opens with the matching queue selected. The ticket chapters explain how to work through the list.",
+          "blocks": [
+            { "tip": "To open **Tickets** without choosing a queue, select **Open workspace** at the top right." }
+          ]
+        },
+        {
+          "id": "cc-sla-board",
+          "title": "The SLA risk board",
+          "type": "concept",
+          "intro": "The SLA risk board lists open tickets whose SLA is at risk or already breached. The ticket due soonest is at the top.",
+          "blocks": [
+            {
+              "image": "shots/03-sla-risk-board.png",
+              "caption": "The **SLA risk board** with breached tickets.",
+              "alt": "SLA risk board with counts of breached and at-risk tickets, a refresh button and rows with countdowns, ticket numbers, subjects, priorities and assignees"
+            },
+            {
+              "list": [
+                "The two counts at the top show how many tickets are **breached** and how many are **at risk**.",
+                "Each row shows the time left, or how long ago the target passed. It then shows the ticket number, subject and priority.",
+                "The last column shows the assignee's initials. A person icon with a minus sign means nobody is assigned.",
+                "Select a row to open the ticket.",
+                "Select the refresh button to reload the board at once."
+              ]
+            },
+            "The board updates as soon as an SLA alert arrives. A row with a new alert is highlighted for a few seconds. The board also re-sorts every minute.",
+            { "note": "When every open ticket is on track, the board says **No SLA risk right now**." }
+          ]
+        },
+        {
+          "id": "cc-my-tickets",
+          "title": "My open tickets by status",
+          "type": "concept",
+          "intro": "This card shows your own open tickets as a ring chart, one colour for each status.",
+          "blocks": [
+            {
+              "image": "shots/03-my-open-tickets.png",
+              "caption": "The **My open tickets by status** card.",
+              "alt": "Ring chart of open tickets by status with a legend and a list of the next tickets due",
+              "width": 380
+            },
+            "Point to a part of the ring to see the status and its count. Below the chart, the card lists up to five of your tickets that are due next. Select one to open it.",
+            { "note": "When nothing is assigned to you, the card says **Your queue is clear**." }
+          ]
+        },
+        {
+          "id": "cc-team",
+          "title": "My team and Team workload",
+          "type": "concept",
+          "intro": [
+            "This card compares each colleague's open tickets with their capacity. Capacity is the most tickets that person should hold at once.",
+            "Agents see **My team**, with the colleagues in their teams. Supervisors see **Team workload**, with everyone in their departments."
+          ],
+          "blocks": [
+            {
+              "image": "shots/03-team-workload.png",
+              "caption": "The **Team workload** card for a supervisor.",
+              "alt": "Team workload card with a bar chart of open tickets and capacity per agent and a table of agent, load and open over capacity",
+              "width": 380
+            },
+            {
+              "list": [
+                "The line at the top says whose work you see and how many people are online.",
+                "The chart shows open tickets and capacity side by side for up to twelve people.",
+                "The table lists every person, the busiest first. The dot on each avatar shows their availability.",
+                "The **Load** bar changes colour when a person reaches 70% of capacity, and again at 90%.",
+                "**Open / capacity** shows the numbers. The ∞ sign means no capacity limit is set.",
+                "The word **light** marks a light agent."
+              ]
+            },
+            {
+              "image": "shots/03-my-team.png",
+              "caption": "The **My team** card for an agent.",
+              "alt": "My team card showing four colleagues of an agent's team with their load",
+              "width": 380
+            }
+          ]
+        },
+        {
+          "id": "cc-replies",
+          "title": "Customer replies and mentions",
+          "type": "concept",
+          "intro": "This card shows your latest twelve notifications about customer replies and @mentions. Unread ones are in bold.",
+          "blocks": [
+            {
+              "list": [
+                "Select an item to open its ticket. The item is then marked as read.",
+                "Select **All notifications** to open the **Notifications** page. See [The Notifications page](#nt-page)."
+              ]
+            },
+            { "note": "New replies and mentions appear at the top as soon as they arrive." }
+          ]
+        },
+        {
+          "id": "cc-approvals-escalations",
+          "title": "Pending approvals and escalations",
+          "type": "concept",
+          "intro": "The last two cards show work that needs a decision or extra attention.",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Card", "What it shows"],
+                "widths": [26, 74],
+                "rows": [
+                  ["**Pending approvals**", "Up to four requests that wait for a decision. If you may decide them, **Approve** and **Reject** appear on each one. Select **View all** to open the **Approvals** page."],
+                  ["**Escalations**", "Up to ten open escalated tickets, with their status and assignee. Select a ticket to open it."]
+                ]
+              }
+            },
+            { "note": "When there is nothing to show, the cards say **Nothing waiting for approval** and **No open escalations**." }
+          ]
+        },
+        {
+          "id": "cc-agent-supervisor",
+          "title": "Agent view and supervisor view",
+          "type": "concept",
+          "intro": "Agents and supervisors see the same page. Supervisors see numbers for their whole departments.",
+          "blocks": [
+            {
+              "image": "shots/03-command-center-supervisor.png",
+              "caption": "The top of the Command Center for a supervisor.",
+              "alt": "Command Center for a supervisor with the header and the Unassigned (my departments) tile highlighted"
+            },
+            {
+              "callouts": [
+                "The greeting says **Numbers cover your departments.**",
+                "The tile is called **Unassigned (my departments)**."
+              ]
+            },
+            {
+              "table": {
+                "columns": ["Part of the page", "Agent", "Supervisor"],
+                "widths": [30, 35, 35],
+                "rows": [
+                  ["Greeting under the title", "**Your queue, SLA risk and team at a glance.**", "**Numbers cover your departments.**"],
+                  ["Unassigned tile", "**Unassigned**", "**Unassigned (my departments)**"],
+                  ["Team card", "**My team**: colleagues in your teams.", "**Team workload**: everyone in your departments."],
+                  ["Pending approvals", "Requests you raised, or that are addressed to you.", "Requests you can approve or reject."]
+                ]
+              }
+            },
+            { "note": "The tiles that start with **My** always count only your own tickets, for agents and supervisors alike." }
+          ]
+        },
+        {
+          "id": "cc-desktop-alerts",
+          "title": "Turn on desktop alerts from the Command Center",
+          "type": "task",
+          "intro": "Desktop alerts show urgent notifications even when the desk is in a background tab.",
+          "steps": [
+            "Open the **Command Center**.",
+            "At the top right, select **Enable desktop alerts**.",
+            "When your browser asks, select **Allow**."
+          ],
+          "result": "The button disappears. Warnings and critical notifications now also appear as desktop alerts. See [Turn on desktop alerts](#nt-desktop-alerts)."
+        },
+        {
+          "id": "cc-approvals-page",
+          "title": "The Approvals page",
+          "type": "concept",
+          "intro": [
+            "Some actions need a supervisor's approval first. Examples are moving a ticket to another department, some workflow steps and some AI actions.",
+            "The **Approvals** page lists these requests. Open it from the **Pending approvals** tile, or select **View all** on the **Pending approvals** card."
+          ],
+          "blocks": [
+            {
+              "image": "shots/03-approvals.png",
+              "caption": "The **Approvals** page with nothing waiting for a decision.",
+              "alt": "Approvals page with numbered highlights on the Refresh button, the Pending, Decided and My requests tabs, and the list"
+            },
+            {
+              "callouts": [
+                "**Refresh** reloads the lists.",
+                "**Pending**: requests that wait for a decision. The badge shows how many.",
+                "**Decided**: requests that were approved, rejected, cancelled or expired.",
+                "**My requests**: requests that you raised.",
+                "The list for the selected tab."
+              ]
+            },
+            { "heading": "What each request shows" },
+            {
+              "list": [
+                "A label with the request type, such as **Department transfer**, **Workflow transition**, **AI action** or **Request**.",
+                "A link to the ticket, with its number and subject. Select it to open the ticket.",
+                "Who asked, when, and when the request expires.",
+                "What the request would do, such as **Transfer to Billing**, and the reason the requester gave."
+              ]
+            },
+            {
+              "image": "shots/03-approvals-decided.png",
+              "caption": "A decided request on the **Decided** tab, with its status at the right.",
+              "alt": "Decided tab with one expired leave request showing the requester, the reason and the status Expired"
+            },
+            { "note": "Leave requests from agents also appear on this page." }
+          ]
+        },
+        {
+          "id": "cc-decide-approval",
+          "title": "Approve or reject a request",
+          "type": "task",
+          "intro": "Decide a request so that the work behind it can go ahead or stop.",
+          "prerequisites": [
+            "Your role lets you decide approvals. Supervisors and administrators usually can.",
+            "You did not raise the request yourself. Nobody can decide their own request."
+          ],
+          "steps": [
+            "Open the **Approvals** page from the **Pending approvals** tile.",
+            "On the **Pending** tab, find the request.",
+            "Read what the request would do and the reason. To see the ticket, select its number.",
+            "In **Note (optional)**, enter a short note for the requester, if you want to.",
+            "Select **Approve** or **Reject**."
+          ],
+          "result": "A **Request approved** or **Request rejected** message appears. The request moves to the **Decided** tab. The requester gets a notification.",
+          "blocks": [
+            { "tip": "You can also approve or reject from the **Pending approvals** card on the Command Center." },
+            { "note": "If someone else decided the request first, a message says so and the list reloads." }
+          ]
+        },
+        {
+          "id": "cc-my-requests",
+          "title": "Check the requests you raised",
+          "type": "task",
+          "intro": "See whether your own requests are still waiting or have been decided.",
+          "steps": [
+            "Open the **Approvals** page.",
+            "Select the **My requests** tab.",
+            "Find your request in the list."
+          ],
+          "result": "A waiting request says **Waiting for a supervisor’s decision.** A decided request shows its status, who decided it, when, and any note."
+        },
+        {
+          "id": "cc-approval-statuses",
+          "title": "Approval statuses",
+          "type": "reference",
+          "blocks": [
+            {
+              "table": {
+                "columns": ["Status", "Meaning"],
+                "widths": [24, 76],
+                "rows": [
+                  ["**Pending**", "The request waits for a decision. It has no status label in the list."],
+                  ["**Approved**", "A supervisor approved it. The action goes ahead."],
+                  ["**Rejected**", "A supervisor rejected it. The action does not happen."],
+                  ["**Cancelled**", "The request no longer applies. For example, the agent cancelled the leave they asked for."],
+                  ["**Expired**", "Nobody decided it before its expiry time."]
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "troubleshooting": [
+    { "problem": "A Command Center card shows an error message with **Retry**.", "cause": "The card could not load its data.", "fix": "Select **Retry**. If it fails again, check your connection." },
+    { "problem": "The **Pending approvals** tile shows 0, but a colleague says a request is waiting.", "cause": "You may not have permission to decide that request, or it belongs to another department.", "fix": "Ask your supervisor or administrator who can decide it." },
+    { "problem": "**Approve** and **Reject** do not appear on a request.", "cause": "You raised the request yourself, or your role cannot decide approvals.", "fix": "Ask another supervisor to decide it." },
+    { "problem": "An error appears when you select **Approve** or **Reject**.", "cause": "Someone else decided the request first, or it has expired.", "fix": "Read the message. The list reloads with the current status." },
+    { "problem": "**Enable desktop alerts** does not appear on the Command Center.", "cause": "You have already allowed or blocked desktop alerts in this browser.", "fix": "To change your answer, open your browser's site settings for SupportDesk." }
+  ],
+  "faq": [
+    { "q": "Why are my numbers different from my supervisor's?", "a": "Supervisors see numbers for their whole departments. Agents see their own work and their teams. The tiles that start with **My** count only the signed-in person's tickets." },
+    { "q": "How often does the Command Center update?", "a": "It updates live, as tickets change and alerts arrive. The SLA risk board also re-sorts every minute. You do not need to reload the page." },
+    { "q": "Can I approve my own request?", "a": "No. Another person with the right permission must decide it." }
+  ],
+  "glossary": [
+    { "term": "Command Center", "definition": "The desk's live overview page with key numbers, SLA risk, team workload, replies, approvals and escalations." },
+    { "term": "SLA", "definition": "Service level agreement. The response and resolution times your company promises its customers." },
+    { "term": "Breached", "definition": "An SLA target whose time has passed before the ticket met it." },
+    { "term": "At risk", "definition": "An SLA target that is close to its due time and not yet met." },
+    { "term": "Queue", "definition": "A ready-made ticket list, such as your own tickets, unassigned tickets or escalated tickets." },
+    { "term": "Capacity", "definition": "The most open tickets an agent should hold at one time. Administrators set it." },
+    { "term": "Escalation", "definition": "Raising a ticket to a higher level of attention, such as a senior agent, a supervisor or engineering." },
+    { "term": "Approval", "definition": "A request that a supervisor must approve before an action, such as a department transfer, can go ahead." }
+  ]
+}
