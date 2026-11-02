@@ -27,6 +27,7 @@ import {
   SdSkeleton,
   SdToggle,
   ToastService,
+  SdLabelPipe,
 } from '@sd/ui';
 import { DateOnlyPipe, HumanizePipe, humanize, statusTone } from '../customers/shared/customer-ui';
 import { ModuleTabsComponent, PRODUCT_TABS } from '../customers/shared/module-tabs.component';
@@ -37,6 +38,7 @@ import { InstallationFormData, InstallationFormDialog } from './installation-for
 @Component({
   selector: 'desk-installations-page',
   imports: [
+    SdLabelPipe,
     FormsModule,
     RouterLink,
     SdPageHeader,
@@ -178,7 +180,7 @@ import { InstallationFormData, InstallationFormDialog } from './installation-for
           } @else {
             <ul class="ints">
               @for (i of d.integrations; track $index) {
-                <li class="sd-small"><sd-icon name="plug" [size]="12" /> {{ i.system }} <span class="sd-muted">{{ i.direction }}</span></li>
+                <li class="sd-small"><sd-icon name="plug" [size]="12" /> {{ i.system | sdLabel }} <span class="sd-muted">{{ i.direction }}</span></li>
               }
             </ul>
           }

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ApiError, AuthApi, MeApi, MeStore, MfaSetupDto, ToastBridge } from '@sd/core';
+import { ApiError, AuthApi, MeApi, MeStore, MfaSetupDto, ToastBridge, canonicalTimeZone, timeZoneOptions } from '@sd/core';
 import {
   SdAvatar,
   SdBadge,
@@ -15,23 +15,15 @@ import {
   SdRichTextEditor,
   SdTab,
   SdTabs,
+  SdLabelPipe,
 } from '@sd/ui';
 
 const COMMON_LOCALES = ['en-US', 'en-GB', 'en-IN', 'en-AU', 'de-DE', 'fr-FR', 'es-ES', 'pt-BR', 'it-IT', 'nl-NL', 'ja-JP', 'zh-CN', 'ar-AE', 'hi-IN'];
 
-function timeZones(): string[] {
-  const intl = Intl as unknown as { supportedValuesOf?: (key: string) => string[] };
-  try {
-    return intl.supportedValuesOf?.('timeZone') ?? ['UTC'];
-  } catch {
-    return ['UTC'];
-  }
-}
-
 /** /me — profile (name, time zone, locale, signature), password change and two-factor setup. */
 @Component({
   selector: 'desk-profile-page',
-  imports: [FormsModule, SdPageHeader, SdTabs, SdTab, SdCard, SdFormField, SdInput, SdButton, SdBadge, SdAvatar, SdQrCode, SdRichTextEditor],
+  imports: [FormsModule, SdPageHeader, SdTabs, SdTab, SdCard, SdFormField, SdInput, SdButton, SdBadge, SdAvatar, SdQrCode, SdRichTextEditor, SdLabelPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="desk-page">
@@ -46,7 +38,11 @@ function timeZones(): string[] {
                   <h2>{{ me.displayName() }}</h2>
                   <p class="sd-muted">{{ me.user()?.email }} · {{ me.user()?.tenantName }}</p>
                   <div class="badges">
-                    <sd-badge tone="primary">{{ me.user()?.kind }}</sd-badge>
+                    @for (r of me.user()?.roles ?? []; track r) {
+                      <sd-badge tone="primary">{{ r }}</sd-badge>
+                    } @empty {
+                      <sd-badge tone="primary">{{ me.user()?.kind | sdLabel }}</sd-badge>
+                    }
                     @if (me.user()?.isLightAgent) {
                       <sd-badge>Light agent</sd-badge>
                     }
@@ -253,7 +249,7 @@ export class ProfilePage {
   private readonly dialogs = inject(SdDialogService);
   private readonly router = inject(Router);
 
-  protected readonly zones = timeZones();
+  protected readonly zones = timeZoneOptions();
   protected readonly tab = signal('profile');
 
   protected displayName = '';
@@ -289,7 +285,7 @@ export class ProfilePage {
       untracked(() => {
         if (!user) return;
         this.displayName = user.displayName;
-        this.timeZone = user.timeZone || 'UTC';
+        this.timeZone = canonicalTimeZone(user.timeZone || 'UTC');
         this.locale = user.locale || 'en-US';
         this.signature = user.signature ?? '';
       });

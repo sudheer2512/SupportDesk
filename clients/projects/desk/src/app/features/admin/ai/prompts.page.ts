@@ -57,7 +57,7 @@ import { fieldErrors, humanize } from '../../ai/shared/ai-ui';
             <sd-card title="Versions" padding="none">
               <ul class="versions">
                 <li>
-                  <span><strong>Default</strong> <span class="sd-xs sd-muted">built in</span></span>
+                  <span><strong>Default</strong><span class="sd-xs sd-muted"> · built in</span></span>
                   @if (t.source === 'custom') {
                     <button sdButton size="sm" (click)="activate(t, 0)">Activate</button>
                   } @else {
@@ -66,7 +66,7 @@ import { fieldErrors, humanize } from '../../ai/shared/ai-ui';
                 </li>
                 @for (v of t.versions; track v.id) {
                   <li>
-                    <span><strong>Version {{ v.version }}</strong> <span class="sd-xs sd-muted">{{ v.createdAt | sdRelativeTime }}</span></span>
+                    <span><strong>Version {{ v.version }}</strong><span class="sd-xs sd-muted"> · {{ v.createdAt | sdRelativeTime }}</span></span>
                     <span class="row">
                       <button sdButton size="sm" variant="ghost" (click)="loadVersion(v.systemPrompt, v.userTemplate)">Load</button>
                       @if (v.isActive) {

@@ -36,7 +36,7 @@ import {
 } from '@sd/ui';
 import { CustomerFormDialog, CustomerFormData } from './customer-form.dialog';
 import { CUSTOMER_TABS, ModuleTabsComponent } from './shared/module-tabs.component';
-import { statusTone, tierTone } from './shared/customer-ui';
+import { humanize, statusTone, tierTone } from './shared/customer-ui';
 import { TextPromptData, TextPromptDialog } from './shared/text-prompt.dialog';
 
 interface Filters {
@@ -155,7 +155,7 @@ const VIEW_SCOPE = 'customers';
               <sd-badge [tone]="tierTone(row.tier)" size="sm">{{ row.tier }}</sd-badge>
             </ng-template>
             <ng-template sdCell="status" [sdCellRows]="list.items()" let-row>
-              <sd-badge [tone]="statusTone(row.status)" size="sm" dot>{{ row.status }}</sd-badge>
+              <sd-badge [tone]="statusTone(row.status)" size="sm" dot>{{ statusLabel(row.status) }}</sd-badge>
             </ng-template>
             <ng-template sdCell="openTickets" [sdCellRows]="list.items()" let-row>
               @if (row.openTickets > 0) {
@@ -232,6 +232,7 @@ export class CustomersListPage {
   protected readonly tabs = CUSTOMER_TABS;
   protected readonly tierTone = tierTone;
   protected readonly statusTone = statusTone;
+  protected readonly statusLabel = humanize;
   protected readonly filters = signal<Filters>({ ...EMPTY });
   protected readonly sort = signal<SdSort | null>({ key: 'name', dir: 'asc' });
   protected readonly facets = signal<CustomerFacetsDto | null>(null);
@@ -257,7 +258,7 @@ export class CustomersListPage {
 
   protected readonly list = cursorList<CustomerListItemDto>((cursor) => this.api.list({ ...this.query(), cursor, limit: 50, includeTotal: !cursor }));
 
-  protected readonly statusOptions = computed<SdOption[]>(() => (this.facets()?.statuses ?? []).map((s) => ({ value: s, label: s })));
+  protected readonly statusOptions = computed<SdOption[]>(() => (this.facets()?.statuses ?? []).map((s) => ({ value: s, label: humanize(s) })));
   protected readonly tierOptions = computed<SdOption[]>(() => (this.facets()?.tiers ?? []).map((s) => ({ value: s, label: s })));
   protected readonly regionOptions = computed<SdOption[]>(() => (this.facets()?.regions ?? []).map((s) => ({ value: s, label: s })));
   protected readonly industryOptions = computed<SdOption[]>(() => (this.facets()?.industries ?? []).map((s) => ({ value: s, label: s })));

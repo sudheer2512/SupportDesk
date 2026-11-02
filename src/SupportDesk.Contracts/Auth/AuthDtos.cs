@@ -65,7 +65,9 @@ public sealed record MeDto(
     IReadOnlyList<string> PlanFeatures,
     string SubscriptionStatus,
     bool MfaEnabled,
-    string? Signature);
+    string? Signature,
+    /// <summary>Names of the user's roles ("Support supervisor"), for display; permissions drive behaviour.</summary>
+    IReadOnlyList<string> Roles);
 
 // ───── Customer portal ─────
 

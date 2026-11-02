@@ -15,6 +15,7 @@ import {
   MetaApi,
   PollResultDto,
   appUrl,
+  enumLabel,
 } from '@sd/core';
 import {
   SdBadge,
@@ -31,6 +32,7 @@ import {
   SdSkeleton,
   SdToggle,
   ToastService,
+  SdLabelPipe,
 } from '@sd/ui';
 import { forkJoin } from 'rxjs';
 import { accountStatusTone, copyText } from '../../../shared/channel-ui';
@@ -46,6 +48,7 @@ type SettingValue = string | number | boolean | null;
 @Component({
   selector: 'desk-channel-editor-page',
   imports: [
+    SdLabelPipe,
     FormsModule,
     RouterLink,
     SdPageHeader,
@@ -91,7 +94,7 @@ type SettingValue = string | number | boolean | null;
                   <sd-form-field label="Provider" required [hint]="providerInfo()?.description ?? null">
                     <select sdInput name="provider" [ngModel]="provider()" (ngModelChange)="setProvider($event)" [disabled]="!!channel()">
                       @for (p of providersForType(); track p.provider) {
-                        <option [value]="p.provider">{{ p.provider === 'Simulator' ? 'Simulator (demo/testing)' : p.provider }}</option>
+                        <option [value]="p.provider">{{ p.provider === 'Simulator' ? 'Simulator (demo/testing)' : (p.provider | sdLabel) }}</option>
                       }
                     </select>
                   </sd-form-field>
@@ -490,7 +493,7 @@ export class ChannelEditorPage {
   protected readonly pageTitle = computed(() => this.channel()?.name ?? 'New channel');
   protected readonly pageSubtitle = computed(() => {
     const c = this.channel();
-    return c ? `${this.typeMeta().label} · ${c.provider} · ${c.address}` : 'Connect a mailbox, messaging number, chat widget or phone line.';
+    return c ? `${this.typeMeta().label} · ${enumLabel(c.provider)} · ${c.address}` : 'Connect a mailbox, messaging number, chat widget or phone line.';
   });
   protected readonly crumbs = computed(() => [
     { label: 'Administration', link: '/admin' },

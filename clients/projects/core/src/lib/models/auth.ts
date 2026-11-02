@@ -97,6 +97,8 @@ export interface MeDto {
   subscriptionStatus: string;
   mfaEnabled: boolean;
   signature: string | null;
+  /** Role names for display ("Support supervisor"); permissions drive behaviour. */
+  roles: string[];
 }
 
 export interface UpdateAvailabilityRequest {

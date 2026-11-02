@@ -86,7 +86,12 @@ export class SdAvatar {
     return { xs: 20, sm: 24, md: 32, lg: 40, xl: 56 }[s];
   });
   protected readonly initials = computed(() => {
-    const parts = (this.name() ?? '').trim().split(/\s+/).filter(Boolean);
+    // "Asha Menon (Admin)" → "AM": ignore parenthesised notes and leading punctuation.
+    const parts = (this.name() ?? '')
+      .replace(/\([^)]*\)/g, ' ')
+      .split(/\s+/)
+      .map((p) => p.replace(/^[^\p{L}\p{N}]+/u, ''))
+      .filter(Boolean);
     if (parts.length === 0) return '?';
     const first = parts[0][0] ?? '';
     const last = parts.length > 1 ? (parts[parts.length - 1][0] ?? '') : '';

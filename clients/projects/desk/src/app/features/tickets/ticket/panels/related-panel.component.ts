@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TicketLinkDto, TicketsApi } from '@sd/core';
-import { SdBadge, SdButton, SdEmptyState, SdIcon, ToastService } from '@sd/ui';
+import { SdBadge, SdButton, SdEmptyState, SdIcon, ToastService, SdLabelPipe } from '@sd/ui';
 import { firstValueFrom } from 'rxjs';
 import { toastApiError } from '../../shared/ticket-ui';
 import { TicketActions } from '../ticket-actions.service';
@@ -19,7 +19,7 @@ const LINK_LABELS: Record<string, [string, string]> = {
 /** Parent / child tickets, linked tickets and external references (ERP documents, origin systems). */
 @Component({
   selector: 'desk-related-panel',
-  imports: [RouterLink, SdBadge, SdButton, SdEmptyState, SdIcon],
+  imports: [SdLabelPipe, RouterLink, SdBadge, SdButton, SdEmptyState, SdIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (ctx.ticket(); as t) {
@@ -72,7 +72,7 @@ const LINK_LABELS: Record<string, [string, string]> = {
           <div class="row">
             <sd-icon name="database" [size]="14" />
             <span class="grow sd-truncate">
-              <strong>{{ r.system }}</strong> {{ r.recordType }} {{ r.recordNumber ?? '' }}
+              <strong>{{ r.system | sdLabel }}</strong> {{ r.recordType }} {{ r.recordNumber ?? '' }}
               @if (r.isOrigin) {
                 <sd-badge size="sm" tone="info">origin</sd-badge>
               }

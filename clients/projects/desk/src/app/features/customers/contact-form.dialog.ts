@@ -17,7 +17,7 @@ import {
   saveErrorMessage,
   validationMessages,
 } from '@sd/core';
-import { SdButton, SdCheckbox, SdCombobox, SdDialog, SdFormField, SdInput, SdOption, SdOptionSource } from '@sd/ui';
+import { SdButton, SdCheckbox, SdCombobox, SdDialog, SdFormField, SdInput, SdOption, SdOptionSource, SdLabelPipe } from '@sd/ui';
 import { map } from 'rxjs';
 import { CustomFieldsEditorComponent } from './shared/custom-fields-editor.component';
 
@@ -30,7 +30,7 @@ export interface ContactFormData {
 /** Create / edit a contact (identity fields, customer/location/department, preferences, portal access, custom fields). */
 @Component({
   selector: 'desk-contact-form-dialog',
-  imports: [FormsModule, SdDialog, SdFormField, SdInput, SdButton, SdCombobox, SdCheckbox, CustomFieldsEditorComponent],
+  imports: [SdLabelPipe, FormsModule, SdDialog, SdFormField, SdInput, SdButton, SdCombobox, SdCheckbox, CustomFieldsEditorComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <sd-dialog [title]="c ? 'Edit ' + c.fullName : 'New contact'">
@@ -91,7 +91,7 @@ export interface ContactFormData {
             <select sdInput name="channel" [(ngModel)]="preferredChannel">
               <option [ngValue]="null">No preference</option>
               @for (ch of channels; track ch) {
-                <option [ngValue]="ch">{{ ch }}</option>
+                <option [ngValue]="ch">{{ ch | sdLabel }}</option>
               }
             </select>
           </sd-form-field>

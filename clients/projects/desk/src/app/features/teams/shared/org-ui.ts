@@ -93,16 +93,8 @@ export function formatMinutes(minutes: number | null | undefined): string {
   return [days ? `${days}d` : '', hours ? `${hours}h` : '', mins ? `${mins}m` : ''].filter(Boolean).join(' ');
 }
 
-/** Common IANA time zones for pickers (the API validates every value). */
-export function timeZoneOptions(current?: string | null): string[] {
-  const intl = Intl as unknown as { supportedValuesOf?: (key: string) => string[] };
-  const zones = intl.supportedValuesOf?.('timeZone') ?? [
-    'UTC', 'Asia/Kolkata', 'Asia/Dubai', 'Asia/Singapore', 'Asia/Tokyo', 'Australia/Sydney', 'Europe/London', 'Europe/Berlin', 'America/New_York',
-    'America/Chicago', 'America/Los_Angeles',
-  ];
-  const list = zones.includes('UTC') ? zones : ['UTC', ...zones];
-  return current && !list.includes(current) ? [current, ...list] : list;
-}
+/** IANA time zones for pickers (shared with the profile and portal pickers; the API validates every value). */
+export { timeZoneOptions } from '@sd/core';
 
 /** User-facing message for an API failure. */
 export function errorText(err: unknown): string {

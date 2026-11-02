@@ -6,10 +6,19 @@ import { SdBadge, SdButton, SdIcon, SdRelativeTimePipe, ToastService } from '@sd
 
 const TYPE_LABELS: Record<string, string> = {
   transfer: 'Department transfer',
+  workflow_transition: 'Workflow transition',
   blueprint: 'Workflow transition',
+  agent_leave: 'Leave request',
+  automation: 'Automation request',
   ai_action: 'AI action',
   custom: 'Request',
 };
+
+/** "agent_leave" → "Agent leave" for types without a label. */
+function humanizeType(type: string): string {
+  const words = type.replace(/[_.-]+/g, ' ').trim();
+  return words ? words[0].toUpperCase() + words.slice(1) : 'Request';
+}
 
 /** One approval request with approve / reject (and an optional note) for users allowed to decide it. */
 @Component({
@@ -43,7 +52,7 @@ const TYPE_LABELS: Record<string, string> = {
       }
       @if (a.status !== 'Pending') {
         <p class="sd-small sd-muted">
-          {{ a.status }} by {{ a.decidedByName ?? 'someone' }}{{ a.decidedAt ? ' · ' : '' }}{{ a.decidedAt ? (a.decidedAt | sdRelativeTime) : '' }}
+          {{ outcome() }}{{ a.decidedAt ? ' · ' : '' }}{{ a.decidedAt ? (a.decidedAt | sdRelativeTime) : '' }}
           @if (a.decisionNote) {
             — {{ a.decisionNote }}
           }
@@ -118,7 +127,13 @@ export class ApprovalItemComponent {
   protected readonly busy = signal<'approve' | 'reject' | null>(null);
   protected readonly error = signal<string | null>(null);
 
-  protected readonly typeLabel = computed(() => TYPE_LABELS[this.approval().type] ?? this.approval().type);
+  protected readonly typeLabel = computed(() => TYPE_LABELS[this.approval().type] ?? humanizeType(this.approval().type));
+  /** "Approved by Priya", "Expired without a decision" (housekeeping expires requests nobody decided). */
+  protected readonly outcome = computed(() => {
+    const a = this.approval();
+    if (a.decidedByName) return `${a.status} by ${a.decidedByName}`;
+    return a.status === 'Expired' ? 'Expired without a decision' : a.status;
+  });
   protected readonly canDecide = computed(() => this.me.can('approvals.decide') && this.approval().requestedById !== this.me.user()?.id);
   protected readonly detail = computed(() => {
     const a = this.approval();

@@ -75,9 +75,10 @@ public sealed class PrincipalLoader(DeskDbContext db, RequestContext ctx, ITenan
         var teams = await db.Teams.AsNoTracking().Where(t => p.TeamIds.Contains(t.Id)).OrderBy(t => t.Name).Select(t => new IdName(t.Id, t.Name)).ToListAsync(ct);
         var agent = await db.Agents.AsNoTracking().FirstOrDefaultAsync(a => a.UserId == userId, ct);
         var limitsInfo = await limits.GetLimitsAsync(ct);
+        var roles = await db.UserRoles.AsNoTracking().Where(ur => ur.UserId == userId).Select(ur => ur.Role!.Name).OrderBy(n => n).ToListAsync(ct);
         return new MeDto(user.Id, tenant.Id, tenant.Slug, tenant.Name, user.DisplayName, user.Email, user.AvatarUrl, user.TimeZone, user.Locale,
             user.Kind.ToString(), p.IsLightAgent, p.Permissions.OrderBy(x => x).ToList(), p.TicketScope.ToString(), depts, teams,
-            (agent?.Availability ?? AgentAvailability.Offline).ToString(), limitsInfo.Features, limitsInfo.Status.ToString(), user.MfaEnabled, user.Signature);
+            (agent?.Availability ?? AgentAvailability.Offline).ToString(), limitsInfo.Features, limitsInfo.Status.ToString(), user.MfaEnabled, user.Signature, roles);
     }
 
     public Task InvalidateAsync(Guid userId, CancellationToken ct = default) => cache.RemoveAsync(CacheKey(userId), ct);

@@ -25,10 +25,10 @@ import { TicketContext } from '../ticket-context.service';
       <form class="log" (ngSubmit)="log()" novalidate>
         <div class="row">
           <sd-form-field label="Hours">
-            <input sdInput type="number" min="0" max="24" name="h" [ngModel]="hours()" (ngModelChange)="hours.set(+$event || 0)" />
+            <input sdInput type="number" min="0" max="24" name="h" [ngModel]="hours()" (ngModelChange)="hours.set(wholeOrNull($event))" />
           </sd-form-field>
           <sd-form-field label="Minutes">
-            <input sdInput type="number" min="0" max="59" name="m" [ngModel]="minutes()" (ngModelChange)="minutes.set(+$event || 0)" />
+            <input sdInput type="number" min="0" max="59" name="m" [ngModel]="minutes()" (ngModelChange)="minutes.set(wholeOrNull($event))" />
           </sd-form-field>
           <sd-form-field label="Started" optional>
             <sd-date-input type="datetime" [value]="startedAt()" (valueChange)="startedAt.set($event)" />
@@ -51,7 +51,7 @@ import { TicketContext } from '../ticket-context.service';
         <div class="row-end">
           <sd-checkbox [value]="billable()" (valueChange)="billable.set($event)">Billable</sd-checkbox>
           <span class="sd-spacer"></span>
-          <button sdButton size="sm" variant="primary" icon="clock" type="submit" [disabled]="hours() * 60 + minutes() <= 0" [loading]="saving()">Log time</button>
+          <button sdButton size="sm" variant="primary" icon="clock" type="submit" [disabled]="totalToLog() <= 0" [loading]="saving()">Log time</button>
         </div>
       </form>
     }
@@ -195,8 +195,10 @@ export class TimePanelComponent {
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly saving = signal(false);
-  protected readonly hours = signal(0);
-  protected readonly minutes = signal(15);
+  /** Null while a box is empty: writing 0 back would turn "30" typed into a cleared box into "030". */
+  protected readonly hours = signal<number | null>(0);
+  protected readonly minutes = signal<number | null>(15);
+  protected readonly totalToLog = computed(() => (this.hours() ?? 0) * 60 + (this.minutes() ?? 0));
   protected readonly startedAt = signal<string | null>(null);
   protected readonly activity = signal('');
   protected readonly notes = signal('');
@@ -230,8 +232,14 @@ export class TimePanelComponent {
     });
   }
 
+  protected wholeOrNull(value: unknown): number | null {
+    if (value === null || value === undefined || value === '') return null;
+    const n = Math.trunc(Number(value));
+    return Number.isFinite(n) && n >= 0 ? n : null;
+  }
+
   protected log(): void {
-    const minutes = this.hours() * 60 + this.minutes();
+    const minutes = this.totalToLog();
     if (minutes <= 0) return;
     this.saving.set(true);
     this.tickets

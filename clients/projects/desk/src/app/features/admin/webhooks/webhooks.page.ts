@@ -59,7 +59,7 @@ interface EditorState {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="desk-page">
-      <sd-page-header title="Webhooks" icon="webhook" subtitle="Signed HTTP callbacks for ticket, customer and knowledge events." [breadcrumbs]="crumbs">
+      <sd-page-header title="Webhooks" icon="webhook" subtitle="Notify your other systems when tickets, customers or articles change. Every message is signed." [breadcrumbs]="crumbs">
         <button sdButton sdPageActions variant="primary" icon="plus" (click)="edit(null)">New webhook</button>
       </sd-page-header>
       <div class="desk-page__body">
@@ -128,7 +128,7 @@ interface EditorState {
         <sd-form-field label="Name" required [error]="errors()['name']">
           <input sdInput name="name" [ngModel]="editor().name" (ngModelChange)="patch({ name: $event })" maxlength="200" />
         </sd-form-field>
-        <sd-form-field label="Payload URL" required hint="Receives POST requests with a JSON envelope {id, type, occurredAt, tenantId, data}." [error]="errors()['url']">
+        <sd-form-field label="Payload URL" required hint="The address of your system. SupportDesk sends each event here with its type, time and details." [error]="errors()['url']">
           <input sdInput name="url" type="url" placeholder="https://erp.example.com/hooks/supportdesk" [ngModel]="editor().url" (ngModelChange)="patch({ url: $event })" />
         </sd-form-field>
         <fieldset class="events-pick" [attr.aria-invalid]="!!errors()['events']">

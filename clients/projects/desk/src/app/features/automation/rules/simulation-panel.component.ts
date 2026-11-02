@@ -67,7 +67,7 @@ import { actionTone, errorMessage } from '../shared/automation-ui';
                     <tr>
                       <td>{{ ctx.fieldLabel(c.field) }}</td>
                       <td>
-                        <span class="op">{{ c.op }}</span> {{ c.expected === null ? '' : ctx.describeValue(c.expected) }}
+                        {{ ctx.describeCheck(c.op, c.expected) }}
                       </td>
                       <td class="actual">{{ ctx.describeValue(c.actual) }}</td>
                       <td>

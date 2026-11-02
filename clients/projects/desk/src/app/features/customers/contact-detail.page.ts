@@ -30,6 +30,7 @@ import {
   SdDateTimePipe,
   SdSkeleton,
   ToastService,
+  SdLabelPipe,
 } from '@sd/ui';
 import { C360TicketsComponent } from './c360-tickets.component';
 import { ContactFormData, ContactFormDialog } from './contact-form.dialog';
@@ -43,6 +44,7 @@ const CONSENT_CHANNELS = ['Email', 'Sms', 'WhatsApp', 'Phone'];
 @Component({
   selector: 'desk-contact-detail-page',
   imports: [
+    SdLabelPipe,
     FormsModule,
     RouterLink,
     SdPageHeader,
@@ -136,7 +138,7 @@ const CONSENT_CHANNELS = ['Email', 'Sms', 'WhatsApp', 'Phone'];
                       <li>
                         <sd-icon [name]="channelIcon(i.channel)" [size]="14" />
                         <span class="sd-mono sd-small">{{ i.identifier }}</span>
-                        <span class="sd-xs sd-muted">{{ i.channel }}</span>
+                        <span class="sd-xs sd-muted">{{ i.channel | sdLabel }}</span>
                         @if (i.isVerified) {
                           <sd-badge tone="success" size="sm">Verified</sd-badge>
                         }
@@ -151,7 +153,7 @@ const CONSENT_CHANNELS = ['Email', 'Sms', 'WhatsApp', 'Phone'];
                   <form class="add-id" (ngSubmit)="addIdentity()">
                     <select sdInput size="sm" name="ch" aria-label="Channel" [(ngModel)]="newChannel">
                       @for (ch of identityChannels; track ch) {
-                        <option [value]="ch">{{ ch }}</option>
+                        <option [value]="ch">{{ ch | sdLabel }}</option>
                       }
                     </select>
                     <input sdInput size="sm" name="idv" aria-label="Identifier" placeholder="Address, number or id" [(ngModel)]="newIdentifier" />
@@ -176,7 +178,7 @@ const CONSENT_CHANNELS = ['Email', 'Sms', 'WhatsApp', 'Phone'];
                     <tbody>
                       @for (ch of consentChannels; track ch) {
                         <tr>
-                          <th scope="row">{{ ch === 'Sms' ? 'SMS' : ch }}</th>
+                          <th scope="row">{{ ch | sdLabel }}</th>
                           @for (p of purposes; track p) {
                             @let row = consent(ch, p);
                             <td>

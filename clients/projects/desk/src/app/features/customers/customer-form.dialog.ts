@@ -14,9 +14,10 @@ import {
   saveErrorMessage,
   validationMessages,
 } from '@sd/core';
-import { SdButton, SdChipsInput, SdCombobox, SdDialog, SdFormField, SdInput, SdOption, SdOptionSource, SdToggle } from '@sd/ui';
+import { SdButton, SdChipsInput, SdCombobox, SdDialog, SdFormField, SdInput, SdOption, SdOptionSource, SdToggle, SdLabelPipe } from '@sd/ui';
 import { map } from 'rxjs';
 import { CustomFieldsEditorComponent } from './shared/custom-fields-editor.component';
+import { humanize } from './shared/customer-ui';
 
 export interface CustomerFormData {
   customer?: CustomerDetailDto | null;
@@ -40,7 +41,7 @@ const LANGUAGES = [
 /** Create / edit a customer organisation (hierarchy, segmentation, account manager, domains, preferences, custom fields). */
 @Component({
   selector: 'desk-customer-form-dialog',
-  imports: [FormsModule, SdDialog, SdFormField, SdInput, SdButton, SdCombobox, SdChipsInput, SdToggle, CustomFieldsEditorComponent],
+  imports: [SdLabelPipe, FormsModule, SdDialog, SdFormField, SdInput, SdButton, SdCombobox, SdChipsInput, SdToggle, CustomFieldsEditorComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <sd-dialog [title]="isEdit ? 'Edit ' + (data.customer?.name ?? 'customer') : 'New customer'" description="Organisation details used for routing, SLA selection and contact auto-linking.">
@@ -64,7 +65,7 @@ const LANGUAGES = [
           <sd-form-field label="Status">
             <select sdInput name="status" [(ngModel)]="status">
               @for (s of statuses; track s) {
-                <option [value]="s">{{ s }}</option>
+                <option [value]="s">{{ statusLabel(s) }}</option>
               }
             </select>
           </sd-form-field>
@@ -134,7 +135,7 @@ const LANGUAGES = [
             <select sdInput name="prefChannel" [(ngModel)]="preferredChannel">
               <option [ngValue]="null">No preference</option>
               @for (c of channels; track c) {
-                <option [ngValue]="c">{{ c }}</option>
+                <option [ngValue]="c">{{ c | sdLabel }}</option>
               }
             </select>
           </sd-form-field>
@@ -210,6 +211,7 @@ export class CustomerFormDialog {
   protected readonly isEdit = !!this.data.customer;
   protected readonly tiers = TIERS;
   protected readonly statuses = ['Active', 'Inactive', 'Prospect', 'OnHold'];
+  protected readonly statusLabel = humanize;
   protected readonly channels = CHANNELS;
   protected readonly languages = LANGUAGES;
 

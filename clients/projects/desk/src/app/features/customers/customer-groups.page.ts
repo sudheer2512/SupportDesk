@@ -16,7 +16,7 @@ import { TABLE_STYLES } from './shared/styles';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="desk-page">
-      <sd-page-header title="Customer groups" subtitle="Group organisations for reporting, routing and SLA conditions." icon="layers">
+      <sd-page-header title="Customer groups" subtitle="Group organisations to filter the customer list and to limit knowledge-base articles to a group." icon="layers">
         @if (canManage) {
           <button sdButton sdPageActions variant="primary" icon="plus" (click)="edit(null)">New group</button>
         }

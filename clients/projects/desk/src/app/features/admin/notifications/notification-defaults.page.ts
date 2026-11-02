@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AdminNotificationsApi, ApiError, NotificationEventDefaultDto, NotificationPolicyDto, SaveNotificationPolicyRequest } from '@sd/core';
+import { AdminNotificationsApi, ApiError, NotificationEventDefaultDto, NotificationPolicyDto, SaveNotificationPolicyRequest, timeZoneOptions } from '@sd/core';
 import { SdButton, SdCheckbox, SdEmptyState, SdFormField, SdIcon, SdInput, SdSkeleton, SdToggle, ToastService } from '@sd/ui';
 import { ADMIN_EDITOR_STYLES, AdminLeaveGuarded, sameValue, saveErrors, warnOnUnload } from '../admin-shared';
 
@@ -142,11 +142,7 @@ export class NotificationDefaultsPage implements OnInit, AdminLeaveGuarded {
 
   protected readonly dirty = computed(() => !sameValue(this.form(), this.original()));
   protected readonly quietOn = computed(() => !!this.form()?.quietHoursStart || !!this.form()?.quietHoursEnd);
-  protected readonly zones = computed(() => {
-    const list = typeof Intl.supportedValuesOf === 'function' ? Intl.supportedValuesOf('timeZone') : ['UTC'];
-    const current = this.form()?.timeZone;
-    return current && !list.includes(current) ? [current, ...list] : list.includes('UTC') ? list : ['UTC', ...list];
-  });
+  protected readonly zones = computed(() => timeZoneOptions(this.form()?.timeZone));
 
   constructor() {
     warnOnUnload(this.dirty);

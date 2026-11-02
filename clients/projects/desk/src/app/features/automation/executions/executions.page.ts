@@ -148,7 +148,7 @@ const STATUSES = ['Succeeded', 'PartiallyFailed', 'Failed', 'SkippedLoop', 'NotM
                 @for (c of e.trace; track $index) {
                   <tr>
                     <td>{{ ctx.fieldLabel(c.field) }}</td>
-                    <td><span class="mono">{{ c.op }}</span> {{ c.expected === null ? '' : ctx.describeValue(c.expected) }}</td>
+                    <td>{{ ctx.describeCheck(c.op, c.expected) }}</td>
                     <td>{{ ctx.describeValue(c.actual) }}</td>
                     <td><sd-icon [name]="c.result ? 'circle-check' : 'circle-x'" [size]="14" [class]="c.result ? 'ok' : 'no'" /><span class="sd-visually-hidden">{{ c.result }}</span></td>
                   </tr>

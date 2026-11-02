@@ -4,7 +4,15 @@ import { CustomersApi, DepartmentDto, Guid, MetaApi, OrganisationApi, PRIORITIES
 import { SdBadge, SdButton, SdCard, SdCombobox, SdFormField, SdInput, SdOption, SdSkeleton } from '@sd/ui';
 import { map } from 'rxjs';
 import { TABLE_STYLES } from '../customers/shared/styles';
-import { FORM_STYLES } from './shared/org-ui';
+import { FORM_STYLES, routingModeLabel } from './shared/org-ui';
+
+const DECISION_LABELS: Record<string, string> = {
+  customer: 'Dedicated agent',
+  round_robin: 'Round robin',
+  load_balanced: 'Load balanced',
+  skill_based: 'Skill based',
+  territory: 'Territory',
+};
 
 /** Test-route preview: who would receive a sample ticket now, and why each member is (in)eligible. Nothing is saved. */
 @Component({
@@ -69,7 +77,7 @@ import { FORM_STYLES } from './shared/org-ui';
             } @else {
               <sd-badge tone="warning" icon="inbox">Stays in queue</sd-badge>
             }
-            <span class="small"> {{ r.teamName ?? 'No team' }} · {{ r.strategy }} — {{ r.reason }}</span>
+            <span class="small"> {{ r.teamName ?? 'No team' }} · {{ strategyLabel(r.strategy) }} — {{ r.reason }}</span>
             @if (r.usedFallback) {
               <sd-badge size="sm" icon="arrow-right">Fallback used</sd-badge>
             }
@@ -155,6 +163,11 @@ export class RoutingPreviewPanel {
       const preferred = this.departmentId() ?? this.departments()[0]?.id ?? null;
       if (this.dept() === null && preferred) this.dept.set(preferred);
     });
+  }
+
+  /** Routing decisions name the rule that picked the agent ("skill_based"), or the team's mode when nobody was picked. */
+  protected strategyLabel(strategy: string | null | undefined): string {
+    return (strategy && DECISION_LABELS[strategy]) || routingModeLabel(strategy);
   }
 
   protected teamsOf(dept: Guid | null): TeamDto[] {

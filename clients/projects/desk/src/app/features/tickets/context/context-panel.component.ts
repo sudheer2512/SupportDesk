@@ -2,7 +2,7 @@ import { DecimalPipe, PercentPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input, signal, untracked } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ApiError, Guid, RealtimeService, SlaMilestoneDto, TicketContextDto, TicketListItemDto, TicketsApi } from '@sd/core';
-import { SdBadge, SdButton, SdDateTimePipe, SdIcon, SdRelativeTimePipe, SdSkeleton, SdSlaCountdown, SdStatusPill } from '@sd/ui';
+import { SdBadge, SdButton, SdDateTimePipe, SdIcon, SdRelativeTimePipe, SdSkeleton, SdSlaCountdown, SdStatusPill, SdLabelPipe } from '@sd/ui';
 import { debounceTime, filter, merge } from 'rxjs';
 import { TicketWorkbenchStore } from '../workspace/workbench.store';
 
@@ -15,7 +15,7 @@ const MILESTONE_LABELS: Record<string, string> = { FirstResponse: 'First respons
  */
 @Component({
   selector: 'desk-context-panel',
-  imports: [RouterLink, DecimalPipe, PercentPipe, SdBadge, SdButton, SdDateTimePipe, SdIcon, SdRelativeTimePipe, SdSkeleton, SdSlaCountdown, SdStatusPill],
+  imports: [SdLabelPipe, RouterLink, DecimalPipe, PercentPipe, SdBadge, SdButton, SdDateTimePipe, SdIcon, SdRelativeTimePipe, SdSkeleton, SdSlaCountdown, SdStatusPill],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="panel" aria-label="Customer context" role="region">
@@ -182,7 +182,7 @@ const MILESTONE_LABELS: Record<string, string> = { FirstResponse: 'First respons
             <ul class="list">
               @for (r of c.relatedTransactions; track r.id) {
                 <li class="row">
-                  <span class="grow sd-truncate"><strong>{{ r.system }}</strong> {{ r.recordType }} {{ r.recordNumber ?? '' }}</span>
+                  <span class="grow sd-truncate"><strong>{{ r.system | sdLabel }}</strong> {{ r.recordType }} {{ r.recordNumber ?? '' }}</span>
                   @if (safeUrl(r.url); as url) {
                     <a [href]="url" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'Open ' + r.recordType"><sd-icon name="external-link" [size]="13" /></a>
                   }

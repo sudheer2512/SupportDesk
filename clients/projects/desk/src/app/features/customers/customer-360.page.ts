@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { ApiError, Customer360Dto, CustomerDetailDto, CustomerMergeLogDto, CustomerMergeResultDto, CustomersApi, MeStore } from '@sd/core';
+import { ApiError, Customer360Dto, CustomerDetailDto, CustomerMergeLogDto, CustomerMergeResultDto, CustomersApi, MeStore, MetaApi } from '@sd/core';
 import {
   SdBadge,
   SdBreadcrumb,
@@ -19,6 +19,7 @@ import {
   SdTab,
   SdTabs,
   ToastService,
+  SdLabelPipe,
 } from '@sd/ui';
 import type { EChartsCoreOption } from 'echarts/core';
 import { ActivitiesCalendarComponent } from './activities-calendar.component';
@@ -36,6 +37,7 @@ import { SECTION_STYLES, TABLE_STYLES } from './shared/styles';
 @Component({
   selector: 'desk-customer-360-page',
   imports: [
+    SdLabelPipe,
     RouterLink,
     SdPageHeader,
     SdButton,
@@ -128,7 +130,7 @@ import { SECTION_STYLES, TABLE_STYLES } from './shared/styles';
                 <sd-kpi-tile label="Avg. resolution" [value]="d.kpis.avgResolutionHours90Days ?? '—'" unit="h" icon="clock" [deltaLabel]="d.kpis.resolvedLast90Days + ' resolved (90 d)'" />
                 <sd-kpi-tile label="Tickets (90 d)" [value]="d.kpis.ticketsLast90Days" icon="activity" [sparkline]="sparkline()" />
                 <sd-kpi-tile label="Active contracts" [value]="d.kpis.activeContracts" icon="file-text" [deltaLabel]="d.kpis.contractsExpiringSoon ? d.kpis.contractsExpiringSoon + ' expiring ≤ 60 d' : null" />
-                <sd-kpi-tile label="Installations" [value]="d.kpis.installations" icon="server" [deltaLabel]="d.kpis.contacts + ' contacts'" />
+                <sd-kpi-tile label="Installations" [value]="d.kpis.installations" icon="server" [deltaLabel]="d.kpis.contacts + (d.kpis.contacts === 1 ? ' contact' : ' contacts')" />
               </div>
 
               <div class="charts">
@@ -182,7 +184,7 @@ import { SECTION_STYLES, TABLE_STYLES } from './shared/styles';
                           <div class="convo-head">
                             <sd-icon [name]="m.direction === 'Outbound' ? 'send' : 'message-circle'" [size]="14" />
                             <strong>{{ m.authorName ?? (m.direction === 'Outbound' ? 'Agent' : 'Customer') }}</strong>
-                            <span class="sd-xs sd-muted">{{ m.channel }} · {{ m.createdAt | sdRelativeTime }}</span>
+                            <span class="sd-xs sd-muted">{{ m.channel | sdLabel }} · {{ m.createdAt | sdRelativeTime }}</span>
                             <span class="sd-spacer"></span>
                             <a class="sd-xs" [routerLink]="['/tickets', m.ticketId]">{{ m.displayNumber }}</a>
                           </div>
@@ -522,6 +524,7 @@ export class Customer360Page {
   readonly id = input.required<string>();
   protected readonly me = inject(MeStore);
   private readonly api = inject(CustomersApi);
+  private readonly meta = inject(MetaApi);
   private readonly dialog = inject(SdDialogService);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
@@ -555,9 +558,14 @@ export class Customer360Page {
     const on = [p.email && 'E-mail', p.phone && 'Phone', p.sms && 'SMS', p.whatsApp && 'WhatsApp'].filter(Boolean).join(', ');
     return p.preferredChannel ? `${p.preferredChannel} (also ${on || 'none'})` : on || '—';
   });
-  protected readonly customFieldEntries = computed(() =>
-    Object.entries(this.data()?.customer.customFields ?? {}).map(([key, value]) => ({ key: key.replace(/_/g, ' '), value: Array.isArray(value) ? value.join(', ') : String(value) })),
-  );
+  /** Custom field values under their configured labels (the stored keys are machine names such as erp_edition). */
+  protected readonly customFieldEntries = computed(() => {
+    const labels = new Map((this.meta.ticketForm()?.customFields ?? []).filter((f) => f.entity === 'Customer').map((f) => [f.key, f.label]));
+    return Object.entries(this.data()?.customer.customFields ?? {}).map(([key, value]) => ({
+      key: labels.get(key) ?? key.replace(/_/g, ' '),
+      value: Array.isArray(value) ? value.join(', ') : typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value),
+    }));
+  });
   protected readonly sparkline = computed(() => (this.data()?.ticketTrend ?? []).map((p) => p.created));
 
   protected readonly csatChart = computed<EChartsCoreOption>(() => {
@@ -622,6 +630,7 @@ export class Customer360Page {
   });
 
   constructor() {
+    this.meta.load();
     effect(() => {
       const id = this.id();
       untracked(() => this.load(id));

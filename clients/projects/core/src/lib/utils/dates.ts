@@ -34,6 +34,7 @@ export function formatDurationMs(ms: number, options: { seconds?: boolean } = {}
 /** Same as formatDurationMs for a number of minutes (time entries, SLA targets). */
 export function formatDurationMinutes(minutes: number | null | undefined): string {
   if (minutes === null || minutes === undefined || Number.isNaN(minutes)) return '—';
+  if (minutes === 0) return '0m';
   return formatDurationMs(minutes * MINUTE);
 }
 

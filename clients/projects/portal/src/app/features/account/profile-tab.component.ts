@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { ApiError, PortalAuthService, PortalProfileDto, PortalTicketsApi } from '@sd/core';
+import { ApiError, PortalAuthService, PortalProfileDto, PortalTicketsApi, timeZoneOptions } from '@sd/core';
 import { SdButton, SdFormField, SdIcon, SdInput, SdRelativeTimePipe, SdSkeleton, ToastService } from '@sd/ui';
 import { firstValueFrom } from 'rxjs';
 import { BrandService } from '../../brand.service';
@@ -171,16 +171,7 @@ export class ProfileTabComponent {
     if (!set.size) set.add(browserLanguage());
     return [...set];
   });
-  protected readonly timeZones = computed(() => {
-    let zones: string[] = [];
-    try {
-      zones = (Intl as unknown as { supportedValuesOf?: (key: string) => string[] }).supportedValuesOf?.('timeZone') ?? [];
-    } catch {
-      zones = [];
-    }
-    const current = this.draft().timeZone;
-    return current && !zones.includes(current) ? [current, ...zones] : zones;
-  });
+  protected readonly timeZones = computed(() => timeZoneOptions(this.draft().timeZone));
 
   constructor() {
     effect(() => {

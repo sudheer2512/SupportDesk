@@ -85,7 +85,9 @@ export * from './lib/utils/cursor-list';
 export * from './lib/utils/dates';
 export * from './lib/utils/fuzzy';
 export * from './lib/utils/ids';
+export * from './lib/utils/labels';
 export * from './lib/utils/storage';
+export * from './lib/utils/time-zones';
 
 // Customers, products & assets, contracts and ERP integration
 export * from './lib/models/customers';

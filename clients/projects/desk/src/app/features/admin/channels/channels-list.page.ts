@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ApiError, ChannelAccountDto, ChannelProviderDto, ChannelsApi } from '@sd/core';
+import { ApiError, ChannelAccountDto, ChannelProviderDto, ChannelsApi, enumLabel } from '@sd/core';
 import { SdBadge, SdButton, SdCard, SdEmptyState, SdIcon, SdPageHeader, SdRelativeTimePipe, SdSkeleton, SdTooltip, ToastService } from '@sd/ui';
 import { forkJoin } from 'rxjs';
 import { accountStatusTone } from '../../../shared/channel-ui';
@@ -161,7 +161,7 @@ export class ChannelsListPage {
   }
 
   protected providerLabel(provider: string): string {
-    return provider === 'Simulator' ? 'Simulator mode' : provider;
+    return provider === 'Simulator' ? 'Simulator mode' : enumLabel(provider);
   }
 
   protected polls(c: ChannelAccountDto): boolean {

@@ -82,7 +82,7 @@ import { TextPromptData, TextPromptDialog } from './shared/text-prompt.dialog';
         @for (d of departments(); track d.id) {
           <li>
             <span>{{ d.name }}</span>
-            <span class="sd-xs sd-muted">{{ d.contactCount }} contacts</span>
+            <span class="sd-xs sd-muted">{{ d.contactCount }} {{ d.contactCount === 1 ? 'contact' : 'contacts' }}</span>
             @if (canManage) {
               <button sdButton size="sm" variant="ghost" icon="pencil" iconOnly [attr.aria-label]="'Rename ' + d.name" (click)="editDepartment(d)"></button>
               <button sdButton size="sm" variant="ghost" icon="trash" iconOnly [attr.aria-label]="'Delete ' + d.name" (click)="deleteDepartment(d)"></button>

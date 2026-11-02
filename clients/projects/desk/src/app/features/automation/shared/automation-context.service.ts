@@ -6,9 +6,11 @@ import {
   BlueprintSummaryDto,
   BlueprintsApi,
   ENTITLEMENT_STATUSES,
+  FILTER_OP_LABELS,
   FilterFieldDef,
   FilterFieldType,
   FilterOp,
+  MeStore,
   MetaApi,
   OptionDto,
   PRIORITIES,
@@ -16,6 +18,9 @@ import {
   SLA_STATES,
   STATUS_CATEGORIES,
   TicketFormMetaDto,
+  enumLabel,
+  formatDateTime,
+  formatDurationMinutes,
 } from '@sd/core';
 import { SdOption } from '@sd/ui';
 import { catchError, forkJoin, of } from 'rxjs';
@@ -36,6 +41,26 @@ const EVENT_TRIGGERS = new Set([
 
 const PRIORITY_OPS: FilterOp[] = ['eq', 'neq', 'in', 'not_in', 'gt', 'gte', 'lt', 'lte'];
 
+/** Trace values the engine writes as ISO-8601 timestamps (datetime fields, schedule times). */
+const ISO_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:?\d{2})?$/;
+
+/** Enum values such as "InProgress" (two or more capitalised words); single words and free text are left alone. */
+const PASCAL_CASE = /^[A-Z][a-z]+(?:[A-Z][a-z]+)+$/;
+
+/** Trace values that are JSON string arrays ('["Resolved","Closed"]'), or null for anything else. */
+function stringList(raw: string): string[] | null {
+  if (!raw.startsWith('[')) return null;
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.map((v) => String(v)) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Operators whose value is a number of minutes ("older than 1d" reads better than "older than (minutes) 1440"). */
+const MINUTE_OPS: Readonly<Record<string, string>> = { older_than_minutes: 'older than', within_last_minutes: 'within the last' };
+
 /**
  * Loads (once per session) everything the automation designers need: the server catalog (triggers, fields,
  * operators, action schemas), ticket metadata (/meta/ticket-form), roles and reply templates, and the blueprint list.
@@ -43,6 +68,7 @@ const PRIORITY_OPS: FilterOp[] = ['eq', 'neq', 'in', 'not_in', 'gt', 'gte', 'lt'
  */
 @Injectable({ providedIn: 'root' })
 export class AutomationContext {
+  private readonly me = inject(MeStore);
   private readonly automation = inject(AutomationApi);
   private readonly blueprintsApi = inject(BlueprintsApi);
   private readonly metaApi = inject(MetaApi);
@@ -158,14 +184,34 @@ export class AutomationContext {
     return m;
   });
 
-  /** Replaces ids in a trace value ("…guid…" or ["guid", …]) with names where known. */
+  /** Replaces ids in a trace value ("…guid…" or ["guid", …]) with names where known; formats timestamps. */
   describeValue(raw: string | null): string {
     if (raw === null || raw === '') return '—';
+    const list = stringList(raw);
+    if (list) return list.length ? list.map((v) => this.describeValue(v)).join(', ') : '—';
+    if (PASCAL_CASE.test(raw)) return enumLabel(raw);
+    if (/^(true|false)$/i.test(raw)) return raw.toLowerCase() === 'true' ? 'Yes' : 'No';
+    if (ISO_TIMESTAMP.test(raw.trim())) {
+      const user = this.me.user();
+      return formatDateTime(raw.trim(), { timeZone: user?.timeZone, locale: user?.locale, style: 'medium' }) || raw;
+    }
     const names = this.nameIndex();
     return raw.replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, (id) => names.get(id.toLowerCase()) ?? id);
   }
 
+  /** One condition check as traces show it: "is High", "is empty", "older than 1d". */
+  describeCheck(op: string, expected: string | null): string {
+    const minutesPrefix = MINUTE_OPS[op];
+    if (minutesPrefix && expected !== null && /^\d+(\.\d+)?$/.test(expected.trim())) return `${minutesPrefix} ${formatDurationMinutes(Number(expected))}`;
+    const label = this.operatorLabel(op);
+    return expected === null ? label : `${label} ${this.describeValue(expected)}`;
+  }
+
   // ───── Labels ─────
+
+  operatorLabel(op: string): string {
+    return this.catalog()?.operators.find((o) => o.key === op)?.label ?? FILTER_OP_LABELS[op as FilterOp] ?? op;
+  }
 
   triggerLabel(key: string): string {
     return this.catalog()?.triggers.find((t) => t.key === key)?.label ?? key;

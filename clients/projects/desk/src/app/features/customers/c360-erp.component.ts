@@ -2,14 +2,14 @@ import { ChangeDetectionStrategy, Component, effect, inject, input, signal, untr
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CustomersApi, ErpApi, ErpCustomerRecordsDto, ErpRecordViewDto, ErpTransaction, Guid, MeStore } from '@sd/core';
-import { SdBadge, SdButton, SdCard, SdDrawer, SdEmptyState, SdKpiTile, SdSkeleton, SdTab, SdTabs } from '@sd/ui';
+import { SdBadge, SdButton, SdCard, SdDrawer, SdEmptyState, SdKpiTile, SdSkeleton, SdTab, SdTabs, SdLabelPipe } from '@sd/ui';
 import { DateOnlyPipe, HumanizePipe, MoneyPipe, formatMoney, statusTone } from './shared/customer-ui';
 import { SECTION_STYLES, TABLE_STYLES } from './shared/styles';
 
 /** The customer as seen in Wings ERP: master data, outstanding balance, invoices, orders, receipts, AMC contracts and installations. */
 @Component({
   selector: 'desk-c360-erp',
-  imports: [NgTemplateOutlet, RouterLink, SdCard, SdBadge, SdButton, SdKpiTile, SdSkeleton, SdEmptyState, SdTabs, SdTab, SdDrawer, DateOnlyPipe, MoneyPipe, HumanizePipe],
+  imports: [SdLabelPipe, NgTemplateOutlet, RouterLink, SdCard, SdBadge, SdButton, SdKpiTile, SdSkeleton, SdEmptyState, SdTabs, SdTab, SdDrawer, DateOnlyPipe, MoneyPipe, HumanizePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (loading()) {
@@ -153,7 +153,7 @@ import { SECTION_STYLES, TABLE_STYLES } from './shared/styles';
         <div class="rec">
           <dl class="meta">
             <dt>Type</dt>
-            <dd>{{ r.record.recordType | deskHumanize }} · {{ r.record.system }}</dd>
+            <dd>{{ r.record.recordType | deskHumanize }} · {{ r.record.system | sdLabel }}</dd>
             <dt>Date</dt>
             <dd>{{ r.record.date | deskDate }}@if (r.record.dueDate) { · due {{ r.record.dueDate | deskDate }} }</dd>
             <dt>Status</dt>

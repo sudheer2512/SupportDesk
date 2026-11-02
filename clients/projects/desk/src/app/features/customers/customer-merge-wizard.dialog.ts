@@ -109,7 +109,7 @@ const MOVED_LABELS: Record<string, string> = {
               <li>
                 <button type="button" class="result" [class.is-selected]="c.id === otherId()" [attr.aria-pressed]="c.id === otherId()" (click)="pick(c)">
                   <span class="rname">{{ c.name }} @if (c.code) {<span class="sd-xs sd-muted sd-mono">{{ c.code }}</span>}</span>
-                  <span class="sd-xs sd-muted">{{ c.contactCount }} contacts · {{ c.openTickets }} open tickets{{ c.parentName ? ' · under ' + c.parentName : '' }}</span>
+                  <span class="sd-xs sd-muted">{{ c.contactCount }} {{ c.contactCount === 1 ? 'contact' : 'contacts' }} · {{ c.openTickets }} open tickets{{ c.parentName ? ' · under ' + c.parentName : '' }}</span>
                 </button>
               </li>
             }

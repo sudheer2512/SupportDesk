@@ -30,6 +30,7 @@ import {
   SdRelativeTimePipe,
   SdSkeleton,
   ToastService,
+  SdLabelPipe,
 } from '@sd/ui';
 import { Subject, debounceTime, merge } from 'rxjs';
 import { ModuleTabsComponent } from '../customers/shared/module-tabs.component';
@@ -44,6 +45,7 @@ import { PAGE_STYLES, TEAMS_TABS, availabilityTone, formatMinutes, loadPercent }
 @Component({
   selector: 'desk-monitor-page',
   imports: [
+    SdLabelPipe,
     FormsModule,
     RouterLink,
     SdPageHeader,
@@ -240,7 +242,7 @@ import { PAGE_STYLES, TEAMS_TABS, availabilityTone, formatMinutes, loadPercent }
                       <span class="risk-main">
                         <sd-badge size="sm" [tone]="c.waitingMinutes >= 5 ? 'danger' : 'warning'">{{ minutes(c.waitingMinutes) }}</sd-badge>
                         <strong class="sd-truncate">{{ c.visitorName ?? 'Visitor' }}</strong>
-                        <span class="xs muted">{{ c.channel }}</span>
+                        <span class="xs muted">{{ c.channel | sdLabel }}</span>
                       </span>
                       <span class="xs muted sd-truncate">{{ c.subject ?? 'No subject' }} · waiting since {{ c.waitingSince | sdRelativeTime }}</span>
                       <a class="small" routerLink="/inbox">Open inbox</a>

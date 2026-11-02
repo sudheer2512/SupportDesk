@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MeStore, TicketDetailDto, TicketsApi, isApiError } from '@sd/core';
-import { SdBadge, SdBreadcrumb, SdButton, SdCard, SdEmptyState, SdPageHeader, SdPriorityBadge, SdRelativeTimePipe, SdRichTextEditor, SdSkeleton, SdStatusPill, ToastService } from '@sd/ui';
+import { SdBadge, SdBreadcrumb, SdButton, SdCard, SdEmptyState, SdPageHeader, SdPriorityBadge, SdRelativeTimePipe, SdRichTextEditor, SdSkeleton, SdStatusPill, ToastService, SdLabelPipe } from '@sd/ui';
 import { AiDraftReplyActionComponent } from '../composer/ai-draft-reply-action.component';
 import { TicketAiPanelComponent } from '../ticket-ai-panel/ticket-ai-panel.component';
 
@@ -15,6 +15,7 @@ import { TicketAiPanelComponent } from '../ticket-ai-panel/ticket-ai-panel.compo
 @Component({
   selector: 'desk-ticket-ai-page',
   imports: [
+    SdLabelPipe,
     FormsModule,
     RouterLink,
     SdPageHeader,
@@ -56,7 +57,7 @@ import { TicketAiPanelComponent } from '../ticket-ai-panel/ticket-ai-panel.compo
                     <div><dt>Priority</dt><dd><sd-priority-badge [priority]="t.priority" /></dd></div>
                     <div><dt>Customer</dt><dd>{{ t.customerName ?? '—' }}</dd></div>
                     <div><dt>Contact</dt><dd>{{ t.contactName ?? '—' }}</dd></div>
-                    <div><dt>Channel</dt><dd>{{ t.channel }}</dd></div>
+                    <div><dt>Channel</dt><dd>{{ t.channel | sdLabel }}</dd></div>
                     <div><dt>Category</dt><dd>{{ t.categoryName ?? '—' }}{{ t.subcategoryName ? ' › ' + t.subcategoryName : '' }}</dd></div>
                     <div><dt>Product</dt><dd>{{ t.productName ?? '—' }}</dd></div>
                     <div><dt>Assignee</dt><dd>{{ t.assigneeName ?? 'Unassigned' }}</dd></div>
@@ -80,7 +81,9 @@ import { TicketAiPanelComponent } from '../ticket-ai-panel/ticket-ai-panel.compo
                 </sd-card>
               }
             </div>
-            <desk-ticket-ai-panel class="right" [ticketId]="id()" (insertReply)="reply.set($event)" (ticketChanged)="load()" />
+            @if (!byNumber()) {
+              <desk-ticket-ai-panel class="right" [ticketId]="id()" (insertReply)="reply.set($event)" (ticketChanged)="load()" />
+            }
           </div>
         }
       </div>
@@ -132,6 +135,14 @@ import { TicketAiPanelComponent } from '../ticket-ai-panel/ticket-ai-panel.compo
       gap: 12px;
       margin-top: 10px;
     }
+    /* The hint wraps; the button keeps its full label ("Send rep…" otherwise). */
+    .send > span {
+      flex: 1;
+      min-width: 0;
+    }
+    .send > button {
+      flex: none;
+    }
   `,
 })
 export class TicketAiPage {
@@ -142,6 +153,8 @@ export class TicketAiPage {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly id = input.required<string>();
+  /** Set while the route holds a ticket number that has not been resolved to the ticket's id yet. */
+  protected readonly byNumber = computed(() => /^#?(\d{1,18})$/.exec(this.id())?.[1] ?? null);
 
   protected readonly ticket = signal<TicketDetailDto | null>(null);
   protected readonly notFound = signal(false);
@@ -166,6 +179,20 @@ export class TicketAiPage {
   }
 
   protected load(): void {
+    // /ai/tickets/<number> → /ai/tickets/<id> without a history entry, like /tickets/<number>.
+    const number = this.byNumber();
+    if (number) {
+      this.tickets
+        .getByNumber(number)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (t) => void this.router.navigate(['/ai/tickets', t.id], { replaceUrl: true }),
+          error: (err: unknown) => {
+            if (isApiError(err) && err.status === 404) this.notFound.set(true);
+          },
+        });
+      return;
+    }
     this.tickets
       .get(this.id())
       .pipe(takeUntilDestroyed(this.destroyRef))
