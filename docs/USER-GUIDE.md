@@ -930,8 +930,9 @@ that, submit a new ticket.
 
 When support asks you to confirm, the ticket shows **Is your issue resolved?**
 
-* Select **Yes** to close the ticket. You can add a comment.
-* Select **No**, describe **What is still not working?**, and select **Send and keep it open**. The ticket reopens.
+* Select **Yes, it's resolved** to close the ticket.
+* Select **No, I still need help**, describe **What is still not working?**, and select **Send and keep it open**. The
+  ticket reopens.
 
 ### To reopen a ticket
 
@@ -942,8 +943,11 @@ Select **Reopen**, enter a reason, and select **Reopen ticket**. The page shows 
 On a resolved or closed ticket, **How did we do?** offers 1–5 stars and a comment. Select **Submit rating**. You can
 rate each ticket once.
 
-**Partial:** the satisfaction survey e-mail links to a portal page that does not exist yet. Rate the ticket from the
-ticket page instead.
+### To answer a satisfaction survey from an e-mail
+
+After a ticket is resolved, the survey e-mail links to a **How did we do?** page. You do not need to sign in. Select 1–5
+stars, optionally write in **Anything you'd like to tell us?**, and select **Send feedback**. The page shows the last
+date you can answer; after that it says the survey has closed.
 
 ### Knowledge base and search
 
